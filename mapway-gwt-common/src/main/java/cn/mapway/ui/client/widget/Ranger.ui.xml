@@ -1,0 +1,44 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        .container {
+            position: relative;
+            overflow: hidden;
+            -webkit-appearance: none;
+            background-color: #fff;
+            background-image: none;
+            border-radius: 4px;
+            border: 1px solid #DCDFE6;
+            box-sizing: border-box;
+            height: 32px;
+            line-height: 32px;
+            padding: 0px;
+            overflow: hidden;
+        }
+
+        .front {
+            position: absolute;
+            top: 0px;
+            left: 0px;
+            width: 100px;
+            bottom: 0px;
+            background-color: skyblue;
+        }
+
+        .text {
+            position: absolute;
+            text-align: center;
+            color: black;
+            top: 0px;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            line-height: 26px;
+            font-size: 1.1rem;
+        }
+    </ui:style>
+    <g:HTMLPanel ui:field="root" styleName="{style.container}">
+        <div class="{style.front}" ui:field="bar"/>
+        <div class="{style.text}" ui:field="text">43</div>
+    </g:HTMLPanel>
+</ui:UiBinder>

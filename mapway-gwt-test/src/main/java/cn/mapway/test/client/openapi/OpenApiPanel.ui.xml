@@ -1,0 +1,46 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:l="urn:import:cn.mapway.test.client.openapi">
+    <ui:style>
+        .top {
+            border-bottom: solid 1px #f0f0f0;;
+        }
+
+        .header {
+            font-weight: bold;
+            font-size: 1.2em;
+        }
+
+        .version {
+            color: #404040;
+        }
+
+        .left {
+            border-right: 1px solid #f0f0f0;
+        }</ui:style>
+    <g:DockLayoutPanel>
+        <g:north size="60">
+            <g:HorizontalPanel width="100%" spacing="5" height="60px" styleName="{style.top}"
+                               verticalAlignment="middle">
+                <g:VerticalPanel>
+                    <g:Label ui:field="lbName" styleName="{style.header}" />
+                    <g:Label ui:field="lbVersion" styleName="{style.version}" />
+                </g:VerticalPanel>
+                <g:cell horizontalAlignment="right">
+                    <g:HorizontalPanel spacing="4">
+                        <g:Label styleName="mapway-label">可用的服务器列表</g:Label>
+                        <l:ServersDropdown width="150px"  ui:field="ddlServers"/>
+                    </g:HorizontalPanel>
+                </g:cell>
+                <g:cell horizontalAlignment="center" width="80px">
+                    <g:Button ui:field="btnLoad">加载文档</g:Button>
+                </g:cell>
+            </g:HorizontalPanel>
+        </g:north>
+        <g:west size="250">
+            <g:ScrollPanel styleName="{style.left}">
+                <l:EntryTree ui:field="tree" width="100%" />
+            </g:ScrollPanel>
+        </g:west>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

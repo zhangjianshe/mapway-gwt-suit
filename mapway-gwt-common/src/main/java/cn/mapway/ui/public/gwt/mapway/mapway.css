@@ -1,0 +1,106 @@
+.mapway-font {
+    font-family: mapway-font;
+    color: black;
+    font-weight: normal;
+    font-style: normal;
+    font-size: 22px;
+    line-height: 1em;
+    text-transform: none;
+    display: inline-block;
+    white-space: nowrap;
+    word-wrap: normal;
+    direction: ltr;
+    -webkit-font-feature-settings: 'liga';
+    -webkit-font-smoothing: antialiased;
+    cursor: pointer;
+    vertical-align: middle;
+    text-align: center;
+    user-select: none;
+    position: relative;
+}
+.mapway-font:HOVER {
+     transition: all 0.3s ease-in;
+ }
+
+.mapway-font[enabled="false"] {
+     cursor: not-allowed;
+     color: #808080;
+     text-shadow: none;
+ }
+
+.mapway-font[disabled="true"] {
+    cursor: not-allowed;
+    color: #808080;
+    text-shadow: none;
+ }
+
+.mapway-font[select="true"] {
+     text-shadow: #808080 0 0 15px;
+ }
+
+.mapway-font[count]::before {
+     position: absolute;
+     right: 0;
+     top: 0;
+     font-weight: normal;
+     display: inline-block;
+     content: attr(count);
+     font-size: 7px;
+     border-radius: 50%;
+     padding: 2px 2px;
+     font-style: normal;
+     margin: auto;
+     background-color: rgba(20, 150, 220, 0.9);
+     color: white;
+     height: 2em;
+     min-width: 2em;
+     max-width: 2em;
+     overflow: hidden;
+     text-overflow: ellipsis;
+     transform: translate(50%, -50%);
+ }
+
+.mapway-dropdown{
+    border: solid 1px #f0f0f0 !important;
+    color: black;
+    user-select: none;
+    cursor: default;
+    line-height: 28px;
+}
+.mapway-dropdown:hover{
+     border: solid 1px #808080;
+     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+     transition: all 0.1s ease-in;
+ }
+.mapway-dropdown[select="true"]{
+     border: solid 1px skyblue;
+     background-color: #f0f0f0;
+}
+.mapway-label{
+    font-weight: bold;
+    line-height: 28px;
+}
+
+.mapway-text-item{
+    cursor: pointer;
+    padding: 0px;
+    margin: 0px;
+    height: 28px;
+    border-width: 0px;
+    user-select: none;
+    background: transparent;
+    color: black;
+}
+.mapway-text-item:hover{
+    background-color: #f0f0f0;
+}
+.mapway-text-item[select="true"] {
+    background-color: #f0f0f0;
+    color: black;
+}
+.mapway-text-item > div[hovershow=true] {
+    visibility: hidden;
+}
+.mapway-text-item:hover > div[hovershow=true] {
+    visibility: hidden;
+}

@@ -1,0 +1,24 @@
+
+
+    List<WindowDecoratorInfo> decorators;
+
+    public __CLASS_NAME__()
+    {
+        decorators=new ArrayList<>();
+        _INIT_DECORATORS__
+    }
+    @Override
+    public IWindowDecorator create(String decorator) {
+        if(decorator==null || decorator.length()==0)
+        {
+            return new DefaultWindowDecorator();
+        }
+        __CREATE_DECORATORS__
+
+        return new DefaultWindowDecorator();
+    }
+
+    @Override
+    public List<WindowDecoratorInfo> getDecorators() {
+        return decorators;
+    }

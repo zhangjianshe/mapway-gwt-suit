@@ -1,0 +1,81 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        .back {
+            background-color: rgba(0, 0, 0, 0.8);
+        }
+
+        .content {
+            border: solid 3px skyblue;
+            display: flex;
+            background-color: rgba(0, 0, 0, 0.2);
+        }
+
+        .c {
+            border: solid 1px #f0f0f0;
+            padding: 10px;
+        }
+
+        .tools {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            gap: 5px;
+            padding:0 10px
+        }
+
+        .tip {
+            background-color: white;
+        }
+
+        .pad {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .header {
+            font-weight: bold;
+        }</ui:style>
+    <g:LayoutPanel ui:field="root">
+        <g:layer>
+            <g:HTML styleName="{style.back}" ui:field="left"/>
+        </g:layer>
+        <g:layer>
+            <g:HTML styleName="{style.back}" ui:field="right"/>
+        </g:layer>
+        <g:layer>
+            <g:HTML styleName="{style.back}" ui:field="top"/>
+        </g:layer>
+        <g:layer>
+            <g:HTML styleName="{style.back}" ui:field="bottom"/>
+        </g:layer>
+        <g:layer>
+            <g:HTML styleName="{style.content}" ui:field="content"/>
+        </g:layer>
+        <g:layer>
+            <g:DockLayoutPanel ui:field="tipLayer" styleName="{style.tip}">
+                <g:north size="30">
+                    <g:HTMLPanel styleName="{style.pad}">
+                        <g:Label ui:field="header" styleName="{style.header}"/>
+                    </g:HTMLPanel>
+                </g:north>
+                <g:south size="40">
+                    <g:HTMLPanel styleName="{style.tools}">
+                        <g:Button ui:field="btnPrev">上一个</g:Button>
+                        <g:Button ui:field="btnNext">下一个</g:Button>
+                        <g:Button ui:field="btnClose">关闭</g:Button>
+                    </g:HTMLPanel>
+                </g:south>
+                <g:center>
+                    <g:ScrollPanel ui:field="scroller" styleName="{style.c}">
+                        <g:HTMLPanel ui:field="container">
+
+                        </g:HTMLPanel>
+                    </g:ScrollPanel>
+                </g:center>
+            </g:DockLayoutPanel>
+        </g:layer>
+    </g:LayoutPanel>
+</ui:UiBinder>

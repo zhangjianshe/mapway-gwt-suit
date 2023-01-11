@@ -1,0 +1,32 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    background-color: white;
+    color: black;
+}
+.ai-text-item{
+    cursor: pointer;
+    padding: 0px;
+    margin: 0px;
+    height: 28px;
+    border-width: 0px;
+    user-select: none;
+    background: transparent;
+    color: black;
+}
+.ai-text-item:hover{
+     background-color: #f0f0f0;
+}
+.ai-text-item[select="true"] {
+    background-color: #f0f0f0;
+    color: black;
+}
+.ai-text-item > div[hovershow=true] {
+    visibility: hidden;
+}
+.ai-text-item:hover > div[hovershow=true] {
+    visibility: hidden;
+}
