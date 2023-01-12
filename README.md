@@ -8,6 +8,7 @@ based gwt,provider a bunch of tools to build a mvc application.
 
 ```shell
 
+
 #如果只需安装到本地 请执行下面命令
 git clone https://gitlab.cangling.io/develop/mapway-gwt-suit.git
 cd mapway-gwt-suit
