@@ -22,13 +22,14 @@ public interface IAttribute {
     int INPUT_PATH = 4; //路径选择器
     int INPUT_FILE = 5; //文件选择器
     int INPUT_SLIDER = 6; //Slider选择输入
-    int INPUT_PATHALL = 7;//目录或者文件选择
-    int INPUT_TEXTAREA = 8;//文本域
+    int INPUT_OTHERS=99;
 
     String getName();
 
     String getAltName();
 
+    int INPUT_PATHALL = 7;//目录或者文件选择
+    int INPUT_TEXTAREA = 8;//文本域
     Object getValue();
 
     void setValue(Object value);
