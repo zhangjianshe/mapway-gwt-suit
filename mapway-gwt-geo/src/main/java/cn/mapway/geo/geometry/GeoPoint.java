@@ -53,7 +53,10 @@ public class GeoPoint extends GeoObject implements IsSerializable {
         this.x = x;
         this.y = y;
     }
-
+    @Override
+    public String toString() {
+        return x+","+y;
+    }
     public String toGeoJson() {
         StringBuilder sb = new StringBuilder();
         sb.append("{\"type\":\"").append(type).append("\",\"coordinates\":[");
