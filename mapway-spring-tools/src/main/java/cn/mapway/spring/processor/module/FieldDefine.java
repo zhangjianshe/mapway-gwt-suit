@@ -1,11 +1,14 @@
 package cn.mapway.spring.processor.module;
 
+import javax.lang.model.type.TypeMirror;
+
 public class FieldDefine {
     public String name;
     public String qTypeName;
-    public FieldDefine(String qtype,String name)
+    public TypeMirror tType;
+
+    public FieldDefine()
     {
-        this.name = name;
-        this.qTypeName = qtype;
+
     }
 }

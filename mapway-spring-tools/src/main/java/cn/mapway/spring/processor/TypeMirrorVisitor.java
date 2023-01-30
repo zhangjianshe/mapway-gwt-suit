@@ -21,24 +21,30 @@ import java.util.stream.Collectors;
 /**
  * 类型解析器
  */
-public class TypeMirrorVisitor extends SimpleTypeVisitor8<Void,Void> {
+public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeMirror,Void> {
     Log log = Logs.getLog(TypeMirrorVisitor.class);
-    List<TypeMirror> components = new ArrayList<TypeMirror>();
     ProcessingEnvironment env;
     public TypeMirrorVisitor(ProcessingEnvironment environment)
     {
             env=environment;
     }
-    public void parse(TypeMirror typeMirror)
+
+    /**
+     * 将一种类型 转化为另一种类型
+     * 在解析的过程中 懑举出所有的类型列表
+     * @param typeMirror
+     * @return
+     */
+    public TypeMirror parse(TypeMirror typeMirror)
     {
-        typeMirror.accept(this,null);
+        return typeMirror.accept(this,null);
     }
 
     @Override
-    public Void visitArray(ArrayType t, Void unused) {
+    public TypeMirror visitArray(ArrayType t, Void unused) {
         TypeMirror com= t.getComponentType();
-        log.infof("Array {}",com.toString());
-        return null;
+        TypeMirror transMirror = parse(com);
+        return env.getTypeUtils().getArrayType(transMirror);
     }
 
     public List<? extends Element> findAllFields(TypeElement typeElement)
@@ -54,7 +60,8 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<Void,Void> {
         return pkg.getQualifiedName()+"."+element.getSimpleName();
     }
     @Override
-    public Void visitDeclared(DeclaredType t, Void unused) {
+    public TypeMirror visitDeclared(DeclaredType t, Void unused) {
+
         Element element = t.asElement();
         if(element.getKind().equals(ElementKind.CLASS))
         {
@@ -62,15 +69,18 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<Void,Void> {
             boolean isSystm=isSystem(qname);
             if(!isSystm)
             {
-                handleModule(qname,element);
+                element= handleModule(qname,element);
             }
         }
         List<? extends TypeMirror> typeArguments = t.getTypeArguments();
+        List< TypeMirror> typeArguments2=new ArrayList<>();
         for(TypeMirror arg : typeArguments)
         {
-            parse(arg);
+            typeArguments2.add(parse(arg));
         }
-        return null;
+        TypeMirror[] args=typeArguments2.toArray(new TypeMirror[typeArguments.size()]);
+        // 返回转换后的类Mirror
+       return env.getTypeUtils().getDeclaredType((TypeElement) element,args);
     }
 
     /**
@@ -79,24 +89,38 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<Void,Void> {
      * @return
      */
     private boolean isSystem(String qname) {
+        if(qname.startsWith("java.lang"))
+        {
+            return true;
+        }
         List<String> omittedClasses = Lang.list(String.class.getCanonicalName(),
                 Date.class.getCanonicalName(), java.sql.Date.class.getCanonicalName());
 
         return omittedClasses.contains(qname);
     }
-
+    boolean isObject(String qname) {
+        return "java.lang.Object".equals(qname);
+    }
     /**
      *  像全局 模型列表中添加模型定义
      * @param qname
      * @param element
+     * @return
      */
-    private void handleModule(String qname, Element element) {
+    private Element handleModule(String qname, Element element) {
         ApiModuleDefine module = AllModules.getInstance().getModule(qname);
         if(module==null)
         {
             //首先添加到库中 禁止接下来的操作出现循环
             module=new ApiModuleDefine(qname);
             AllModules.getInstance().put(module);
+
+            //处理父类型
+            TypeMirror superclass = ((TypeElement) element).getSuperclass();
+            if(!(isSystem(superclass.toString()) || isObject(superclass.toString())))
+            {
+                parse(superclass);
+            }
 
             //处理泛型参数信息
             List<? extends TypeParameterElement> typeParameters = ((TypeElement) element).getTypeParameters();
@@ -116,6 +140,10 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<Void,Void> {
                                 public Void visitIntersection(IntersectionType t, Void unused) {
                                     for(TypeMirror v : t.getBounds())
                                     {
+                                        if(isObject(v.toString()))
+                                        {
+                                            continue;
+                                        }
                                         modulePara.upBound.add(v.toString());
                                         parse(v);
                                     }
@@ -124,8 +152,10 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<Void,Void> {
                                 // K
                                 @Override
                                 public Void visitDeclared(DeclaredType t, Void unused) {
-                                    modulePara.upBound.add(t.toString());
-                                    parse(t);
+                                    if(!isObject(t.toString())) {
+                                        modulePara.upBound.add(t.toString());
+                                        parse(t);
+                                    }
                                     return null;
                                 }
                             },null);
@@ -151,36 +181,39 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<Void,Void> {
             List<VariableElement> fields= (List<VariableElement>) findAllFields((TypeElement) element);
             for(VariableElement field : fields)
             {
-                String fieldName = field.getSimpleName().toString();
-                String typeName = field.asType().toString();
-                FieldDefine fieldDefine = new FieldDefine( typeName,fieldName);
+                FieldDefine fieldDefine = new FieldDefine();
+
+                fieldDefine.name=field.getSimpleName().toString();
+                fieldDefine.qTypeName=getQName(field);
+                fieldDefine.tType=parse(field.asType());
+
                 module.fields.add(fieldDefine);
             }
         }
+        return element;
     }
 
     @Override
-    public Void visitExecutable(ExecutableType t, Void unused) {
+    public TypeMirror visitExecutable(ExecutableType t, Void unused) {
         log.infof("ExecutableType {}",t.toString());
-        return null;
+        return env.getTypeUtils().getNullType();
     }
 
     @Override
-    public Void visitPrimitive(PrimitiveType t, Void unused) {
-
-        log.infof("PrimitiveType {}",t.toString());
-        return null;
+    public TypeMirror visitPrimitive(PrimitiveType t, Void unused) {
+        //基本类型不变
+        return t;
     }
 
     @Override
-    public Void visitTypeVariable(TypeVariable t, Void unused) {
+    public TypeMirror visitTypeVariable(TypeVariable t, Void unused) {
         log.infof("TypeVariable {}",t.toString());
-        return null;
+        return env.getTypeUtils().getNullType();
     }
 
     @Override
-    public Void visitWildcard(WildcardType t, Void unused) {
+    public TypeMirror visitWildcard(WildcardType t, Void unused) {
         log.infof("WildcardType {}",t.toString());
-        return null;
+        return env.getTypeUtils().getNullType();
     }
 }
