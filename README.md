@@ -21,4 +21,10 @@ deploy.sh
 ```
 
 ## Reference
-- [GWT Book](https://livebook.manning.com/book/gwt-in-action-second-edition/about-this-book/) 
+- [GWT Book](https://livebook.manning.com/book/gwt-in-action-second-edition/about-this-book/)
+
+- IntelliJ IDEA Run Panel Maven彩色输出配置 [参考](https://youtrack.jetbrains.com/issue/IDEA-181337/Make-Maven-plugin-use-colors-in-Run-window)
+
+```code
+  -Djansi.passthrough=true      
+```

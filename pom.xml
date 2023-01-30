@@ -15,6 +15,8 @@
         <module>mapway-gwt-openapi</module>
         <module>mapway-gwt-xterm</module>
         <module>mapway-gwt-ace</module>
+        <module>mapway-gwt-map</module>
+        <module>mapway-spring-tools</module>
         <!--        <module>mapway-gwt-test</module>-->
     </modules>
 

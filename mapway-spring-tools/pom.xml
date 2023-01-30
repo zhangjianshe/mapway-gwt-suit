@@ -9,9 +9,8 @@
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>mapway-gwt-xterm</artifactId>
-    <version>${project.parent.version}</version>
-    <packaging>gwt-lib</packaging>
+    <artifactId>mapway-spring-tools</artifactId>
+
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
@@ -19,8 +18,19 @@
         <nutz.version>1.r.66</nutz.version>
         <slfj-api.version>1.7.33</slfj-api.version>
         <elementalVersion>1.1.0</elementalVersion>
+        <auto-service.version>1.0.1</auto-service.version>
     </properties>
     <dependencies>
+        <dependency>
+            <groupId>cn.mapway</groupId>
+            <artifactId>mapway-gwt-common</artifactId>
+            <version>1.0.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>5.2.22.RELEASE</version>
+        </dependency>
         <dependency>
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-core</artifactId>
@@ -35,18 +45,6 @@
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-svg</artifactId>
             <version>${elementalVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.gwtproject</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwt.version}</version>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.gwtproject</groupId>
-            <artifactId>gwt-dev</artifactId>
-            <version>${gwt.version}</version>
-            <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -66,7 +64,12 @@
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
-            <version>1.0.1</version>
+            <version>${auto-service.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup</groupId>
+            <artifactId>javapoet</artifactId>
+            <version>1.13.0</version>
         </dependency>
     </dependencies>
     <build>
@@ -78,18 +81,20 @@
                 <configuration>
                     <source>1.8</source>
                     <target>1.8</target>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>net.ltgt.gwt.maven</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <version>1.0.0</version>
-                <extensions>true</extensions>
-                <configuration>
-                    <moduleName>cn.mapway.xterm.Xterm</moduleName>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>com.google.auto.service</groupId>
+                            <artifactId>auto-service</artifactId>
+                            <version>${auto-service.version}</version>
+                        </path>
+                        <path>
+                            <groupId>org.projectlombok</groupId>
+                            <artifactId>lombok</artifactId>
+                            <version>1.18.22</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>
