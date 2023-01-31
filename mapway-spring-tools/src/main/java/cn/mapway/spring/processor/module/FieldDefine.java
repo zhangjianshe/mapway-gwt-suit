@@ -1,11 +1,11 @@
 package cn.mapway.spring.processor.module;
 
-import javax.lang.model.type.TypeMirror;
+import com.squareup.javapoet.TypeName;
 
 public class FieldDefine {
     public String name;
     public String qTypeName;
-    public TypeMirror tType;
+    public TypeName tType;
 
     public FieldDefine()
     {

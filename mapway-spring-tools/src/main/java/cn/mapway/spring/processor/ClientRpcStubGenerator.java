@@ -7,6 +7,7 @@ import cn.mapway.ui.server.code.RpcProxy;
 import com.google.auto.common.MoreElements;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;
+import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,8 @@ import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
 import java.io.File;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @AutoService(Processor.class)
 public class ClientRpcStubGenerator extends AbstractProcessor {
@@ -76,15 +79,6 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
         }
     }
 
-    private String getPackageName(TypeElement element) {
-        String qualifiedName = element.getQualifiedName().toString();
-        int position = qualifiedName.lastIndexOf('.');
-        if (position > 0) {
-            return qualifiedName.substring(0, position);
-        }
-        return qualifiedName;
-    }
-
 
     private void processPackage(PackageElement packageElement, RoundEnvironment roundEnv) {
 
@@ -122,7 +116,6 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
         if (Strings.isBlank(packageName)) {
             packageName = packageElement.getQualifiedName().toString();
         }
-
         if (rpcPackage.getBoolean("merge")) {
             //将所有的API统一 输出到一个类里
             String interfaceName = rpcPackage.getString("name");
@@ -138,40 +131,80 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
         }
 
         //输出所有接口中用到的模型 module存储的包路径为 packageName+".module"
+        // 生成模型类
+
+        AllModules.getInstance().emitToPath(outputPath);
+
 
     }
 
+
+
     private void exportTo(AnnotationHolder rpcPackageHolder, String outputPath, String packageName, String interfaceName, List<Element> list) {
         System.out.println("<-------------- " + outputPath + "------------->");
+        String modulePackagename=packageName+".module";
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec.interfaceBuilder(interfaceName);
         typeSpecBuilder.addModifiers(Modifier.PUBLIC);
 
+        String oldJavaFilePath=outputPath+"/"+packageName.replaceAll("\\.","/")+"/"+interfaceName+".java";
+        File file=new File(oldJavaFilePath);
+        String proxyPackage= rpcPackageHolder.getString("proxyPackage");
+        String url="";
+        String proxyName=rpcPackageHolder.getString("proxyName");
+        if(file.exists())
+        {
+            String oldSource= Files.read(file);
+            Pattern pn = Pattern.compile("packageName\\s=\\s\"(.*)\"");
+            Pattern cn = Pattern.compile("className\\s=\\s\"(.*)\"");
+            Pattern un = Pattern.compile("url\\s*=\\s*\"(.*)\"");
+            Matcher matcher = pn.matcher(oldSource);
+            if(matcher.find())
+            {
+                System.out.println("found old source pn: " + matcher.group(1));
+                proxyPackage= matcher.group(1);
+            }
+
+            matcher = cn.matcher(oldSource);
+            if(matcher.find())
+            {
+                System.out.println("found old source cn: " + matcher.group(1));
+                proxyName= matcher.group(1);
+            }
+            matcher = un.matcher(oldSource);
+            if(matcher.find())
+            {
+                System.out.println("found old source un: " + matcher.group(1));
+                url= matcher.group(1);
+            }
+        }
+
         //TODO  检查是否已经有之前的记录了 可以从之前的记录中国获取该值
         if(rpcPackageHolder.getBoolean("merge")) {
             AnnotationSpec.Builder rpcInterfaceAnnotationBuilder = AnnotationSpec.builder(RpcProxy.class);
-            rpcInterfaceAnnotationBuilder.addMember("url", "$S", "");
-            rpcInterfaceAnnotationBuilder.addMember("packageName", "$S", rpcPackageHolder.getString("proxyPackage"));
-            rpcInterfaceAnnotationBuilder.addMember("className", "$S", rpcPackageHolder.getString("proxyName"));
+            rpcInterfaceAnnotationBuilder.addMember("url", "$S", url);
+            rpcInterfaceAnnotationBuilder.addMember("packageName", "$S",proxyPackage);
+            rpcInterfaceAnnotationBuilder.addMember("className", "$S", proxyName);
             typeSpecBuilder.addAnnotation(rpcInterfaceAnnotationBuilder.build());
         }
         else
         {
             AnnotationSpec.Builder rpcInterfaceAnnotationBuilder = AnnotationSpec.builder(RpcProxy.class);
-            rpcInterfaceAnnotationBuilder.addMember("url", "$S", "");
-            rpcInterfaceAnnotationBuilder.addMember("packageName", "$S", "");
-            rpcInterfaceAnnotationBuilder.addMember("className", "$S", "");
+            rpcInterfaceAnnotationBuilder.addMember("url", "$S", url);
+            rpcInterfaceAnnotationBuilder.addMember("packageName", "$S",proxyPackage);
+            rpcInterfaceAnnotationBuilder.addMember("className", "$S", proxyName);
             typeSpecBuilder.addAnnotation(rpcInterfaceAnnotationBuilder.build());
         }
 
 
         List<String> allMethods = new ArrayList<String>();
         for (Element e : list) {
-            processClazz(allMethods, typeSpecBuilder, e);
+            processClazz(modulePackagename, allMethods, typeSpecBuilder, e);
         }
 
         //输出所有解析的模型定义
-        System.out.println(AllModules.getInstance().toString());
+        //System.out.println(AllModules.getInstance().toString());
+        AllModules.getInstance().emitToPath(outputPath);
 
         try {
             JavaFile javaFile = JavaFile.builder(packageName, typeSpecBuilder.build())
@@ -189,7 +222,7 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
     }
 
-    private void processClazz(List<String> allMethods, TypeSpec.Builder typeSpecBuilder, Element e) {
+    private void processClazz(String packageName, List<String> allMethods, TypeSpec.Builder typeSpecBuilder, Element e) {
 
         String rootPath = "";
         String rootMethod = "GET";
@@ -260,13 +293,12 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                 //处理返回值 返回值可能是一个 模板类 Result<Abc<Time, String>>
                 // 针对里面的所有有非 基本类型的类型 创建相应的 模型类
                 // 并用 新创建的模型类填充返回值
-                processReturnValueType(methodBuilder, executableElement.getReturnType());
+                processReturnValueType(packageName,methodBuilder, executableElement.getReturnType());
 
                 List<? extends VariableElement> parameters = executableElement.getParameters();
                 VariableElement bodyElement = null;
                 for (int i = 0; i < parameters.size(); i++) {
                     VariableElement variableElement = parameters.get(i);
-
                     AnnotationHolder requestBody = AnnotationHolder.createFromElement(variableElement, RequestBody.class);
                     if (requestBody.isPresent()) {
                         bodyElement = variableElement;
@@ -276,23 +308,26 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
                     AnnotationHolder pathVariable = AnnotationHolder.createFromElement(variableElement, PathVariable.class);
                     if (pathVariable.isPresent()) {
-                        if (pathVariable.getString("name").length() > 0) {
-                            pname = pathVariable.getString("name");
+                        if (pathVariable.getString("value").length() > 0) {
+                            pname = pathVariable.getString("value");
                         }
                     }
-                    methodBuilder.addParameter(TypeName.get(variableElement.asType()), pname);
+                    TypeName paramTypeName=parseParameter(packageName,variableElement);
+                    methodBuilder.addParameter(paramTypeName, pname);
                 }
                 if (bodyElement != null) {
                     String pname = bodyElement.getSimpleName().toString();
                     AnnotationHolder pathVariable = AnnotationHolder.createFromElement(bodyElement, PathVariable.class);
                     if (pathVariable.isPresent()) {
-                        if (pathVariable.getString("name").length() > 0) {
-                            pname = pathVariable.getString("name");
+                        if (pathVariable.getString("value").length() > 0) {
+                            pname = pathVariable.getString("value");
                         }
                     }
-                    methodBuilder.addParameter(TypeName.get(bodyElement.asType()), pname);
+                    TypeName paramTypeName=parseParameter(packageName,bodyElement);
+                    methodBuilder.addParameter(paramTypeName, pname);
                 }
 
+                path=path.replaceAll("[/]{2,}","/");
                 AnnotationSpec.Builder rpcEntryBuilder = AnnotationSpec.builder(RpcEntry.class);
                 rpcEntryBuilder.addMember("path", "$S", path);
                 rpcEntryBuilder.addMember("method", "$S", method);
@@ -306,24 +341,23 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
     }
 
+    private TypeName parseParameter(String packageName, VariableElement variableElement) {
+        TypeMirrorVisitor visitor=new TypeMirrorVisitor(processingEnv);
+        TypeName typeName =  visitor.parse(packageName,variableElement.asType());
+        return typeName;
+    }
+
     /**
      * 处理返回值类类型
      * 比较复杂的操作
+     * @param packageName
      * @param methodBuilder
      * @param returnType
      */
-    private void processReturnValueType(MethodSpec.Builder methodBuilder, TypeMirror returnType) {
-        TypeName typeName = TypeName.get(returnType);
-        methodBuilder.returns(typeName);
+    private void processReturnValueType(String packageName, MethodSpec.Builder methodBuilder, TypeMirror returnType) {
         TypeMirrorVisitor visitor=new TypeMirrorVisitor(processingEnv);
-
-//        TypeElement listElement = processingEnv.getElementUtils().getTypeElement("java.util.List");
-//        TypeElement str=processingEnv.getElementUtils().getTypeElement("java.lang.String");
-//
-//        DeclaredType declaredType = processingEnv.getTypeUtils().getDeclaredType(listElement, str.asType());
-//        System.out.println(declaredType.toString());
-        visitor.parse(returnType);
-
+        TypeName typeName =  visitor.parse(packageName,returnType);
+        methodBuilder.returns(typeName);
     }
 
 
@@ -367,5 +401,19 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
     private void fatalError(String msg) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.ERROR, "FATAL ERROR: " + msg);
+    }
+
+    public static void main(String[] args) {
+        String file="E:\\dev\\mapway-gwt-test\\src\\main\\java\\cn\\mapway\\test\\client\\code\\IHelloWorld.java";
+        Pattern un = Pattern.compile("url\\s*=\\s*\"(.*)\"");
+        String oldSource=Files.read(file);
+        Matcher matcher = un.matcher(oldSource);
+        if(matcher.find())
+        {
+            System.out.println("found old source pn: " + matcher.group(1));
+        }
+        else{
+            System.out.println("not match");
+        }
     }
 }
