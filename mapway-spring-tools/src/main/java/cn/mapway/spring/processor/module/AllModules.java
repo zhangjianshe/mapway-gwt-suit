@@ -84,7 +84,12 @@ public class AllModules {
                 tb.superclass(define.translateSuper);
             }
             if (Lang.isNotEmpty(define.translateImpls)) {
-                tb.addSuperinterfaces(define.translateImpls);
+                for (TypeName inter:define.translateImpls)
+                {
+                    if(!inter.toString().contains("Serializable")){
+                        tb.addSuperinterface(inter);
+                    }
+                }
             }
 
             tb.addModifiers(Modifier.PUBLIC);
