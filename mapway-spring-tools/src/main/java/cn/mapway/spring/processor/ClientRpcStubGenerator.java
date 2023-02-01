@@ -49,7 +49,7 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
         try {
             processImpl(annotations, roundEnv);
         } catch (RuntimeException e) {
-            // We don't allow exceptions of any kind to propagate to the compiler
+            e.printStackTrace();
             exceptionStacks.add(e.getMessage());
             fatalError(e.getMessage());
         }
@@ -152,12 +152,14 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
         String proxyPackage= rpcPackageHolder.getString("proxyPackage");
         String url="";
         String proxyName=rpcPackageHolder.getString("proxyName");
+        boolean enabled=true;
         if(file.exists())
         {
             String oldSource= Files.read(file);
             Pattern pn = Pattern.compile("packageName\\s=\\s\"(.*)\"");
             Pattern cn = Pattern.compile("className\\s=\\s\"(.*)\"");
             Pattern un = Pattern.compile("url\\s*=\\s*\"(.*)\"");
+            Pattern enabledpat = Pattern.compile("enabled\\s*=\\s*(.*)\\s");
             Matcher matcher = pn.matcher(oldSource);
             if(matcher.find())
             {
@@ -177,6 +179,11 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                 System.out.println("found old source un: " + matcher.group(1));
                 url= matcher.group(1);
             }
+            matcher = enabledpat.matcher(oldSource);
+            if(matcher.find())
+            {
+               enabled=Boolean.parseBoolean(matcher.group(1));
+            }
         }
 
         //TODO  检查是否已经有之前的记录了 可以从之前的记录中国获取该值
@@ -185,6 +192,7 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
             rpcInterfaceAnnotationBuilder.addMember("url", "$S", url);
             rpcInterfaceAnnotationBuilder.addMember("packageName", "$S",proxyPackage);
             rpcInterfaceAnnotationBuilder.addMember("className", "$S", proxyName);
+            rpcInterfaceAnnotationBuilder.addMember("enabled", "$L", enabled+"");
             typeSpecBuilder.addAnnotation(rpcInterfaceAnnotationBuilder.build());
         }
         else
@@ -193,6 +201,7 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
             rpcInterfaceAnnotationBuilder.addMember("url", "$S", url);
             rpcInterfaceAnnotationBuilder.addMember("packageName", "$S",proxyPackage);
             rpcInterfaceAnnotationBuilder.addMember("className", "$S", proxyName);
+            rpcInterfaceAnnotationBuilder.addMember("enabled", "$L", enabled+"");
             typeSpecBuilder.addAnnotation(rpcInterfaceAnnotationBuilder.build());
         }
 
@@ -305,7 +314,12 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                         continue;
                     }
                     String pname = variableElement.getSimpleName().toString();
-
+                    // 对于 javax.servlet* 不进行输出
+                    String packName= variableElement.asType().toString();
+                    if(packName.startsWith("javax.servlet"))
+                    {
+                        continue;
+                    }
                     AnnotationHolder pathVariable = AnnotationHolder.createFromElement(variableElement, PathVariable.class);
                     if (pathVariable.isPresent()) {
                         if (pathVariable.getString("value").length() > 0) {

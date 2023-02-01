@@ -156,7 +156,6 @@ public class AllModules {
                     methodSetterBuilder.addCode("\t this.$L=(value==null)?null:value.doubleValue();", fieldDefine.name);
                 }
 
-
                 AnnotationSpec.Builder jsOverlay = AnnotationSpec.builder(JsOverlay.class);
                 methodSetterBuilder.addAnnotation(jsOverlay.build());
                 tb.addMethod(methodSetterBuilder.build());
@@ -165,7 +164,6 @@ public class AllModules {
             JavaFile javaFile = JavaFile.builder(define.packageName, tb.build()).build();
             try {
                 javaFile.writeTo(new File(outputPath));
-                System.out.println("Written to " + outputPath);
             } catch (IOException e) {
                 e.printStackTrace();
             }

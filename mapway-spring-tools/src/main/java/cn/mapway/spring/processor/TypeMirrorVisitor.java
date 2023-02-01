@@ -1,10 +1,9 @@
 package cn.mapway.spring.processor;
 
-import cn.mapway.spring.processor.module.AllModules;
-import cn.mapway.spring.processor.module.ApiModuleDefine;
-import cn.mapway.spring.processor.module.FieldDefine;
-import cn.mapway.spring.processor.module.ModulePara;
+import cn.mapway.spring.processor.module.*;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import com.squareup.javapoet.*;
+import elemental2.core.JsArray;
 import org.nutz.lang.Lang;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
@@ -95,6 +94,7 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
         // returnType would be ApiResult<GoData>
         List<? extends TypeMirror> typeArguments = t.getTypeArguments();
         List<TypeName> typeArguments2=new ArrayList<>();
+
         for(TypeMirror arg : typeArguments)
         {
             typeArguments2.add(parse(packageName, arg));
@@ -102,18 +102,33 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
         if(Lang.isNotEmpty(typeArguments2))
         {
             TypeName[] types = typeArguments2.toArray(new TypeName[typeArguments2.size()]);
-            String name=AllModules.getSimpleName(outerName.toString());
-            // remove args
-            int pos=name.indexOf("<");
-            if(pos>0)
+            String name="";
+            if(outerName instanceof ParameterizedTypeName)
             {
-                name=name.substring(0,pos);
+                name=((ParameterizedTypeName)outerName).rawType.canonicalName();
             }
-            outerName=ParameterizedTypeName.get(ClassName.get(packageName,name), types);
+            else {
+                name = outerName.toString();
+            }
+
+            if(name.startsWith("java.util.List")||name.startsWith("java.util.ArrayList"))
+            {
+                name=JsArray.class.getCanonicalName();
+            }
+
+            String[] vs =StringTools.splitLast(name, '.');
+
+            if(isSystem(name)) {
+                outerName = ParameterizedTypeName.get(ClassName.get(vs[0],vs[1]), types);
+            }
+            else{
+                outerName = ParameterizedTypeName.get(ClassName.get(packageName,vs[1]), types);
+            }
         }
 
        return outerName;
     }
+
 
 
     /**
@@ -122,14 +137,17 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
      * @return
      */
     private boolean isSystem(String qname) {
-        if(qname.startsWith("java.lang"))
+        if(qname.startsWith("java.lang") || qname.startsWith("java.util") || qname.startsWith("elemental2."))
         {
             return true;
         }
         List<String> omittedClasses = Lang.list(String.class.getCanonicalName(),
                 Date.class.getCanonicalName(),
                 java.sql.Date.class.getCanonicalName(),
-                java.io.Serializable.class.getCanonicalName()
+                java.io.Serializable.class.getCanonicalName(),
+                IsSerializable.class.getCanonicalName(),
+                List.class.getCanonicalName(),
+                ArrayList.class.getCanonicalName()
         );
 
         return omittedClasses.contains(qname);
@@ -152,11 +170,19 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
     private TypeName handleModule(String packageName, boolean isInterface, String qname, Element element) {
 
         ApiModuleDefine module = AllModules.getInstance().getModule(qname);
-        if(module==null)
+        boolean needParseFields=true;
+        //没有定义 或者 进入了嵌套定义 当进入嵌套定义的时候 不需要解析字段
+        if(module==null || module.translateName==null)
+        //   没有定义              进入嵌套
         {
-            //首先添加到库中 禁止接下来的操作出现循环
-            module=new ApiModuleDefine(qname);
-            AllModules.getInstance().put(module);
+            // 重新进入不需要解析字段
+            needParseFields= (module==null);
+
+            if(module==null) {
+                //首先添加到库中 禁止接下来的操作出现循环
+                module = new ApiModuleDefine(qname);
+                AllModules.getInstance().put(module);
+            }
 
             //转换后的基类
             TypeName translationSuperMirror=null;
@@ -248,15 +274,17 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
 
             if(!isInterface) {
                 module.isInterface=false;
-                //字段信息 需要获取
-                List<VariableElement> fields = (List<VariableElement>) findAllFields((TypeElement) element);
-                for (VariableElement field : fields) {
-                    FieldDefine fieldDefine = new FieldDefine();
+                if(needParseFields) {
+                    //字段信息 需要获取
+                    List<VariableElement> fields = (List<VariableElement>) findAllFields((TypeElement) element);
+                    for (VariableElement field : fields) {
+                        FieldDefine fieldDefine = new FieldDefine();
 
-                    fieldDefine.name = field.getSimpleName().toString();
-                    fieldDefine.qTypeName = getQName(field);
-                    fieldDefine.tType = parse(packageName, field.asType());
-                    module.fields.add(fieldDefine);
+                        fieldDefine.name = field.getSimpleName().toString();
+                        fieldDefine.qTypeName = getQName(field);
+                        fieldDefine.tType = parse(packageName, field.asType());
+                        module.fields.add(fieldDefine);
+                    }
                 }
             }
             else{
@@ -264,15 +292,31 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
                 module.isInterface=true;
             }
 
-            String name=element.getSimpleName().toString();
-
-            TypeName[] args=translateParameters.toArray(new TypeName[translateParameters.size()]);
             module.packageName=packageName;
+
+            //  package name
+            //
+            // [pkname name]
+            String name=element.toString();
+            String[] nameList=StringTools.splitLast(name, '.');
+            TypeName[] args=translateParameters.toArray(new TypeName[translateParameters.size()]);
+
+            if (isSystem(nameList[0])) {
+                //系统类 做转换 List->JsArray
+                if(name.equals("java.util.List")||name.equals("java.util.ArrayList")) {
+                    nameList[0]= JsArray.class.getPackage().getName();
+                    nameList[1]= JsArray.class.getSimpleName();
+                }
+            }
+            else{
+                //非系统类 都转换到 用户自定义的包中
+                nameList[0]=packageName;
+            }
             if(args.length>0) {
-                module.translateName = ParameterizedTypeName.get(ClassName.get(packageName, name), args);
+                module.translateName = ParameterizedTypeName.get(ClassName.get(nameList[0], nameList[1]), args);
             }
             else {
-                module.translateName = ClassName.get(packageName, name);
+                module.translateName = ClassName.get(nameList[0], nameList[1]);
             }
 
             if(translationSuperMirror!=null) {
@@ -281,6 +325,7 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
         }
         return module.translateName;
     }
+
 
     @Override
     public TypeName visitExecutable(ExecutableType t,  String packageName) {

@@ -16,4 +16,5 @@ public @interface RpcProxy {
     String url() default "";
     String packageName() default "";
     String className() default "";
+    boolean enabled() default true;
 }

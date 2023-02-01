@@ -65,8 +65,7 @@ public class JsonRpcProcessor extends AbstractProcessor {
     private void processAnnotations(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 
         Set<? extends Element> elements = roundEnv.getElementsAnnotatedWith(RpcProxy.class);
-        log(annotations.toString());
-        log(elements.toString());
+
 
         for (Element e : elements) {
             //处理每一个 代理接口
@@ -87,6 +86,10 @@ public class JsonRpcProcessor extends AbstractProcessor {
         if (e.getKind() == ElementKind.INTERFACE) {
             TypeElement type = (TypeElement) e;
             RpcProxy rpcProxy = e.getAnnotation(RpcProxy.class);
+            if(!rpcProxy.enabled()) {
+                System.out.println("用户禁止了生成代理接口");
+                return ;
+            }
             String name = rpcProxy.className();
             String packageName = rpcProxy.packageName();
             String basePath = rpcProxy.url();
