@@ -319,9 +319,8 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
                 module.translateName = ClassName.get(nameList[0], nameList[1]);
             }
 
-            if(translationSuperMirror!=null) {
-                module.translateSuper=translationSuperMirror;
-            }
+            module.setTranslateSuper(translationSuperMirror);
+
         }
         return module.translateName;
     }
@@ -329,7 +328,7 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
 
     @Override
     public TypeName visitExecutable(ExecutableType t,  String packageName) {
-        log.infof("ExecutableType {}",t.toString());
+        //log.infof("ExecutableType {}",t.toString());
         return  TypeName.get(t);
     }
 
@@ -341,13 +340,23 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
 
     @Override
     public TypeName visitTypeVariable(TypeVariable t,  String packageName) {
-        log.infof("TypeVariable {}",t.toString());
+        //log.infof("TypeVariable {}",t.toString());
         return TypeName.get(t);
     }
 
     @Override
     public TypeName visitWildcard(WildcardType t,  String packageName) {
-        log.infof("WildcardType {}",t.toString());
+        //log.infof("WildcardType {}",t.toString());
         return TypeName.get(t);
+    }
+
+    @Override
+    public TypeName visitNoType(NoType t, String s) {
+        return TypeName.VOID;
+    }
+
+    @Override
+    public TypeName visitNull(NullType t, String s) {
+        return TypeName.VOID;
     }
 }

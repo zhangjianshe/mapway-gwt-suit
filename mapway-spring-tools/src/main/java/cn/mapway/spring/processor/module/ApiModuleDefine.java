@@ -16,7 +16,18 @@ public class ApiModuleDefine {
     public List<FieldDefine> fields;
     public TypeName translateName=null;
     //转换后的基类
-    public TypeName translateSuper=null;
+    private TypeName translateSuper=null;
+    public TypeName getTranslateSuper() {
+        return translateSuper;
+    }
+    public void setTranslateSuper(TypeName translateSuper   ){
+        if(translateSuper!=null){
+            if(!translateSuper.equals(TypeName.VOID)){
+                this.translateSuper=translateSuper;
+            }
+        }
+        this.translateSuper=null;
+    }
 
     //转换后 实现的接口
     public List<TypeName> translateImpls=new ArrayList<TypeName>();

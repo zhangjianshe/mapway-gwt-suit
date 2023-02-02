@@ -6,6 +6,7 @@ import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
+import org.nutz.log.Logs;
 
 import javax.lang.model.element.Modifier;
 import java.io.File;
@@ -44,6 +45,10 @@ public class AllModules {
         return sb.toString();
     }
 
+    private void info(String msg)
+    {
+        Logs.getLog("MG").info(msg);
+    }
 
     /**
      * 输出所有的模型到 文件
@@ -54,13 +59,14 @@ public class AllModules {
 
         for (ApiModuleDefine define : modules.values()) {
             if (define.translateName == null) {
+                info("ERROR: "+define.qname+" is not transformed");
                 continue;
             }
+            info("Process : "+define.translateName.toString());
             TypeSpec.Builder tb;
             if (define.translateName instanceof ParameterizedTypeName) {
                 ParameterizedTypeName p = (ParameterizedTypeName) define.translateName;
                 if (define.isInterface) {
-
                     tb = TypeSpec.interfaceBuilder(p.rawType.simpleName());
                 } else {
                     tb = TypeSpec.classBuilder(p.rawType.simpleName());
@@ -80,8 +86,8 @@ public class AllModules {
                 }
             }
 
-            if (define.translateSuper != null) {
-                tb.superclass(define.translateSuper);
+            if (define.getTranslateSuper() != null) {
+                tb.superclass(define.getTranslateSuper());
             }
             if (Lang.isNotEmpty(define.translateImpls)) {
                 for (TypeName inter:define.translateImpls)

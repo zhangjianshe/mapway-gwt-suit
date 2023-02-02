@@ -4,12 +4,15 @@ package cn.mapway.spring.processor;
 import cn.mapway.spring.processor.module.AllModules;
 import cn.mapway.ui.server.code.RpcEntry;
 import cn.mapway.ui.server.code.RpcProxy;
+import cn.mapway.util.console.Ansi;
+import cn.mapway.util.console.AnsiColor;
 import com.google.auto.common.MoreElements;
 import com.google.auto.service.AutoService;
 import com.squareup.javapoet.*;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
+import org.nutz.log.Logs;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -28,6 +31,10 @@ import java.util.regex.Pattern;
 
 @AutoService(Processor.class)
 public class ClientRpcStubGenerator extends AbstractProcessor {
+    private static Ansi BLUE=Ansi.from(AnsiColor.FG_BLUE);
+    private static Ansi GREEN=Ansi.from(AnsiColor.FG_CYAN);
+    private static Ansi RED=Ansi.from(AnsiColor.FG_GREEN);
+    private static Ansi WARNING=Ansi.from(AnsiColor.FG_YELLOW);
     private final List<String> exceptionStacks = Collections.synchronizedList(new ArrayList<>());
 
 
@@ -91,11 +98,8 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
         }
         List<Element> exportClazz = new ArrayList<Element>();
         for (Element enclosedElement : enclosedElements) {
-            System.out.println("checking " + enclosedElement.getSimpleName() + "");
             if (enclosedElement.getKind().equals(ElementKind.CLASS)) {
                 if (isController(rpcPackage, enclosedElement)) {
-                    System.out.println(enclosedElement.getSimpleName() + " is a controller");
-                    //输出
                     exportClazz.add(enclosedElement);
                 }
             }
@@ -132,16 +136,15 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
         //输出所有接口中用到的模型 module存储的包路径为 packageName+".module"
         // 生成模型类
-
+        info(Ansi.from(AnsiColor.BG_CYAN).set(AnsiColor.FG_BLACK).val("===================EMIT FILE================"));
         AllModules.getInstance().emitToPath(outputPath);
-
 
     }
 
 
 
     private void exportTo(AnnotationHolder rpcPackageHolder, String outputPath, String packageName, String interfaceName, List<Element> list) {
-        System.out.println("<-------------- " + outputPath + "------------->");
+
         String modulePackagename=packageName+".module";
 
         TypeSpec.Builder typeSpecBuilder = TypeSpec.interfaceBuilder(interfaceName);
@@ -163,20 +166,20 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
             Matcher matcher = pn.matcher(oldSource);
             if(matcher.find())
             {
-                System.out.println("found old source pn: " + matcher.group(1));
+                ///("found old source pn: " + matcher.group(1));
                 proxyPackage= matcher.group(1);
             }
 
             matcher = cn.matcher(oldSource);
             if(matcher.find())
             {
-                System.out.println("found old source cn: " + matcher.group(1));
+                ///System.out.println("found old source cn: " + matcher.group(1));
                 proxyName= matcher.group(1);
             }
             matcher = un.matcher(oldSource);
             if(matcher.find())
             {
-                System.out.println("found old source un: " + matcher.group(1));
+                ///System.out.println("found old source un: " + matcher.group(1));
                 url= matcher.group(1);
             }
             matcher = enabledpat.matcher(oldSource);
@@ -207,35 +210,33 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
 
         List<String> allMethods = new ArrayList<String>();
+        int index=0;
+        info("Total classes :"+list.size());
         for (Element e : list) {
-            processClazz(modulePackagename, allMethods, typeSpecBuilder, e);
+            processClazz(++index,modulePackagename, allMethods, typeSpecBuilder, e);
         }
-
-        //输出所有解析的模型定义
-        //System.out.println(AllModules.getInstance().toString());
-        AllModules.getInstance().emitToPath(outputPath);
 
         try {
             JavaFile javaFile = JavaFile.builder(packageName, typeSpecBuilder.build())
                     .build();
             if (Strings.isBlank(outputPath)) {
                 javaFile.writeTo(processingEnv.getFiler());
-
             } else {
                 javaFile.writeTo(new File(outputPath));
-
             }
         } catch (Exception e) {
+            info("Failed to export Interface ");
             e.printStackTrace();
         }
-
     }
 
-    private void processClazz(String packageName, List<String> allMethods, TypeSpec.Builder typeSpecBuilder, Element e) {
+    private void processClazz(int index,String packageName, List<String> allMethods, TypeSpec.Builder typeSpecBuilder, Element e) {
 
         String rootPath = "";
         String rootMethod = "GET";
         String acceptContent = "text/plain";
+
+        info(BLUE.val("Parse Class "+index+"\t"+e.asType().toString()));
 
         AnnotationHolder rootMapping = AnnotationHolder.createFromElement(e, RequestMapping.class);
         List<String> paths = rootMapping.getStrings("value");
@@ -256,9 +257,15 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
         for (Element enclosedElement : e.getEnclosedElements()) {
             if (enclosedElement.getKind().equals(ElementKind.METHOD) && enclosedElement.getModifiers().contains(Modifier.PUBLIC)) {
                 String name = enclosedElement.getSimpleName().toString();
+                info(RED.val("\tMethod "+name));
                 String method = rootMethod;
                 String content = acceptContent;
                 String path = rootPath;
+                boolean haspc= MoreElements.isAnnotationPresent(enclosedElement,RpcIgnore.class);
+                if(haspc) {
+                    info(WARNING.val("Ignore Method " +name));
+                    continue;
+                }
 
                 AnnotationHolder getMapping = AnnotationHolder.createFromElement(enclosedElement, GetMapping.class);
                 AnnotationHolder postMapping = AnnotationHolder.createFromElement(enclosedElement, PostMapping.class);
@@ -302,12 +309,14 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                 //处理返回值 返回值可能是一个 模板类 Result<Abc<Time, String>>
                 // 针对里面的所有有非 基本类型的类型 创建相应的 模型类
                 // 并用 新创建的模型类填充返回值
+                info(GREEN.val("\t\t Return "+executableElement.getReturnType().toString()));
                 processReturnValueType(packageName,methodBuilder, executableElement.getReturnType());
 
                 List<? extends VariableElement> parameters = executableElement.getParameters();
                 VariableElement bodyElement = null;
                 for (int i = 0; i < parameters.size(); i++) {
                     VariableElement variableElement = parameters.get(i);
+                    info(GREEN.val("\t\t Parameter "+variableElement.asType().toString()));
                     AnnotationHolder requestBody = AnnotationHolder.createFromElement(variableElement, RequestBody.class);
                     if (requestBody.isPresent()) {
                         bodyElement = variableElement;
@@ -316,7 +325,7 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                     String pname = variableElement.getSimpleName().toString();
                     // 对于 javax.servlet* 不进行输出
                     String packName= variableElement.asType().toString();
-                    if(packName.startsWith("javax.servlet"))
+                    if(packName.startsWith("javax.servlet")||packName.startsWith("org.spring"))
                     {
                         continue;
                     }
@@ -379,8 +388,9 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
         boolean hasController = MoreElements.isAnnotationPresent(element, Controller.class);
         boolean hasRestController = MoreElements.isAnnotationPresent(element, RestController.class);
+        boolean haspc= MoreElements.isAnnotationPresent(element,RpcIgnore.class);
 
-        if (!(hasController || hasRestController)) {
+        if (!(hasController || hasRestController) || haspc) {
             return false;
         }
 
@@ -404,7 +414,9 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
             processingEnv.getMessager().printMessage(Diagnostic.Kind.NOTE, msg);
         }
     }
-
+    private void info(String msg) {
+        Logs.getLog("MG").info(msg);
+    }
     private void warning(String msg, Element element, AnnotationMirror annotation) {
         processingEnv.getMessager().printMessage(Diagnostic.Kind.WARNING, msg, element, annotation);
     }
