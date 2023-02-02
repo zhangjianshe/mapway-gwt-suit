@@ -52,8 +52,9 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
     public List<? extends Element> findAllFields(TypeElement typeElement)
     {
         return typeElement.getEnclosedElements().stream().filter(e-> {
-            return e.getKind().equals(ElementKind.FIELD)
-                    && (!e.getModifiers().contains(Modifier.STATIC));
+            return e.getKind().equals(ElementKind.FIELD);
+                  //  && (!e.getModifiers().contains(Modifier.STATIC)
+
         }).collect(Collectors.toList());
     }
     String getQName(Element element)
@@ -279,10 +280,10 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
                     List<VariableElement> fields = (List<VariableElement>) findAllFields((TypeElement) element);
                     for (VariableElement field : fields) {
                         FieldDefine fieldDefine = new FieldDefine();
-
                         fieldDefine.name = field.getSimpleName().toString();
                         fieldDefine.qTypeName = getQName(field);
                         fieldDefine.tType = parse(packageName, field.asType());
+                        fieldDefine.isStatic=field.getModifiers().contains(Modifier.STATIC);
                         module.fields.add(fieldDefine);
                     }
                 }

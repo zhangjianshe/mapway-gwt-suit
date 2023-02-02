@@ -133,10 +133,16 @@ public class AllModules {
                     storeTypeName = fieldDefine.tType;
                 }
 
-                FieldSpec.Builder fb = FieldSpec.builder(storeTypeName, fieldDefine.name, Modifier.PRIVATE);
-                tb.addField(fb.build());
-                //字段处理 增加另外的处理
+                FieldSpec.Builder fb = FieldSpec.builder(storeTypeName, fieldDefine.name);
 
+                //字段处理 增加另外的处理
+                if(fieldDefine.isStatic){
+                    fb.addModifiers(Modifier.STATIC).addModifiers(Modifier.PUBLIC);
+                }
+                else{
+                    fb.addModifiers(Modifier.PRIVATE);
+                }
+                tb.addField(fb.build());
                 MethodSpec.Builder methodGetterBuilder = MethodSpec.methodBuilder("get" + Strings.upperFirst(fieldDefine.name));
                 methodGetterBuilder.returns(fieldDefine.tType);
                 methodGetterBuilder.addModifiers(Modifier.FINAL, Modifier.PUBLIC);

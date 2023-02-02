@@ -278,13 +278,13 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                     method = "GET";
                     List<String> _paths = getMapping.getStrings("value");
                     if (_paths.size() > 0) {
-                        path = path + _paths.get(0);
+                        path = path +"/" +_paths.get(0);
                     }
                 } else if (postMapping.isPresent()) {
                     method = "POST";
                     List<String> _paths = postMapping.getStrings("value");
                     if (_paths.size() > 0) {
-                        path = path + _paths.get(0);
+                        path = path+"/"  + _paths.get(0);
                     }
                 } else if (requestMapping.isPresent()) {
 
@@ -294,7 +294,7 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                     }
                     List<String> _paths = requestMapping.getStrings("value");
                     if (_paths.size() > 0) {
-                        path = path + _paths.get(0);
+                        path = path+"/"  + _paths.get(0);
                     }
                 } else {
                     //有错误
@@ -314,6 +314,7 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
                 List<? extends VariableElement> parameters = executableElement.getParameters();
                 VariableElement bodyElement = null;
+
                 for (int i = 0; i < parameters.size(); i++) {
                     VariableElement variableElement = parameters.get(i);
                     info(GREEN.val("\t\t Parameter "+variableElement.asType().toString()));
@@ -353,8 +354,14 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
                 path=path.replaceAll("[/]{2,}","/");
                 AnnotationSpec.Builder rpcEntryBuilder = AnnotationSpec.builder(RpcEntry.class);
                 rpcEntryBuilder.addMember("path", "$S", path);
-                rpcEntryBuilder.addMember("method", "$S", method);
-                rpcEntryBuilder.addMember("contentType", "$S", content);
+                if(!method.equals("POST")){
+
+                    rpcEntryBuilder.addMember("method", "$S", method);
+                }
+                if(!content.equals("application/json")){
+
+                    rpcEntryBuilder.addMember("contentType", "$S", content);
+                }
                 methodBuilder.addAnnotation(rpcEntryBuilder.build());
                 methodBuilder.addModifiers(Modifier.ABSTRACT, Modifier.PUBLIC);
 

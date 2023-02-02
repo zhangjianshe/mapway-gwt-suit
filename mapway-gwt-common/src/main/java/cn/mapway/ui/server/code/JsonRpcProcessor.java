@@ -16,6 +16,7 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.*;
 import javax.lang.model.type.TypeMirror;
 import javax.tools.Diagnostic;
+import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
@@ -86,6 +87,8 @@ public class JsonRpcProcessor extends AbstractProcessor {
         if (e.getKind() == ElementKind.INTERFACE) {
             TypeElement type = (TypeElement) e;
             RpcProxy rpcProxy = e.getAnnotation(RpcProxy.class);
+            //TODO check environment variable
+            String output=processingEnv.getOptions().get("RPC_IMPL_PATH");
             if(!rpcProxy.enabled()) {
                 System.out.println("用户禁止了生成代理接口");
                 return ;
@@ -125,11 +128,21 @@ public class JsonRpcProcessor extends AbstractProcessor {
 
             JavaFile javaFile = JavaFile.builder(packageName, proxyImplType.build())
                     .build();
-            Filer filer = processingEnv.getFiler();
-            try {
-                javaFile.writeTo(filer);
-            } catch (IOException ex) {
-                ex.printStackTrace();
+
+            if(Strings.isBlank(output)) {
+                Filer filer = processingEnv.getFiler();
+                try {
+                    javaFile.writeTo(filer);
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+            }
+            else{
+                try {
+                    javaFile.writeTo(new File(output));
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
             }
             log("Process finished " + packageName + "." + name + ".java");
         } else {
@@ -143,7 +156,7 @@ public class JsonRpcProcessor extends AbstractProcessor {
         MethodSpec.Builder builder = MethodSpec.methodBuilder(methodName);
 
         TypeMirror returnType = executableElement.getReturnType();
-        ParameterizedTypeName returnTypeName =ParameterizedTypeName.get(ClassName.get(Promise.class),TypeName.get(returnType));
+        ParameterizedTypeName returnTypeName =ParameterizedTypeName.get(ClassName.get(Promise.class),TypeName.get(returnType).box());
         builder.returns(returnTypeName);
 
         //处理参数

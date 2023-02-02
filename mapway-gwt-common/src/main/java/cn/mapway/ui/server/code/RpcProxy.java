@@ -17,4 +17,10 @@ public @interface RpcProxy {
     String packageName() default "";
     String className() default "";
     boolean enabled() default true;
+
+    /**
+     * 输出路径 缺省为 项目 generatored path 一版再 target/generatted-sources
+     * @return
+     */
+    String outputPath() default "";
 }

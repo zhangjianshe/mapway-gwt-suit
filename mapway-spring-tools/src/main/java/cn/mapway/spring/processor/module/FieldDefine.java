@@ -6,6 +6,7 @@ public class FieldDefine {
     public String name;
     public String qTypeName;
     public TypeName tType;
+    public boolean isStatic;
 
     public FieldDefine()
     {
