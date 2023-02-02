@@ -2,10 +2,12 @@ package cn.mapway.ui.client.rpc;
 
 import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import elemental2.core.Global;
 import elemental2.dom.XMLHttpRequest;
 import elemental2.promise.Promise;
 import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -54,6 +56,50 @@ public class JsonRpcBase {
         }
     }
 
+    public  void httpRequestAsync(String url,
+                                    String method,
+                                    String body,
+                                    Map<String, String> headers,
+            AsyncCallback<?> callback
+    ) {
+
+        XMLHttpRequest request = new XMLHttpRequest();
+        request.open(method, url, true);
+        if (fixedHeaders.size() > 0) {
+            for (Map.Entry<String, String> item : fixedHeaders.entrySet()) {
+                request.setRequestHeader(item.getKey(), item.getValue());
+            }
+        }
+        if (headers != null && headers.size() > 0) {
+            for (Map.Entry<String, String> item : headers.entrySet()) {
+                request.setRequestHeader(item.getKey(), item.getValue());
+            }
+        }
+        request.onreadystatechange = (status) -> {
+            if (request.readyState == DONE) {
+                if (request.status == 200) {
+                    callback.onSuccess( Js.uncheckedCast(Global.JSON.parse(request.responseText)));
+                } else if (request.status == 0) {
+                    callback.onFailure(new Throwable(request.responseText));
+                } else {
+                    JsPropertyMap<Object> obj=JsPropertyMap.of();
+                    obj.set("code",request.status);
+                    obj.set("message",request.responseText);
+                    callback.onSuccess(Js.uncheckedCast(obj));
+                }
+            }
+            return true;
+        };
+        request.onerror = (event) -> {
+            JsPropertyMap<Object> obj=JsPropertyMap.of();
+            obj.set("code",request.status);
+            obj.set("message",request.responseText);
+            callback.onSuccess(Js.uncheckedCast(obj));
+            return true;
+        };
+        request.send(body);
+    }
+
     /**
      * 请求http接口
      *
@@ -86,24 +132,21 @@ public class JsonRpcBase {
                                 T result = Js.uncheckedCast(Global.JSON.parse(request.responseText));
                                 accept.onInvoke(result);
                             } else if (request.status == 0) {
-                                HttpError error = new HttpError();
-                                error.code = request.status;
-                                error.message = "网络故障";
-                                reject.onInvoke(error);
+                                reject.onInvoke(new Throwable(request.responseText));
                             } else {
-                                HttpError error = new HttpError();
-                                error.code = request.status;
-                                error.message = request.responseText;
-                                reject.onInvoke(error);
+                                JsPropertyMap<Object> obj=JsPropertyMap.of();
+                                obj.set("code",request.status);
+                                obj.set("message",request.responseText);
+                                accept.onInvoke((T)Js.uncheckedCast(obj));
                             }
                         }
                         return true;
                     };
                     request.onerror = (event) -> {
-                        HttpError error = new HttpError();
-                        error.code = -1;
-                        error.message = "传输错误";
-                        reject.onInvoke(error);
+                        JsPropertyMap<Object> obj=JsPropertyMap.of();
+                        obj.set("code",request.status);
+                        obj.set("message",request.responseText);
+                        accept.onInvoke((T)Js.uncheckedCast(obj));
                         return true;
                     };
                     request.send(body);

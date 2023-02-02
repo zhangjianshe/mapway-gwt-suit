@@ -147,7 +147,7 @@ public class AllModules {
                 methodGetterBuilder.returns(fieldDefine.tType);
                 methodGetterBuilder.addModifiers(Modifier.FINAL, Modifier.PUBLIC);
                 if (Strings.isBlank(toNumberType)) {
-                    methodGetterBuilder.addCode("\treturn this.$L;", fieldDefine.name);
+                    methodGetterBuilder.addCode("\treturn this.$L==null?null:this.$L;", fieldDefine.name,fieldDefine.name);
                 } else {
 
                     methodGetterBuilder.addCode("\treturn this.$L==null?null:this.$L.$LValue();", fieldDefine.name,fieldDefine.name,toNumberType);

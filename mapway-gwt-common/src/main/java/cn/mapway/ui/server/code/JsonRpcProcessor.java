@@ -3,9 +3,9 @@ package cn.mapway.ui.server.code;
 import cn.mapway.ui.client.rpc.JsonRpcBase;
 import cn.mapway.ui.client.rpc.PathItemVisitor;
 import com.google.auto.service.AutoService;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.squareup.javapoet.*;
 import elemental2.core.Global;
-import elemental2.promise.Promise;
 import org.nutz.lang.Strings;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -156,14 +156,15 @@ public class JsonRpcProcessor extends AbstractProcessor {
         MethodSpec.Builder builder = MethodSpec.methodBuilder(methodName);
 
         TypeMirror returnType = executableElement.getReturnType();
-        ParameterizedTypeName returnTypeName =ParameterizedTypeName.get(ClassName.get(Promise.class),TypeName.get(returnType).box());
-        builder.returns(returnTypeName);
+        ParameterizedTypeName callback =ParameterizedTypeName.get(ClassName.get(AsyncCallback.class),TypeName.get(returnType).box());
+        builder.returns(TypeName.VOID);
 
         //处理参数
         List<? extends VariableElement> parameters = executableElement.getParameters();
         for (VariableElement parameter : parameters) {
             builder.addParameter(TypeName.get(parameter.asType()), parameter.getSimpleName().toString(),Modifier.FINAL);
         }
+        builder.addParameter(callback,"callback",Modifier.FINAL);
         builder.addModifiers(Modifier.PUBLIC);
 
         //处理代码快
@@ -224,7 +225,7 @@ public class JsonRpcProcessor extends AbstractProcessor {
             builder.addStatement("headers.put($L,$S)", "HEAD_ACCEPT_TYPE", rpcEntry.acceptType());
         }
 
-        builder.addStatement("return httpRequest(url,method,body,headers)");
+        builder.addStatement(" httpRequestAsync(url,method,body,headers,callback)");
 
 
         proxyImplType.addMethod(builder.build());
