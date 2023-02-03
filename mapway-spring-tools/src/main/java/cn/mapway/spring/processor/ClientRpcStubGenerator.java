@@ -91,6 +91,16 @@ public class ClientRpcStubGenerator extends AbstractProcessor {
 
         AnnotationHolder rpcPackage = AnnotationHolder.createFromElement(packageElement, RpcPackage.class);
 
+        List<String> maps = rpcPackage.getStrings("maps");
+        for(String map : maps)
+        {
+            String[] mapStrings = Strings.split(map,false,false,',');
+            if(mapStrings.length==2)
+            {
+                AllModules.addTranslatePattern(mapStrings[0], mapStrings[1]);
+            }
+        }
+
         //检查包下面的各个类 是否是Controller类
         List<? extends Element> enclosedElements = packageElement.getEnclosedElements();
         if (Lang.isEmpty(enclosedElements)) {

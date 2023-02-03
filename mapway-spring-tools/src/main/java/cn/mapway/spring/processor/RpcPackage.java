@@ -56,4 +56,12 @@ public @interface RpcPackage {
     Class[] excludes() default {};
     Class[] includes() default {};
     boolean merge() default true;
+
+    /**
+     * 定义一些类转换成另外一些类 这些类将不会生成代码 只是转换 需要项目提供该类的实现
+     * 比如 cn.mapway.ui.RpcResult:cn.client.ApiResult
+     * 数组可以添加多对数据
+     * @return
+     */
+    String[] maps() default {};
 }

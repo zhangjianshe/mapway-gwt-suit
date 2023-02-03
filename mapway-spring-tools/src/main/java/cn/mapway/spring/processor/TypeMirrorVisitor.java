@@ -75,9 +75,10 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
         TypeName outerName=TypeName.get(t);
 
         Element element = t.asElement();
+        String qname=getQName(element);
         if(element.getKind().equals(ElementKind.CLASS))
         {
-            String qname=getQName(element);
+
             if(!isSystem(qname))
             {
                 outerName= handleModule(packageName,false,qname,element);
@@ -85,12 +86,14 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
         }
         else if(element.getKind().equals(ElementKind.INTERFACE))
         {
-            String qname=getQName(element);
             if(!isSystem(qname)) {
                 outerName = handleModule(packageName, true, qname, element);
             }
         }
-
+        if(AllModules.isPedefinedType(qname))
+        {
+            return AllModules.getTranslatePattern(qname);
+        }
         // outName is  ApiResult<T>
         // returnType would be ApiResult<GoData>
         List<? extends TypeMirror> typeArguments = t.getTypeArguments();
@@ -142,6 +145,10 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
         {
             return true;
         }
+        if(AllModules.isPedefinedType(qname))
+        {
+            return true;
+        }
         List<String> omittedClasses = Lang.list(String.class.getCanonicalName(),
                 Date.class.getCanonicalName(),
                 java.sql.Date.class.getCanonicalName(),
@@ -169,6 +176,13 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
      * @return
      */
     private TypeName handleModule(String packageName, boolean isInterface, String qname, Element element) {
+
+        TypeName prepareType=AllModules.getTranslatePattern(qname);
+        if(prepareType!=null )
+        {
+            //用户设定了预先转换的类
+            return prepareType;
+        }
 
         ApiModuleDefine module = AllModules.getInstance().getModule(qname);
         boolean needParseFields=true;

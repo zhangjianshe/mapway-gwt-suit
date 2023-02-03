@@ -27,6 +27,10 @@ public class AllModules {
 
     private final Map<String, ApiModuleDefine> modules = new HashMap<String, ApiModuleDefine>();
 
+    public static boolean isPedefinedType(String qname) {
+        return translatePattern.containsKey(qname);
+    }
+
     public ApiModuleDefine getModule(String qname) {
         return modules.get(qname);
     }
@@ -191,5 +195,19 @@ public class AllModules {
             return name.substring(pos + 1);
         }
         return name;
+    }
+
+    private static Map<String, TypeName>  translatePattern=new HashMap<>();
+
+    public static TypeName getTranslatePattern(String sourceTarget) {
+        return translatePattern.get(sourceTarget);
+    }
+    public static void addTranslatePattern(String sourceType, String targetType)
+    {
+        if(translatePattern.get(sourceType) == null) {
+            String[] parts = StringTools.splitLast(targetType,'.');
+            TypeName typeName=ClassName.get(parts[0],parts[1]);
+            translatePattern.put(sourceType, typeName);
+        }
     }
 }
