@@ -142,7 +142,11 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
      * @return
      */
     private boolean isSystem(String qname) {
-        if(qname.startsWith("java.lang") || qname.startsWith("java.util") || qname.startsWith("elemental2."))
+        if(qname.startsWith("java.lang")
+                || qname.startsWith("java.util")
+                || qname.startsWith("elemental2.")
+                || qname.startsWith("java.sql.")
+        )
         {
             return true;
         }
@@ -175,7 +179,7 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
      * @param packageName
      * @param qname       cn.test.client.rpc.module.Result
      * @param element     Restlt<Time1<Integer>> extends Parent
-     * @return
+     * @    return
      */
     private TypeName handleModule(String packageName, boolean isInterface, String qname, Element element) {
 
