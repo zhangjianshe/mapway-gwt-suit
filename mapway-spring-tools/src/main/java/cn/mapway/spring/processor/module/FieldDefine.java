@@ -7,6 +7,8 @@ public class FieldDefine {
     public String qTypeName;
     public TypeName tType;
     public boolean isStatic;
+    public String initValue;
+    public String summary;
 
     public FieldDefine()
     {

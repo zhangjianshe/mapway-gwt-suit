@@ -27,8 +27,19 @@ public class AllModules {
 
     private final Map<String, ApiModuleDefine> modules = new HashMap<String, ApiModuleDefine>();
 
-    public static boolean isPedefinedType(String qname) {
-        return translatePattern.containsKey(qname);
+    public static boolean isPredefinedType(String qname) {
+        boolean b = translatePattern.containsKey(qname);
+        if(b)
+        {
+            return true;
+        }
+        for(TypeName typeName:translatePattern.values()){
+            if(typeName.toString().equals(qname))
+            {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ApiModuleDefine getModule(String qname) {
@@ -137,45 +148,58 @@ public class AllModules {
                     storeTypeName = fieldDefine.tType;
                 }
 
-                FieldSpec.Builder fb = FieldSpec.builder(storeTypeName, fieldDefine.name);
+                FieldSpec.Builder fb ;
 
                 //字段处理 增加另外的处理
                 if(fieldDefine.isStatic){
+                    fb= FieldSpec.builder(fieldDefine.tType, fieldDefine.name);
                     fb.addModifiers(Modifier.STATIC).addModifiers(Modifier.PUBLIC);
+                    if(Strings.isNotBlank(fieldDefine.initValue))
+                    {
+                        fb.initializer("$L", fieldDefine.initValue);
+                    }
+                    if(Strings.isNotBlank(fieldDefine.summary))
+                    {
+                        fb.addJavadoc("$L", fieldDefine.summary);
+                    }
+                    tb.addField(fb.build());
                 }
                 else{
+                    fb= FieldSpec.builder(storeTypeName, fieldDefine.name);
                     fb.addModifiers(Modifier.PRIVATE);
+                    tb.addField(fb.build());
+                    MethodSpec.Builder methodGetterBuilder = MethodSpec.methodBuilder("get" + Strings.upperFirst(fieldDefine.name));
+                    methodGetterBuilder.returns(fieldDefine.tType);
+                    methodGetterBuilder.addModifiers(Modifier.FINAL, Modifier.PUBLIC);
+                    if(Strings.isNotBlank(fieldDefine.summary))
+                    {
+                        fb.addJavadoc("$L", fieldDefine.summary);
+                    }
+                    if (Strings.isBlank(toNumberType)) {
+                        methodGetterBuilder.addCode("\treturn this.$L==null?null:this.$L;", fieldDefine.name,fieldDefine.name);
+                    } else {
+
+                        methodGetterBuilder.addCode("\treturn this.$L==null?null:this.$L.$LValue();", fieldDefine.name,fieldDefine.name,toNumberType);
+                    }
+                    AnnotationSpec.Builder jsOverlay1 = AnnotationSpec.builder(JsOverlay.class);
+                    methodGetterBuilder.addAnnotation(jsOverlay1.build());
+
+                    tb.addMethod(methodGetterBuilder.build());
+
+                    MethodSpec.Builder methodSetterBuilder = MethodSpec.methodBuilder("set" + Strings.upperFirst(fieldDefine.name));
+                    methodSetterBuilder.addParameter(fieldDefine.tType, "value");
+                    methodSetterBuilder.returns(TypeName.VOID);
+                    methodSetterBuilder.addModifiers(Modifier.FINAL, Modifier.PUBLIC);
+                    if (Strings.isBlank(toNumberType)) {
+                        methodSetterBuilder.addCode("\t this.$L=value;", fieldDefine.name);
+                    }
+                    else{
+                        methodSetterBuilder.addCode("\t this.$L=(value==null)?null:value.doubleValue();", fieldDefine.name);
+                    }
+                    AnnotationSpec.Builder jsOverlay = AnnotationSpec.builder(JsOverlay.class);
+                    methodSetterBuilder.addAnnotation(jsOverlay.build());
+                    tb.addMethod(methodSetterBuilder.build());
                 }
-                tb.addField(fb.build());
-                MethodSpec.Builder methodGetterBuilder = MethodSpec.methodBuilder("get" + Strings.upperFirst(fieldDefine.name));
-                methodGetterBuilder.returns(fieldDefine.tType);
-                methodGetterBuilder.addModifiers(Modifier.FINAL, Modifier.PUBLIC);
-                if (Strings.isBlank(toNumberType)) {
-                    methodGetterBuilder.addCode("\treturn this.$L==null?null:this.$L;", fieldDefine.name,fieldDefine.name);
-                } else {
-
-                    methodGetterBuilder.addCode("\treturn this.$L==null?null:this.$L.$LValue();", fieldDefine.name,fieldDefine.name,toNumberType);
-                }
-                AnnotationSpec.Builder jsOverlay1 = AnnotationSpec.builder(JsOverlay.class);
-                methodGetterBuilder.addAnnotation(jsOverlay1.build());
-
-                tb.addMethod(methodGetterBuilder.build());
-
-                MethodSpec.Builder methodSetterBuilder = MethodSpec.methodBuilder("set" + Strings.upperFirst(fieldDefine.name));
-                methodSetterBuilder.addParameter(fieldDefine.tType, "value");
-                methodSetterBuilder.returns(TypeName.VOID);
-                methodSetterBuilder.addModifiers(Modifier.FINAL, Modifier.PUBLIC);
-                if (Strings.isBlank(toNumberType)) {
-                    methodSetterBuilder.addCode("\t this.$L=value;", fieldDefine.name);
-                }
-                else{
-                    methodSetterBuilder.addCode("\t this.$L=(value==null)?null:value.doubleValue();", fieldDefine.name);
-                }
-
-                AnnotationSpec.Builder jsOverlay = AnnotationSpec.builder(JsOverlay.class);
-                methodSetterBuilder.addAnnotation(jsOverlay.build());
-                tb.addMethod(methodSetterBuilder.build());
-
             }
             JavaFile javaFile = JavaFile.builder(define.packageName, tb.build()).build();
             try {

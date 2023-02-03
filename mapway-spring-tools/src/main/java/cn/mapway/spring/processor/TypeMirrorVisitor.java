@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import com.squareup.javapoet.*;
 import elemental2.core.JsArray;
 import org.nutz.lang.Lang;
+import org.nutz.lang.Strings;
 import org.nutz.log.Log;
 import org.nutz.log.Logs;
 
@@ -90,9 +91,9 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
                 outerName = handleModule(packageName, true, qname, element);
             }
         }
-        if(AllModules.isPedefinedType(qname))
+        if(AllModules.isPredefinedType(qname))
         {
-            return AllModules.getTranslatePattern(qname);
+            outerName= AllModules.getTranslatePattern(qname);
         }
         // outName is  ApiResult<T>
         // returnType would be ApiResult<GoData>
@@ -145,10 +146,11 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
         {
             return true;
         }
-        if(AllModules.isPedefinedType(qname))
+        if(AllModules.isPredefinedType(qname))
         {
             return true;
         }
+
         List<String> omittedClasses = Lang.list(String.class.getCanonicalName(),
                 Date.class.getCanonicalName(),
                 java.sql.Date.class.getCanonicalName(),
@@ -298,6 +300,35 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
                         fieldDefine.qTypeName = getQName(field);
                         fieldDefine.tType = parse(packageName, field.asType());
                         fieldDefine.isStatic=field.getModifiers().contains(Modifier.STATIC);
+
+                        if(fieldDefine.isStatic ) {
+                            Object constantExpression = field.getConstantValue();
+                            if(constantExpression!=null) {
+                                //读取缺省值
+                                if (fieldDefine.tType.toString().endsWith("String")) {
+                                    fieldDefine.initValue = "\"" + constantExpression.toString() + "\"";
+                                } else {
+                                    fieldDefine.initValue = constantExpression.toString();
+                                }
+                            }
+                        }
+                        String comment = env.getElementUtils().getDocComment(field);
+                        if(Strings.isNotBlank(comment)) {
+                             fieldDefine.summary=comment;
+                        }
+                        else
+                        {
+                            List<? extends AnnotationMirror> allAnnotationMirrors = env.getElementUtils().getAllAnnotationMirrors(field);
+                            for(AnnotationMirror aMirror : allAnnotationMirrors)
+                            {
+                                String com = env.getElementUtils().getDocComment(field);
+                                if(Strings.isNotBlank(com)) {
+                                    fieldDefine.summary=com;
+                                    break;
+                                }
+                            }
+                        }
+
                         module.fields.add(fieldDefine);
                     }
                 }
