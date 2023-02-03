@@ -26,7 +26,6 @@ public class ApiModuleDefine {
                 this.translateSuper=translateSuper;
             }
         }
-        this.translateSuper=null;
     }
 
     //转换后 实现的接口

@@ -205,9 +205,13 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
             TypeName translationSuperMirror=null;
             //处理父类型
             TypeMirror superclass = ((TypeElement) element).getSuperclass();
-            if(!(isSystem(superclass.toString()) || isObject(superclass.toString())))
+            if(   superclass.getKind().equals(TypeKind.DECLARED) &&
+                    ( !(isSystem(superclass.toString()) || isObject(superclass.toString()))))
             {
                 translationSuperMirror=parse(packageName, superclass);
+                if(translationSuperMirror!=null) {
+                    module.setTranslateSuper(translationSuperMirror);
+                }
             }
 
             //处理实现的接口
@@ -365,7 +369,6 @@ public class TypeMirrorVisitor extends SimpleTypeVisitor8<TypeName,String> {
                 module.translateName = ClassName.get(nameList[0], nameList[1]);
             }
 
-            module.setTranslateSuper(translationSuperMirror);
 
         }
         return module.translateName;
