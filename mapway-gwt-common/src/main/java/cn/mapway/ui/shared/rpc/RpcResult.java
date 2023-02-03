@@ -1,25 +1,33 @@
 package cn.mapway.ui.shared.rpc;
 
-import com.google.gwt.user.client.rpc.IsSerializable;
+import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
+
+import java.io.Serializable;
 
 /**
  * RpcResult
  *
  * @author zhangjianshe@gmail.com
  */
-public class RpcResult<T> implements IsSerializable {
+@JsType(isNative = true,namespace = JsPackage.GLOBAL,name="Object")
+public class RpcResult<T> implements Serializable {
     Integer code;
     String message;
     T data;
 
-    public static RpcResult success(Object data) {
+    @JsOverlay
+    public static final RpcResult success(Object data) {
         RpcResult r = new RpcResult();
         r.code = 200;
         r.data = data;
         return r;
     }
 
-    public static RpcResult create(Integer code, String message, Object data) {
+    @JsOverlay
+    public static final RpcResult create(Integer code, String message, Object data) {
         RpcResult r = new RpcResult();
         r.code = code;
         r.message = message;
@@ -27,26 +35,31 @@ public class RpcResult<T> implements IsSerializable {
         return r;
     }
 
-    public static RpcResult fail(Integer code, String message) {
+    @JsOverlay
+    public static final RpcResult fail(Integer code, String message) {
         RpcResult r = new RpcResult();
         r.code = code;
         r.message = message;
         return r;
     }
 
-    public Boolean isSuccess() {
+    @JsOverlay
+    public final boolean isSuccess() {
         return code == 200;
     }
 
-    public T getData() {
-        return data;
+    @JsProperty
+    public final T getData() {
+        return this.data;
     }
 
-    public String getMessage() {
+    @JsOverlay
+    public final String getMessage() {
         return this.message;
     }
 
-    public Integer getCode()
+    @JsOverlay
+    public final Integer getCode()
     {
         return this.code;
     }
