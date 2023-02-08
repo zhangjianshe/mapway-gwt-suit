@@ -2,7 +2,6 @@ package cn.mapway.ui.shared.rpc;
 
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 import java.io.Serializable;
@@ -12,7 +11,7 @@ import java.io.Serializable;
  *
  * @author zhangjianshe@gmail.com
  */
-@JsType(isNative = true,namespace = JsPackage.GLOBAL,name="Object")
+@JsType(namespace = JsPackage.GLOBAL,name="Object")
 public class RpcResult<T> implements Serializable {
     Integer code;
     String message;
@@ -48,7 +47,7 @@ public class RpcResult<T> implements Serializable {
         return code == 200;
     }
 
-    @JsProperty
+    @JsOverlay
     public final T getData() {
         return this.data;
     }
