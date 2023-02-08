@@ -1,7 +1,5 @@
 package cn.mapway.ui.shared.rpc;
 
-import jsinterop.annotations.JsOverlay;
-
 import java.io.Serializable;
 
 /**
@@ -15,7 +13,7 @@ public class RpcResult<T> implements Serializable {
     String message;
     T data;
 
-    @JsOverlay
+   // @JsOverlay
     public static final RpcResult success(Object data) {
         RpcResult r = new RpcResult();
         r.code = 200;
@@ -23,7 +21,7 @@ public class RpcResult<T> implements Serializable {
         return r;
     }
 
-    @JsOverlay
+   // @JsOverlay
     public static final RpcResult create(Integer code, String message, Object data) {
         RpcResult r = new RpcResult();
         r.code = code;
@@ -32,7 +30,7 @@ public class RpcResult<T> implements Serializable {
         return r;
     }
 
-    @JsOverlay
+   // @JsOverlay
     public static final RpcResult fail(Integer code, String message) {
         RpcResult r = new RpcResult();
         r.code = code;
@@ -40,22 +38,22 @@ public class RpcResult<T> implements Serializable {
         return r;
     }
 
-    @JsOverlay
+   // @JsOverlay
     public final boolean isSuccess() {
         return code == 200;
     }
 
-    @JsOverlay
+   // @JsOverlay
     public final T getData() {
         return this.data;
     }
 
-    @JsOverlay
+   // @JsOverlay
     public final String getMessage() {
         return this.message;
     }
 
-    @JsOverlay
+   // @JsOverlay
     public final Integer getCode()
     {
         return this.code;
