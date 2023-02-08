@@ -18,8 +18,11 @@ public class Box implements Serializable, IsSerializable {
     public double xmax;
     public double ymax;
 
+    /**
+     * 初始化
+     */
     public Box() {
-        setValue(0.0f, 0.0f, 0.0f, 0.0f);
+        setValue(Double.MAX_VALUE, Double.MAX_VALUE, Double.MIN_VALUE, Double.MIN_VALUE);
     }
 
     public Box(double xmin, double ymin, double xmax, double ymax) {
