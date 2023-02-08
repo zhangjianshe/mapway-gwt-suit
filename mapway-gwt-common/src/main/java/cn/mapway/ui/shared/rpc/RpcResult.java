@@ -1,5 +1,7 @@
 package cn.mapway.ui.shared.rpc;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 import java.io.Serializable;
 
 /**
@@ -8,7 +10,7 @@ import java.io.Serializable;
  * @author zhangjianshe@gmail.com
  */
 //@JsType(isNative = true, namespace = JsPackage.GLOBAL,name="Object")
-public class RpcResult<T> implements Serializable {
+public class RpcResult<T> implements Serializable , IsSerializable {
     Integer code;
     String message;
     T data;
