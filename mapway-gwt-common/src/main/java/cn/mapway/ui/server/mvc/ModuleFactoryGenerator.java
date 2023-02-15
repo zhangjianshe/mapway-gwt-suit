@@ -13,7 +13,6 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.nutz.json.Json;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
@@ -166,29 +165,26 @@ public class ModuleFactoryGenerator extends Generator {
         if (Strings.isBlank(iconName) || "icon.png".equals(iconName)) {
             return "";
         }
-        log.info("*** classType is {}", Json.toJson(classType.getQualifiedSourceName()));
         String packageName = classType.getPackage().getName().replaceAll("\\.", "/");
         String filename = packageName + "/" + iconName;
 
         String projectBase = System.getProperty("project.base");
 
-        log.info("project base path: {}", projectBase);
         File f = Files.findFile(filename);
-        log.warn("*** find file {} result is {}", filename, f);
 
         if (f != null) {
             String path = f.getAbsolutePath().replaceAll("\\\\", "/");
             return extractClassName(path);
         } else {
             String filePath = projectBase + "/src/main/java/" + filename;
-            log.info("twice to find {}", filePath);
+
             File f1 = new File(filePath);
             if (f1.exists()) {
                 String path = f1.getAbsolutePath().replaceAll("\\\\", "/");
-                log.info("*** find module {} icon {}", classType.getName(), iconName);
+              //  log.info("*** find module {} icon {}", classType.getName(), iconName);
                 return extractClassName(path);
             } else {
-                log.warn("*** module {} 's configuration icon {} can not found", classType.getName(), iconName);
+              //  log.warn("*** module {} 's configuration icon {} can not found", classType.getName(), iconName);
                 return "";
             }
         }
