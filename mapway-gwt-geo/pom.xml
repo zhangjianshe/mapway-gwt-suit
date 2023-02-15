@@ -19,8 +19,6 @@
     <artifactId>mapway-gwt-geo</artifactId>
     <version>${project.parent.version}</version>
     <packaging>gwt-lib</packaging>
-
-
     <dependencies>
         <dependency>
             <groupId>cn.mapway</groupId>
