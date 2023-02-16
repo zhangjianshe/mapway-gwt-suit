@@ -97,7 +97,7 @@ public class JsonRpcProcessor extends AbstractProcessor {
             String packageName = rpcProxy.packageName();
             String basePath = rpcProxy.url();
             if (Strings.isBlank(name)) {
-                name = e.getSimpleName() + "Proxy";
+                name = e.getSimpleName() + "Async";
             }
             if (Strings.isBlank(packageName)) {
                 packageName = getPackageName(type);
