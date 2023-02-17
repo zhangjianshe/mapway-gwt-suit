@@ -56,7 +56,7 @@ public class JsonRpcBase {
         }
     }
 
-    public  void httpRequestAsync(String url,
+    public   void httpRequestAsync(String url,
                                     String method,
                                     String body,
                                     Map<String, String> headers,
