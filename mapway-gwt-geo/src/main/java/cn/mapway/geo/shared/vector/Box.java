@@ -81,13 +81,13 @@ public class Box implements Serializable, IsSerializable {
     }
 
     public String toString() {
-        return  xmin + "," + ymin + "," + xmax + "," + ymax ;
+        return xmin + "," + ymin + "," + xmax + "," + ymax;
     }
 
-    public String toGeoJSON()
-    {
+    public String toGeoJSON() {
         return "{\"type\":\"Polygon\",\"coordinates\":[[[" + xmin + "," + ymin + "],[" + xmin + "," + ymax + "],[" + xmax + "," + ymax + "],[" + xmax + "," + ymin + "],[" + xmin + "," + ymin + "]]]}";
     }
+
     public String toWKT() {
         StringBuilder sb = new StringBuilder(256);
         sb.append("POLYGON (");
@@ -121,6 +121,26 @@ public class Box implements Serializable, IsSerializable {
         merge(box.xmin, box.xmax, box.ymin, box.ymax);
     }
 
+    public void copyFrom(Box box) {
+        this.xmin = box.xmin;
+        this.xmax = box.xmax;
+        this.ymin = box.ymin;
+        this.ymax = box.ymax;
+    }
+
+    public void copyTo(Box box) {
+        box.xmin=this.xmin;
+        box.xmax=this.xmax;
+        box.ymin=this.ymin;
+        box.ymax=this.ymax;
+    }
+
+    public Box clone(){
+        Box ret = new Box();
+        copyTo(ret);
+        return ret;
+    }
+
     /**
      * 判断两个 box是否相交
      *
@@ -136,10 +156,10 @@ public class Box implements Serializable, IsSerializable {
     }
 
     public void expand(double x, double y) {
-        if(x<xmin) xmin = x;
-        if(x>xmax) xmax = x;
-        if(y<ymin) ymin = y;
-        if(y>ymax) ymax = y;
+        if (x < xmin) xmin = x;
+        if (x > xmax) xmax = x;
+        if (y < ymin) ymin = y;
+        if (y > ymax) ymax = y;
     }
 
     public boolean intersect(Box box) {
@@ -147,13 +167,13 @@ public class Box implements Serializable, IsSerializable {
     }
 
     public String toViewBox() {
-        return xmin + " " + ymin + " " + (xmax-xmin) + " " +(ymax-ymin);
+        return xmin + " " + ymin + " " + (xmax - xmin) + " " + (ymax - ymin);
     }
 
     public void expand(Box extend) {
-        if(xmin>extend.xmin) xmin =extend.xmin;
-        if(xmax<extend.xmax) xmax =extend.xmax;
-        if(ymin>extend.ymin) ymin =extend.ymin;
-        if(ymax<extend.ymax) ymax =extend.ymax;
+        if (xmin > extend.xmin) xmin = extend.xmin;
+        if (xmax < extend.xmax) xmax = extend.xmax;
+        if (ymin > extend.ymin) ymin = extend.ymin;
+        if (ymax < extend.ymax) ymax = extend.ymax;
     }
 }
