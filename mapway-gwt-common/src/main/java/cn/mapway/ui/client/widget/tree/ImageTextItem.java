@@ -6,6 +6,7 @@ import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
+import cn.mapway.ui.client.widget.UIConstants;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
@@ -28,6 +29,7 @@ import java.util.List;
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
 public class ImageTextItem extends CommonEventComposite implements IData, HasDragHandlers, HasDragStartHandlers, HasDragEndHandlers, HasDragEnterHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDropHandlers {
+
 
     private static final ImageTextItemUiBinder ourUiBinder = GWT.create(ImageTextItemUiBinder.class);
 
@@ -326,11 +328,21 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             root.getElement().setAttribute(ISelectable.SELECT_ATTRIBUTE, "true");
             lbText.getElement().setAttribute(ISelectable.SELECT_ATTRIBUTE, "true");
         } else {
-            root.getElement().setAttribute(ISelectable.SELECT_ATTRIBUTE, "false");
+            root.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
             lbText.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
     }
-
+    boolean enabled=true;
+    public void setEnabled(boolean b) {
+        enabled = b;
+        if (b) {
+            root.getElement().removeAttribute(UIConstants.DISABLED);
+            lbText.getElement().removeAttribute(UIConstants.DISABLED);
+        } else {
+            root.getElement().setAttribute(UIConstants.DISABLED, "true");
+            lbText.getElement().setAttribute(UIConstants.DISABLED, "true");
+        }
+    }
     public Label getLabel() {
         return lbText;
     }

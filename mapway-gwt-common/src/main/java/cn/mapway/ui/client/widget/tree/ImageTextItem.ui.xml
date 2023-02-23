@@ -43,7 +43,7 @@
             <widget:FontIcon visible="false" ui:field="openClose"/>
             <widget:FontIcon visible="false" ui:field="fontIcon" addStyleNames="{style.ic}"/>
             <g:Image ui:field="icon" addStyleNames="{style.ic}" visible="false" width="22px" height="22px"/>
-            <g:Label ui:field="lbText" styleName="{style.expand}"/>
+            <g:Label ui:field="lbText" styleName="{style.expand} text-content"/>
             <widget:FontIcon visible="false" ui:field="fontIconSuffix"/>
         </g:HTMLPanel>
         <g:HTMLPanel ui:field="childrenPanel"/>

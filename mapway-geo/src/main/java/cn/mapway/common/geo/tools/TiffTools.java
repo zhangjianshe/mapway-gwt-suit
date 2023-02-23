@@ -1,5 +1,6 @@
 package cn.mapway.common.geo.tools;
 
+
 import cn.mapway.common.geo.tools.parser.GF1Parser;
 import cn.mapway.common.geo.tools.parser.ISatelliteExtractor;
 import cn.mapway.geo.client.raster.BandInfo;
@@ -34,7 +35,6 @@ import static cn.mapway.geo.shared.GeoConstant.*;
 import static org.gdal.ogr.ogrConstants.wkbLinearRing;
 import static org.gdal.ogr.ogrConstants.wkbPolygon;
 import static org.gdal.osr.osrConstants.OAMS_TRADITIONAL_GIS_ORDER;
-
 
 /**
  * TiffTools
@@ -401,6 +401,7 @@ public class TiffTools {
             }
         }
         info.box = new Box();
+        info.setSourceBox(new Box());
         Box box = info.box;
         if (info.getSrid() == SRID_WGS84) {
             box.setValue(originX, originY - pixelSizeY * dataset.GetRasterYSize(), originX + dataset.GetRasterXSize() * pixelSizeX, originY);
@@ -412,6 +413,7 @@ public class TiffTools {
             info.setMaxZoom(zoom);
             info.setMinZoom(3);
             info.setResolution((int) resolutionMi.getX() * 10);
+            info.getSourceBox().copyFrom(box);
         } else if (info.getSrid() == SRID_CGCS2000) {
             box.setValue(originX, originY - pixelSizeY * dataset.GetRasterYSize(), originX + dataset.GetRasterXSize() * pixelSizeX, originY);
             info.setLat(box.center().getY());
@@ -423,6 +425,7 @@ public class TiffTools {
             info.setMaxZoom(zoom);
             info.setMinZoom(3);
             info.setResolution((int) (resolutionMi.getX() * 10));
+            info.getSourceBox().copyFrom(box);
         } else if (info.getSrid() == SRID_WEB_MERCATO) {
 
             // 图像四个角 分别对应坐标参考系下的四个坐标
@@ -431,6 +434,7 @@ public class TiffTools {
             Point pt1 = pixelToLocation(adfGeoTransform, info.getWidth(), info.getHeight());
 
             Box extendBox = new Box(pt0.getX(), pt1.getY(), pt1.getX(), pt0.getY());
+            info.getSourceBox().copyFrom(extendBox);
             if(spatialReference==null)
             {
                 spatialReference=getWebMercatorReference();
@@ -464,6 +468,7 @@ public class TiffTools {
             info.setMaxZoom(zoom);
             info.setMinZoom(3);
             info.setResolution(0);
+            info.getSourceBox().copyTo(box);
         }
         info.setDataTime(Times.format("yyyy-MM-dd HH:mm:ss", new Date()));
         return info;
@@ -686,4 +691,3 @@ public class TiffTools {
 
     }
 }
-

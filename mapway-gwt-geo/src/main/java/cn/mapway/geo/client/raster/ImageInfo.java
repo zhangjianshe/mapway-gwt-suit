@@ -46,9 +46,13 @@ public class ImageInfo implements Serializable, IsSerializable {
      */
     public String projection;
     /**
-     * 影像包围盒
+     * 影像包围盒 WGS84
      */
     public Box box;
+    /**
+     * 原始坐标参考下的包围盒
+     */
+    public Box sourceBox;
     /**
      * 文件长度
      */

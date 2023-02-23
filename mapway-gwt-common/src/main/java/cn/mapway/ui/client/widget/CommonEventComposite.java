@@ -9,6 +9,7 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.IAttributeProvider;
 import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
 import cn.mapway.ui.client.mvc.decorator.IEnabled;
+import cn.mapway.ui.client.mvc.decorator.IErrorMessage;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;
 import cn.mapway.ui.client.mvc.decorator.ISelectable;
 import cn.mapway.ui.client.mvc.tip.IPageTip;
@@ -39,7 +40,7 @@ import java.util.Set;
  *
  * @author zhangjianshe@gmail.com
  */
-public class CommonEventComposite extends Composite implements ISelectable, IEnabled, HasCommonHandlers, Id, IEventHandler, IProvideSize, IAttributeProvider, IPageTip {
+public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IEventHandler, IProvideSize, IAttributeProvider, IPageTip {
     private static final String ATTR_TIP = "tip";
     HandlerRegistration commonHandler = null;
     Set<IAttributeReadyCallback> callbacks;
@@ -364,6 +365,16 @@ public class CommonEventComposite extends Composite implements ISelectable, IEna
             successHandler.onSuccess(data.getData());
         } else {
             fireMessage(MessageObject.info(200, "操作成功"));
+        }
+    }
+
+    @Override
+    public void setErrorMessage(String message) {
+        if(message==null || message.length()==0) {
+            getElement().removeAttribute(UIConstants.ERROR_MSG_KEY);
+        }
+        else{
+            getElement().setAttribute(UIConstants.ERROR_MSG_KEY, message);
         }
     }
 }

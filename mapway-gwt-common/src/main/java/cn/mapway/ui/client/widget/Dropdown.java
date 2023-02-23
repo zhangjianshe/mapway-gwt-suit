@@ -4,6 +4,7 @@ import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IOptionProvider;
 import cn.mapway.ui.client.mvc.attribute.IOptionProviderCallback;
 import cn.mapway.ui.client.mvc.attribute.Option;
+import cn.mapway.ui.client.mvc.decorator.IErrorMessage;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.tree.ImageTextItem;
 import cn.mapway.ui.shared.CommonEventHandler;
@@ -25,14 +26,14 @@ import java.util.Objects;
  *
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
-public class Dropdown extends HorizontalPanel implements IOptionProviderCallback, HasValueChangeHandlers, ClickHandler, IData, HasValue {
+public class Dropdown extends HorizontalPanel implements IOptionProviderCallback, IErrorMessage, HasValueChangeHandlers, ClickHandler, IData, HasValue {
     Image icon;
     Label content;
     FontIcon downArrow;
     PopupPanel popupPanel;
     VerticalPanel upPanel;
     ImageTextItem selected = null;
-    String tip = "";
+    String tip = "请选择";
     Object data;
     FontIcon fontIcon;
     private final CommonEventHandler itemClicked = event -> {
@@ -50,10 +51,11 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
         setStyleName("mapway-dropdown");
         label = new Label();
-        label.setStyleName("mapway-label");
+        label.setStyleName("label");
         downArrow = new FontIcon();
         downArrow.setIconUnicode(Fonts.DOWN);
         content = new Label();
+        content.setStyleName("text-content");
         content.setWidth("100%");
         this.add(label);
         this.add(content);
@@ -101,6 +103,7 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
             } else {
                 setIcon(selected.getResource());
             }
+            selected.setSelect(true);
         } else {
             content.setText(tip);
             setIcon("");
@@ -150,14 +153,17 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
 
     public ImageTextItem addItem(ImageResource icon, String name, Object value) {
         ImageTextItem item = new ImageTextItem(icon, name);
+        item.setStyleName("dropdown-item");
         item.setData(value);
         item.addCommonHandler(itemClicked);
         upPanel.add(item);
         return item;
     }
 
+
     public ImageTextItem addItem(String iconFontUnicode, String name, Object value) {
         ImageTextItem item = new ImageTextItem(iconFontUnicode, name);
+        item.setStyleName("dropdown-item");
         item.setData(value);
         item.addCommonHandler(itemClicked);
         upPanel.add(item);
@@ -178,6 +184,16 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
             return upPanel.getWidget(index);
         }
         return null;
+    }
+
+    @Override
+    public void setErrorMessage(String message) {
+        if(message==null || message.length()==0) {
+            getElement().removeAttribute(UIConstants.ERROR_MSG_KEY);
+        }
+        else{
+            getElement().setAttribute(UIConstants.ERROR_MSG_KEY, message);
+        }
     }
 
     public void setText(String text) {
@@ -263,11 +279,12 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     public void setEnabled(boolean b) {
         enabled = b;
         if (b) {
-            this.getElement().setAttribute("enabled", "true");
+            this.getElement().removeAttribute(UIConstants.DISABLED);
         } else {
-            this.getElement().setAttribute("enabled", "false");
+            this.getElement().setAttribute(UIConstants.DISABLED, "true");
         }
     }
+
 
     @Override
     public Object getData() {
