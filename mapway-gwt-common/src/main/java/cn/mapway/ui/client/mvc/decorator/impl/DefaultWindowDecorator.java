@@ -65,4 +65,9 @@ public class DefaultWindowDecorator extends AbstractDecoratorPanel implements IW
         return addHandler(handler, CommonEvent.TYPE);
     }
 
+    @Override
+    public CommonEventHandler getCurrentCommonHandler() {
+        return null;
+    }
+
 }

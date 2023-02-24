@@ -101,6 +101,11 @@ public class MiniWindowDecorator extends AbstractDecoratorPanel implements IWind
         return addHandler(handler, CommonEvent.TYPE);
     }
 
+    @Override
+    public CommonEventHandler getCurrentCommonHandler() {
+        return null;
+    }
+
     interface MiniWindowDecoratorUiBinder extends UiBinder<LayoutPanel, MiniWindowDecorator> {
     }
 }
