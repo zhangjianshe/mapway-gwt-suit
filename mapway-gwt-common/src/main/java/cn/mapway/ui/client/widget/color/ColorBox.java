@@ -136,10 +136,6 @@ public class ColorBox extends TextBox implements HasCommonHandlers {
         return addHandler(handler, CommonEvent.TYPE);
     }
 
-    @Override
-    public CommonEventHandler getCurrentCommonHandler() {
-        return null;
-    }
 
     private boolean checkColor(String value){
         try{

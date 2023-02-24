@@ -104,10 +104,7 @@ public class SimpleWindowDecorator extends AbstractDecoratorPanel implements IWi
         return addHandler(handler, CommonEvent.TYPE);
     }
 
-    @Override
-    public CommonEventHandler getCurrentCommonHandler() {
-        return null;
-    }
+
 
     interface SimpleWindowDecoratorUiBinder extends UiBinder<LayoutPanel, SimpleWindowDecorator> {
     }
