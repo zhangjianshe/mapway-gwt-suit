@@ -42,8 +42,6 @@ import java.util.Set;
  */
 public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IEventHandler, IProvideSize, IAttributeProvider, IPageTip {
     private static final String ATTR_TIP = "tip";
-    HandlerRegistration commonHandlerRegistration = null;
-    CommonEventHandler commonEventHandler=null;
     Set<IAttributeReadyCallback> callbacks;
     Set<String> topics = new HashSet<>();
     List<TipData> tipDataList = new ArrayList<TipData>();
@@ -140,18 +138,7 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
-        if (commonHandlerRegistration != null) {
-            commonHandlerRegistration.removeHandler();
-            commonEventHandler=null;
-        }
-        commonHandlerRegistration = addHandler(handler, CommonEvent.TYPE);
-        commonEventHandler=handler;
-        return commonHandlerRegistration;
-    }
-
-    @Override
-    public CommonEventHandler getCurrentCommonHandler() {
-        return commonEventHandler;
+        return addHandler(handler, CommonEvent.TYPE);
     }
 
 
