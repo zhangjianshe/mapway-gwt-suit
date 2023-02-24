@@ -167,7 +167,7 @@ public class Box implements Serializable, IsSerializable {
     }
 
     public String toViewBox() {
-        return xmin + " " + ymin + " " + (xmax - xmin) + " " + (ymax - ymin);
+        return xmin + " " + ymax + " " + (xmax - xmin) + " " + (ymax - ymin);
     }
 
     public void expand(Box extend) {
