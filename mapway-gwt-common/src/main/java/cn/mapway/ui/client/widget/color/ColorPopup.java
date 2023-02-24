@@ -261,4 +261,9 @@ public class ColorPopup extends PopupPanel implements HasCommonHandlers {
     public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
         return addHandler(handler, CommonEvent.TYPE);
     }
+
+    @Override
+    public CommonEventHandler getCurrentCommonHandler() {
+        return null;
+    }
 }

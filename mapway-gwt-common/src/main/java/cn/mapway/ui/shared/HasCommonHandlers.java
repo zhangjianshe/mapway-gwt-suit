@@ -10,4 +10,5 @@ import com.google.gwt.event.shared.HasHandlers;
  */
 public interface HasCommonHandlers extends HasHandlers {
     HandlerRegistration addCommonHandler(CommonEventHandler handler);
+    CommonEventHandler getCurrentCommonHandler();
 }

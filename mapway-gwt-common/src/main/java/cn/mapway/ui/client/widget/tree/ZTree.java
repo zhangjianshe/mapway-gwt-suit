@@ -124,6 +124,11 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         return addHandler(handler, CommonEvent.TYPE);
     }
 
+    @Override
+    public CommonEventHandler getCurrentCommonHandler() {
+        return null;
+    }
+
     /**
      * 根据本地存储 展开响应的节点
      */

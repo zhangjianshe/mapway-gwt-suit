@@ -355,4 +355,9 @@ public class BigFileUploader extends HTMLPanel implements HasCommonHandlers {
     public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
         return addHandler(handler, CommonEvent.TYPE);
     }
+
+    @Override
+    public CommonEventHandler getCurrentCommonHandler() {
+        return null;
+    }
 }
