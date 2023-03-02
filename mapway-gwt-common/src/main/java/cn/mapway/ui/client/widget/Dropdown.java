@@ -49,7 +49,7 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         super();
         setWidth("100%");
         this.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
-        setStyleName("mapway-dropdown");
+        setStyleName("ai-dropdown");
         label = new Label();
         label.setStyleName("label");
         downArrow = new FontIcon();
@@ -218,9 +218,12 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     }
 
     public void setSelectedIndex(int index) {
+        setSelectedIndex(index, true);
+    }
+    public void setSelectedIndex(int index,boolean fireEvent) {
         if (index >= 0 && index < upPanel.getWidgetCount()) {
             ImageTextItem item = (ImageTextItem) upPanel.getWidget(index);
-            displayItem(item, true);
+            displayItem(item, fireEvent);
         }
     }
 
