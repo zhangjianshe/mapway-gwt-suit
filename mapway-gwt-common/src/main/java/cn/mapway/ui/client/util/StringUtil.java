@@ -374,6 +374,25 @@ public class StringUtil {
         }
     }
 
+    /**
+     * 格式化进度值 [0,100]->n% 其他的值 返回 -- 或者 空字符串
+     * @param progress
+     * @return
+     */
+    public static String formatProgress(Integer progress) {
+        if(progress==null)
+        {
+            return "";
+        }
+        if(progress>=0 && progress<=100)
+        {
+            return progress+"%";
+        }
+        else{
+            return "--";
+        }
+    }
+
     public static String extractLocation(String location) {
         if (location == null || location.length() == 0) {
             return "";
