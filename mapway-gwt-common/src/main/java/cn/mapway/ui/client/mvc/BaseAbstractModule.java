@@ -43,8 +43,17 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
         return FACTORY;
     }
 
+    boolean initialized=false;
+    /**
+     * 是否已经初始化了
+     */
+    public boolean hasInitialized()
+    {
+        return initialized;
+    }
     @Override
     public boolean initialize(IModule parentModule, ModuleParameter parameter) {
+        initialized=true;
         if (parameter == null) {
             mParameter = new ModuleParameter();
         } else {
@@ -67,7 +76,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
 
     @Override
     public void unInitialize() {
-
+        initialized=false;
     }
 
     @Override
