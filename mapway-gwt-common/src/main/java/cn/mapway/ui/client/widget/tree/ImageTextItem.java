@@ -195,6 +195,29 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         return item;
     }
 
+    public String attr(String key) {
+        if (key == null || key.length() == 0) {
+            return null;
+        }
+        com.google.gwt.dom.client.Element element = getElement();
+        if (element.hasAttribute(key)) {
+            return element.getAttribute(key);
+        }
+        return null;
+    }
+
+    public void attr(String key, String value) {
+        if (key == null || key.length() == 0) {
+            return;
+        }
+        com.google.gwt.dom.client.Element element = getElement();
+        if (value == null) {
+            element.removeAttribute(key);
+        } else {
+            element.setAttribute(key, value);
+        }
+    }
+
     public String getText() {
         return lbText.getText();
     }
@@ -271,8 +294,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
-    public String getIconSuffix(){
-        if(fontIconSuffix.isVisible()){
+    public String getIconSuffix() {
+        if (fontIconSuffix.isVisible()) {
             return fontIconSuffix.getIconUnicode();
         } else {
             return "";
@@ -332,7 +355,9 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             lbText.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
     }
-    boolean enabled=true;
+
+    boolean enabled = true;
+
     public void setEnabled(boolean b) {
         enabled = b;
         if (b) {
@@ -343,6 +368,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             lbText.getElement().setAttribute(UIConstants.DISABLED, "true");
         }
     }
+
     public Label getLabel() {
         return lbText;
     }
