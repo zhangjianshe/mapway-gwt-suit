@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.widget.tree;
 
+import cn.mapway.ui.client.widget.panel.MessagePanel;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
@@ -40,12 +41,25 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         }
     };
     String itemStyleName;
+    MessagePanel messagePanel;
+
+    public ZTree() {
+        messagePanel = new MessagePanel();
+        add(messagePanel);
+    }
 
     public void setValue(ImageTextItem item, boolean fire) {
         setCurrentItem(item);
         if (fire) {
             fireEvent(CommonEvent.selectEvent(item));
         }
+    }
+
+    @Override
+    public void clear() {
+        super.clear();
+        messagePanel.setHeight("0px");
+        add(messagePanel);
     }
 
     public void setCurrentItem(ImageTextItem item) {
@@ -117,6 +131,16 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         item.addCommonHandler(itemClicked);
 
         return item;
+    }
+
+    public void setMessage(String message, int height) {
+        messagePanel.setText(message);
+        messagePanel.setHeight(height + "px");
+    }
+
+    public void clearMessage() {
+        messagePanel.setText("");
+        messagePanel.setHeight("0px");
     }
 
     @Override
