@@ -94,6 +94,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int CANSAVE = 81;//可以保存 data总是 true /false
     public static final int DOWNLOAD = 82;//下载
     public static final int CLICK = 83;//下载
+    public static final int CHECKED = 84;//用户check
+    public static final int UNCHECKED = 85;//用户uncheck
+    public static final int VALUE_CHANGE = 86;//数据改变
 
 
     public final static int OK = 200;
@@ -115,9 +118,23 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
     }
+
+    public static CommonEvent checkedEvent(Object data) {
+        return new CommonEvent(CHECKED, data);
+    }
+
+    public static CommonEvent unCheckedEvent(Object data) {
+        return new CommonEvent(UNCHECKED, data);
+    }
+
+    public static CommonEvent valueChangedEvent(Object data) {
+        return new CommonEvent(VALUE_CHANGE, data);
+    }
+
     public static CommonEvent canSaveEvent(Object data) {
         return new CommonEvent(CANSAVE, data);
     }
+
     public static CommonEvent moveEvent(Object data) {
         return new CommonEvent(MOVE, data);
     }
@@ -173,6 +190,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent progressEvent(Object data) {
         return new CommonEvent(PROGRESS, data);
     }
+
     public static CommonEvent clickEvent(Object data) {
         return new CommonEvent(CLICK, data);
     }
@@ -184,6 +202,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent locationEvent(Object data) {
         return new CommonEvent(LOCATION, data);
     }
+
     public static CommonEvent downloadEvent(Object data) {
         return new CommonEvent(DOWNLOAD, data);
     }
@@ -427,6 +446,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent commitEvent(Object data) {
         return new CommonEvent(COMMIT, data);
     }
+
     public static CommonEvent palletEvent(Object data) {
         return new CommonEvent(PALLET, data);
     }
@@ -438,6 +458,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isProgress() {
         return PROGRESS == this.type;
     }
+
     public boolean isPallet() {
         return PALLET == this.type;
     }
@@ -477,6 +498,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isAttribute() {
         return ATTRIBUTE == this.type;
     }
+
     public boolean isCanSave() {
         return CANSAVE == this.type;
     }
@@ -492,6 +514,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isMessage() {
         return MESSAGE == this.type;
     }
+
     public boolean isDownload() {
         return DOWNLOAD == this.type;
     }
@@ -515,6 +538,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isAdd() {
         return ADD == this.type;
     }
+
     public boolean isClick() {
         return CLICK == this.type;
     }
@@ -738,8 +762,21 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isCommit() {
         return COMMIT == this.type;
     }
+
     public boolean isMove() {
         return MOVE == this.type;
+    }
+
+    public boolean isChecked(int type) {
+        return CHECKED == type;
+    }
+
+    public boolean isUnChecked(int type) {
+        return UNCHECKED == type;
+    }
+
+    public boolean isValueChanged(int type) {
+        return VALUE_CHANGE == type;
     }
 
     @Override
