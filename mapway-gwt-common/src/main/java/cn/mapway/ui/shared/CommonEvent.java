@@ -93,6 +93,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int MOVE = 80;
     public static final int CANSAVE = 81;//可以保存 data总是 true /false
     public static final int DOWNLOAD = 82;//下载
+    public static final int CLICK = 83;//下载
 
 
     public final static int OK = 200;
@@ -171,6 +172,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent progressEvent(Object data) {
         return new CommonEvent(PROGRESS, data);
+    }
+    public static CommonEvent clickEvent(Object data) {
+        return new CommonEvent(CLICK, data);
     }
 
     public static CommonEvent loadEvent(Object data) {
@@ -510,6 +514,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isAdd() {
         return ADD == this.type;
+    }
+    public boolean isClick() {
+        return CLICK == this.type;
     }
 
     public boolean isPlay() {
