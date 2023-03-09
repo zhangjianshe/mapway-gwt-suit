@@ -19,7 +19,8 @@ public enum DbFieldType {
     FLD_TYPE_DATETIME(3, "日期时间", Fonts.CALENDAR),
     FLD_TYPE_BOOLEAN(4, "布尔型", Fonts.CONTROLER),
     FLD_TYPE_GEOMETRY(5, "地理字段", Fonts.EARTH),
-    FLD_TYPE_SERIAL(7, "序列", Fonts.SERIAL);
+    FLD_TYPE_SERIAL(7, "序列", Fonts.SERIAL),
+    FLD_TYPE_STRING_ARRAY(8, "字符串数组", Fonts.LIST);
     //TODO 添加新的图标样式
     int code;
     String name;
