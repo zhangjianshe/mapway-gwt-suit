@@ -39,7 +39,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         public void onMouseDown(MouseDownEvent event) {
             if(event.getNativeButton()==NativeEvent.BUTTON_RIGHT)
             {
-                MenuEvent menuEvent=new MenuEvent(event.getNativeEvent(),this);
+                MenuEvent menuEvent=new MenuEvent(event.getNativeEvent(),ImageTextItem.this);
                 fireEvent(CommonEvent.menuEvent(menuEvent));
             }
         }
