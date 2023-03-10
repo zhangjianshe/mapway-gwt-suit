@@ -34,6 +34,16 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
 
 
     private static final ImageTextItemUiBinder ourUiBinder = GWT.create(ImageTextItemUiBinder.class);
+    private final MouseDownHandler mouseDownClick=new MouseDownHandler() {
+        @Override
+        public void onMouseDown(MouseDownEvent event) {
+            if(event.getNativeButton()==NativeEvent.BUTTON_RIGHT)
+            {
+                MenuEvent menuEvent=new MenuEvent(event.getNativeEvent(),this);
+                fireEvent(CommonEvent.menuEvent(menuEvent));
+            }
+        }
+    };
 
     @UiField
     Label lbText;
@@ -74,11 +84,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             if(button== NativeEvent.BUTTON_LEFT) {
                 fireEvent(CommonEvent.selectEvent(getData()));
             }
-            else if(button==NativeEvent.BUTTON_RIGHT)
-            {
-                MenuEvent menuEvent=new MenuEvent(event.getNativeEvent(),this);
-                fireEvent(CommonEvent.menuEvent(menuEvent));
-            }
+
         }
     };
 
@@ -91,6 +97,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         children = new ArrayList<>();
         setValue(resource, text);
         root.addDomHandler(itemClicked, ClickEvent.getType());
+        root.addDomHandler(mouseDownClick,MouseDownEvent.getType());
         root.addDomHandler(itemDoubleClicked, DoubleClickEvent.getType());
         root.addDomHandler(event -> {
             event.stopPropagation();
