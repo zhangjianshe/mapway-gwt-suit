@@ -9,6 +9,7 @@ import cn.mapway.ui.client.widget.FontIcon;
 import cn.mapway.ui.client.widget.UIConstants;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
@@ -68,7 +69,14 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     private final ClickHandler itemClicked = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-            fireEvent(CommonEvent.selectEvent(getData()));
+            int button=event.getNativeButton();
+            if(button== NativeEvent.BUTTON_LEFT) {
+                fireEvent(CommonEvent.selectEvent(getData()));
+            }
+            else if(button==NativeEvent.BUTTON_RIGHT)
+            {
+                fireEvent(CommonEvent.menuEvent(getData()));
+            }
         }
     };
 

@@ -39,6 +39,8 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             if (storage != null) {
                 storage.setItem(item.getStorageKey(), "0");
             }
+        } else if (event.isMenu()) {
+            fireEvent(CommonEvent.menuEvent(item));
         }
     };
     String itemStyleName;

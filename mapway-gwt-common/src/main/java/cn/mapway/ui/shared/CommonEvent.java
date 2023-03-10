@@ -97,6 +97,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int CHECKED = 84;//用户check
     public static final int UNCHECKED = 85;//用户uncheck
     public static final int VALUE_CHANGE = 86;//数据改变
+    public static final int RIGHT_CLICK = 87;//数据改变
+    public static final int LEFT_CLICK = 88;//数据改变
+    public static final int MENU = 89;//数据改变
 
 
     public final static int OK = 200;
@@ -118,7 +121,15 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
     }
-
+    public static CommonEvent rightClickEvent(Object data) {
+        return new CommonEvent(RIGHT_CLICK, data);
+    }
+    public static CommonEvent leftClickEvent(Object data) {
+        return new CommonEvent(LEFT_CLICK, data);
+    }
+    public static CommonEvent menuEvent(Object data) {
+        return new CommonEvent(MENU, data);
+    }
     public static CommonEvent checkedEvent(Object data) {
         return new CommonEvent(CHECKED, data);
     }
@@ -767,17 +778,30 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return MOVE == this.type;
     }
 
-    public boolean isChecked(int type) {
+    public boolean isChecked() {
         return CHECKED == type;
     }
 
-    public boolean isUnChecked(int type) {
+    public boolean isUnChecked() {
         return UNCHECKED == type;
     }
 
-    public boolean isValueChanged(int type) {
+    public boolean isValueChanged() {
         return VALUE_CHANGE == type;
     }
+
+    public boolean isLeftClick() {
+        return LEFT_CLICK == type;
+    }
+
+    public boolean isRightClick() {
+        return RIGHT_CLICK == type;
+    }
+
+    public boolean isMenu() {
+        return MENU == type;
+    }
+
 
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
