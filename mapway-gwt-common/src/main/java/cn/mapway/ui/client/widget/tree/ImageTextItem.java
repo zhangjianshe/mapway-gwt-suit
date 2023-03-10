@@ -96,6 +96,10 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         initWidget(ourUiBinder.createAndBindUi(this));
         children = new ArrayList<>();
         setValue(resource, text);
+       installEvent();
+    }
+
+    private void installEvent() {
         root.addDomHandler(itemClicked, ClickEvent.getType());
         root.addDomHandler(mouseDownClick,MouseDownEvent.getType());
         root.addDomHandler(itemDoubleClicked, DoubleClickEvent.getType());
@@ -115,12 +119,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         initWidget(ourUiBinder.createAndBindUi(this));
         children = new ArrayList<>();
         setValue(fontIconUnicode, text);
-        root.addDomHandler(itemClicked, ClickEvent.getType());
-        root.addDomHandler(itemDoubleClicked, DoubleClickEvent.getType());
-        root.addDomHandler(event -> {
-            event.stopPropagation();
-            event.preventDefault();
-        }, ContextMenuEvent.getType());
+        installEvent();
     }
 
     @Override
