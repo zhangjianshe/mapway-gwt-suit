@@ -8,6 +8,7 @@ import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
 import cn.mapway.ui.client.widget.UIConstants;
 import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.MenuEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
@@ -75,7 +76,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             }
             else if(button==NativeEvent.BUTTON_RIGHT)
             {
-                fireEvent(CommonEvent.menuEvent(getData()));
+                MenuEvent menuEvent=new MenuEvent(event.getNativeEvent(),this);
+                fireEvent(CommonEvent.menuEvent(menuEvent));
             }
         }
     };
