@@ -8,6 +8,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
 
 /**
  * ZTree
@@ -154,8 +155,11 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     public void resetLayout() {
         if (storage != null) {
             for (int i = 0; i < getWidgetCount(); i++) {
-                ImageTextItem item = (ImageTextItem) getWidget(i);
-                layoutItem(item);
+                Widget widget=getWidget(i);
+                if(widget instanceof ImageTextItem) {
+                    ImageTextItem item = (ImageTextItem) widget;
+                    layoutItem(item);
+                }
             }
         }
     }
