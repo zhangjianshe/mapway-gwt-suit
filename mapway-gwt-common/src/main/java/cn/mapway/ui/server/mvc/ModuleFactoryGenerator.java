@@ -169,7 +169,7 @@ public class ModuleFactoryGenerator extends Generator {
         String filename = packageName + "/" + iconName;
 
         String projectBase = System.getProperty("project.base");
-
+        log.warn("projectBase:{}", projectBase);
         File f = Files.findFile(filename);
 
         if (f != null) {
@@ -181,19 +181,29 @@ public class ModuleFactoryGenerator extends Generator {
             File f1 = new File(filePath);
             if (f1.exists()) {
                 String path = f1.getAbsolutePath().replaceAll("\\\\", "/");
-              //  log.info("*** find module {} icon {}", classType.getName(), iconName);
+                log.warn("*** find module {} icon {} at {} ", classType.getName(), iconName,path);
                 return extractClassName(path);
             } else {
-              //  log.warn("*** module {} 's configuration icon {} can not found", classType.getName(), iconName);
+                log.warn("*** module {} 's configuration icon {} can not found", classType.getName(), iconName);
                 return "";
             }
         }
     }
 
     private String extractClassName(String abstractPath) {
+        log.warn("extract class name {}" ,abstractPath);
         String match = "src/main/java/";
         int index = abstractPath.indexOf(match);
+        if(index>=0){
         return abstractPath.substring(index + match.length());
+        }
+        match = "target/classes/";
+        index = abstractPath.indexOf(match);
+        if(index>=0){
+            return abstractPath.substring(index + match.length());
+        }
+
+        return "";
     }
 
     /**
