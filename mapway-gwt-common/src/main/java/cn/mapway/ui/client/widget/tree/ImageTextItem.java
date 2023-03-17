@@ -14,6 +14,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * ImageTextItem
@@ -31,7 +33,7 @@ import java.util.List;
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
 public class ImageTextItem extends CommonEventComposite implements IData, HasDragHandlers, HasDragStartHandlers, HasDragEndHandlers, HasDragEnterHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDropHandlers {
-
+    private static final  Random random=new Random(System.currentTimeMillis());
 
     private static final ImageTextItemUiBinder ourUiBinder = GWT.create(ImageTextItemUiBinder.class);
     private final MouseDownHandler mouseDownClick = new MouseDownHandler() {
@@ -69,6 +71,10 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     FontIcon fontIconSuffix;
     @UiField
     CheckBox check;
+    @UiField
+    HTMLPanel bar;
+    @UiField
+    MyStyle style;
     boolean enabled = true;
     private String storageKey = "";
     private Object data;
@@ -272,9 +278,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
 
     private int calPaddingLeft() {
         int spacing = this.level * 22;
-        if(level>0 && check.isVisible())
-        {
-            spacing+=15;
+        if (level > 0 && check.isVisible()) {
+            spacing += 15;
         }
         return spacing + 4;
     }
@@ -524,6 +529,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
 
     public String getStorageKey() {
         return storageKey;
+
     }
 
     public void setStorageKey(String key) {
@@ -543,6 +549,51 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             root.remove(child);
         }
         rightWidgets.clear();
+    }
+
+    /**
+     * 设置一项的操作进度 如果为 null 或者不在 [0,100] 之间 就清楚进度信息
+     *
+     * @param progress
+     */
+    public void setProgress(Integer progress) {
+        if (progress == null || progress < 0 || progress > 100) {
+            bar.setVisible(false);
+        } else {
+            bar.setVisible(true);
+            bar.removeStyleName(style.barAnimation());
+            bar.setStyleName(style.bar());
+            Style style = bar.getElement().getStyle();
+            style.setWidth(progress, Style.Unit.PCT);
+        }
+    }
+
+    public void loading(boolean loading) {
+        if (loading) {
+            bar.setVisible(true);
+            bar.removeStyleName(style.bar());
+            bar.setStyleName(style.barAnimation());
+            bar.getElement().getStyle().setProperty("animationDelay",random.nextDouble()+"s");
+        } else {
+            bar.setVisible(false);
+            bar.removeStyleName(style.barAnimation());
+            bar.setStyleName(style.bar());
+        }
+    }
+
+    public interface MyStyle extends CssResource {
+
+        String item();
+
+        String expand();
+
+        String bar();
+
+        String gap();
+
+        String ic();
+
+        String barAnimation();
     }
 
     interface ImageTextItemUiBinder extends UiBinder<VerticalPanel, ImageTextItem> {
