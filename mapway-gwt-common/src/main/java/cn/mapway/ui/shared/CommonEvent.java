@@ -134,7 +134,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent checkedEvent(Object data) {
         return new CommonEvent(CHECKED, data);
     }
-    public static CommonEvent uplaodEvent(Object data) {
+    public static CommonEvent uploadEvent(Object data) {
         return new CommonEvent(UPLOAD, data);
     }
     public static CommonEvent unCheckedEvent(Object data) {
