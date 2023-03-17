@@ -41,6 +41,7 @@
         <g:HTMLPanel styleName="mapway-text-item {style.item}" ui:field="root">
             <g:Label ui:field="gap" styleName="{style.gap}" width="1px"/>
             <widget:FontIcon visible="false" ui:field="openClose"/>
+            <g:CheckBox ui:field="check" visible="false" />
             <widget:FontIcon visible="false" ui:field="fontIcon" addStyleNames="{style.ic}"/>
             <g:Image ui:field="icon" addStyleNames="{style.ic}" visible="false" width="22px" height="22px"/>
             <g:Label ui:field="lbText" styleName="{style.expand} text-content"/>

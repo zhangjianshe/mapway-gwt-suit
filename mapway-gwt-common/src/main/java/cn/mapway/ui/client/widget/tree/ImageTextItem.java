@@ -34,12 +34,11 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
 
 
     private static final ImageTextItemUiBinder ourUiBinder = GWT.create(ImageTextItemUiBinder.class);
-    private final MouseDownHandler mouseDownClick=new MouseDownHandler() {
+    private final MouseDownHandler mouseDownClick = new MouseDownHandler() {
         @Override
         public void onMouseDown(MouseDownEvent event) {
-            if(event.getNativeButton()==NativeEvent.BUTTON_RIGHT)
-            {
-                MenuEvent menuEvent=new MenuEvent(event.getNativeEvent(),ImageTextItem.this);
+            if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
+                MenuEvent menuEvent = new MenuEvent(event.getNativeEvent(), ImageTextItem.this);
                 fireEvent(CommonEvent.menuEvent(menuEvent));
             }
         }
@@ -60,7 +59,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     List<ImageTextItem> children;
     @UiField
     FontIcon openClose;
-
     int level = 0;
     int command = 0;
     ImageTextItem parentItem;
@@ -69,6 +67,9 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     List<Widget> rightWidgets = new ArrayList<>();
     @UiField
     FontIcon fontIconSuffix;
+    @UiField
+    CheckBox check;
+    boolean enabled = true;
     private String storageKey = "";
     private Object data;
     private final DoubleClickHandler itemDoubleClicked = new DoubleClickHandler() {
@@ -80,8 +81,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     private final ClickHandler itemClicked = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-            int button=event.getNativeButton();
-            if(button== NativeEvent.BUTTON_LEFT) {
+            int button = event.getNativeButton();
+            if (button == NativeEvent.BUTTON_LEFT) {
                 fireEvent(CommonEvent.selectEvent(getData()));
             }
 
@@ -96,17 +97,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         initWidget(ourUiBinder.createAndBindUi(this));
         children = new ArrayList<>();
         setValue(resource, text);
-       installEvent();
-    }
-
-    private void installEvent() {
-        root.addDomHandler(itemClicked, ClickEvent.getType());
-        root.addDomHandler(mouseDownClick,MouseDownEvent.getType());
-        root.addDomHandler(itemDoubleClicked, DoubleClickEvent.getType());
-        root.addDomHandler(event -> {
-            event.stopPropagation();
-            event.preventDefault();
-        }, ContextMenuEvent.getType());
+        installEvent();
     }
 
     /**
@@ -120,6 +111,23 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         children = new ArrayList<>();
         setValue(fontIconUnicode, text);
         installEvent();
+    }
+
+    private void installEvent() {
+        root.addDomHandler(itemClicked, ClickEvent.getType());
+        root.addDomHandler(mouseDownClick, MouseDownEvent.getType());
+        root.addDomHandler(itemDoubleClicked, DoubleClickEvent.getType());
+        root.addDomHandler(event -> {
+            event.stopPropagation();
+            event.preventDefault();
+        }, ContextMenuEvent.getType());
+        check.addValueChangeHandler(event -> {
+            if (event.getValue()) {
+                fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
+            } else {
+                fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
+            }
+        });
     }
 
     @Override
@@ -170,6 +178,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             openClose.setIconUnicode(Fonts.DOWN);
             openClose.setVisible(true);
         }
+        item.enableCheck(check.isVisible());
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
         children.add(item);
@@ -187,6 +196,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             openClose.setIconUnicode(Fonts.DOWN);
             openClose.setVisible(true);
         }
+        item.enableCheck(check.isVisible());
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
         children.add(item);
@@ -205,6 +215,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
+        item.enableCheck(check.isVisible());
         children.add(item);
         item.setParentItem(this);
         lbText.getElement().setAttribute("bold", "true");
@@ -251,8 +262,20 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         gap.getElement().getStyle().setWidth(calPaddingLeft(), Style.Unit.PX);
     }
 
+    public void enableCheck(boolean enabled) {
+        check.setVisible(enabled);
+        for (int i = 0; i < getChildren().size(); i++) {
+            ImageTextItem item = getChildren().get(i);
+            item.enableCheck(enabled);
+        }
+    }
+
     private int calPaddingLeft() {
-        int spacing = this.level * 20;
+        int spacing = this.level * 22;
+        if(level>0 && check.isVisible())
+        {
+            spacing+=15;
+        }
         return spacing + 4;
     }
 
@@ -301,23 +324,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
-    public void setIconSuffix(String unicode) {
-        fontIconSuffix.setVisible(false);
-        fontIconSuffix.setVisible(false);
-        if (!StringUtil.isBlank(unicode)) {
-            fontIconSuffix.setVisible(true);
-            fontIconSuffix.setIconUnicode(unicode);
-        }
-    }
-
-    public String getIconSuffix() {
-        if (fontIconSuffix.isVisible()) {
-            return fontIconSuffix.getIconUnicode();
-        } else {
-            return "";
-        }
-    }
-
     public void setIcon(Image resource) {
         icon.setVisible(false);
         fontIcon.setVisible(false);
@@ -333,6 +339,23 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         if (resource != null) {
             icon.setVisible(true);
             icon.setResource(resource);
+        }
+    }
+
+    public String getIconSuffix() {
+        if (fontIconSuffix.isVisible()) {
+            return fontIconSuffix.getIconUnicode();
+        } else {
+            return "";
+        }
+    }
+
+    public void setIconSuffix(String unicode) {
+        fontIconSuffix.setVisible(false);
+        fontIconSuffix.setVisible(false);
+        if (!StringUtil.isBlank(unicode)) {
+            fontIconSuffix.setVisible(true);
+            fontIconSuffix.setIconUnicode(unicode);
         }
     }
 
@@ -371,8 +394,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             lbText.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
     }
-
-    boolean enabled = true;
 
     public void setEnabled(boolean b) {
         enabled = b;
