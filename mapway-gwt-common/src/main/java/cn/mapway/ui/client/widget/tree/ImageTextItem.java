@@ -463,6 +463,12 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         childrenPanel.setVisible(!show);
     }
 
+    public void open(boolean openChild) {
+        if( openChild != childrenPanel.isVisible())
+        {
+            toggleChild();
+        }
+    }
     /**
      * 清空所有的子节点
      */

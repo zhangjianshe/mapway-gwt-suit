@@ -101,6 +101,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int LEFT_CLICK = 88;//数据改变
     public static final int MENU = 89;//数据改变
     public static final int UPLOAD = 90;//上传数据
+    public static final int UNSELECTED = 91;//清空选择
 
 
     public final static int OK = 200;
@@ -139,6 +140,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public static CommonEvent unCheckedEvent(Object data) {
         return new CommonEvent(UNCHECKED, data);
+    }
+    public static CommonEvent unSelectedEvent(Object data) {
+        return new CommonEvent(UNSELECTED, data);
     }
 
     public static CommonEvent valueChangedEvent(Object data) {
@@ -579,6 +583,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isSelect() {
         return SElECT == this.type;
+    }
+    public boolean isUnSelect() {
+        return UNSELECTED == this.type;
     }
 
     public boolean isSave() {
