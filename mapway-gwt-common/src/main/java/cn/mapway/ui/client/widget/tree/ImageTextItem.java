@@ -33,7 +33,7 @@ import java.util.Random;
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
 public class ImageTextItem extends CommonEventComposite implements IData, HasDragHandlers, HasDragStartHandlers, HasDragEndHandlers, HasDragEnterHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDropHandlers {
-    private static final  Random random=new Random(System.currentTimeMillis());
+    private static final Random random = new Random(System.currentTimeMillis());
 
     private static final ImageTextItemUiBinder ourUiBinder = GWT.create(ImageTextItemUiBinder.class);
     private final MouseDownHandler mouseDownClick = new MouseDownHandler() {
@@ -447,6 +447,16 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
+    public void setChecked(boolean checked, boolean fireEvent) {
+        if (check.isVisible()) {
+            check.setValue(checked, fireEvent);
+        }
+    }
+
+    public boolean isChecked() {
+        return check.isVisible() && check.getValue();
+    }
+
     public void toggleChild() {
         boolean show = childrenPanel.isVisible();
         if (show) {
@@ -463,12 +473,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         childrenPanel.setVisible(!show);
     }
 
+
     public void open(boolean openChild) {
-        if( openChild != childrenPanel.isVisible())
-        {
+        if (openChild != childrenPanel.isVisible()) {
             toggleChild();
         }
     }
+
     /**
      * 清空所有的子节点
      */
@@ -579,7 +590,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             bar.setVisible(true);
             bar.removeStyleName(style.bar());
             bar.setStyleName(style.barAnimation());
-            bar.getElement().getStyle().setProperty("animationDelay",random.nextDouble()+"s");
+            bar.getElement().getStyle().setProperty("animationDelay", random.nextDouble() + "s");
         } else {
             bar.setVisible(false);
             bar.removeStyleName(style.barAnimation());
