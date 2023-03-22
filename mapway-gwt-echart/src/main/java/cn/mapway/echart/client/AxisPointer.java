@@ -10,5 +10,5 @@ import jsinterop.annotations.JsType;
 public class AxisPointer {
 
     public String type;
-    
+
 }
