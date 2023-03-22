@@ -33,6 +33,7 @@ public class ChartTooltip {
     public String order;
     public int padding;
     public JsObject formatter;
+    public AxisPointer axisPointer;
 
     @JsOverlay
     public final static ChartTooltip create() {
