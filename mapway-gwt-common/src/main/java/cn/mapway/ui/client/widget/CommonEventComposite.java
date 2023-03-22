@@ -146,7 +146,8 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         if (handler == null) {
             return null;
         }
-        return addHandler(handler, CommonEvent.TYPE);
+        oldHandler = addHandler(handler, CommonEvent.TYPE);
+        return oldHandler;
     }
 
 
