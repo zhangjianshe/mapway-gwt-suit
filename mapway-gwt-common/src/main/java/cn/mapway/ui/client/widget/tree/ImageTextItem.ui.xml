@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:widget="urn:import:cn.mapway.ui.client.widget">
-    <ui:style>
+    <ui:style field="style" type="cn.mapway.ui.client.widget.tree.ImageTextItem.MyStyle">
         .gap {
             width: 0px;
             overflow: hidden;
@@ -15,6 +15,8 @@
             height: 28px;
             overflow: hidden;
             width: 100%;
+            position: relative;
+            overflow: hidden;
         }
 
         .expand {
@@ -36,11 +38,41 @@
 
         .ic {
             margin-right: 3px;
-        }</ui:style>
+        }
+
+        .bar {
+
+        }
+        .barAnimation {
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 2px;
+            width: 20px;
+            background-color: chocolate;
+            animation: hello 2s ease  infinite;
+        }
+        @keyframes hello {
+            0% {
+                background-color: blueviolet;
+                left:0px;
+            }
+            50%{
+                background-color: brown;
+                left: 100%;
+            }
+            100%{
+                background-color: blueviolet;
+                left:0px;
+            }
+        }
+    </ui:style>
     <g:VerticalPanel width="100%" ui:field="box">
         <g:HTMLPanel styleName="mapway-text-item {style.item}" ui:field="root">
+            <g:HTMLPanel ui:field="bar" styleName="{style.bar}"/>
             <g:Label ui:field="gap" styleName="{style.gap}" width="1px"/>
             <widget:FontIcon visible="false" ui:field="openClose"/>
+            <g:CheckBox ui:field="check" visible="false" />
             <widget:FontIcon visible="false" ui:field="fontIcon" addStyleNames="{style.ic}"/>
             <g:Image ui:field="icon" addStyleNames="{style.ic}" visible="false" width="22px" height="22px"/>
             <g:Label ui:field="lbText" styleName="{style.expand} text-content"/>

@@ -14,6 +14,7 @@ import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -23,6 +24,7 @@ import com.google.gwt.user.client.ui.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * ImageTextItem
@@ -31,15 +33,14 @@ import java.util.List;
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
 public class ImageTextItem extends CommonEventComposite implements IData, HasDragHandlers, HasDragStartHandlers, HasDragEndHandlers, HasDragEnterHandlers, HasDragLeaveHandlers, HasDragOverHandlers, HasDropHandlers {
-
+    private static final Random random = new Random(System.currentTimeMillis());
 
     private static final ImageTextItemUiBinder ourUiBinder = GWT.create(ImageTextItemUiBinder.class);
-    private final MouseDownHandler mouseDownClick=new MouseDownHandler() {
+    private final MouseDownHandler mouseDownClick = new MouseDownHandler() {
         @Override
         public void onMouseDown(MouseDownEvent event) {
-            if(event.getNativeButton()==NativeEvent.BUTTON_RIGHT)
-            {
-                MenuEvent menuEvent=new MenuEvent(event.getNativeEvent(),ImageTextItem.this);
+            if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
+                MenuEvent menuEvent = new MenuEvent(event.getNativeEvent(), ImageTextItem.this);
                 fireEvent(CommonEvent.menuEvent(menuEvent));
             }
         }
@@ -60,7 +61,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     List<ImageTextItem> children;
     @UiField
     FontIcon openClose;
-
     int level = 0;
     int command = 0;
     ImageTextItem parentItem;
@@ -69,6 +69,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     List<Widget> rightWidgets = new ArrayList<>();
     @UiField
     FontIcon fontIconSuffix;
+    @UiField
+    CheckBox check;
+    @UiField
+    HTMLPanel bar;
+    @UiField
+    MyStyle style;
+    boolean enabled = true;
     private String storageKey = "";
     private Object data;
     private final DoubleClickHandler itemDoubleClicked = new DoubleClickHandler() {
@@ -80,8 +87,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     private final ClickHandler itemClicked = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-            int button=event.getNativeButton();
-            if(button== NativeEvent.BUTTON_LEFT) {
+            int button = event.getNativeButton();
+            if (button == NativeEvent.BUTTON_LEFT) {
                 fireEvent(CommonEvent.selectEvent(getData()));
             }
 
@@ -96,17 +103,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         initWidget(ourUiBinder.createAndBindUi(this));
         children = new ArrayList<>();
         setValue(resource, text);
-       installEvent();
-    }
-
-    private void installEvent() {
-        root.addDomHandler(itemClicked, ClickEvent.getType());
-        root.addDomHandler(mouseDownClick,MouseDownEvent.getType());
-        root.addDomHandler(itemDoubleClicked, DoubleClickEvent.getType());
-        root.addDomHandler(event -> {
-            event.stopPropagation();
-            event.preventDefault();
-        }, ContextMenuEvent.getType());
+        installEvent();
     }
 
     /**
@@ -120,6 +117,23 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         children = new ArrayList<>();
         setValue(fontIconUnicode, text);
         installEvent();
+    }
+
+    private void installEvent() {
+        root.addDomHandler(itemClicked, ClickEvent.getType());
+        root.addDomHandler(mouseDownClick, MouseDownEvent.getType());
+        root.addDomHandler(itemDoubleClicked, DoubleClickEvent.getType());
+        root.addDomHandler(event -> {
+            event.stopPropagation();
+            event.preventDefault();
+        }, ContextMenuEvent.getType());
+        check.addValueChangeHandler(event -> {
+            if (event.getValue()) {
+                fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
+            } else {
+                fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
+            }
+        });
     }
 
     @Override
@@ -170,6 +184,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             openClose.setIconUnicode(Fonts.DOWN);
             openClose.setVisible(true);
         }
+        item.enableCheck(check.isVisible());
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
         children.add(item);
@@ -187,6 +202,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             openClose.setIconUnicode(Fonts.DOWN);
             openClose.setVisible(true);
         }
+        item.enableCheck(check.isVisible());
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
         children.add(item);
@@ -205,6 +221,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
+        item.enableCheck(check.isVisible());
         children.add(item);
         item.setParentItem(this);
         lbText.getElement().setAttribute("bold", "true");
@@ -251,8 +268,19 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         gap.getElement().getStyle().setWidth(calPaddingLeft(), Style.Unit.PX);
     }
 
+    public void enableCheck(boolean enabled) {
+        check.setVisible(enabled);
+        for (int i = 0; i < getChildren().size(); i++) {
+            ImageTextItem item = getChildren().get(i);
+            item.enableCheck(enabled);
+        }
+    }
+
     private int calPaddingLeft() {
-        int spacing = this.level * 20;
+        int spacing = this.level * 22;
+        if (level > 0 && check.isVisible()) {
+            spacing += 15;
+        }
         return spacing + 4;
     }
 
@@ -301,23 +329,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
-    public void setIconSuffix(String unicode) {
-        fontIconSuffix.setVisible(false);
-        fontIconSuffix.setVisible(false);
-        if (!StringUtil.isBlank(unicode)) {
-            fontIconSuffix.setVisible(true);
-            fontIconSuffix.setIconUnicode(unicode);
-        }
-    }
-
-    public String getIconSuffix() {
-        if (fontIconSuffix.isVisible()) {
-            return fontIconSuffix.getIconUnicode();
-        } else {
-            return "";
-        }
-    }
-
     public void setIcon(Image resource) {
         icon.setVisible(false);
         fontIcon.setVisible(false);
@@ -333,6 +344,23 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         if (resource != null) {
             icon.setVisible(true);
             icon.setResource(resource);
+        }
+    }
+
+    public String getIconSuffix() {
+        if (fontIconSuffix.isVisible()) {
+            return fontIconSuffix.getIconUnicode();
+        } else {
+            return "";
+        }
+    }
+
+    public void setIconSuffix(String unicode) {
+        fontIconSuffix.setVisible(false);
+        fontIconSuffix.setVisible(false);
+        if (!StringUtil.isBlank(unicode)) {
+            fontIconSuffix.setVisible(true);
+            fontIconSuffix.setIconUnicode(unicode);
         }
     }
 
@@ -371,8 +399,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             lbText.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
     }
-
-    boolean enabled = true;
 
     public void setEnabled(boolean b) {
         enabled = b;
@@ -421,6 +447,16 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
+    public void setChecked(boolean checked, boolean fireEvent) {
+        if (check.isVisible()) {
+            check.setValue(checked, fireEvent);
+        }
+    }
+
+    public boolean isChecked() {
+        return check.isVisible() && check.getValue();
+    }
+
     public void toggleChild() {
         boolean show = childrenPanel.isVisible();
         if (show) {
@@ -435,6 +471,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             }
         }
         childrenPanel.setVisible(!show);
+    }
+
+
+    public void open(boolean openChild) {
+        if (openChild != childrenPanel.isVisible()) {
+            toggleChild();
+        }
     }
 
     /**
@@ -503,6 +546,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
 
     public String getStorageKey() {
         return storageKey;
+
     }
 
     public void setStorageKey(String key) {
@@ -522,6 +566,51 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             root.remove(child);
         }
         rightWidgets.clear();
+    }
+
+    /**
+     * 设置一项的操作进度 如果为 null 或者不在 [0,100] 之间 就清楚进度信息
+     *
+     * @param progress
+     */
+    public void setProgress(Integer progress) {
+        if (progress == null || progress < 0 || progress > 100) {
+            bar.setVisible(false);
+        } else {
+            bar.setVisible(true);
+            bar.removeStyleName(style.barAnimation());
+            bar.setStyleName(style.bar());
+            Style style = bar.getElement().getStyle();
+            style.setWidth(progress, Style.Unit.PCT);
+        }
+    }
+
+    public void loading(boolean loading) {
+        if (loading) {
+            bar.setVisible(true);
+            bar.removeStyleName(style.bar());
+            bar.setStyleName(style.barAnimation());
+            bar.getElement().getStyle().setProperty("animationDelay", random.nextDouble() + "s");
+        } else {
+            bar.setVisible(false);
+            bar.removeStyleName(style.barAnimation());
+            bar.setStyleName(style.bar());
+        }
+    }
+
+    public interface MyStyle extends CssResource {
+
+        String item();
+
+        String expand();
+
+        String bar();
+
+        String gap();
+
+        String ic();
+
+        String barAnimation();
     }
 
     interface ImageTextItemUiBinder extends UiBinder<VerticalPanel, ImageTextItem> {

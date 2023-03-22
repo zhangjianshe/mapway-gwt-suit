@@ -41,6 +41,8 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             }
         } else if (event.isMenu()) {
             fireEvent(CommonEvent.menuEvent(event.getValue()));
+        }else if (event.isChecked() || event.isUnChecked()) {
+            fireEvent(event);
         }
     };
     String itemStyleName;
@@ -55,6 +57,28 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         setCurrentItem(item);
         if (fire) {
             fireEvent(CommonEvent.selectEvent(item));
+        }
+    }
+    boolean enabledChecked=false;
+    public void enableChecked(Boolean checked)
+    {
+        if(enabledChecked!=checked)
+        {
+            updateItems(checked);
+            enabledChecked=checked;
+        }
+    }
+
+    private void updateItems(Boolean checked) {
+        int index=0;
+        for(index=0;index<getWidgetCount();index++)
+        {
+            Widget widget = getWidget(index);
+            if(widget instanceof  ImageTextItem)
+            {
+                ImageTextItem item= (ImageTextItem) widget;
+                item.enableCheck(checked);
+            }
         }
     }
 
@@ -88,6 +112,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             item.setLevel(0);
             item.setStorageKey(storagePrefix + "/" + text);
             item.setParentItem(null);
+            item.enableCheck(enabledChecked);
             add(item);
         } else {
             item = parent.addChild(text, icon);
@@ -106,6 +131,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             item.setValue(unicode, text);
             item.setLevel(0);
             item.setStorageKey(storagePrefix + "/" + text);
+            item.enableCheck(enabledChecked);
             add(item);
             item.setParentItem(null);
         } else {
@@ -125,6 +151,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             item.setValue(icon, text);
             item.setLevel(0);
             item.setStorageKey(storagePrefix + "/" + text);
+            item.enableCheck(enabledChecked);
             insert(item, 0);
             item.setParentItem(null);
 
@@ -140,6 +167,11 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         messagePanel.setText(message);
         messagePanel.setHeight(height + "px");
     }
+
+    public void setMessage(String message) {
+        setMessage(message,60);
+    }
+
 
     public void clearMessage() {
         messagePanel.setText("");
