@@ -47,16 +47,12 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
     List<TipData> tipDataList = new ArrayList<TipData>();
     int tipVersion = 0;
     String componentName = "";
+    HandlerRegistration oldHandler;
     private String _id;
 
     public CommonEventComposite() {
         _id = randomId();
         callbacks = new HashSet<>();
-    }
-
-    @Override
-    public void setSelect(boolean select) {
-        setElementSelect(getWidget().getElement(), select);
     }
 
     public static void setElementSelect(com.google.gwt.dom.client.Element element, boolean select) {
@@ -65,6 +61,11 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         } else {
             element.removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
+    }
+
+    @Override
+    public void setSelect(boolean select) {
+        setElementSelect(getWidget().getElement(), select);
     }
 
     private String randomId() {
@@ -138,6 +139,13 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
+        if (oldHandler != null) {
+            oldHandler.removeHandler();
+            oldHandler = null;
+        }
+        if (handler == null) {
+            return null;
+        }
         return addHandler(handler, CommonEvent.TYPE);
     }
 
@@ -366,10 +374,9 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public void setErrorMessage(String message) {
-        if(message==null || message.length()==0) {
+        if (message == null || message.length() == 0) {
             getElement().removeAttribute(UIConstants.ERROR_MSG_KEY);
-        }
-        else{
+        } else {
             getElement().setAttribute(UIConstants.ERROR_MSG_KEY, message);
         }
     }
