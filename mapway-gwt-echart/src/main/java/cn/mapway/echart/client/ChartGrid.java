@@ -1,5 +1,6 @@
 package cn.mapway.echart.client;
 
+import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 
@@ -19,7 +20,8 @@ public class ChartGrid {
 
     public boolean containLabel;
 
-    public static ChartGrid create(String left, String right, String bottom, String top, boolean containLabel) {
+    @JsOverlay
+    public static final ChartGrid create(String left, String right, String bottom, String top, boolean containLabel) {
         ChartGrid grid = new ChartGrid();
         grid.left = left;
         grid.right = right;
@@ -29,7 +31,8 @@ public class ChartGrid {
         return grid;
     }
 
-    public static ChartGrid create(String left, String right, String bottom, String top) {
+    @JsOverlay
+    public static final ChartGrid create(String left, String right, String bottom, String top) {
         ChartGrid grid = new ChartGrid();
         grid.left = left;
         grid.right = right;
