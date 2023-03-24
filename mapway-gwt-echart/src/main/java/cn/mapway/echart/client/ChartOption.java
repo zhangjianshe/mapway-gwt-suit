@@ -22,6 +22,8 @@ public class ChartOption {
 
     public ChartLegend legend;
 
+    public ChartGrid grid;
+
     @JsOverlay
     public final static ChartOption create(String title) {
         ChartOption option = new ChartOption();
