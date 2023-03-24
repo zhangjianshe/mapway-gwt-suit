@@ -475,9 +475,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
 
 
     public void open(boolean openChild) {
-        if (openChild != childrenPanel.isVisible()) {
-            toggleChild();
-        }
+        expand(openChild);
     }
 
     /**
