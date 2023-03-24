@@ -21,6 +21,10 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     String storagePrefix = "";
     Storage storage = Storage.getLocalStorageIfSupported();
     ImageTextItem current = null;
+    String itemStyleName;
+    MessagePanel messagePanel;
+    boolean enabledChecked = false;
+    boolean checkWithChildren = false;
     //树形条目被点击了
     private final CommonEventHandler itemClicked = event -> {
         ImageTextItem item = (ImageTextItem) event.getSource();
@@ -41,16 +45,25 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             }
         } else if (event.isMenu()) {
             fireEvent(CommonEvent.menuEvent(event.getValue()));
-        }else if (event.isChecked() || event.isUnChecked()) {
+        } else if (event.isChecked() || event.isUnChecked()) {
+
+            if (this.checkWithChildren) {
+                checkChildren(item, event.isChecked());
+            }
             fireEvent(event);
+
         }
     };
-    String itemStyleName;
-    MessagePanel messagePanel;
-
     public ZTree() {
         messagePanel = new MessagePanel();
         add(messagePanel);
+    }
+
+    private void checkChildren(ImageTextItem item, boolean checked) {
+        for (ImageTextItem child : item.getChildren()) {
+            child.setChecked(checked, false);
+            checkChildren(child, checked);
+        }
     }
 
     public void setValue(ImageTextItem item, boolean fire) {
@@ -59,24 +72,29 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             fireEvent(CommonEvent.selectEvent(item));
         }
     }
-    boolean enabledChecked=false;
-    public void enableChecked(Boolean checked)
-    {
-        if(enabledChecked!=checked)
-        {
+
+    public void enableChecked(Boolean checked) {
+        if (enabledChecked != checked) {
             updateItems(checked);
-            enabledChecked=checked;
+            enabledChecked = checked;
         }
     }
 
+    /**
+     * 设置选择的时候 是否同时选择或者取消所有的子节点
+     *
+     * @param checkWithChildren
+     */
+    public void enableCheckWithChildren(boolean checkWithChildren) {
+        this.checkWithChildren = checkWithChildren;
+    }
+
     private void updateItems(Boolean checked) {
-        int index=0;
-        for(index=0;index<getWidgetCount();index++)
-        {
+        int index = 0;
+        for (index = 0; index < getWidgetCount(); index++) {
             Widget widget = getWidget(index);
-            if(widget instanceof  ImageTextItem)
-            {
-                ImageTextItem item= (ImageTextItem) widget;
+            if (widget instanceof ImageTextItem) {
+                ImageTextItem item = (ImageTextItem) widget;
                 item.enableCheck(checked);
             }
         }
@@ -169,7 +187,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     }
 
     public void setMessage(String message) {
-        setMessage(message,60);
+        setMessage(message, 60);
     }
 
 
@@ -189,8 +207,8 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     public void resetLayout() {
         if (storage != null) {
             for (int i = 0; i < getWidgetCount(); i++) {
-                Widget widget=getWidget(i);
-                if(widget instanceof ImageTextItem) {
+                Widget widget = getWidget(i);
+                if (widget instanceof ImageTextItem) {
                     ImageTextItem item = (ImageTextItem) widget;
                     layoutItem(item);
                 }
