@@ -61,6 +61,23 @@ public class ChartSerial {
     }
 
     @JsOverlay
+    public final JsArray<String> getRadius() {
+        if (radius == null) {
+            radius = new JsArray<String>();
+        }
+        return radius;
+    }
+
+    @JsOverlay
+    public final JsArray<String> getCenter() {
+        if (center == null) {
+            center = new JsArray<String>();
+        }
+        return center;
+    }
+
+
+    @JsOverlay
     public final ChartItemStyle getItemStyle() {
         if (itemStyle == null) {
             itemStyle = new ChartItemStyle();
