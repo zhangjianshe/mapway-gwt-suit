@@ -14,4 +14,7 @@ public class ChartItemStyle {
     public String shadowColor;
     public String borderType;
     public float opacity;
+    public double borderRadius;
+    public String borderColor;
+    public double borderWidth;
 }

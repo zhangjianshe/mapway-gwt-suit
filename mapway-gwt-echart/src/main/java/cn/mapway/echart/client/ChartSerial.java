@@ -34,6 +34,9 @@ public class ChartSerial {
     public AxisLineStyle axisLine;
     public Tick axisTick;
     public SerialDetail detail;
+    public JsArray<String> radius;
+    public boolean avoidLabelOverlap;
+    public JsArray<String> center;
 
     @JsOverlay
     public final static ChartSerial create(String name, String type, List<Object> data) {
@@ -46,7 +49,7 @@ public class ChartSerial {
     public final void build(String name, String type, List<Object> data) {
         this.name = name;
         this.type = type;
-        this.data = new JsArray<>();
+        this.data = new JsArray<Object>();
         for (Object d : data) {
             this.data.push(d);
         }
