@@ -102,6 +102,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int MENU = 89;//数据改变
     public static final int UPLOAD = 90;//上传数据
     public static final int UNSELECTED = 91;//清空选择
+    public static final int TITLE = 92;//标题消息
 
 
     public final static int OK = 200;
@@ -123,24 +124,35 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
     }
+
+    public static CommonEvent titleEvent(Object data) {
+        return new CommonEvent(TITLE, data);
+    }
+
     public static CommonEvent rightClickEvent(Object data) {
         return new CommonEvent(RIGHT_CLICK, data);
     }
+
     public static CommonEvent leftClickEvent(Object data) {
         return new CommonEvent(LEFT_CLICK, data);
     }
+
     public static CommonEvent menuEvent(Object data) {
         return new CommonEvent(MENU, data);
     }
+
     public static CommonEvent checkedEvent(Object data) {
         return new CommonEvent(CHECKED, data);
     }
+
     public static CommonEvent uploadEvent(Object data) {
         return new CommonEvent(UPLOAD, data);
     }
+
     public static CommonEvent unCheckedEvent(Object data) {
         return new CommonEvent(UNCHECKED, data);
     }
+
     public static CommonEvent unSelectedEvent(Object data) {
         return new CommonEvent(UNSELECTED, data);
     }
@@ -584,6 +596,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isSelect() {
         return SElECT == this.type;
     }
+
     public boolean isUnSelect() {
         return UNSELECTED == this.type;
     }
@@ -639,9 +652,11 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isReturn() {
         return RETURN == this.type;
     }
+
     public boolean isUpload() {
         return UPLOAD == this.type;
     }
+
     public boolean isData() {
         return DATA == this.type;
     }
@@ -684,6 +699,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isList() {
         return LIST == this.type;
+    }
+
+    public boolean isTitle() {
+        return TITLE == this.type;
     }
 
     public boolean isSearch() {
