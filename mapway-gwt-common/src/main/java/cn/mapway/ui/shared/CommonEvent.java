@@ -103,6 +103,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int UPLOAD = 90;//上传数据
     public static final int UNSELECTED = 91;//清空选择
     public static final int TITLE = 92;//标题消息
+    public static final int MODE = 93;//MODE消息
 
 
     public final static int OK = 200;
@@ -123,6 +124,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent modeEvent(Object data) {
+        return new CommonEvent(MODE, data);
     }
 
     public static CommonEvent titleEvent(Object data) {
@@ -831,6 +835,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isMenu() {
         return MENU == type;
+    }
+    public boolean isMode() {
+        return MODE == type;
     }
 
 
