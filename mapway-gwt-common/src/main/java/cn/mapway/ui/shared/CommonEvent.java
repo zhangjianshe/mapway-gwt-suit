@@ -104,6 +104,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int UNSELECTED = 91;//清空选择
     public static final int TITLE = 92;//标题消息
     public static final int MODE = 93;//MODE消息
+    public static final int LEFT = 94;//MODE消息
+    public static final int RIGHT = 95;//MODE消息
 
 
     public final static int OK = 200;
@@ -124,6 +126,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent leftEvent(Object data) {
+        return new CommonEvent(LEFT, data);
+    }
+    public static CommonEvent rightEvent(Object data) {
+        return new CommonEvent(RIGHT, data);
     }
     public static CommonEvent modeEvent(Object data) {
         return new CommonEvent(MODE, data);
@@ -771,6 +779,14 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isMouseUp() {
         return MOUSEUP == this.type;
+    }
+
+    public boolean isLeft() {
+        return LEFT == this.type;
+    }
+
+    public boolean isRight() {
+        return RIGHT == this.type;
     }
 
     public boolean isScrollBottom() {
