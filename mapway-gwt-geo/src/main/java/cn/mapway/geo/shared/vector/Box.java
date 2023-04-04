@@ -162,6 +162,14 @@ public class Box implements Serializable, IsSerializable {
         if (y > ymax) ymax = y;
     }
 
+    /**
+     * 判断坐标是否在 wgs84范围内
+     * @return
+     */
+    public boolean isInWgs84(){
+        return -180 <=xmin && xmin<xmax && xmax<=180
+              && -90<ymin && ymin<ymax && ymax<=90;
+    }
     public boolean intersect(Box box) {
         return isCross(box);
     }
