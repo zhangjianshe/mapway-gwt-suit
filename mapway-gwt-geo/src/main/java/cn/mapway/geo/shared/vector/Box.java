@@ -170,6 +170,31 @@ public class Box implements Serializable, IsSerializable {
         return -180 <=xmin && xmin<xmax && xmax<=180
               && -90<ymin && ymin<ymax && ymax<=90;
     }
+
+
+    public double getWidth(){
+        return Math.abs(xmax-xmin);
+    }
+
+    public double getHeight(){
+        return Math.abs(ymax-ymin);
+    }
+
+    /**
+     * 按比例扩展
+     * @param scale
+     * @return
+     */
+    public Box expand(double scale)
+    {
+        double width=getWidth();
+        double height=getHeight();
+        xmin=xmin-width*scale;
+        xmax=xmax+width*scale;
+        ymin=ymin-height*scale;
+        ymax=ymax+height*scale;
+        return this;
+    }
     public boolean intersect(Box box) {
         return isCross(box);
     }
