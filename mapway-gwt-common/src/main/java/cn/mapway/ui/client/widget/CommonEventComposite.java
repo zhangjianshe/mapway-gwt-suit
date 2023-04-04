@@ -54,15 +54,19 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         _id = randomId();
         callbacks = new HashSet<>();
     }
-
+    public final static String TRUE ="true";
     public static void setElementSelect(com.google.gwt.dom.client.Element element, boolean select) {
         if (select) {
-            element.setAttribute(ISelectable.SELECT_ATTRIBUTE, "true");
+            element.setAttribute(ISelectable.SELECT_ATTRIBUTE,TRUE);
         } else {
             element.removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
     }
 
+    public boolean isSelected()
+    {
+        return TRUE.equals(getElement().getAttribute(ISelectable.SELECT_ATTRIBUTE));
+    }
     @Override
     public void setSelect(boolean select) {
         setElementSelect(getWidget().getElement(), select);
