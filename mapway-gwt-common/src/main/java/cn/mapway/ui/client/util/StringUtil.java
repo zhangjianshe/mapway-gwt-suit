@@ -27,11 +27,12 @@ public class StringUtil {
     public static DateTimeFormat dfS;
     public static TimeZone timeZoneShanghai;
     static Random random = new Random(new Date().getTime());
-
+    // 时间日格式
+    public static String FULL_DATETIME_FORMAT ="yyyy-MM-dd HH:mm:ss";
     static {
         TimeZoneConstants timeZoneConstants = GWT.create(TimeZoneConstants.class);
         timeZoneShanghai = TimeZone.createTimeZone(timeZoneConstants.asiaShanghai());
-        df = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss");
+        df = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT);
         dfS = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
     }
