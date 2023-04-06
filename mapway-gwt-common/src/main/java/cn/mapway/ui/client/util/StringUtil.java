@@ -15,6 +15,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.TimeUnit;
 
 /**
  * StringUtil
@@ -22,13 +23,19 @@ import java.util.Random;
  * @author zhangjianshe@gmail.com
  */
 public class StringUtil {
+    public final static String STRING_DAY = "天";
+    public final static String STRING_HOUR = "小时";
+    public final static String STRING_MINUTE = "分";
+    public final static String STRING_SECOND = "秒";
+    public final static String STRING_MILLIONSECOND = "豪秒";
     private static final String character = "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz";
     public static DateTimeFormat df;
     public static DateTimeFormat dfS;
     public static TimeZone timeZoneShanghai;
-    static Random random = new Random(new Date().getTime());
     // 时间日格式
-    public static String FULL_DATETIME_FORMAT ="yyyy-MM-dd HH:mm:ss";
+    public static String FULL_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    static Random random = new Random(new Date().getTime());
+
     static {
         TimeZoneConstants timeZoneConstants = GWT.create(TimeZoneConstants.class);
         timeZoneShanghai = TimeZone.createTimeZone(timeZoneConstants.asiaShanghai());
@@ -203,6 +210,52 @@ public class StringUtil {
     }
 
     /**
+     * 格式化毫秒时间间隔
+     *
+     * @param numberOfMilliseconds
+     * @return
+     */
+    public static String formatMillseconds(long numberOfMilliseconds) {
+        long numberOfDays = TimeUnit.MILLISECONDS.toDays(numberOfMilliseconds);
+        numberOfMilliseconds -= TimeUnit.DAYS.toMillis(numberOfDays);
+
+        long numberOfHours = TimeUnit.MILLISECONDS.toHours(numberOfMilliseconds);
+        numberOfMilliseconds -= TimeUnit.HOURS.toMillis(numberOfHours);
+
+        long numberOfMinutes = TimeUnit.MILLISECONDS.toMinutes(numberOfMilliseconds);
+        numberOfMilliseconds -= TimeUnit.MINUTES.toMillis(numberOfMinutes);
+
+        long numberOfSeconds = TimeUnit.MILLISECONDS.toSeconds(numberOfMilliseconds);
+        numberOfMilliseconds -= TimeUnit.SECONDS.toMillis(numberOfSeconds);
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (numberOfDays > 0) {
+            stringBuilder.append(numberOfDays + STRING_DAY);
+        }
+
+        if (numberOfHours > 0) {
+            stringBuilder.append(numberOfHours + STRING_HOUR);
+        }
+
+        if (numberOfMinutes > 0) {
+            stringBuilder.append(numberOfHours + STRING_MINUTE);
+        }
+
+        if (numberOfSeconds > 0) {
+            stringBuilder.append(numberOfHours + STRING_SECOND);
+        }
+
+//        if(numberOfMilliseconds > 0) {
+//            if(numberOfMilliseconds == 1)
+//                stringBuilder.append(String.format("%d millisecond", numberOfMilliseconds));
+//            else
+//                stringBuilder.append(String.format("%d milliseconds", numberOfMilliseconds));
+//        }
+        return stringBuilder.toString();
+    }
+
+    /**
      * 格式化时间区间
      *
      * @param estTime
@@ -222,6 +275,10 @@ public class StringUtil {
             return (estTime.intValue() / 60) + "分" + (estTime % 60) + "秒";
         }
         if (estTime < 60 * 60 * 60) {
+            int hour = (estTime.intValue() / (60 * 60));
+            int minute = (estTime.intValue() - hour * 60 * 60) / 60;
+            return hour + "小时" + minute + "分";
+        } else if (estTime < 24 * 60 * 60 * 60) {
             int hour = (estTime.intValue() / (60 * 60));
             int minute = (estTime.intValue() - hour * 60 * 60) / 60;
             return hour + "小时" + minute + "分";
@@ -377,19 +434,17 @@ public class StringUtil {
 
     /**
      * 格式化进度值 [0,100]->n% 其他的值 返回 -- 或者 空字符串
+     *
      * @param progress
      * @return
      */
     public static String formatProgress(Integer progress) {
-        if(progress==null)
-        {
+        if (progress == null) {
             return "";
         }
-        if(progress>=0 && progress<=100)
-        {
-            return progress+"%";
-        }
-        else{
+        if (progress >= 0 && progress <= 100) {
+            return progress + "%";
+        } else {
             return "--";
         }
     }
@@ -417,14 +472,17 @@ public class StringUtil {
         }
         if (obj instanceof String) {
             return (String) obj;
-        } if (obj instanceof Long) {
-            return  obj+"";
-        } if (obj instanceof Integer) {
-            return  obj+"";
-        }if (obj instanceof Float) {
-            return  StringUtil.formatDouble(((Float) obj).doubleValue(),4);
+        }
+        if (obj instanceof Long) {
+            return obj + "";
+        }
+        if (obj instanceof Integer) {
+            return obj + "";
+        }
+        if (obj instanceof Float) {
+            return StringUtil.formatDouble(((Float) obj).doubleValue(), 4);
         } else if (obj instanceof JsObject) {
-            JsObject jsObj= (JsObject) obj;
+            JsObject jsObj = (JsObject) obj;
             return jsObj.toString();
         } else {
             return obj.toString();
