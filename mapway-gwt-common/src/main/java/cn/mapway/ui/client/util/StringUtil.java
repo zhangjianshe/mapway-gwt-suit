@@ -27,7 +27,9 @@ public class StringUtil {
     public final static String STRING_HOUR = "小时";
     public final static String STRING_MINUTE = "分";
     public final static String STRING_SECOND = "秒";
-    public final static String STRING_MILLIONSECOND = "豪秒";
+
+    //public final static String STRING_MILLIONSECOND = "豪秒";
+
     private static final String character = "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz";
     public static DateTimeFormat df;
     public static DateTimeFormat dfS;
