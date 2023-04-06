@@ -33,14 +33,14 @@ public class StringUtil {
     public static DateTimeFormat dfS;
     public static TimeZone timeZoneShanghai;
     // 时间日格式
-    public static String FULL_DATETIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static String FULL_DATETIME_FORMAT = "YYYY-MM-dd HH:mm:ss";
     static Random random = new Random(new Date().getTime());
 
     static {
         TimeZoneConstants timeZoneConstants = GWT.create(TimeZoneConstants.class);
         timeZoneShanghai = TimeZone.createTimeZone(timeZoneConstants.asiaShanghai());
         df = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT);
-        dfS = DateTimeFormat.getFormat("yyyy-MM-dd HH:mm:ss.SSS");
+        dfS = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT+".SSS");
 
     }
 
