@@ -53,13 +53,20 @@ public abstract class ToolbarModule extends BaseAbstractModule implements IShowM
         }
     }
 
+    public void setTitleWidth(int width, String style) {
+        uiHolder.lbTitle.setWidth(width + "px");
+        if (style != null && style.length() > 0) {
+            uiHolder.lbTitle.addStyleName(style);
+        }
+    }
+
     @Override
     public void setStyleName(String style) {
         uiHolder.panel.setStyleName(style);
     }
 
     public void setCaption(String caption) {
-        if(!StringUtil.isBlank(caption)){
+        if (!StringUtil.isBlank(caption)) {
             uiHolder.msgBar.setVisible(true);
             uiHolder.leftToolBar.setVisible(false);
         }
@@ -108,7 +115,7 @@ public abstract class ToolbarModule extends BaseAbstractModule implements IShowM
 
     public boolean updateLeftToolBar(Widget... tools) {
         uiHolder.leftToolBar.clear();
-        if(tools != null){
+        if (tools != null) {
             uiHolder.msgBar.setVisible(false);
             uiHolder.leftToolBar.setVisible(true);
         }
