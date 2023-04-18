@@ -106,6 +106,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int MODE = 93;//MODE消息
     public static final int LEFT = 94;//MODE消息
     public static final int RIGHT = 95;//MODE消息
+    public static final int LAYER_REMOVE = 96;
+    public static final int LAYER_ADD = 97;
+    public static final int SYS_LAYER_REMOVE = 98;
+    public static final int SYS_LAYER_ADD = 99;
 
 
     public final static int OK = 200;
@@ -127,12 +131,32 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
     }
+
+    public static CommonEvent layerAddEvent(Object data) {
+        return new CommonEvent(LAYER_ADD, data);
+    }
+
+    public static CommonEvent layerRemoveEvent(Object data) {
+        return new CommonEvent(LAYER_REMOVE, data);
+    }
+
+    public static CommonEvent sysLayerAddEvent(Object data) {
+        return new CommonEvent(SYS_LAYER_ADD, data);
+    }
+
+    public static CommonEvent sysLayerRemoveEvent(Object data) {
+        return new CommonEvent(SYS_LAYER_REMOVE, data);
+    }
+
+
     public static CommonEvent leftEvent(Object data) {
         return new CommonEvent(LEFT, data);
     }
+
     public static CommonEvent rightEvent(Object data) {
         return new CommonEvent(RIGHT, data);
     }
+
     public static CommonEvent modeEvent(Object data) {
         return new CommonEvent(MODE, data);
     }
@@ -852,10 +876,26 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isMenu() {
         return MENU == type;
     }
+
     public boolean isMode() {
         return MODE == type;
     }
 
+    public boolean isLayerAdd() {
+        return LAYER_ADD == type;
+    }
+
+    public boolean isLayerRemove() {
+        return LAYER_REMOVE == type;
+    }
+
+    public boolean isSysLayerAdd() {
+        return SYS_LAYER_ADD == type;
+    }
+
+    public boolean isSysLayerRemove() {
+        return SYS_LAYER_REMOVE == type;
+    }
 
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
