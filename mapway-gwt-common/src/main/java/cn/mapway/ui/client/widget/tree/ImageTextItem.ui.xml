@@ -7,35 +7,6 @@
             overflow: hidden;
         }
 
-        .item {
-            display: flex;
-            flex-direction: row;
-            align-items: center;
-            justify-content: flex-start;
-            height: 28px;
-            overflow: hidden;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .expand {
-            flex-grow: 1;
-            white-space: nowrap;
-            font-size: 0.9em;
-            color: #000000;
-        }
-
-        .expand[select=true] {
-            font-style: italic;
-            font-weight: bold;
-        }
-
-        .expand[bold=true] {
-            font-weight: bold;
-            font-size: 0.95em;
-        }
-
         .ic {
             margin-right: 3px;
         }

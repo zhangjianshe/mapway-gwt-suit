@@ -103,6 +103,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
 
     public ImageTextItem(ImageResource resource, String text) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setStyleName("iti-default");
         children = new ArrayList<>();
         setValue(resource, text);
         installEvent();
@@ -150,7 +151,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
      */
     @Override
     public void setStyleName(String styleName) {
-        root.setStyleName(style.item() + " " + styleName);
+        root.setStyleName(styleName);
         openClose.setStyleName("mapway-font " + styleName + "-openclose");
         check.setStyleName(styleName + "-checkbox");
         fontIcon.setStyleName("mapway-font " +styleName + "-icon");
@@ -614,10 +615,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     }
 
     public interface MyStyle extends CssResource {
-
-        String item();
-
-        String expand();
 
         String bar();
 
