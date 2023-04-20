@@ -125,6 +125,8 @@
     font-size: 0.9em;
     color:#000;
     line-height:28px;
+    cursor: default;
+    user-select: none;
 }
 .iti-default-label[select]{
     font-style: italic;
