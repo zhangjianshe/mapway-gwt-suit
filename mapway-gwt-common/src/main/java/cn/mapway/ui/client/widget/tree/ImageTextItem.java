@@ -147,8 +147,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         root.setStyleName(style.item() + " " + styleName);
         openClose.setStyleName("mapway-font " + styleName + "-openclose");
         check.setStyleName(styleName + "-checkbox");
-        fontIcon.setStyleName(styleName + "-icon");
-        fontIconSuffix.setStyleName(styleName + "-icon");
+        fontIcon.setStyleName("mapway-font " +styleName + "-icon");
+        fontIconSuffix.setStyleName("mapway-font " +styleName + "-icon");
         lbText.setStyleName(styleName + "-label");
     }
 
