@@ -68,7 +68,7 @@
         }
     </ui:style>
     <g:VerticalPanel width="100%" ui:field="box">
-        <g:HTMLPanel styleName="mapway-text-item {style.item}" ui:field="root">
+        <g:HTMLPanel styleName="{style.item}" ui:field="root">
             <g:HTMLPanel ui:field="bar" styleName="{style.bar}"/>
             <g:Label ui:field="gap" styleName="{style.gap}" width="1px"/>
             <widget:FontIcon visible="false" ui:field="openClose"/>

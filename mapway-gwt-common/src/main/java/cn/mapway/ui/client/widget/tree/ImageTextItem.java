@@ -29,6 +29,13 @@ import java.util.Random;
 /**
  * ImageTextItem
  * ImageTextItem 的样式表如下
+ * <p>
+ * <-----------loading bar---------------------------->
+ * [gap][open.close.icon][checkbox][icon][label]
+ * abc-openclose
+ * abc-checkbox
+ * abc-icon
+ * abc-label
  *
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
@@ -36,13 +43,10 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     private static final Random random = new Random(System.currentTimeMillis());
 
     private static final ImageTextItemUiBinder ourUiBinder = GWT.create(ImageTextItemUiBinder.class);
-    private final MouseDownHandler mouseDownClick = new MouseDownHandler() {
-        @Override
-        public void onMouseDown(MouseDownEvent event) {
-            if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
-                MenuEvent menuEvent = new MenuEvent(event.getNativeEvent(), ImageTextItem.this);
-                fireEvent(CommonEvent.menuEvent(menuEvent));
-            }
+    private final MouseDownHandler mouseDownClick = event -> {
+        if (event.getNativeButton() == NativeEvent.BUTTON_RIGHT) {
+            MenuEvent menuEvent = new MenuEvent(event.getNativeEvent(), ImageTextItem.this);
+            fireEvent(CommonEvent.menuEvent(menuEvent));
         }
     };
 
@@ -78,21 +82,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     boolean enabled = true;
     private String storageKey = "";
     private Object data;
-    private final DoubleClickHandler itemDoubleClicked = new DoubleClickHandler() {
-        @Override
-        public void onDoubleClick(DoubleClickEvent event) {
-            fireEvent(CommonEvent.doubleClickEvent(getData()));
+    private final DoubleClickHandler itemDoubleClicked = event -> fireEvent(CommonEvent.doubleClickEvent(getData()));
+    private final ClickHandler itemClicked = event -> {
+        int button = event.getNativeButton();
+        if (button == NativeEvent.BUTTON_LEFT) {
+            fireEvent(CommonEvent.selectEvent(getData()));
         }
-    };
-    private final ClickHandler itemClicked = new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-            int button = event.getNativeButton();
-            if (button == NativeEvent.BUTTON_LEFT) {
-                fireEvent(CommonEvent.selectEvent(getData()));
-            }
 
-        }
     };
 
     public ImageTextItem() {
@@ -136,9 +132,24 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         });
     }
 
+    /**
+     * * <-----------loading bar---------------------------->
+     * * [gap][open.close.icon][checkbox][icon][label]
+     * *  abc-openclose
+     * *  abc-checkbox
+     * *  abc-icon
+     * *  abc-label
+     *
+     * @param styleName
+     */
     @Override
-    public void setStyleName(String style) {
-        root.setStyleName(style);
+    public void setStyleName(String styleName) {
+        root.setStyleName(style.item() + " " + styleName);
+        openClose.setStyleName("mapway-font " + styleName + "-openclose");
+        check.setStyleName(styleName + "-checkbox");
+        fontIcon.setStyleName(styleName + "-icon");
+        fontIconSuffix.setStyleName(styleName + "-icon");
+        lbText.setStyleName(styleName + "-label");
     }
 
     public ImageTextItem getParentItem() {
