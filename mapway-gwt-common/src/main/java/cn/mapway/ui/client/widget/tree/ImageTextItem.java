@@ -117,6 +117,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
      */
     public ImageTextItem(String fontIconUnicode, String text) {
         initWidget(ourUiBinder.createAndBindUi(this));
+        setStyleName("iti-default");
         children = new ArrayList<>();
         setValue(fontIconUnicode, text);
         installEvent();
