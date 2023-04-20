@@ -1,22 +1,5 @@
 .mapway-font {
-    font-family: mapway-font;
-    color: black;
-    font-weight: normal;
-    font-style: normal;
-    font-size: 22px;
-    line-height: 1em;
-    text-transform: none;
-    display: inline-block;
-    white-space: nowrap;
-    word-wrap: normal;
-    direction: ltr;
-    -webkit-font-feature-settings: 'liga';
-    -webkit-font-smoothing: antialiased;
-    cursor: pointer;
-    vertical-align: middle;
-    text-align: center;
-    user-select: none;
-    position: relative;
+
 }
 .mapway-font:HOVER {
      transition: all 0.3s ease-in;

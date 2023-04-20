@@ -82,13 +82,19 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     boolean enabled = true;
     private String storageKey = "";
     private Object data;
-    private final DoubleClickHandler itemDoubleClicked = event -> fireEvent(CommonEvent.doubleClickEvent(getData()));
+    private final DoubleClickHandler itemDoubleClicked = event ->
+    {
+        event.stopPropagation();
+        event.preventDefault();
+        fireEvent(CommonEvent.doubleClickEvent(getData()));
+    };
     private final ClickHandler itemClicked = event -> {
+        event.stopPropagation();
+        event.preventDefault();
         int button = event.getNativeButton();
         if (button == NativeEvent.BUTTON_LEFT) {
             fireEvent(CommonEvent.selectEvent(getData()));
         }
-
     };
 
     public ImageTextItem() {

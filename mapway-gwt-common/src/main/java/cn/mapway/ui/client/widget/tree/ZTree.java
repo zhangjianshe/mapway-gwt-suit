@@ -25,12 +25,16 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     MessagePanel messagePanel;
     boolean enabledChecked = false;
     boolean checkWithChildren = false;
+    boolean autoSelected = true;
+
     //树形条目被点击了
     private final CommonEventHandler itemClicked = event -> {
         ImageTextItem item = (ImageTextItem) event.getSource();
         if (event.isToogle()) {
         } else if (event.isSelect()) {
-            setCurrentItem(item);
+            if(autoSelected) {
+                setCurrentItem(item);
+            }
             fireEvent(CommonEvent.selectEvent(item));
         } else if (event.isDoubleClick()) {
             setCurrentItem(item);
@@ -54,6 +58,8 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
 
         }
     };
+
+
     public ZTree() {
         messagePanel = new MessagePanel();
         add(messagePanel);
@@ -64,6 +70,15 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             child.setChecked(checked, false);
             checkChildren(child, checked);
         }
+    }
+
+    /**
+     * 是否自动选择
+     *
+     * @param autoSelected
+     */
+    public void setAutoSelected(boolean autoSelected) {
+        this.autoSelected = autoSelected;
     }
 
     public void setValue(ImageTextItem item, boolean fire) {
