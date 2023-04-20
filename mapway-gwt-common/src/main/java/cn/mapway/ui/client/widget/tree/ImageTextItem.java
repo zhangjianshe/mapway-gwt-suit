@@ -13,6 +13,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.NativeEvent;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
@@ -89,12 +90,17 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         fireEvent(CommonEvent.doubleClickEvent(getData()));
     };
     private final ClickHandler itemClicked = event -> {
-        event.stopPropagation();
-        event.preventDefault();
         int button = event.getNativeButton();
         if (button == NativeEvent.BUTTON_LEFT) {
             fireEvent(CommonEvent.selectEvent(getData()));
         }
+    };
+    private ValueChangeHandler<Boolean> checkHandler= event -> {
+            if (event.getValue()) {
+                fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
+            } else {
+                fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
+            }
     };
 
     public ImageTextItem() {
@@ -131,13 +137,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             event.stopPropagation();
             event.preventDefault();
         }, ContextMenuEvent.getType());
-        check.addValueChangeHandler(event -> {
-            if (event.getValue()) {
-                fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
-            } else {
-                fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
-            }
-        });
+        check.addValueChangeHandler(checkHandler);
     }
 
     /**
@@ -154,7 +154,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     public void setStyleName(String styleName) {
         root.setStyleName(styleName);
         openClose.setStyleName("mapway-font " + styleName + "-openclose");
-        check.setStyleName(styleName + "-checkbox");
+        check.addStyleName(styleName + "-checkbox");
         fontIcon.setStyleName("mapway-font " +styleName + "-icon");
         fontIconSuffix.setStyleName("mapway-font " +styleName + "-icon");
         lbText.setStyleName(styleName + "-label");
