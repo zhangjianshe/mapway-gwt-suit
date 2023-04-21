@@ -1,5 +1,6 @@
 .mapway-font {
-
+    cursor: default;
+    user-select: auto;
 }
 .mapway-font:HOVER {
      transition: all 0.3s ease-in;
