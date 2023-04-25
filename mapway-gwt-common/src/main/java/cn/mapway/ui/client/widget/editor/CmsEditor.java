@@ -71,6 +71,10 @@ public class CmsEditor extends HTML implements RequiresResize, IData<String>, Ha
     public void onResize() {
         int width = getElement().getParentElement().getClientWidth();
         int height = getElement().getParentElement().getClientHeight();
+        if(width==0 || height==0)
+        {
+            return;
+        }
         if (editor != null && !editor.isDestroyed()) {
             editor.resize(width, height);
         }
