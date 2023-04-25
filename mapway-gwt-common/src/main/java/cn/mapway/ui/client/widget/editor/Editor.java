@@ -1,7 +1,9 @@
 package cn.mapway.ui.client.widget.editor;
 
 import com.google.gwt.user.client.Element;
+import elemental2.dom.HTMLElement;
 import jsinterop.annotations.JsMethod;
+import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 /**
@@ -32,4 +34,7 @@ public class Editor {
 
     @JsMethod
     public native void destroy();
+
+    @JsProperty
+    public HTMLElement container;
 }

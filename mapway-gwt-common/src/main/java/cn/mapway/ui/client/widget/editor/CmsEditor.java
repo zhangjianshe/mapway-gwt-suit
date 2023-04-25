@@ -75,7 +75,7 @@ public class CmsEditor extends HTML implements RequiresResize, IData<String>, Ha
         {
             return;
         }
-        if (editor != null && !editor.isDestroyed()) {
+        if (editor != null && editor.container!=null && !editor.isDestroyed()) {
             editor.resize(width, height);
         }
     }
