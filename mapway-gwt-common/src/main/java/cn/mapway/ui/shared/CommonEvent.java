@@ -111,6 +111,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int SYS_LAYER_REMOVE = 98;
     public static final int SYS_LAYER_ADD = 99;
 
+    public final static int CONVERT = 100;
+
 
     public final static int OK = 200;
     public final static int FAIL = 500;
@@ -517,6 +519,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(PALLET, data);
     }
 
+    public static CommonEvent convertEvent(Object data) {
+        return new CommonEvent(CONVERT, data);
+    }
+
     public boolean isMultiSelect() {
         return MULTI_SELECT == this.type;
     }
@@ -895,6 +901,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isSysLayerRemove() {
         return SYS_LAYER_REMOVE == type;
+    }
+
+    public boolean isConvert() {
+        return CONVERT == this.type;
     }
 
     @Override
