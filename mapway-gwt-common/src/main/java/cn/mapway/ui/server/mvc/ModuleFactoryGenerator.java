@@ -287,9 +287,6 @@ public class ModuleFactoryGenerator extends Generator {
                 continue;
             }
 
-            // ModuleInfo moduleInfo=new ModuleInfo(null,null,null,false,null,null,true);
-            // temp.add(moduleInfo);
-            // addModule(moduleInfo);
             if (Strings.isBlank(items.get(classType.getQualifiedSourceName()))) {
                 intiCodes.append(" moduleInfo= new ModuleInfo(\"" + item.name + "\",\"" + item.code + "\",\""
                         + item.summary + "\"," + (item.isPublic ? "true" : "false") + ",DEFAULT_ICON,\""
@@ -347,7 +344,7 @@ public class ModuleFactoryGenerator extends Generator {
         }
 
         ServerModuleInfo item = new ServerModuleInfo("", "", "", false, marker.icon(), "", false);
-        log.info("module " + modulename + "\t" + group);
+
         item.code = modulecode;
         item.name = modulename;
         item.isPublic = isPublic;
@@ -361,6 +358,7 @@ public class ModuleFactoryGenerator extends Generator {
         //新增的行为
         item.parent = marker.parent();
         item.setTags(marker.tags());
+        log.info("{}\t{}\t{}",item.code,item.name,item.group);
         return item;
     }
 
