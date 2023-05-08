@@ -145,4 +145,13 @@ public class GeoObject implements Serializable, IsSerializable {
         return "";
     }
 
+    /**
+     * 根据GeoJson对象创建
+     * @param geojson
+     * @return
+     */
+    public static GeoObject createFromGeoJson(String geojson){
+            return null;
+    }
+
 }

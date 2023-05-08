@@ -223,6 +223,7 @@ public class GeoObjectAdaptor implements ValueAdaptor {
             rings[ringIndex++] = new LinearRing(points);
         }
         Polygon polygon = new Polygon(rings);
+
         return polygon;
     }
 

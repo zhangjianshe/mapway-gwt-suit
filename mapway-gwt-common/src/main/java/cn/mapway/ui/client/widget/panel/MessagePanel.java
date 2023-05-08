@@ -8,18 +8,23 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 
 public class MessagePanel extends Composite {
-    interface MessagePanelUiBinder extends UiBinder<HTMLPanel, MessagePanel> {
-    }
-
-    private static MessagePanelUiBinder ourUiBinder = GWT.create(MessagePanelUiBinder.class);
+    private static final MessagePanelUiBinder ourUiBinder = GWT.create(MessagePanelUiBinder.class);
     @UiField
     Label lbMessage;
-    public MessagePanel setText(String text)
-    {
+    public MessagePanel() {
+        initWidget(ourUiBinder.createAndBindUi(this));
+    }
+
+    public MessagePanel setText(String text) {
         lbMessage.setText(text);
         return this;
     }
-    public MessagePanel() {
-        initWidget(ourUiBinder.createAndBindUi(this));
+
+    public MessagePanel setHtml(String html) {
+        lbMessage.getElement().setInnerHTML(html);
+        return this;
+    }
+
+    interface MessagePanelUiBinder extends UiBinder<HTMLPanel, MessagePanel> {
     }
 }
