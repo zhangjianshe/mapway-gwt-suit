@@ -60,7 +60,7 @@ public class TipAdaptor implements MouseOverHandler, MouseOutHandler, MouseDownH
         } else {
             tipInfo = title;
             if (outHandler == null) {
-                if (relObject instanceof HasMouseOverHandlers) {
+                if (relObject instanceof HasMouseOutHandlers) {
                     HasMouseOutHandlers hasMouseOutHandlers = (HasMouseOutHandlers) relObject;
                     outHandler = hasMouseOutHandlers.addMouseOutHandler(this);
                 }
