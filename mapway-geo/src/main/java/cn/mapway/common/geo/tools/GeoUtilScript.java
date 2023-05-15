@@ -228,7 +228,7 @@ public class GeoUtilScript {
             return null;
         }
         Object geoJson = Json.fromJson(geometry.ExportToJson());
-        return parsePolygon(geoJson);
+        return parseGeoObject(geoJson);
     }
 
     private static Double object2Double(Object o) {
