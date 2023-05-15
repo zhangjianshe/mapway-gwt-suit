@@ -4,6 +4,7 @@ import elemental2.core.JsArray;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 /**
  * ChartAxis
@@ -57,5 +58,10 @@ public class ChartAxis {
             this.axisLine = AxisLineStyle.create();
         }
         return this.axisLine;
+    }
+
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
     }
 }

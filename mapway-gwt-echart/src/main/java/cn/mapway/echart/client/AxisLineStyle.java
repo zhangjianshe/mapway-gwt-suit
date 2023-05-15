@@ -86,4 +86,9 @@ public class AxisLineStyle {
         this.show = b;
         return this;
     }
+
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
+    }
 }

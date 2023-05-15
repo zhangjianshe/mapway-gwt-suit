@@ -4,6 +4,7 @@ import elemental2.core.JsArray;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 /**
  * ChartOption
@@ -115,6 +116,11 @@ public class ChartOption {
     @JsOverlay
     public final ChartLegend getLegend() {
         return legend;
+    }
+
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
     }
 
 }

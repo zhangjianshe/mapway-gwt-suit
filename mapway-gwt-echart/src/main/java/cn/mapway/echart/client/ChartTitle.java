@@ -3,6 +3,7 @@ package cn.mapway.echart.client;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 /**
  * ChartTitle
@@ -18,5 +19,9 @@ public class ChartTitle {
         ChartTitle chartTitle = new ChartTitle();
         chartTitle.text = title;
         return chartTitle;
+    }
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
     }
 }

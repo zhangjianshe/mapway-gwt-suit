@@ -3,6 +3,7 @@ package cn.mapway.echart.client;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 
 /**
@@ -75,5 +76,10 @@ public class ChartLegend {
             textStyle=new ChartLabelStyle();
         }
         return textStyle;
+    }
+
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
     }
 }

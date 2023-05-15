@@ -37,6 +37,7 @@ public class ChartSerial {
     public JsArray<String> radius;
     public boolean avoidLabelOverlap;
     public JsArray<String> center;
+    public LineStyle lineStyle;
 
     @JsOverlay
     public final static ChartSerial create(String name, String type, List<Object> data) {
@@ -91,6 +92,13 @@ public class ChartSerial {
             backgroundStyle = new ChartBackgroundStyle();
         }
         return backgroundStyle;
+    }
+    @JsOverlay
+    public final LineStyle getLineStyle() {
+        if (lineStyle == null) {
+            lineStyle = new LineStyle();
+        }
+        return lineStyle;
     }
 
     @JsOverlay

@@ -1,7 +1,9 @@
 package cn.mapway.echart.client;
 
+import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 /**
  * ChartItemStyle
@@ -17,4 +19,8 @@ public class ChartItemStyle {
     public double borderRadius;
     public String borderColor;
     public double borderWidth;
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
+    }
 }

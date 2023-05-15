@@ -3,6 +3,7 @@ package cn.mapway.echart.client;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 /**
  * LineStyle
@@ -29,5 +30,9 @@ public class LineStyle {
         LineStyle lineStyle = new LineStyle();
         return lineStyle;
     }
-    
+
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
+    }
 }
