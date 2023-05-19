@@ -110,8 +110,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int LAYER_ADD = 97;
     public static final int SYS_LAYER_REMOVE = 98;
     public static final int SYS_LAYER_ADD = 99;
-
-    public final static int CONVERT = 100;
+    public static final int TOOLS = 100;
+    public final static int CONVERT = 101;
 
 
     public final static int OK = 200;
@@ -132,6 +132,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+
+    public static CommonEvent toolsEvent(Object data) {
+        return new CommonEvent(TOOLS, data);
     }
 
     public static CommonEvent layerAddEvent(Object data) {
@@ -845,6 +849,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isBorder() {
         return BORDER == this.type;
+    }
+
+    public boolean isTools() {
+        return TOOLS == this.type;
     }
 
     public boolean isSetup() {
