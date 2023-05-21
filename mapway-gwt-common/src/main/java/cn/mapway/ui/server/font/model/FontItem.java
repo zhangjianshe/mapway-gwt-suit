@@ -24,6 +24,6 @@ public class FontItem implements Serializable {
     public Integer unicode_decimal;
 
     public String toName() {
-        return name.toUpperCase().replaceAll("-", "_").replaceAll("\\s", "_");
+        return font_class.toUpperCase().replaceAll("-", "_").replaceAll("\\s", "_");
     }
 }

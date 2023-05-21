@@ -51,8 +51,9 @@ public class WebFontImport {
             FontItem item = fontFile.glyphs.get(i);
             sb.append("\tpublic final static String " + item.toName() + " = \"" + item.unicode + "\";\n");
             mapInit.append("\tunicodes.put(\"" + item.toName() + "\", Fonts." + item.toName() + ");\r\n");
+
         }
-        String packageName = "cn.mapway.font.client";
+        String packageName = "cn.mapway.ui.client.fonts";
         String template = readTemplate("(Fonts\\.txt)$");
         Map<String, Object> mapper = new HashMap<>();
 
@@ -75,7 +76,7 @@ public class WebFontImport {
     public static void writeTo(String packageName, String fileName, String content) {
         String path = packageName.replaceAll("\\.", "/");
 
-        File file = new File("./src/main/java/" + path + "/" + fileName);
+        File file = new File("mapway-gwt-common/src/main/java/" + path + "/" + fileName);
         Files.write(file, content);
     }
 

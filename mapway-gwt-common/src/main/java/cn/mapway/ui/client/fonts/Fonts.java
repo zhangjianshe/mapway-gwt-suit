@@ -1,13 +1,16 @@
 package cn.mapway.ui.client.fonts;
 import java.util.HashMap;
 import java.util.Map;
-
 /**
  * Fonts
  * 图标字体常量
  * @author zhang
  */
 public class Fonts {
+	public final static String PROJECT = "e6c4";
+	public final static String ZHUANHUAN = "e6c8";
+	public final static String XUANZE = "e61c";
+	public final static String CAMERA = "e6c6";
 	public final static String SEARCHABLE = "e6c3";
 	public final static String ALERT1 = "e6c1";
 	public final static String TABLE = "e6c2";
@@ -206,7 +209,11 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("SEARCHABLE", Fonts.SEARCHABLE);
+			unicodes.put("PROJECT", Fonts.PROJECT);
+	unicodes.put("ZHUANHUAN", Fonts.ZHUANHUAN);
+	unicodes.put("XUANZE", Fonts.XUANZE);
+	unicodes.put("CAMERA", Fonts.CAMERA);
+	unicodes.put("SEARCHABLE", Fonts.SEARCHABLE);
 	unicodes.put("ALERT1", Fonts.ALERT1);
 	unicodes.put("TABLE", Fonts.TABLE);
 	unicodes.put("SERIAL", Fonts.SERIAL);
