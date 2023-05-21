@@ -7,7 +7,10 @@ import java.util.Map;
  * @author zhang
  */
 public class Fonts {
-	public final static String PROJECT = "e6c4";
+    public static String toHtmlEntity(String fontIndex){
+        return "&#x"+fontIndex;
+    }
+    	public final static String PROJECT = "e6c4";
 	public final static String ZHUANHUAN = "e6c8";
 	public final static String XUANZE = "e61c";
 	public final static String CAMERA = "e6c6";
