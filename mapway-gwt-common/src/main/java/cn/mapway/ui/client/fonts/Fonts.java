@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.fonts;
 import java.util.HashMap;
 import java.util.Map;
+
 /**
  * Fonts
  * 图标字体常量

@@ -11,7 +11,6 @@
     <modules>
         <module>mapway-gwt-common</module>
         <module>mapway-gwt-geo</module>
-        <module>mapway-gwt-font</module>
         <module>mapway-gwt-openapi</module>
         <module>mapway-gwt-xterm</module>
         <module>mapway-gwt-ace</module>

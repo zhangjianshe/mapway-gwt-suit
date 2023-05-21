@@ -1,0 +1,17 @@
+package __PACKAGE_NAME__;
+import java.util.HashMap;
+import java.util.Map;
+/**
+ * Fonts
+ * 图标字体常量
+ * @author zhang
+ */
+public class Fonts {
+__FONT_LIST__
+   public static Map<String,String> unicodes;
+	static {
+		unicodes=new HashMap<>();
+		//unicodes.put("console", Fonts.CONSOLE);
+		__FONT_MAP_INIT__
+	}
+}

@@ -26,7 +26,7 @@ public class FontUtl {
      * @param url 字体Url
      * @return
      */
-    public static Promise<FontFace> loadFont(String faceName,String url)
+    public static Promise<FontFace> loadFont(String faceName, String url)
     {
         FontFace face=new FontFace(faceName,url);
         DomGlobal.document.fonts.add(face);

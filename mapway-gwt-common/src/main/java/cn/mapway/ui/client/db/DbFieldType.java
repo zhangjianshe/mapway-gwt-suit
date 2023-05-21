@@ -26,18 +26,6 @@ public enum DbFieldType {
     String name;
     String unicode;
 
-    public int getCode() {
-        return code;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUnicode() {
-        return unicode;
-    }
-
     DbFieldType(int code, String name, String unicode) {
         this.code = code;
         this.name = name;
@@ -52,5 +40,17 @@ public enum DbFieldType {
             }
         }
         return FLD_TYPE_STRING;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getUnicode() {
+        return unicode;
     }
 }
