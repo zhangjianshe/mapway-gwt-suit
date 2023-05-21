@@ -7,7 +7,10 @@ import java.util.Map;
  * @author zhang
  */
 public class Fonts {
-__FONT_LIST__
+    public static toHtmlEntity(String fontIndex){
+        return "&#x"+fontIndex;
+    }
+    __FONT_LIST__
    public static Map<String,String> unicodes;
 	static {
 		unicodes=new HashMap<>();
