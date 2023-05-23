@@ -18,7 +18,7 @@ public class CmsEditor extends HTML implements RequiresResize, IData<String>, Ha
     Editor editor;
 
     public CmsEditor() {
-        super("");
+        recreateController();
     }
 
     @Override
