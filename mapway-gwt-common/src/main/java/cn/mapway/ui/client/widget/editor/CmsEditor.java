@@ -32,6 +32,9 @@ public class CmsEditor extends HTML implements RequiresResize, IData<String>, Ha
         recreateController();
     }
 
+    public Editor getEditor(){
+        return editor;
+    }
     /**
      * 重新生成编辑空间 解决 当 空间 detach之后 不能编辑的BUG
      */
