@@ -25,6 +25,8 @@ public class Editor {
 
     @JsMethod
     public native void resize(int width, int height);
+    @JsMethod
+    public native void resize(String width, String height,boolean isContentHeight);
 
     @JsMethod
     public native void editable(Element element);
