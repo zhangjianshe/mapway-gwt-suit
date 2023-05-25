@@ -18,13 +18,9 @@ public class CmsEditor extends HTML implements RequiresResize, IData<String>, Ha
     Editor editor;
 
     public CmsEditor() {
-        recreateController();
+        super("");
     }
 
-    @Override
-    protected void onLoad() {
-        super.onLoad();
-    }
 
     @Override
     protected void onAttach() {
@@ -62,10 +58,6 @@ public class CmsEditor extends HTML implements RequiresResize, IData<String>, Ha
         super.onDetach();
     }
 
-    @Override
-    protected void onUnload() {
-        super.onUnload();
-    }
 
     /**
      * 所在的parent变化了 我们要调整自己的大小

@@ -2,9 +2,6 @@
     cursor: default;
     user-select: auto;
 }
-.mapway-font:HOVER {
-     transition: all 0.3s ease-in;
- }
 
 .mapway-font[enabled="false"] {
      cursor: not-allowed;
