@@ -77,14 +77,13 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
             root.clear();
             current = module;
             root.add(current.getRootWidget());
-
-            //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
-            if (!module.getModuleInfo().hash.equals(data.getHash())) {
-                data.getParameters().put(data.getHash());
-            }
-
-            current.initialize(null, data.getParameters());
         }
+
+        //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
+        if (!module.getModuleInfo().hash.equals(data.getHash())) {
+            data.getParameters().put(data.getHash());
+        }
+        current.initialize(null, data.getParameters());
     }
 
     @Override
