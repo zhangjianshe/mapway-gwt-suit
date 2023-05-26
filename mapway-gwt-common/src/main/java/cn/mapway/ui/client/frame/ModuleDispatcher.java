@@ -68,17 +68,15 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
             Logs.info("生成模块" + data.getModuleCode() + "错误");
             return;
         }
-        if (!module.getRootWidget().equals(current)) {
-            if (current != null) {
-                //保存浏览器导航数据
-                History.newItem(current.getModuleInfo().hash, false);
-            }
-            RootLayoutPanel root = RootLayoutPanel.get();
-            root.clear();
-            current = module;
-            root.add(current.getRootWidget());
-        }
 
+        if (current != null) {
+            //保存浏览器导航数据
+            History.newItem(current.getModuleInfo().hash, false);
+        }
+        RootLayoutPanel root = RootLayoutPanel.get();
+        root.clear();
+        current = module;
+        root.add(current.getRootWidget());
         //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
         if (!module.getModuleInfo().hash.equals(data.getHash())) {
             data.getParameters().put(data.getHash());
