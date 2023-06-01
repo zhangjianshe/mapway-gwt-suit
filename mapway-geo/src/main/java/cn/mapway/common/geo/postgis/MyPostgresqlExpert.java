@@ -7,6 +7,7 @@ import org.nutz.dao.entity.annotation.ColType;
 import org.nutz.dao.impl.jdbc.psql.PsqlJdbcExpert;
 import org.nutz.dao.jdbc.JdbcExpertConfigFile;
 import org.nutz.dao.jdbc.ValueAdaptor;
+import org.nutz.lang.Strings;
 import org.postgresql.geometric.*;
 
 /**
@@ -24,10 +25,22 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
     }
 
     @Override
+    public void addDefaultValue(StringBuilder sb, MappingField mf) {
+        String defaultValue = getDefaultValue(mf);
+        if (Strings.isNotBlank(defaultValue)) {
+            if (defaultValue.contains("::character")) {
+                sb.append(" DEFAULT ").append(defaultValue);
+            } else {
+                super.addDefaultValue(sb, mf);
+            }
+        }
+    }
+
+    @Override
     public ValueAdaptor getAdaptor(MappingField ef) {
         //重载系统的转换器
         if (ColType.PSQL_JSON == ef.getColumnType()) {
-            return new PGObject2JsonObjectAdaptor( ef.getType());
+            return new PGObject2JsonObjectAdaptor(ef.getType());
         }
         if (ef.getTypeMirror().isOf(GeoObject.class)) {
             return new GeoObjectAdaptor();
