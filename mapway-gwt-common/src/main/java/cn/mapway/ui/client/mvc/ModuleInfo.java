@@ -70,7 +70,10 @@ public class ModuleInfo {
      * 模块标签
      */
     public List<String> tags;
-
+    /**
+     * 模块标签
+     */
+    public List<String> themes;
     /**
      * 模块的父模块名称
      */
@@ -99,6 +102,7 @@ public class ModuleInfo {
         this.hash = hash;
         this.isVisible = visible;
         this.tags = new ArrayList<>();
+        this.themes=new ArrayList<>();
         children = new ArrayList<>();
     }
 
@@ -129,7 +133,37 @@ public class ModuleInfo {
      */
     public ModuleInfo copy() {
         ModuleInfo n = new ModuleInfo(name, code, summary, isPublic, icon, hash, isVisible);
+        if (themes != null) {
+            for (String theme : themes) {
+                n.addTheme(theme);
+            }
+        }
+        if (tags != null) {
+            for (String tag : tags) {
+                n.addTag(tag);
+            }
+        }
         return n;
+    }
+
+    private void addTag(String tag) {
+        if (tag == null || tag.length() == 0) {
+            return;
+        }
+        if (tags == null) {
+            tags = new ArrayList();
+        }
+        tags.add(tag);
+    }
+
+    public void addTheme(String theme) {
+        if (theme == null || theme.length() == 0) {
+            return;
+        }
+        if (themes == null) {
+            themes = new ArrayList();
+        }
+        themes.add(theme);
     }
 
     /**
@@ -151,8 +185,22 @@ public class ModuleInfo {
         order = order;
     }
 
+    public boolean forTheme(String themeName) {
+        if (themes == null || themeName == null || themeName.length() == 0) {
+            return true;
+        }
+
+        for (String theme : themes) {
+            if (themeName.equals(theme)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * 模块是否有 TAG标签
+     *
      * @param tag
      * @return
      */

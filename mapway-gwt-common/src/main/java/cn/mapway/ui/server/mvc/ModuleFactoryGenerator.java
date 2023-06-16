@@ -305,6 +305,11 @@ public class ModuleFactoryGenerator extends Generator {
                     intiCodes.append(String.format("moduleInfo.tags.add(\"%s\");\r\n", tag));
                 }
             }
+            for (String theme : item.themes) {
+                if (Strings.isNotBlank(theme)) {
+                    intiCodes.append(String.format("moduleInfo.themes.add(\"%s\");\r\n", theme));
+                }
+            }
             intiCodes.append("modulesFlat.add(moduleInfo);\r\n");
             createCodes.append(String.format(" if(moduleCode.equals(\"%s\")){ return new %s();}\r\n", item.code, classType.getQualifiedSourceName()));
 
@@ -358,6 +363,7 @@ public class ModuleFactoryGenerator extends Generator {
         //新增的行为
         item.parent = marker.parent();
         item.setTags(marker.tags());
+        item.setThemes(marker.themes());
         log.info("{}\t{}\t{}",item.code,item.name,item.group);
         return item;
     }

@@ -26,6 +26,17 @@ public class ServerModuleInfo extends ModuleInfo {
             }
         }
     }
+    public void setThemes(String[] themeList) {
+        themes.clear();
+        if (themeList != null) {
+            for (String theme : themeList) {
+                theme = theme.trim();
+                if (!theme.isEmpty()) {
+                    themes.add(theme);
+                }
+            }
+        }
+    }
     public String getIconString() {
         return iconString;
     }

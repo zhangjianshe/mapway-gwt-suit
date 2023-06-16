@@ -91,4 +91,11 @@ public @interface ModuleMarker {
      * 模块的标签 可以根据需要添加
      */
     String[] tags() default {};
+
+    /**
+     * 这个模块应用于THEME 如果不设定 应用于所有的THEME
+     * 否则只会应用在相应的THEME中
+     * @return
+     */
+    String[] themes() default {};
 }
