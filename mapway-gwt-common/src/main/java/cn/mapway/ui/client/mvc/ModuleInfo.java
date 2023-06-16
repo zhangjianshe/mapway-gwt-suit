@@ -102,7 +102,7 @@ public class ModuleInfo {
         this.hash = hash;
         this.isVisible = visible;
         this.tags = new ArrayList<>();
-        this.themes=new ArrayList<>();
+        this.themes = new ArrayList<>();
         children = new ArrayList<>();
     }
 
@@ -195,7 +195,7 @@ public class ModuleInfo {
                 return true;
             }
         }
-        return false;
+        return themes.size() == 0;
     }
 
     /**
