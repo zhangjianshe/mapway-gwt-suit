@@ -10,7 +10,8 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String ICON_LX = "e6d9";
+    	public final static String GITLAB = "f1b7";
+	public final static String ICON_LX = "e6d9";
 	public final static String ICON_SC1 = "e6df";
 	public final static String ICON_MB = "e6e0";
 	public final static String ICON_JQ = "e6de";
@@ -240,7 +241,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("ICON_LX", Fonts.ICON_LX);
+			unicodes.put("GITLAB", Fonts.GITLAB);
+	unicodes.put("ICON_LX", Fonts.ICON_LX);
 	unicodes.put("ICON_SC1", Fonts.ICON_SC1);
 	unicodes.put("ICON_MB", Fonts.ICON_MB);
 	unicodes.put("ICON_JQ", Fonts.ICON_JQ);

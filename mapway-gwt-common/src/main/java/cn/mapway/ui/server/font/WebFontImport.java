@@ -24,9 +24,11 @@ import java.util.Map;
  */
 public class WebFontImport {
     public static void main(String[] args) throws FileNotFoundException {
-        String path = "D:\\data\\iconfont";
-        String zipLocation = "D:\\data\\download.zip";
-        String tempPath = path + "\\temp";
+
+        String zipLocation = getFromEnviroment("FONT_ZIP_LOCATION", "D:\\data\\download.zip");
+        String path = Files.getParent(zipLocation);
+        String tempPath = path + File.separator + "temp";
+        Files.createDirIfNoExists(tempPath);
         Files.deleteDir(new File(tempPath));
 
         String fontPath = "";
@@ -42,7 +44,7 @@ public class WebFontImport {
                 break;
             }
         }
-        String jsonFile = fontPath + "\\iconfont.json";
+        String jsonFile = fontPath + File.separator + "iconfont.json";
 
         FontFile fontFile = Json.fromJson(FontFile.class, Files.read(jsonFile));
         StringBuilder sb = new StringBuilder();
@@ -72,6 +74,14 @@ public class WebFontImport {
         Files.copy(new File(fontPath + "\\iconfont.woff2"), new File(target.getAbsolutePath() + "\\iconfont.woff2"));
     }
 
+    private static String getFromEnviroment(String fontZipLocation, String defaultValue) {
+        String s1 = System.getenv().get(fontZipLocation);
+        if (Strings.isNotBlank(s1)) {
+            return s1;
+        }
+        return defaultValue;
+    }
+
 
     public static void writeTo(String packageName, String fileName, String content) {
         String path = packageName.replaceAll("\\.", "/");
@@ -83,7 +93,8 @@ public class WebFontImport {
 
     /**
      * 读取模板
-     *Fonts.txt
+     * Fonts.txt
+     *
      * @param resourceName
      * @return
      */
