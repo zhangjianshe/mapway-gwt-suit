@@ -71,7 +71,7 @@ public class WebFontImport {
         //当前目录 File
 
         File target = new File("mapway-gwt-common/src/main/resources/META-INF/public-web-resources/webfonts");
-        Files.copy(new File(fontPath + "\\iconfont.woff2"), new File(target.getAbsolutePath() + "\\iconfont.woff2"));
+        Files.copy(new File(fontPath + File.separator + "iconfont.woff2"), new File(target.getAbsolutePath() + File.separator + "iconfont.woff2"));
     }
 
     private static String getFromEnviroment(String fontZipLocation, String defaultValue) {
@@ -86,7 +86,7 @@ public class WebFontImport {
     public static void writeTo(String packageName, String fileName, String content) {
         String path = packageName.replaceAll("\\.", "/");
 
-        File file = new File("mapway-gwt-common/src/main/java/" + path + "/" + fileName);
+        File file = new File("mapway-gwt-common/src/main/java/" + path + File.separator + fileName);
         Files.write(file, content);
     }
 
