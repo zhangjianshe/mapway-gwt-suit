@@ -23,9 +23,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * ImageTextItem
@@ -95,12 +93,12 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             fireEvent(CommonEvent.selectEvent(getData()));
         }
     };
-    private ValueChangeHandler<Boolean> checkHandler= event -> {
-            if (event.getValue()) {
-                fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
-            } else {
-                fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
-            }
+    private final ValueChangeHandler<Boolean> checkHandler = event -> {
+        if (event.getValue()) {
+            fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
+        } else {
+            fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
+        }
     };
 
     public ImageTextItem() {
@@ -155,8 +153,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         root.setStyleName(styleName);
         openClose.setStyleName("mapway-font " + styleName + "-openclose");
         check.addStyleName(styleName + "-checkbox");
-        fontIcon.setStyleName("mapway-font " +styleName + "-icon");
-        fontIconSuffix.setStyleName("mapway-font " +styleName + "-icon");
+        fontIcon.setStyleName("mapway-font " + styleName + "-icon");
+        fontIconSuffix.setStyleName("mapway-font " + styleName + "-icon");
         lbText.setStyleName(styleName + "-label");
     }
 
@@ -612,6 +610,23 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             bar.setVisible(false);
             bar.removeStyleName(style.barAnimation());
             bar.setStyleName(style.bar());
+        }
+    }
+
+    public HTMLPanel getChildrenPanel() {
+        return childrenPanel;
+    }
+
+    public void sortItem( Comparator<ImageTextItem> sort ) {
+        for (ImageTextItem child : children) {
+            child.sortItem(sort);
+        }
+        if(sort!=null && children.size()>1)
+        {
+            childrenPanel.clear();
+            for (ImageTextItem item : children) {
+                childrenPanel.add(item);
+            }
         }
     }
 

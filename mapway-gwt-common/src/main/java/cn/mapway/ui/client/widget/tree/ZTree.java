@@ -7,8 +7,14 @@ import cn.mapway.ui.shared.HasCommonHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.storage.client.Storage;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 /**
  * ZTree
@@ -32,7 +38,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         ImageTextItem item = (ImageTextItem) event.getSource();
         if (event.isToogle()) {
         } else if (event.isSelect()) {
-            if(autoSelected) {
+            if (autoSelected) {
                 setCurrentItem(item);
             }
             fireEvent(CommonEvent.selectEvent(item));
@@ -240,6 +246,34 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             for (ImageTextItem item1 : item.getChildren()) {
                 layoutItem(item1);
             }
+        }
+    }
+
+    public void sortItem(Comparator<ImageTextItem> sort) {
+        List<ImageTextItem> all = new ArrayList<>();
+        for (int index = 0; index < getWidgetCount(); index++) {
+            Widget widget = getWidget(index);
+            if (widget instanceof ImageTextItem) {
+                ImageTextItem item = (ImageTextItem) widget;
+                item.sortItem(sort);
+                all.add(item);
+            }
+        }
+        clear();
+        if (sort != null) {
+            Collections.sort(all, sort);
+        }
+
+        for (ImageTextItem item : all) {
+            add(item);
+        }
+    }
+
+    public void sortByName(boolean asc) {
+        if (asc) {
+            sortItem((o1, o2) -> o1.getText().compareTo(o2.getText()));
+        } else {
+            sortItem((o1, o2) -> o2.getText().compareTo(o1.getText()));
         }
     }
 
