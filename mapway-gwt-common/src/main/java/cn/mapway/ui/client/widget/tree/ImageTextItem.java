@@ -624,6 +624,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         if(sort!=null && children.size()>1)
         {
             childrenPanel.clear();
+            Collections.sort(children,sort);
             for (ImageTextItem item : children) {
                 childrenPanel.add(item);
             }
