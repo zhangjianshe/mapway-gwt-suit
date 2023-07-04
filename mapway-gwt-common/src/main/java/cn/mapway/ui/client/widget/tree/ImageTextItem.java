@@ -3,6 +3,7 @@ package cn.mapway.ui.client.widget.tree;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.decorator.ISelectable;
 import cn.mapway.ui.client.tools.IData;
+import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
@@ -623,6 +624,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
         if(sort!=null && children.size()>1)
         {
+            String t=lbText.getText();
+            Logs.info(lbText.getText());
             childrenPanel.clear();
             Collections.sort(children,sort);
             for (ImageTextItem item : children) {
