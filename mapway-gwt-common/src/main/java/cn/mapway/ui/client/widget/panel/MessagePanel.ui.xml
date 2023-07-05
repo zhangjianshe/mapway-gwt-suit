@@ -7,7 +7,7 @@
             align-items: center;
         }
     </ui:style>
-    <g:HTMLPanel styleName="{style.box}">
+    <g:HTMLPanel styleName="{style.box}" ui:field="panel">
         <g:Label ui:field="lbMessage"/>
     </g:HTMLPanel>
 </ui:UiBinder>

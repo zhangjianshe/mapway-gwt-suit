@@ -125,6 +125,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     public void clear() {
         super.clear();
         messagePanel.setHeight("0px");
+        messagePanel.clear();
         add(messagePanel);
     }
 
@@ -205,6 +206,13 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     public void setMessage(String message, int height) {
         messagePanel.setHtml(message);
         messagePanel.setHeight(height + "px");
+    }
+
+    public void setMessage(Widget widget, int height) {
+        messagePanel.appendWidget(widget);
+        if (height > 0) {
+            messagePanel.setHeight(height + "px");
+        }
     }
 
     public void setMessage(String message) {
