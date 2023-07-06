@@ -49,7 +49,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             fireEvent(CommonEvent.menuEvent(menuEvent));
         }
     };
-
+    private final ValueChangeHandler<Boolean> checkHandler = event -> {
+        if (event.getValue()) {
+            fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
+        } else {
+            fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
+        }
+    };
     @UiField
     Label lbText;
     @UiField
@@ -92,13 +98,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         int button = event.getNativeButton();
         if (button == NativeEvent.BUTTON_LEFT) {
             fireEvent(CommonEvent.selectEvent(getData()));
-        }
-    };
-    private final ValueChangeHandler<Boolean> checkHandler = event -> {
-        if (event.getValue()) {
-            fireEvent(CommonEvent.checkedEvent(ImageTextItem.this));
-        } else {
-            fireEvent(CommonEvent.unCheckedEvent(ImageTextItem.this));
         }
     };
 
@@ -299,7 +298,17 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         if (level > 0 && check.isVisible()) {
             spacing += 15;
         }
+        if (parentItem != null && (parentItem.icon.isVisible() || parentItem.fontIcon.isVisible())) {
+            spacing += 22;
+        }
         return spacing + 4;
+    }
+
+    /**
+     * 第一级 需要根据所有第一级是否有图标来进行操作
+     */
+    public void adjustFirstLevelPosition(){
+
     }
 
     public ImageTextItem setTextStyle(String textStyle) {
@@ -614,8 +623,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
-    public Label getTextLabel()
-    {
+    public Label getTextLabel() {
         return lbText;
     }
 
@@ -623,16 +631,15 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         return childrenPanel;
     }
 
-    public void sortItem( Comparator<ImageTextItem> sort ) {
+    public void sortItem(Comparator<ImageTextItem> sort) {
         for (ImageTextItem child : children) {
             child.sortItem(sort);
         }
-        if(sort!=null && children.size()>1)
-        {
-            String t=lbText.getText();
+        if (sort != null && children.size() > 1) {
+            String t = lbText.getText();
             Logs.info(lbText.getText());
             childrenPanel.clear();
-            Collections.sort(children,sort);
+            Collections.sort(children, sort);
             for (ImageTextItem item : children) {
                 childrenPanel.add(item);
             }
