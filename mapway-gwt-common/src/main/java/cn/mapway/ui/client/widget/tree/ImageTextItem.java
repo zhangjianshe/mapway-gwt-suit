@@ -614,6 +614,11 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
+    public Label getTextLabel()
+    {
+        return lbText;
+    }
+
     public HTMLPanel getChildrenPanel() {
         return childrenPanel;
     }
