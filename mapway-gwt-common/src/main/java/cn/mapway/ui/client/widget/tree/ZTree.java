@@ -148,10 +148,10 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
+            item.setParentItem(null);
             item.setValue(icon, text);
             item.setLevel(0);
             item.setStorageKey(storagePrefix + "/" + text);
-            item.setParentItem(null);
             item.enableCheck(enabledChecked);
             add(item);
         } else {
@@ -168,6 +168,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
+            item.setParentItem(null);
             item.setValue(unicode, text);
             item.setLevel(0);
             item.setStorageKey(storagePrefix + "/" + text);
@@ -188,6 +189,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
+            item.setParentItem(null);
             item.setValue(icon, text);
             item.setLevel(0);
             item.setStorageKey(storagePrefix + "/" + text);
