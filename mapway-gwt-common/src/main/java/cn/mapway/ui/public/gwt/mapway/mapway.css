@@ -114,6 +114,9 @@
 }
 .iti-default-icon{
     color:#000;
+    height: 22px;
+    width: 22px;
+    text-align: center;
 }
 .iti-default-label{
     flex-grow: 1;
