@@ -197,6 +197,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         ImageTextItem item = new ImageTextItem(unicode, text);
         item.setStyleName(root.getStyleName());
         item.setStorageKey(storageKey + "/" + text);
+        item.setParentItem(this);
         if (this.children.size() == 0) {
             openClose.setIconUnicode(Fonts.DOWN);
             openClose.setVisible(true);
@@ -205,8 +206,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
         children.add(item);
-        item.setParentItem(this);
-
         lbText.getElement().setAttribute("bold", "true");
         return item;
     }
@@ -215,6 +214,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         ImageTextItem item = new ImageTextItem(icon, text);
         item.setStyleName(root.getStyleName());
         item.setStorageKey(storageKey + "/" + text);
+        item.setParentItem(this);
         if (this.children.size() == 0) {
             openClose.setIconUnicode(Fonts.DOWN);
             openClose.setVisible(true);
@@ -223,7 +223,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         childrenPanel.add(item);
         item.setLevel(getLevel() + 1);
         children.add(item);
-        item.setParentItem(this);
         lbText.getElement().setAttribute("bold", "true");
         return item;
     }
@@ -232,6 +231,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         ImageTextItem item = new ImageTextItem(icon, text);
         item.setStyleName(root.getStyleName());
         item.setStorageKey(storageKey + "/" + text);
+        item.setParentItem(this);
         if (this.children.size() == 0) {
             openClose.setIconUnicode(Fonts.DOWN);
             openClose.setVisible(true);
@@ -240,7 +240,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         item.setLevel(getLevel() + 1);
         item.enableCheck(check.isVisible());
         children.add(item);
-        item.setParentItem(this);
         lbText.getElement().setAttribute("bold", "true");
         return item;
     }
