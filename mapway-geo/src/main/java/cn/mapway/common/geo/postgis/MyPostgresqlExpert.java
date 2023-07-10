@@ -66,4 +66,21 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
             return super.getAdaptor(ef);
         }
     }
+
+    @Override
+    public String evalFieldType(MappingField mf) {
+        switch (mf.getColumnType()) {
+            case FLOAT:
+                // 用户自定义了精度
+                if (mf.getWidth() > 0 && mf.getPrecision() > 0) {
+                    return "NUMERIC(" + mf.getWidth() + "," + mf.getPrecision() + ")";
+                }
+                // 用默认精度
+                if (mf.getTypeMirror().isDouble())
+                    return "NUMERIC(53,10)";
+                return "NUMERIC";
+            default:
+                return super.evalFieldType(mf);
+        }
+    }
 }
