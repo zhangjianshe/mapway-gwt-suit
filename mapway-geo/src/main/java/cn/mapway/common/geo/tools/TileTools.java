@@ -227,6 +227,13 @@ public class TileTools {
             } catch (SQLException | IOException exception) {
                 exception.printStackTrace();
             }
+            finally {
+                try {
+                    connection.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
         } else {
             log.error("数据库没有准备好");
         }
