@@ -30,6 +30,7 @@ public interface IAttribute {
 
     int INPUT_PATHALL = 7;//目录或者文件选择
     int INPUT_TEXTAREA = 8;//文本域
+    int INPUT_MULTIFILE = 9;//多文件选择
     Object getValue();
 
     void setValue(Object value);
