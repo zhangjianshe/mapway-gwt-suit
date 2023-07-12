@@ -35,11 +35,11 @@ public abstract class AttributeAdaptor implements IAttribute {
     }
 
     public AttributeAdaptor(String name, String alterName) {
-        this(name, alterName, DbFieldType.FLD_TYPE_STRING.getCode(), IAttribute.INPUT_TEXTBOX, null);
+        this(name, alterName, DbFieldType.FLD_TYPE_STRING.getCode(), InputTypeEnum.INPUT_TEXTBOX.code, null);
     }
 
     public AttributeAdaptor() {
-        this("", "", DbFieldType.FLD_TYPE_STRING.getCode(), IAttribute.INPUT_TEXTBOX, "");
+        this("", "", DbFieldType.FLD_TYPE_STRING.getCode(), InputTypeEnum.INPUT_TEXTBOX.code, "");
     }
 
     public AttributeAdaptor(String name, String altName, int dataType, int uiType, String defaultValue) {

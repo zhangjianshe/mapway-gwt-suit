@@ -45,7 +45,7 @@ public class Attribute implements IAttribute {
         attribute.group = ("基本属性");
         attribute.readonly = (false);
         attribute.dataType = DbFieldType.FLD_TYPE_STRING.getCode();
-        attribute.uiType = (INPUT_TEXTBOX);
+        attribute.uiType = (InputTypeEnum.INPUT_TEXTBOX.code);
         return attribute;
     }
 
