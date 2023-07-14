@@ -10,7 +10,12 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String ICON_CD = "e6e9";
+    	public final static String JAVA = "e700";
+	public final static String KAFKA = "e701";
+	public final static String API = "e702";
+	public final static String UNKNOWN1 = "e703";
+	public final static String DOCKER = "e704";
+	public final static String ICON_CD = "e6e9";
 	public final static String ICON_CK = "e6ec";
 	public final static String ICON_DC = "e6ee";
 	public final static String ICON_JZWDM = "e6ef";
@@ -271,7 +276,12 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("ICON_CD", Fonts.ICON_CD);
+			unicodes.put("JAVA", Fonts.JAVA);
+	unicodes.put("KAFKA", Fonts.KAFKA);
+	unicodes.put("API", Fonts.API);
+	unicodes.put("UNKNOWN1", Fonts.UNKNOWN1);
+	unicodes.put("DOCKER", Fonts.DOCKER);
+	unicodes.put("ICON_CD", Fonts.ICON_CD);
 	unicodes.put("ICON_CK", Fonts.ICON_CK);
 	unicodes.put("ICON_DC", Fonts.ICON_DC);
 	unicodes.put("ICON_JZWDM", Fonts.ICON_JZWDM);
