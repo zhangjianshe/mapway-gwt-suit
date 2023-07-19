@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectable {
 
+    private static final String PUSH_BUTTON_STYLE = "ai-push-button";
     T data;
     TipAdaptor tipAdaptor;
     int messageCount = 0;
@@ -44,9 +45,17 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
         }
     }
 
+    public void setPushButton(boolean isPushButton) {
+        if (isPushButton) {
+            addStyleName(PUSH_BUTTON_STYLE);
+        } else {
+            removeStyleName(PUSH_BUTTON_STYLE);
+        }
+    }
+
     public void addMessageCount(int count) {
         messageCount += count;
-        setProperty("count", messageCount + "");
+        setProperty("count", String.valueOf(messageCount));
     }
 
     public void setMessageCount(int count) {
@@ -54,7 +63,7 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
         if (messageCount <= 0) {
             setProperty("count", null);
         } else {
-            setProperty("count", messageCount + "");
+            setProperty("count", String.valueOf(messageCount));
         }
     }
 
@@ -108,6 +117,10 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
         }
     }
 
+    public boolean isSelect() {
+        return getElement().hasAttribute(ISelectable.SELECT_ATTRIBUTE);
+    }
+
     public void setSelect(boolean selected) {
         if (selected) {
             this.getElement().setAttribute(ISelectable.SELECT_ATTRIBUTE, "true");
@@ -115,10 +128,7 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
             this.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
     }
-    public  boolean isSelect()
-    {
-        return getElement().hasAttribute(ISelectable.SELECT_ATTRIBUTE);
-    }
+
     @Override
     public void onBrowserEvent(Event event) {
         switch (DOM.eventGetType(event)) {
