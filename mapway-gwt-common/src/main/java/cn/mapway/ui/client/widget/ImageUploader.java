@@ -2,6 +2,7 @@ package cn.mapway.ui.client.widget;
 
 
 import cn.mapway.ui.client.event.MessageObject;
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.resource.MapwayResource;
 import cn.mapway.ui.client.tools.MapwayLog;
 import cn.mapway.ui.shared.CommonEvent;
@@ -10,10 +11,12 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
+import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.safehtml.shared.SafeUri;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -106,6 +109,8 @@ public class ImageUploader extends CommonEventComposite {
      */
     @UiField
     FontIcon btnUploader;
+    @UiField
+    FontIcon btnClear;
     int currentImageWidth;
     int currentImageHeight;
     /**
@@ -129,9 +134,8 @@ public class ImageUploader extends CommonEventComposite {
             }
             if (action.length() > 0) {
                 MapwayLog.info("上传文件到" + action);
-                StringBuilder sb = new StringBuilder();
-                sb.append("extra=" + URL.encodeQueryString(extra));
-                sb.append("&relPath=" + URL.encodeQueryString(relpath));
+                String sb = "extra=" + URL.encodeQueryString(extra) +
+                        "&relPath=" + URL.encodeQueryString(relpath);
                 String actionUrl = action + "?" + sb;
                 form.setAction(actionUrl);
                 form.submit();
@@ -153,14 +157,12 @@ public class ImageUploader extends CommonEventComposite {
         img.addErrorHandler(event -> img.setUrl(MapwayResource.INSTANCE.defaultImage().getSafeUri()));
         img.addLoadHandler(event -> resizeImage());
 
-        addAcceptFileExtension("png");
-        addAcceptFileExtension("jpg");
-        addAcceptFileExtension("bmp");
-        addAcceptFileExtension("gif");
-        addAcceptFileExtension("tif");
-        addAcceptFileExtension("tiff");
+        for (int i = 0; i < picTypes.length; i++) {
+            addAcceptFileExtension(picTypes[i]);
+        }
         img.setUrl(MapwayResource.INSTANCE.defaultImage().getSafeUri());
         btnUploader.setLineHeight(28);
+        btnClear.setIconUnicode(Fonts.CLOSE_L);
     }
 
     /**
@@ -276,7 +278,13 @@ public class ImageUploader extends CommonEventComposite {
      * @param ext 可以接受的上传文件后缀 不需要添加 . 如 pdf png apk etc..
      */
     public void addAcceptFileExtension(String ext) {
-        acceptableFiles.add(ext);
+        if (ext != null && ext.length() > 0) {
+            if (ext.startsWith(".")) {
+                acceptableFiles.add(ext.substring(1));
+            } else {
+                acceptableFiles.add(ext);
+            }
+        }
     }
 
     /**
@@ -286,7 +294,7 @@ public class ImageUploader extends CommonEventComposite {
      */
     public void addAcceptFileExtensions(String... exts) {
         for (String ext : exts) {
-            acceptableFiles.add(ext);
+            addAcceptFileExtension(ext);
         }
     }
 
@@ -381,6 +389,12 @@ public class ImageUploader extends CommonEventComposite {
      */
     public void setExtra(String value) {
         extra = (value);
+    }
+
+    @UiHandler("btnClear")
+    public void btnClearClick(ClickEvent event) {
+        setUrl("");
+        fireEvent(CommonEvent.okEvent(""));
     }
 
     /**
