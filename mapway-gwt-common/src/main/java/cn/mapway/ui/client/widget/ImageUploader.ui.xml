@@ -48,8 +48,8 @@
                 <g:FileUpload ui:field="uploader" name="file" styleName="{style.uploader}"/>
             </g:FormPanel>
         </g:layer>
-        <g:layer left="4" top="4" width="24" height="24">
-            <widget:FontIcon ui:field="btnClear"  addStyleNames="image-uploader-icon"/>
+        <g:layer right="4" top="4" width="24" height="24">
+            <widget:FontIcon ui:field="btnClear" title="清空图片"  addStyleNames="image-uploader-icon"/>
         </g:layer>
     </g:LayoutPanel>
 </ui:UiBinder>
