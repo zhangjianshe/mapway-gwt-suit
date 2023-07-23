@@ -112,6 +112,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int SYS_LAYER_ADD = 99;
     public static final int TOOLS = 100;
     public final static int CONVERT = 101;
+    public final static int COPY = 102;
 
 
     public final static int OK = 200;
@@ -144,6 +145,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent layerRemoveEvent(Object data) {
         return new CommonEvent(LAYER_REMOVE, data);
+    }
+    public static CommonEvent copyEvent(Object data) {
+        return new CommonEvent(COPY, data);
     }
 
     public static CommonEvent sysLayerAddEvent(Object data) {
@@ -569,6 +573,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isEdit() {
         return EDIT == this.type;
+    }
+    public boolean isCopy() {
+        return COPY == this.type;
     }
 
     public boolean isAttribute() {
