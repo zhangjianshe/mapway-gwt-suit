@@ -577,7 +577,6 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isCopy() {
         return COPY == this.type;
     }
-
     public boolean isAttribute() {
         return ATTRIBUTE == this.type;
     }
