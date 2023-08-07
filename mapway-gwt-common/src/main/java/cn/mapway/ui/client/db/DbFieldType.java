@@ -20,7 +20,8 @@ public enum DbFieldType {
     FLD_TYPE_BOOLEAN(4, "布尔型", Fonts.CONTROLER),
     FLD_TYPE_GEOMETRY(5, "地理字段", Fonts.EARTH),
     FLD_TYPE_SERIAL(7, "序列", Fonts.SERIAL),
-    FLD_TYPE_STRING_ARRAY(8, "字符串数组", Fonts.LIST);
+    FLD_TYPE_STRING_ARRAY(8, "字符串数组", Fonts.LIST),
+    FLD_TYPE_CLOB(8, "文本块", Fonts.FILES);
     //TODO 添加新的图标样式
     int code;
     String name;
