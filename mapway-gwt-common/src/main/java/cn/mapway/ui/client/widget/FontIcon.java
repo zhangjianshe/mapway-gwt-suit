@@ -35,6 +35,10 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
         setIconUnicode(text);
     }
 
+    public void asToolButton(){
+        setStyleName("ai-tool-btn");
+    }
+
     public void setProperty(String name, String value) {
         if (name != null) {
             if (value == null) {
