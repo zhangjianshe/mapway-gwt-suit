@@ -18,11 +18,11 @@ import com.google.gwt.user.client.ui.Label;
  */
 public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectable {
 
-    private static final String PUSH_BUTTON_STYLE = "ai-push-button";
     T data;
     TipAdaptor tipAdaptor;
     int messageCount = 0;
     private String iconUnicode;
+    private boolean isPushButton = false;
 
     public FontIcon() {
         this("");
@@ -46,11 +46,7 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
     }
 
     public void setPushButton(boolean isPushButton) {
-        if (isPushButton) {
-            addStyleName(PUSH_BUTTON_STYLE);
-        } else {
-            removeStyleName(PUSH_BUTTON_STYLE);
-        }
+        this.isPushButton = isPushButton;
     }
 
     public void addMessageCount(int count) {
@@ -122,10 +118,12 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
     }
 
     public void setSelect(boolean selected) {
-        if (selected) {
-            this.getElement().setAttribute(ISelectable.SELECT_ATTRIBUTE, "true");
-        } else {
-            this.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
+        if (isPushButton) {
+            if (selected) {
+                this.getElement().setAttribute(ISelectable.SELECT_ATTRIBUTE, "true");
+            } else {
+                this.getElement().removeAttribute(ISelectable.SELECT_ATTRIBUTE);
+            }
         }
     }
 
