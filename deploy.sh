@@ -1,4 +1,4 @@
-#/bin/bash
+#!/bin/bash
 export REPO_ID=cangling
 export REPO_URL=https://nexus.cangling.io/repository/maven-releases/
 
