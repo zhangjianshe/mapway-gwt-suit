@@ -192,6 +192,30 @@ public class Tip extends PopupPanel implements PopupPanel.PositionCallback {
                 top = relTop - (offsetHeight - relHeight) / 2;
                 style.setTop(this.getOffsetHeight() / 2 - 5, Style.Unit.PX);
             }
+        }else if (tipDirection.equalsIgnoreCase(LOCATION_LEFT)) {//显示在目标的左边
+            left = relLeft -getOffsetWidth() -10;
+            style.setLeft(getOffsetWidth()-7, Style.Unit.PX);
+
+            if (offsetHeight > relHeight) {
+                //tip宽度大于 目标的宽度
+                if (relTop < (offsetHeight - relHeight) / 2) {
+                    //上对齐
+                    top = relTop;
+                    style.setTop(relHeight / 2 - 5, Style.Unit.PX);
+
+                } else if ((relLeft + relWidth) > (Window.getClientHeight() - (offsetHeight - relHeight) / 2)) {
+                    //低对齐
+                    top = relTop + relHeight - offsetHeight;
+                    style.setTop(this.getOffsetHeight() - relHeight / 2 - 5, Style.Unit.PX);
+                } else {
+                    //垂直居中对齐
+                    top = relTop - (offsetHeight - relHeight) / 2;
+                    style.setTop(this.getOffsetHeight() / 2 - 5, Style.Unit.PX);
+                }
+            } else {
+                top = relTop - (offsetHeight - relHeight) / 2;
+                style.setTop(this.getOffsetHeight() / 2 - 5, Style.Unit.PX);
+            }
         }
         setPopupPosition(left, top);
     }
