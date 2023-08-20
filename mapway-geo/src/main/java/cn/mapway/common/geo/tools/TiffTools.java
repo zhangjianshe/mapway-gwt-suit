@@ -24,6 +24,7 @@ import org.gdal.osr.SpatialReference;
 import org.nutz.filepool.FilePool;
 import org.nutz.filepool.NutFilePool;
 import org.nutz.json.Json;
+import org.nutz.json.JsonFormat;
 import org.nutz.lang.*;
 
 import java.io.File;
@@ -35,6 +36,7 @@ import java.security.NoSuchAlgorithmException;
 import java.util.*;
 
 import static cn.mapway.geo.shared.GeoConstant.*;
+import static org.gdal.gdalconst.gdalconstConstants.CE_None;
 import static org.gdal.ogr.ogrConstants.wkbLinearRing;
 import static org.gdal.ogr.ogrConstants.wkbPolygon;
 import static org.gdal.osr.osrConstants.OAMS_TRADITIONAL_GIS_ORDER;
@@ -184,6 +186,82 @@ public class TiffTools {
         CoordinateTransformation coordinateTransformation = new CoordinateTransformation(geometry.GetSpatialReference(), getWgs84Reference());
         GeomTransformer geomTransformer = new GeomTransformer(coordinateTransformation);
         return geomTransformer.Transform(geometry);
+    }
+
+    public static BizResult<List<Double>> readPixelValues(String filePath, double lat, double lng) {
+        Dataset dataset = gdal.Open(filePath);
+        int rasterCount = dataset.getRasterCount();
+        int rasterXSize = dataset.getRasterXSize();
+        int rasterYSize = dataset.getRasterYSize();
+
+        SpatialReference imageSpatialRef = dataset.GetSpatialRef();
+        if (imageSpatialRef == null) {
+            return BizResult.error(500, "目标文件没有设置坐标参考");
+        }
+
+        double[] affineCoff = dataset.GetGeoTransform();
+        if (affineCoff == null) {
+            return BizResult.error(500, "目标文件没有放射变换参数");
+        }
+        Geometry geoLocation = new Geometry(ogrConstants.wkbPoint);
+        geoLocation.SetPoint(0, lng, lat);
+        geoLocation.AssignSpatialReference(getWgs84Reference());
+        geoLocation.TransformTo(imageSpatialRef);
+
+        Point pt = new Point(geoLocation.GetX(), geoLocation.GetY());
+        Point pixelLocation = BaseTileExtractor.imageSpaceToSourceSpace(affineCoff, pt);
+        // now location is in image spatialReference
+        log.info("read pixel {} {} -> {} {} -> {} {}", lng, lat, pt.x, pt.y, pixelLocation.x, pixelLocation.y);
+
+        List<Double> data = new ArrayList<>(rasterCount);
+        if (
+                pixelLocation.x < 0 || pixelLocation.x >= rasterXSize
+                        || pixelLocation.y < 0 || pixelLocation.y >= rasterYSize
+        ) {
+            log.warn("location is out of image extends");
+            for (int i = 0; i < rasterCount; i++) {
+                data.add(0.0);
+            }
+            return BizResult.success(data);
+        } else {
+
+            for (int i = 1; i <= rasterCount; i++) {
+                Band band = dataset.GetRasterBand(i);
+                int dataType = band.getDataType();
+                data.add(readPixelValue(band, dataType, pixelLocation.getXAsInt(), pixelLocation.getYAsInt()));
+            }
+            log.info("data is {}", Json.toJson(data, JsonFormat.compact()));
+        }
+        return BizResult.success(data);
+    }
+
+    private static double readPixelValue(Band band, int dataType, int x, int y) {
+        int[] intValue = {0};
+        short[] shortValue = {0};
+        byte[] byteValue = {0};
+        double[] doubleValue = {0};
+        float[] floatValue = {0};
+
+        if (dataType == gdalconstConstants.GDT_Byte) {
+            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, byteValue);
+            return byteValue[0];
+        } else if (dataType == gdalconstConstants.GDT_Int16 || dataType == gdalconstConstants.GDT_UInt16) {
+            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, shortValue);
+            return shortValue[0];
+
+        } else if (dataType == gdalconstConstants.GDT_Int32 || dataType == gdalconstConstants.GDT_UInt32) {
+            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, intValue);
+            return intValue[0];
+        } else if (dataType == gdalconstConstants.GDT_Float32) {
+            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, floatValue);
+            return floatValue[0];
+        } else if (dataType == gdalconstConstants.GDT_Float64) {
+            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, doubleValue);
+            return doubleValue[0];
+        } else {
+            log.warn("不能读取数值类型 {}", dataType);
+            return 0;
+        }
     }
 
     private void printDataType() {
@@ -577,7 +655,6 @@ public class TiffTools {
         return data;
     }
 
-
     /**
      * 根据影像的分辨率 m 找到最合适的输出级别
      *
@@ -588,7 +665,6 @@ public class TiffTools {
         GlobalMercator globalMercator = new GlobalMercator(256);
         return globalMercator.zoomForPixelSize(xMi);
     }
-
 
     /**
      * 像素坐标 转化为 坐标参考系下的坐标  进行仿射变换
@@ -658,72 +734,6 @@ public class TiffTools {
         }
         return outData;
     }
-
-    public static BizResult<List<Double>> readPixelValues(String filePath, double lat, double lng) {
-        Dataset dataset = gdal.Open(filePath);
-        int rasterCount = dataset.getRasterCount();
-        int rasterXSize = dataset.getRasterXSize();
-        int rasterYSize = dataset.getRasterYSize();
-
-        SpatialReference imageSpatialRef = dataset.GetSpatialRef();
-        if (imageSpatialRef == null) {
-            return BizResult.error(500, "目标文件没有设置坐标参考");
-        }
-
-        double[] affineCoff = dataset.GetGeoTransform();
-        if (affineCoff == null) {
-            return BizResult.error(500, "目标文件没有放射变换参数");
-        }
-        Geometry geoLocation = new Geometry(ogrConstants.wkbPoint);
-        geoLocation.SetPoint(0, lng, lat);
-        geoLocation.AssignSpatialReference(getWgs84Reference());
-        geoLocation.TransformTo(imageSpatialRef);
-
-        Point pt = new Point(geoLocation.GetX(), geoLocation.GetY());
-        Point pixelLocation = BaseTileExtractor.rasterSpaceToImageSpace(affineCoff, pt);
-        // now location is in image spatialReference
-        log.info("read pixel {} {} -> {} {} -> {} {}", lng, lat, pt.x, pt.y, pixelLocation.x, pixelLocation.y);
-
-        List<Double> data = new ArrayList<>(rasterCount);
-        if (
-                pixelLocation.x < 0 || pixelLocation.x >= rasterXSize
-                        || pixelLocation.y < 0 || pixelLocation.y >= rasterYSize
-        ) {
-            log.warn("location is out of image extends");
-            for (int i = 0; i < rasterCount; i++) {
-                data.add(0.0);
-            }
-            return BizResult.success(data);
-        } else {
-
-            for (int i = 1; i <= rasterCount; i++) {
-                Band band = dataset.GetRasterBand(i);
-                int dataType = band.GetRasterDataType();
-                data.add(readPixelValue(band, dataType, pixelLocation.getXAsInt(), pixelLocation.getYAsInt()));
-            }
-        }
-        return BizResult.success(data);
-    }
-
-    private static double readPixelValue(Band band, int dataType, int x, int y) {
-        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(64);
-        band.ReadRaster_Direct(x, y, 1, 1, 1, 1, dataType, byteBuffer);
-        if (dataType == gdalconstConstants.GDT_Byte) {
-            return byteBuffer.get(0);
-        } else if (dataType == gdalconstConstants.GDT_Int16 || dataType == gdalconstConstants.GDT_UInt16) {
-            return byteBuffer.getInt(0);
-        } else if (dataType == gdalconstConstants.GDT_Int32 || dataType == gdalconstConstants.GDT_UInt32) {
-            return byteBuffer.getLong(0);
-        } else if (dataType == gdalconstConstants.GDT_Float32) {
-            return byteBuffer.getFloat(0);
-        } else if (dataType == gdalconstConstants.GDT_Float64) {
-            return byteBuffer.getDouble(0);
-        } else {
-            log.warn("不能读取数值类型 {}", dataType);
-            return 0;
-        }
-    }
-
 
     private byte[] extract(ITileExtractor extractor, ImageInfo imageInfo, long tileX, long tileY, int zoom) {
         Stopwatch stopwatch = Stopwatch.begin();
