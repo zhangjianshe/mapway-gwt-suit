@@ -1,6 +1,7 @@
 package cn.mapway.common.geo.tools;
 
 
+import cn.mapway.biz.core.BizResult;
 import cn.mapway.common.geo.tools.parser.GF1Parser;
 import cn.mapway.common.geo.tools.parser.ISatelliteExtractor;
 import cn.mapway.geo.client.raster.BandInfo;
@@ -17,6 +18,7 @@ import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.gdalconst.gdalconstJNI;
 import org.gdal.ogr.GeomTransformer;
 import org.gdal.ogr.Geometry;
+import org.gdal.ogr.ogrConstants;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
 import org.nutz.filepool.FilePool;
@@ -27,6 +29,7 @@ import org.nutz.lang.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -91,10 +94,10 @@ public class TiffTools {
 
         String filePath;
         //filePath = "E:\\mnt\\imagebot-docker-prod\\imagebot\\personal\\500\\0\\beijing1.tif";
-        filePath="E:\\out\\2010.tif";
+        filePath = "E:\\out\\2010.tif";
         // filePath = "E:\\developer\\data\\imagebot\\personal\\1\\0853_GF701_013568_E112.3_N40.3_20220409114151_BWD_01_SC0_0001_2204094535_Reg.tif";
         //  (53346 27486 16)
-        filePath="E:\\mnt\\imagebot-docker-prod\\imagebot\\personal\\503\\5\\sdg\\Q_210_97_840_391.tif";
+        filePath = "E:\\mnt\\imagebot-docker-prod\\imagebot\\personal\\503\\5\\sdg\\Q_210_97_840_391.tif";
         long tilex = 1680;
         long tiley = 783;
         int zoom = 11;
@@ -131,6 +134,7 @@ public class TiffTools {
         }
         return srfwgs84;
     }
+
     public static synchronized SpatialReference getWebMercatorReference() {
         if (srfwebMercator == null) {
             srfwebMercator = new SpatialReference();
@@ -305,9 +309,7 @@ public class TiffTools {
                 bandInfo.setNoValues(noValue1);
             } else {
                 Double[] noValue1 = new Double[count];
-                for (int j = 0; j < count; j++) {
-                    noValue1[j] = noValue[j];
-                }
+                System.arraycopy(noValue, 0, noValue1, 0, count);
                 bandInfo.setNoValues(noValue1);
             }
             info.getBandInfos().add(bandInfo);
@@ -325,14 +327,12 @@ public class TiffTools {
                     break;
                 }
             }
-            log.info("source no value is found {} {}",found,Json.toJson(noValue));
+            log.info("source no value is found {} {}", found, Json.toJson(noValue));
             if (!found) {
                 Double[] noValue1 = new Double[noValue.length + 1];
                 noValue1[0] = 0.0;
-                for (int i = 1; i < noValue1.length; i++) {
-                    noValue1[i] = noValue[i - 1];
-                }
-                log.info("source no value add   {}",found,Json.toJson(noValue1));
+                System.arraycopy(noValue, 0, noValue1, 1, noValue1.length - 1);
+                log.info("source no value add   {}", found, Json.toJson(noValue1));
                 info.getBandInfos().get(0).setNoValues(noValue1);
             }
         } else if (info.getBandInfos().size() == 2) {
@@ -435,9 +435,8 @@ public class TiffTools {
 
             Box extendBox = new Box(pt0.getX(), pt1.getY(), pt1.getX(), pt0.getY());
             info.getSourceBox().copyFrom(extendBox);
-            if(spatialReference==null)
-            {
-                spatialReference=getWebMercatorReference();
+            if (spatialReference == null) {
+                spatialReference = getWebMercatorReference();
             }
             Geometry extend = toGeometry(extendBox, spatialReference);
             Geometry wgs84Extend = toWgs84(extend);
@@ -658,6 +657,71 @@ public class TiffTools {
             return null;
         }
         return outData;
+    }
+
+    public static BizResult<List<Double>> readPixelValues(String filePath, double lat, double lng) {
+        Dataset dataset = gdal.Open(filePath);
+        int rasterCount = dataset.getRasterCount();
+        int rasterXSize = dataset.getRasterXSize();
+        int rasterYSize = dataset.getRasterYSize();
+
+        SpatialReference imageSpatialRef = dataset.GetSpatialRef();
+        if (imageSpatialRef == null) {
+            return BizResult.error(500, "目标文件没有设置坐标参考");
+        }
+
+        double[] affineCoff = dataset.GetGeoTransform();
+        if (affineCoff == null) {
+            return BizResult.error(500, "目标文件没有放射变换参数");
+        }
+        Geometry geoLocation = new Geometry(ogrConstants.wkbPoint);
+        geoLocation.SetPoint(0, lng, lat);
+        geoLocation.AssignSpatialReference(getWgs84Reference());
+        geoLocation.TransformTo(imageSpatialRef);
+
+        Point pt = new Point(geoLocation.GetX(), geoLocation.GetY());
+        Point pixelLocation = BaseTileExtractor.rasterSpaceToImageSpace(affineCoff, pt);
+        // now location is in image spatialReference
+        log.info("read pixel {} {} -> {} {} -> {} {}", lng, lat, pt.x, pt.y, pixelLocation.x, pixelLocation.y);
+
+        List<Double> data = new ArrayList<>(rasterCount);
+        if (
+                pixelLocation.x < 0 || pixelLocation.x >= rasterXSize
+                        || pixelLocation.y < 0 || pixelLocation.y >= rasterYSize
+        ) {
+            log.warn("location is out of image extends");
+            for (int i = 0; i < rasterCount; i++) {
+                data.add(0.0);
+            }
+            return BizResult.success(data);
+        } else {
+
+            for (int i = 1; i <= rasterCount; i++) {
+                Band band = dataset.GetRasterBand(i);
+                int dataType = band.GetRasterDataType();
+                data.add(readPixelValue(band, dataType, pixelLocation.getXAsInt(), pixelLocation.getYAsInt()));
+            }
+        }
+        return BizResult.success(data);
+    }
+
+    private static double readPixelValue(Band band, int dataType, int x, int y) {
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(64);
+        band.ReadRaster_Direct(x, y, 1, 1, 1, 1, dataType, byteBuffer);
+        if (dataType == gdalconstConstants.GDT_Byte) {
+            return byteBuffer.get(0);
+        } else if (dataType == gdalconstConstants.GDT_Int16 || dataType == gdalconstConstants.GDT_UInt16) {
+            return byteBuffer.getInt(0);
+        } else if (dataType == gdalconstConstants.GDT_Int32 || dataType == gdalconstConstants.GDT_UInt32) {
+            return byteBuffer.getLong(0);
+        } else if (dataType == gdalconstConstants.GDT_Float32) {
+            return byteBuffer.getFloat(0);
+        } else if (dataType == gdalconstConstants.GDT_Float64) {
+            return byteBuffer.getDouble(0);
+        } else {
+            log.warn("不能读取数值类型 {}", dataType);
+            return 0;
+        }
     }
 
 

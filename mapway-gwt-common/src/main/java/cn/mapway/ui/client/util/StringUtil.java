@@ -491,6 +491,11 @@ public class StringUtil {
         }
     }
 
+    public static double random(double start,double end)
+    {
+      return start+ random.nextDouble()*(end-start);
+    }
+
     public static Double parseDouble(String value, double defaultValue) {
         return StringUtil.isBlank(value) ? defaultValue : Double.parseDouble(value);
     }

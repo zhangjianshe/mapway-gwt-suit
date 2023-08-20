@@ -325,7 +325,7 @@ public class BaseTileExtractor {
      * @param pt
      * @return
      */
-    protected Point imageSpaceToSourceSpace(double[] adfGeoTransform, Point pt) {
+    public static Point imageSpaceToSourceSpace(double[] adfGeoTransform, Point pt) {
         double a1a3 = adfGeoTransform[1] * adfGeoTransform[3];
         double a4a0 = adfGeoTransform[4] * adfGeoTransform[0];
         double a2a3 = adfGeoTransform[2] * adfGeoTransform[3];
@@ -348,7 +348,7 @@ public class BaseTileExtractor {
      * @param pt
      * @return
      */
-    protected Point rasterSpaceToImageSpace(double[] adfGeoTransform, Point pt) {
+    public static Point rasterSpaceToImageSpace(double[] adfGeoTransform, Point pt) {
         double Xgeo0 = adfGeoTransform[0] + pt.x * adfGeoTransform[1] + pt.y * adfGeoTransform[2];
         double Ygeo0 = adfGeoTransform[3] + pt.x * adfGeoTransform[4] + pt.y * adfGeoTransform[5];
         return new Point(Xgeo0, Ygeo0);
