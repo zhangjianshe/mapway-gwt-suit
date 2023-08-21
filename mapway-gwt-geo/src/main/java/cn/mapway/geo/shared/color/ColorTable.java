@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 import static cn.mapway.geo.shared.color.ColorTableType.COLOR_TYPE_SINGLE_BAND_PSEUDO_COLOR;
@@ -30,8 +31,21 @@ public class ColorTable implements Serializable, IsSerializable {
     List<ColorMap> colorMaps;
 
 
+    /**
+     * 缺省构造一个  单波段为彩色 单一值的颜色表
+     */
     public ColorTable() {
         colorTableType = COLOR_TYPE_SINGLE_BAND_PSEUDO_COLOR.code;
+        colorMapType = ColorMapType.COLOR_MAP_TYPE_UNIQUE.code;
+        colorMaps = new ArrayList<>();
+    }
+
+    public void add(ColorMap colorMap) {
+        colorMaps.add(colorMap);
+    }
+
+    public void clear() {
+        colorMaps.clear();
     }
 
     /**
