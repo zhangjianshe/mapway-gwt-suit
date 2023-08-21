@@ -7,6 +7,7 @@ import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
+import cn.mapway.ui.client.util.Colors;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
@@ -27,9 +28,52 @@ import java.util.Map;
 @Slf4j
 public class BaseTileExtractor {
 
-    private final byte[] defaultColor = new byte[]{(byte) 128, (byte) 128, (byte) 128, (byte) 0xFF};
+    private final int defaultColor = 0x808080FF;
     private byte[] blackBuffer;
     private ColorTable colorTable;
+
+    /**
+     * 根据仿射变换 将经纬度坐标转换到 影像的像素坐标空间
+     * 利用下面的公式进行逆变换求解 已知(XP YP ) 求解  (P L)
+     * * Xp = padfTransform[0] + P*padfTransform[1] + L*padfTransform[2];
+     * * Yp = padfTransform[3] + P*padfTransform[4] + L*padfTransform[5];
+     * <p>
+     * <p>
+     * L=(a1*a3-a4*a0+a4*Xp-a1*Yp)/(a2*a4-a1*a5)
+     * P=-(a2*a3-a5*a0+a5*Xp-a2*Yp)/(a2*a4-a1*a5)
+     *
+     * @param adfGeoTransform
+     * @param pt
+     * @return
+     */
+    public static Point imageSpaceToSourceSpace(double[] adfGeoTransform, Point pt) {
+        double a1a3 = adfGeoTransform[1] * adfGeoTransform[3];
+        double a4a0 = adfGeoTransform[4] * adfGeoTransform[0];
+        double a2a3 = adfGeoTransform[2] * adfGeoTransform[3];
+        double a5a0 = adfGeoTransform[5] * adfGeoTransform[0];
+        double a2a4 = adfGeoTransform[2] * adfGeoTransform[4];
+        double a1a5 = adfGeoTransform[1] * adfGeoTransform[5];
+        // TL
+        double L = (a1a3 - a4a0 + adfGeoTransform[4] * pt.getX() - adfGeoTransform[1] * pt.getY()) / (a2a4 - a1a5);
+        double P = -(a2a3 - a5a0 + adfGeoTransform[5] * pt.getX() - adfGeoTransform[2] * pt.getY()) / (a2a4 - a1a5);
+        return new Point(P, L);
+    }
+
+    /**
+     * 根据仿射变换 将像素空间 转化为影像所在参考系下的坐标
+     * 利用 放射变化6参数进行变换
+     * Xgeo = GT(0) + Xpixel*GT(1) + Yline*GT(2)
+     * Ygeo = GT(3) + Xpixel*GT(4) + Yline*GT(5)
+     *
+     * @param adfGeoTransform
+     * @param pt
+     * @return
+     */
+    public static Point rasterSpaceToImageSpace(double[] adfGeoTransform, Point pt) {
+        double Xgeo0 = adfGeoTransform[0] + pt.x * adfGeoTransform[1] + pt.y * adfGeoTransform[2];
+        double Ygeo0 = adfGeoTransform[3] + pt.x * adfGeoTransform[4] + pt.y * adfGeoTransform[5];
+        return new Point(Xgeo0, Ygeo0);
+    }
 
     /**
      * 设置颜色表
@@ -58,11 +102,11 @@ public class BaseTileExtractor {
     }
 
     public synchronized ByteBuffer getTargetBuffer(int w, int h) {
-        return  ByteBuffer.allocateDirect(w * h);
+        return ByteBuffer.allocateDirect(w * h);
     }
 
     public synchronized ByteBuffer getSourceBuffer(int w, int h) {
-            return   ByteBuffer.allocateDirect(w * h * 8);
+        return ByteBuffer.allocateDirect(w * h * 8);
     }
 
     public void processBands(ImageInfo imageInfo, Dataset sourceDataset, Dataset targetDataset, List<BandData> sourceBandList, List<Band> targetBandList) {
@@ -201,7 +245,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col)*4;
+                        int pos = (row * targetWidth + col) * 4;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         // source  postion 读取一个 64位的浮点数 怎么转换
 
@@ -214,7 +258,7 @@ public class BaseTileExtractor {
                         }
                     }
                 }
-        }else if (dt == gdalconstConstants.GDT_Float64) {
+        } else if (dt == gdalconstConstants.GDT_Float64) {
 
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight,
                     targetWidth, targetHeight, gdalconstConstants.GDT_Float64, source);
@@ -226,7 +270,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col)*8;
+                        int pos = (row * targetWidth + col) * 8;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         // source  postion 读取一个 64位的浮点数 怎么转换
 
@@ -312,49 +356,6 @@ public class BaseTileExtractor {
         return new Box(P0, L1, P1, L0);
     }
 
-    /**
-     * 根据仿射变换 将经纬度坐标转换到 影像的像素坐标空间
-     * 利用下面的公式进行逆变换求解 已知(XP YP ) 求解  (P L)
-     * * Xp = padfTransform[0] + P*padfTransform[1] + L*padfTransform[2];
-     * * Yp = padfTransform[3] + P*padfTransform[4] + L*padfTransform[5];
-     * <p>
-     * <p>
-     * L=(a1*a3-a4*a0+a4*Xp-a1*Yp)/(a2*a4-a1*a5)
-     * P=-(a2*a3-a5*a0+a5*Xp-a2*Yp)/(a2*a4-a1*a5)
-     *
-     * @param adfGeoTransform
-     * @param pt
-     * @return
-     */
-    public static Point imageSpaceToSourceSpace(double[] adfGeoTransform, Point pt) {
-        double a1a3 = adfGeoTransform[1] * adfGeoTransform[3];
-        double a4a0 = adfGeoTransform[4] * adfGeoTransform[0];
-        double a2a3 = adfGeoTransform[2] * adfGeoTransform[3];
-        double a5a0 = adfGeoTransform[5] * adfGeoTransform[0];
-        double a2a4 = adfGeoTransform[2] * adfGeoTransform[4];
-        double a1a5 = adfGeoTransform[1] * adfGeoTransform[5];
-        // TL
-        double L = (a1a3 - a4a0 + adfGeoTransform[4] * pt.getX() - adfGeoTransform[1] * pt.getY()) / (a2a4 - a1a5);
-        double P = -(a2a3 - a5a0 + adfGeoTransform[5] * pt.getX() - adfGeoTransform[2] * pt.getY()) / (a2a4 - a1a5);
-        return new Point(P, L);
-    }
-
-    /**
-     * 根据仿射变换 将像素空间 转化为影像所在参考系下的坐标
-     * 利用 放射变化6参数进行变换
-     * Xgeo = GT(0) + Xpixel*GT(1) + Yline*GT(2)
-     * Ygeo = GT(3) + Xpixel*GT(4) + Yline*GT(5)
-     *
-     * @param adfGeoTransform
-     * @param pt
-     * @return
-     */
-    public static Point rasterSpaceToImageSpace(double[] adfGeoTransform, Point pt) {
-        double Xgeo0 = adfGeoTransform[0] + pt.x * adfGeoTransform[1] + pt.y * adfGeoTransform[2];
-        double Ygeo0 = adfGeoTransform[3] + pt.x * adfGeoTransform[4] + pt.y * adfGeoTransform[5];
-        return new Point(Xgeo0, Ygeo0);
-    }
-
     private void printDataType() {
         log.info(" GDT_Unknown {}", gdalconstJNI.GDT_Unknown_get());
         log.info(" GDT_Byte {}", gdalconstJNI.GDT_Byte_get());
@@ -426,7 +427,11 @@ public class BaseTileExtractor {
         return true;
     }
 
-    public byte[] translateColor(double value) {
+    /**
+     * @param value 0xRRGGBBAA
+     * @return
+     */
+    public int translateColor(double value) {
         if (colorTable == null) {
             return defaultColor;
         }
@@ -476,37 +481,34 @@ public class BaseTileExtractor {
 
             if (dt == gdalconstConstants.GDT_Byte) {
                 //仅替换 原来是byte类型的数据
-                for(int row=0; row<targetRect.getHeightAsInt();row++) {
-                    for(int col= 0;col< targetRect.getWidthAsInt();col++) {
+                for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
+                    for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
                         int location = row * targetRect.getWidthAsInt() + col;
-                        int tilePosition=(targetRect.getYAsInt()+row)*tileSize+ targetRect.getXAsInt()+col;
+                        int tilePosition = (targetRect.getYAsInt() + row) * tileSize + targetRect.getXAsInt() + col;
                         int value = byteBuffer.get(location);
-                        byte[] rgb;
+                        int rgba;
                         if (replaceColor == null || replaceColor.length < 3) {
                             //没有设置替换颜色 使用颜色表
-                            rgb = translateColor(value);
-                            sourceBuffer[0].put(rgb[0]);
-                            sourceBuffer[1].put(rgb[1]);
-                            sourceBuffer[2].put(rgb[2]);
+                            rgba = translateColor(value);
+                            sourceBuffer[0].put(Colors.r(rgba));
+                            sourceBuffer[1].put(Colors.g(rgba));
+                            sourceBuffer[2].put(Colors.b(rgba));
                             if ((transparentBand[tilePosition] & 0xFF) == 0x00) {
                                 // 对于文件中设置的无效值 仍然采用透明色处理
                             } else {
                                 //使用颜色表中的透明色
-                                if(rgb.length >= 4){
-                                    transparentBand[tilePosition] = rgb[3];
-                                }
+                                transparentBand[tilePosition] = Colors.a(rgba);
                             }
                         } else {
-                            rgb = replaceColor;
-                            sourceBuffer[0].put(rgb[0]);
-                            sourceBuffer[1].put(rgb[1]);
-                            sourceBuffer[2].put(rgb[2]);
+                            sourceBuffer[0].put(replaceColor[0]);
+                            sourceBuffer[1].put(replaceColor[1]);
+                            sourceBuffer[2].put(replaceColor[2]);
                             if ((transparentBand[tilePosition] & 0xFF) == 0x00) {
                                 // 对于文件中设置的无效值 仍然采用透明色处理
                             } else {
                                 //使用颜色表中的透明色
-                                if (rgb.length >= 4) {
-                                    transparentBand[tilePosition] = rgb[3];
+                                if (replaceColor.length >= 4) {
+                                    transparentBand[tilePosition] = replaceColor[3];
                                 } else {
                                     transparentBand[tilePosition] = (byte) 0xFF;
                                 }

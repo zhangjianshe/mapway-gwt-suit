@@ -16,7 +16,7 @@ import static cn.mapway.geo.shared.color.ColorTableType.COLOR_TYPE_SINGLE_BAND_P
  */
 @Data
 public class ColorTable implements Serializable, IsSerializable {
-    private static byte[] defaultColor = {(byte) 0x80, (byte) 0x80, (byte) 0x80, (byte) 0xFF};
+    private static int defaultColor = 0x000000FF;
     /**
      * 颜色表类型 ColorTableType
      */
@@ -54,7 +54,7 @@ public class ColorTable implements Serializable, IsSerializable {
      * @param value
      * @return
      */
-    public byte[] mapColor(double value) {
+    public int  mapColor(double value) {
         if (colorMaps == null) {
             return defaultColor;
         }

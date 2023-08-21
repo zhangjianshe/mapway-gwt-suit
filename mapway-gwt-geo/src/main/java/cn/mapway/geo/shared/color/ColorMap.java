@@ -13,18 +13,22 @@ public class ColorMap implements Serializable, IsSerializable {
     double start;
     double end;
     String name;
-    byte[] rgba;
+    /**
+     * color is 0xRRGGBBAA
+     */
+    int rgba;
 
-    public ColorMap uniqueMap(double value, byte[] rgba) {
+    public ColorMap uniqueMap(double value, int rgba) {
         start = value;
         this.rgba = rgba;
         return this;
     }
 
-    public ColorMap rangeMap(double start, double end, byte[] rgba) {
+    public ColorMap rangeMap(double start, double end, int rgba) {
         this.start = start;
         this.end = end;
         this.rgba = rgba;
         return this;
     }
+
 }

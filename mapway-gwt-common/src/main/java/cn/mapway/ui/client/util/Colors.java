@@ -424,8 +424,7 @@ public class Colors {
         for (int i = 0; i < singleColor.length; i++) {
             int number = singleColor[i] & 0xff;
             String v = Integer.toHexString(number);
-            if(i>0)
-            {
+            if (i > 0) {
                 color.append(",");
             }
             color.append(v.length() == 1 ? ("0" + v) : v);
@@ -435,15 +434,15 @@ public class Colors {
     }
 
     public static void main(String[] args) {
-        byte[] bytes=fromColor("#FF0000");
-        System.out.println((int)(bytes[0]&0xFF));
-        System.out.println((int)(bytes[1]&0xFF));
-        System.out.println((int)(bytes[2]&0xFF));
+
+        byte[] rgba = new byte[]{(byte) 0x80, (byte) 0x90, (byte) 0xA0, (byte) 0xFF};
+        int color = colorFromBytes(rgba);
 
     }
 
     /**
      * from #AABBCC to bytes
+     *
      * @param fillColor
      * @return
      */
@@ -461,4 +460,57 @@ public class Colors {
         }
         return null;
     }
+
+    public static byte r(int color) {
+        return (byte) (0xFF & (color >> 3 * 8));
+    }
+
+    public static byte g(int color) {
+        return (byte) (0xFF & (color >> 2 * 8));
+    }
+
+    public static byte b(int color) {
+        return (byte) (0xFF & (color >> 8));
+    }
+
+    public static byte a(int color) {
+        return (byte) (0xFF & (color));
+    }
+
+    public static int colorFromBytes(byte[] rgba) {
+        return fromColorByte(rgba[0], rgba[1], rgba[2], rgba[3]);
+    }
+
+    public static int fromColorInt(int r, int g, int b, int a) {
+        int color = (0xFF & r) << 3 * 8;
+        color |= (0xFF & g) << 2 * 8;
+        color |= (0xFF & b) << 8;
+        color |= (0xFF & a);
+        return color;
+    }
+
+    public static int fromColorByte(byte r, byte g, byte b, byte a) {
+        return fromColorInt(r, g, b, a);
+    }
+
+    public static int setR(int color, int red) {
+        int color1 = color & 0x00FFFFFF;
+        return color1 | ((0xFF & red) << (3 * 8));
+    }
+
+    public static int setG(int color, int red) {
+        int color1 = color & 0xFF00FFFF;
+        return color1 | ((0xFF & red) << (2 * 8));
+    }
+
+    public static int setB(int color, int red) {
+        int color1 = color & 0xFFFF00FF;
+        return color1 | ((0xFF & red) << (8));
+    }
+
+    public static int setA(int color, int red) {
+        int color1 = color & 0xFFFFFF00;
+        return color1 | (0xFF & red);
+    }
+
 }
