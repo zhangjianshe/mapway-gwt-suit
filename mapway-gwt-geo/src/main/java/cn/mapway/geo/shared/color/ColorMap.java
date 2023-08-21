@@ -14,4 +14,17 @@ public class ColorMap implements Serializable, IsSerializable {
     double end;
     String name;
     byte[] rgba;
+
+    public ColorMap uniqueMap(double value, byte[] rgba) {
+        start = value;
+        this.rgba = rgba;
+        return this;
+    }
+
+    public ColorMap rangeMap(double start, double end, byte[] rgba) {
+        this.start = start;
+        this.end = end;
+        this.rgba = rgba;
+        return this;
+    }
 }
