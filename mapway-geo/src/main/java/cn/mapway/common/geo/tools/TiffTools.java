@@ -7,6 +7,7 @@ import cn.mapway.common.geo.tools.parser.ISatelliteExtractor;
 import cn.mapway.geo.client.raster.BandInfo;
 import cn.mapway.geo.client.raster.ChanelData;
 import cn.mapway.geo.client.raster.ImageInfo;
+import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import lombok.extern.slf4j.Slf4j;
@@ -124,7 +125,7 @@ public class TiffTools {
         });
         Files.write(infoFile, Json.toJson(md5File));
 
-        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new HashMap<>());
+        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
         Files.write("d:\\out\\test.png", bytes);
     }
 
@@ -709,7 +710,7 @@ public class TiffTools {
      * @param zoom
      * @return
      */
-    public byte[] extractFromSource(ImageInfo imageInfo, long tileX, long tileY, int zoom, Map<Integer, byte[]> colorTable) {
+    public byte[] extractFromSource(ImageInfo imageInfo, long tileX, long tileY, int zoom, ColorTable colorTable) {
         if (imageInfo == null || !Files.isFile(new File(imageInfo.location))) {
             log.error("ImageInfo 描述的影像 不是一个合法的文件{}", Json.toJson(imageInfo));
             return null;

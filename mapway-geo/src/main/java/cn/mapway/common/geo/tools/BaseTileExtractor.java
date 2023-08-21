@@ -3,6 +3,7 @@ package cn.mapway.common.geo.tools;
 
 import cn.mapway.geo.client.raster.ChanelData;
 import cn.mapway.geo.client.raster.ImageInfo;
+import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
@@ -28,16 +29,16 @@ public class BaseTileExtractor {
 
     private final byte[] defaultColor = new byte[]{(byte) 128, (byte) 128, (byte) 128, (byte) 0xFF};
     private byte[] blackBuffer;
-    private Map<Integer, byte[]> colorTable;
+    private ColorTable colorTable;
 
     /**
      * 设置颜色表
      *
      * @param table
      */
-    public void setColorTable(Map<Integer, byte[]> table) {
+    public void setColorTable(ColorTable table) {
         if (table != null) {
-            colorTable = table;
+            this.colorTable = table;
         }
     }
 
@@ -425,15 +426,11 @@ public class BaseTileExtractor {
         return true;
     }
 
-    public byte[] getColorTable(int index) {
+    public byte[] translateColor(double value) {
         if (colorTable == null) {
             return defaultColor;
         }
-        byte[] data = colorTable.get(index);
-        if (data == null) {
-            return defaultColor;
-        }
-        return data;
+        return colorTable.mapColor(value);
     }
 
     /**
@@ -487,7 +484,7 @@ public class BaseTileExtractor {
                         byte[] rgb;
                         if (replaceColor == null || replaceColor.length < 3) {
                             //没有设置替换颜色 使用颜色表
-                            rgb = getColorTable(value);
+                            rgb = translateColor(value);
                             sourceBuffer[0].put(rgb[0]);
                             sourceBuffer[1].put(rgb[1]);
                             sourceBuffer[2].put(rgb[2]);
