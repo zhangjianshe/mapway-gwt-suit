@@ -418,6 +418,22 @@ public class Colors {
         return color.toString();
     }
 
+    public static String toRGBA(byte[] singleColor) {
+        if (singleColor == null) return "rgba(0,0,0,1)";
+        StringBuilder color = new StringBuilder("rgba(");
+        for (int i = 0; i < singleColor.length; i++) {
+            int number = singleColor[i] & 0xff;
+            String v = Integer.toHexString(number);
+            if(i>0)
+            {
+                color.append(",");
+            }
+            color.append(v.length() == 1 ? ("0" + v) : v);
+        }
+        color.append(")");
+        return color.toString();
+    }
+
     public static void main(String[] args) {
         byte[] bytes=fromColor("#FF0000");
         System.out.println((int)(bytes[0]&0xFF));
