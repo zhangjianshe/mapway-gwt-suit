@@ -354,6 +354,29 @@ public class Colors {
         return toColor(rgb);
     }
 
+    /**
+     * 不处理透明度信息
+     *
+     * @param color
+     * @param bw
+     * @return
+     */
+    public static int invertColor(int color, boolean bw) {
+
+        int r = r(color) & 0xFF;
+        int g = g(color) & 0xFF;
+        int b = b(color) & 0xFF;
+        if (bw) {
+            return (r * 0.299 + g * 0.587 + b * 0.114) > 186
+                    ? 0x000000FF
+                    : 0xFFFFFFFF;
+        }
+        r = (0xFF & (255 - r));
+        g = (byte) (0xFF & (255 - g));
+        b = (byte) (0xFF & (255 - b));
+        return Colors.fromColorInt(r, g, b, 0xFF);
+    }
+
     public static byte[] fromRgba(String color) {
         color = color.toLowerCase();
         String r;
