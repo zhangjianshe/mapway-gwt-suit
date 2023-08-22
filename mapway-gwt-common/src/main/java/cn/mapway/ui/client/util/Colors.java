@@ -466,7 +466,10 @@ public class Colors {
         if (a(color) == (byte) 0xFF) {
             return "rgb(" + (r(color) & 0xFF) + "," + (g(color) & 0xFF) + "," + (b(color) & 0xFF) + ")";
         } else {
-            return "rgba(" + (r(color) & 0xFF) + "," + (g(color) & 0xFF) + "," + (b(color) & 0xFF) + "," + ((a(color) & 0xFF) * 1.0 / 0xFF) + ")";
+            // a(color) is 0-255 -> 0.33->33.00
+            double a = ((a(color) & 0xFF) * 100.0 / 0xFF);
+            String alpha = "0" + (int) a;
+            return "rgba(" + (r(color) & 0xFF) + "," + (g(color) & 0xFF) + "," + (b(color) & 0xFF) + "," + alpha + ")";
         }
     }
 
