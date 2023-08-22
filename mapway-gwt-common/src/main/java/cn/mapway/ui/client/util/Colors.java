@@ -463,12 +463,12 @@ public class Colors {
      * @return
      */
     public static String toRGBA(int color) {
-        if (a(color) == (byte) 0xFF) {
+        if (a(color) >= 0xFF) {
             return "rgb(" + (r(color) & 0xFF) + "," + (g(color) & 0xFF) + "," + (b(color) & 0xFF) + ")";
         } else {
             // a(color) is 0-255 -> 0.33->33.00
             double a = ((a(color) & 0xFF) * 100.0 / 0xFF);
-            String alpha = "0" + (int) a;
+            String alpha = "0." + (int) a;
             return "rgba(" + (r(color) & 0xFF) + "," + (g(color) & 0xFF) + "," + (b(color) & 0xFF) + "," + alpha + ")";
         }
     }
