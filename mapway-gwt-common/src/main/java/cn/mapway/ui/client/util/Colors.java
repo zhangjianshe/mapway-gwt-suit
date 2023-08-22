@@ -435,23 +435,20 @@ public class Colors {
 
     /**
      * int color 0xRRGGBBAA => rgba(RR,GG,BB,AA/255)
+     *
      * @param color
      * @return
      */
-    public static String toRGBA(int color)
-    {
-        if(a(color)==(byte)0xFF)
-        {
-            return "rgb("+r(color)+","+g(color)+","+b(color)+")";
-        }
-        else
-        {
-            return "rgba("+r(color)+","+g(color)+","+b(color)+","+((a(color)&0xFF)*1.0/0xFF)+")";
+    public static String toRGBA(int color) {
+        if (a(color) == (byte) 0xFF) {
+            return "rgb(" + (r(color) & 0xFF) + "," + (g(color) & 0xFF) + "," + (b(color) & 0xFF) + ")";
+        } else {
+            return "rgba(" + (r(color) & 0xFF) + "," + (g(color) & 0xFF) + "," + (b(color) & 0xFF) + "," + ((a(color) & 0xFF) * 1.0 / 0xFF) + ")";
         }
     }
-    public static byte[] toBytes(int color)
-    {
-        return new byte[]{(byte) r(color), (byte) g(color), (byte) b(color), (byte) a(color)};
+
+    public static byte[] toBytes(int color) {
+        return new byte[]{(byte) (r(color) & 0xFF), (byte) (g(color) & 0xFF), (byte) (b(color) & 0xFF), (byte) (a(color) & 0xFF)};
     }
 
     public static void main(String[] args) {
@@ -483,7 +480,7 @@ public class Colors {
     }
 
     public static int r(int color) {
-        return  (0xFF & (color >> 3 * 8));
+        return (0xFF & (color >> 3 * 8));
     }
 
     public static int g(int color) {
@@ -491,11 +488,11 @@ public class Colors {
     }
 
     public static int b(int color) {
-        return  (0xFF & (color >> 8));
+        return (0xFF & (color >> 8));
     }
 
     public static int a(int color) {
-        return  (0xFF & (color));
+        return (0xFF & (color));
     }
 
     public static int colorFromBytes(byte[] rgba) {
