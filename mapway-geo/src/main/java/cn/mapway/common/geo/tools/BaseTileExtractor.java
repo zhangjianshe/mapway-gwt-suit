@@ -153,7 +153,7 @@ public class BaseTileExtractor {
                                                 int tileWidth
     ) {
         Band sourceBand = sourceBandData.getBand();
-        ByteBuffer source = getSourceBuffer(targetWidth, targetHeight);
+        ByteBuffer source = ByteBuffer.allocateDirect(targetWidth * targetHeight * 8);
         int dt = sourceBand.GetRasterDataType();
         source.position(0);
         sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, dt, source);
@@ -503,6 +503,7 @@ public class BaseTileExtractor {
                     targetRect.getXAsInt(), targetRect.getYAsInt(),
                     targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), tileSize);
 
+            log.info(sourceData.toString());
             //RGB 通道 用于替换颜色
             ByteBuffer[] sourceBuffer = new ByteBuffer[3];
             sourceBuffer[0] = ByteBuffer.allocateDirect(tileSize * tileSize);
@@ -510,34 +511,26 @@ public class BaseTileExtractor {
             sourceBuffer[2] = ByteBuffer.allocateDirect(tileSize * tileSize);
 
             //根据读出的值 用颜色表替换
-            sourceData.position(0); //原始影像
+            // sourceData.position(0); //原始影像
             int dt = sourceBand.getBand().GetRasterDataType();
             //循环处理每一个像素
-
+            sourceData.order(ByteOrder.nativeOrder());
             for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
                 for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
                     int location = row * targetRect.getWidthAsInt() + col;
                     int tilePosition = (targetRect.getYAsInt() + row) * tileSize + targetRect.getXAsInt() + col;
-                    double pixelValue=0;
-                    if(dt== GDT_Byte)
-                    {
-                        pixelValue=sourceData.get(location) & 0xFF;
+                    double pixelValue = 0;
+                    if (dt == GDT_Byte) {
+                        pixelValue = sourceData.get(location) & 0xFF;
+                    } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
+                        pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;
+                    } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
+                        pixelValue = sourceData.asIntBuffer().get(location);
+                    } else if (dt == GDT_Float32) {
+                        pixelValue = sourceData.asFloatBuffer().get(location);
+                    } else if (dt == GDT_Float64) {
+                        pixelValue = sourceData.asDoubleBuffer().get(location);
                     }
-                    else if(dt==GDT_Int16 || dt==GDT_UInt16)
-                    {
-                        pixelValue=sourceData.getShort(location) & 0xFFFF;
-                    }
-                    else if(dt==GDT_Int32|| dt==GDT_UInt32)
-                    {
-                        pixelValue=sourceData.getInt(location) & 0xFFFF;
-                    }else if(dt==GDT_Float32)
-                    {
-                        pixelValue=sourceData.getFloat(location);
-                    }else if(dt==GDT_Float64)
-                    {
-                        pixelValue=sourceData.getDouble(location);
-                    }
-
                     int rgba;
                     if (replaceColor == null || replaceColor.length < 3) {
                         //没有设置替换颜色 使用颜色表
@@ -545,12 +538,9 @@ public class BaseTileExtractor {
                         sourceBuffer[0].put((byte) (Colors.r(rgba) & 0xFF));
                         sourceBuffer[1].put((byte) (Colors.g(rgba) & 0xFF));
                         sourceBuffer[2].put((byte) (Colors.b(rgba) & 0xFF));
-                        if ((transparentBand[tilePosition] & 0xFF) == 0x00) {
-                            // 对于文件中设置的无效值 仍然采用透明色处理
-                        } else {
-                            //使用颜色表中的透明色
-                            transparentBand[tilePosition] = (byte) Colors.a(rgba);
-                        }
+                        //使用颜色表中的透明色
+                        transparentBand[tilePosition] = (byte) (Colors.a(rgba) & 0xFF);
+
                     } else {
                         sourceBuffer[0].put(replaceColor[0]);
                         sourceBuffer[1].put(replaceColor[1]);
