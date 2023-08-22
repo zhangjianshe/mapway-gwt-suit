@@ -490,14 +490,14 @@ public class BaseTileExtractor {
                         if (replaceColor == null || replaceColor.length < 3) {
                             //没有设置替换颜色 使用颜色表
                             rgba = translateColor(value);
-                            sourceBuffer[0].put(Colors.r(rgba));
-                            sourceBuffer[1].put(Colors.g(rgba));
-                            sourceBuffer[2].put(Colors.b(rgba));
+                            sourceBuffer[0].put((byte) (Colors.r(rgba) & 0xFF));
+                            sourceBuffer[1].put((byte) (Colors.g(rgba) & 0xFF));
+                            sourceBuffer[2].put((byte) (Colors.b(rgba) & 0xFF));
                             if ((transparentBand[tilePosition] & 0xFF) == 0x00) {
                                 // 对于文件中设置的无效值 仍然采用透明色处理
                             } else {
                                 //使用颜色表中的透明色
-                                transparentBand[tilePosition] = Colors.a(rgba);
+                                transparentBand[tilePosition] = (byte) Colors.a(rgba);
                             }
                         } else {
                             sourceBuffer[0].put(replaceColor[0]);

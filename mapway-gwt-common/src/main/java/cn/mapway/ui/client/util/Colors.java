@@ -451,7 +451,7 @@ public class Colors {
     }
     public static byte[] toBytes(int color)
     {
-        return new byte[]{r(color),g(color),b(color),a(color)};
+        return new byte[]{(byte) r(color), (byte) g(color), (byte) b(color), (byte) a(color)};
     }
 
     public static void main(String[] args) {
@@ -482,20 +482,20 @@ public class Colors {
         return null;
     }
 
-    public static byte r(int color) {
-        return (byte) (0xFF & (color >> 3 * 8));
+    public static int r(int color) {
+        return  (0xFF & (color >> 3 * 8));
     }
 
-    public static byte g(int color) {
-        return (byte) (0xFF & (color >> 2 * 8));
+    public static int g(int color) {
+        return (0xFF & (color >> 2 * 8));
     }
 
-    public static byte b(int color) {
-        return (byte) (0xFF & (color >> 8));
+    public static int b(int color) {
+        return  (0xFF & (color >> 8));
     }
 
-    public static byte a(int color) {
-        return (byte) (0xFF & (color));
+    public static int a(int color) {
+        return  (0xFF & (color));
     }
 
     public static int colorFromBytes(byte[] rgba) {
