@@ -446,7 +446,7 @@ public class Colors {
         }
         else
         {
-            return "rgba("+r(color)+","+g(color)+","+b(color)+","+(1.0*a(color)/0xFF)+")";
+            return "rgba("+r(color)+","+g(color)+","+b(color)+","+((a(color)&0xFF)*1.0/0xFF)+")";
         }
     }
     public static byte[] toBytes(int color)
