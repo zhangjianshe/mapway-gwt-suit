@@ -433,6 +433,27 @@ public class Colors {
         return color.toString();
     }
 
+    /**
+     * int color 0xRRGGBBAA => rgba(RR,GG,BB,AA/255)
+     * @param color
+     * @return
+     */
+    public static String toRGBA(int color)
+    {
+        if(a(color)==(byte)0xFF)
+        {
+            return "rgb("+r(color)+","+g(color)+","+b(color)+")";
+        }
+        else
+        {
+            return "rgba("+r(color)+","+g(color)+","+b(color)+","+(1.0*a(color)/0xFF)+")";
+        }
+    }
+    public static byte[] toBytes(int color)
+    {
+        return new byte[]{r(color),g(color),b(color),a(color)};
+    }
+
     public static void main(String[] args) {
 
         byte[] rgba = new byte[]{(byte) 0x80, (byte) 0x90, (byte) 0xA0, (byte) 0xFF};
