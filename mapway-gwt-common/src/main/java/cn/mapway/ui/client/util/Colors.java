@@ -557,4 +557,52 @@ public class Colors {
         return color1 | (0xFF & red);
     }
 
+    /**
+     *  // 用户输入了 78% -> 0.78*255
+     *         // 用户输入了 78  -> 78
+     *         // .......  >255 -> 255
+     *         // .......  <0   -> 0
+     *
+     * @param value 可以使 AA% 也可以是 [0-255]之间的值
+     * @return  [0-255]之间的值
+     */
+    public static Integer parseAlpha(String value) {
+
+        if (value != null && value.length() > 0) {
+            if (value.endsWith("%")) {
+                String temp = value.substring(0, value.length() - 1);
+                if (temp.length() == 0) {
+                    return 0xFF;
+                }
+                try {
+                    int intValue = Integer.parseInt(temp);
+                    if (intValue >= 100) {
+                        return 0xFF;
+                    }
+                    if (intValue <= 0) {
+                        return 0x00;
+                    }
+                    return (int) (intValue * 0xFF / 100.0);
+                } catch (Exception e) {
+                    return 0xFF;
+                }
+            } else {
+                try {
+                    // [0-255]
+                    int intValue = Integer.parseInt(value);
+                    if (intValue >= 255) {
+                        return 0xFF;
+                    }
+                    if (intValue <= 0) {
+                        return 0x00;
+                    }
+                    return intValue;
+                } catch (Exception e) {
+                    return 0xFF;
+                }
+            }
+        }
+        return 0xFF;
+    }
+
 }
