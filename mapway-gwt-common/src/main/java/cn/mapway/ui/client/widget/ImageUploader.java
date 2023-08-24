@@ -21,8 +21,10 @@ import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
 import elemental2.core.Global;
+import elemental2.core.JsObject;
 import elemental2.dom.HTMLImageElement;
 import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 import java.util.ArrayList;
 
@@ -394,7 +396,14 @@ public class ImageUploader extends CommonEventComposite {
     @UiHandler("btnClear")
     public void btnClearClick(ClickEvent event) {
         setUrl("");
-        fireEvent(CommonEvent.okEvent(""));
+        UploadReturn uploadReturn = Js.uncheckedCast(JsPropertyMap.of());
+        uploadReturn.size = 0;
+        uploadReturn.relPath = "";
+        uploadReturn.msg = "清空图片";
+        uploadReturn.fileName = "";
+        uploadReturn.retCode = 400;
+        uploadReturn.extra = extra;
+        fireEvent(CommonEvent.okEvent(uploadReturn));
     }
 
     /**
