@@ -8,6 +8,7 @@ import cn.mapway.ui.client.tools.MapwayLog;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.UploadReturn;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.InputElement;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
@@ -20,9 +21,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.Image;
 import elemental2.core.Global;
 import elemental2.core.JsObject;
-import elemental2.dom.HTMLImageElement;
+import elemental2.dom.*;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
@@ -79,34 +81,6 @@ public class ImageUploader extends CommonEventComposite {
     @UiField
     FileUpload uploader;
     /**
-     * The form.
-     */
-    @UiField
-    FormPanel form;
-    /**
-     * The complete handler.
-     */
-    private final SubmitCompleteHandler completeHandler = new SubmitCompleteHandler() {
-
-        @Override
-        public void onSubmitComplete(SubmitCompleteEvent event) {
-            String data = event.getResults();
-            data = removeHTMLTag(data);
-            UploadReturn r = (UploadReturn) Global.JSON.parse(data);
-
-            if (r.retCode == 0) {
-                CommonEvent ev = CommonEvent.okEvent(r);
-                if (isPicture(r.relPath)) {
-                    img.setUrl(basePath + r.relPath);
-                }
-                fireEvent(ev);
-            } else {
-                fireMessage(MessageObject.warn(MessageObject.CODE_FAIL, r.msg));
-            }
-            form.reset();
-        }
-    };
-    /**
      * The btn uploader.
      */
     @UiField
@@ -139,8 +113,25 @@ public class ImageUploader extends CommonEventComposite {
                 String sb = "extra=" + URL.encodeQueryString(extra) +
                         "&relPath=" + URL.encodeQueryString(relpath);
                 String actionUrl = action + "?" + sb;
-                form.setAction(actionUrl);
-                form.submit();
+
+                XMLHttpRequest request=new XMLHttpRequest();
+                FormData data=new FormData();
+                HTMLInputElement inputElement=Js.uncheckedCast(uploader.getElement());
+                data.set("file",inputElement.files.getAt(0));
+                request.open("POST",actionUrl);
+                request.onloadend= p0 -> {
+                    UploadReturn r = (UploadReturn) Global.JSON.parse(request.responseText);
+                    if (r.retCode == 0) {
+                        CommonEvent ev = CommonEvent.okEvent(r);
+                        if (isPicture(r.relPath)) {
+                            img.setUrl(basePath + r.relPath);
+                        }
+                        fireEvent(ev);
+                    } else {
+                        fireMessage(MessageObject.warn(MessageObject.CODE_FAIL, r.msg));
+                    }
+                };
+                request.send(data);
             } else {
                 fireMessage(MessageObject.warn(MessageObject.CODE_FAIL, "没有设置上传网址"));
             }
@@ -154,7 +145,6 @@ public class ImageUploader extends CommonEventComposite {
         initWidget(uiBinder.createAndBindUi(this));
         this.setAction(DEFAULT_ACTION, "default");
         uploader.addChangeHandler(fileChange);
-        form.addSubmitCompleteHandler(completeHandler);
 
         img.addErrorHandler(event -> img.setUrl(MapwayResource.INSTANCE.defaultImage().getSafeUri()));
         img.addLoadHandler(event -> resizeImage());
