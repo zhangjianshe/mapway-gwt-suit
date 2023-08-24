@@ -305,9 +305,13 @@ public class ImageUploader extends CommonEventComposite {
             return "";
         }
         // 去掉所有html元素
-        String str = input.replaceAll("<[^>]*>", "").replaceAll("</[^>]*>", "");
+        String str = removePrev(input);
         return str;
     }
+
+    private native String removePrev(String html)/*-{
+        return html.replace(/<.*?>/ig,"");
+    }-*/;
 
     /**
      * 设置图片的相对路径前缀
