@@ -20,6 +20,16 @@ public class WindowEvent extends GwtEvent<WindowEventHandler> {
         return new WindowEvent(WE_TITLE, data);
     }
 
+    /**
+     * 获取关联的数据
+     *
+     * @param <T>
+     * @return
+     */
+    public <T> T getData() {
+        return (T) data;
+    }
+
     public int getType() {
         return type;
     }
