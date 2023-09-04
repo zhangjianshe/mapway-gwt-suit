@@ -51,6 +51,7 @@ public class ShapeUtil {
     GeomTransformer geomTransformer;
     CoordinateTransformation coordinateTransformation;
     private String encoding = "UTF-8";
+
     public ShapeUtil(String path) {
 
         if (srcWebMercator == null) {
@@ -408,7 +409,7 @@ public class ShapeUtil {
             case wkbMultiPolygonZM:
                 return "多边形集合ZM";
             default:
-                return "未知";
+                return "未知类型" + geoType;
         }
     }
 
