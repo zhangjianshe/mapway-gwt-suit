@@ -1,5 +1,6 @@
 package cn.mapway.common.geo.gdal;
 
+import cn.mapway.geo.geometry.GeometryType;
 import cn.mapway.geo.shared.vector.Box;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.ogr.*;
@@ -25,18 +26,6 @@ import static org.gdal.ogr.ogrConstants.*;
  */
 @Slf4j
 public class ShapeUtil {
-    public static void main(String[] args) {
-        GdalUtil.init();
-        String path = "D:\\天翼云盘下载\\merged\\merged.shp";
-        ShapeUtil shapeUtil = new ShapeUtil(path);
-        shapeUtil.each(new Each<Feature>() {
-            @Override
-            public void invoke(int index, Feature ele, int length) throws ExitLoop, ContinueLoop, LoopException {
-                log.info("{}", ShapeUtil.readAsString(ele, "PRE", shapeUtil.getEncoding()));
-            }
-        });
-    }
-
     static Map<Integer, String> typeMapper;
     private static SpatialReference srcWgs84;
     private static SpatialReference srcWebMercator;
@@ -62,7 +51,6 @@ public class ShapeUtil {
     GeomTransformer geomTransformer;
     CoordinateTransformation coordinateTransformation;
     private String encoding = "UTF-8";
-
     public ShapeUtil(String path) {
 
         if (srcWebMercator == null) {
@@ -118,11 +106,6 @@ public class ShapeUtil {
         }
     }
 
-
-    public void setEncoding(String encoding) {
-        this.encoding = encoding;
-    }
-
     /**
      * @param fileName
      * @param geoType
@@ -158,23 +141,16 @@ public class ShapeUtil {
         }
     }
 
-    /**
-     * 获取字段定义
-     *
-     * @return
-     */
-    public List<FieldDefn> getFields() {
-        List<FieldDefn> fields;
-        FeatureDefn featureDefn = layer.GetLayerDefn();
-        fields = new ArrayList<>(featureDefn.GetFieldCount() + 1);
-        for (int i = 0; i < featureDefn.GetFieldCount(); i++) {
-            fields.add(featureDefn.GetFieldDefn(i));
-        }
-        return fields;
-    }
-
-    public String getEncoding() {
-        return this.encoding;
+    public static void main(String[] args) {
+        GdalUtil.init();
+        String path = "D:\\天翼云盘下载\\merged\\merged.shp";
+        ShapeUtil shapeUtil = new ShapeUtil(path);
+        shapeUtil.each(new Each<Feature>() {
+            @Override
+            public void invoke(int index, Feature ele, int length) throws ExitLoop, ContinueLoop, LoopException {
+                log.info("{}", ShapeUtil.readAsString(ele, "PRE", shapeUtil.getEncoding()));
+            }
+        });
     }
 
     public static String readAsString(Feature feature, Integer fieldIndex, String encoding) {
@@ -227,6 +203,29 @@ public class ShapeUtil {
             e.printStackTrace();
         }
         return value;
+    }
+
+    /**
+     * 获取字段定义
+     *
+     * @return
+     */
+    public List<FieldDefn> getFields() {
+        List<FieldDefn> fields;
+        FeatureDefn featureDefn = layer.GetLayerDefn();
+        fields = new ArrayList<>(featureDefn.GetFieldCount() + 1);
+        for (int i = 0; i < featureDefn.GetFieldCount(); i++) {
+            fields.add(featureDefn.GetFieldDefn(i));
+        }
+        return fields;
+    }
+
+    public String getEncoding() {
+        return this.encoding;
+    }
+
+    public void setEncoding(String encoding) {
+        this.encoding = encoding;
     }
 
     private Driver getDriver() {
@@ -369,11 +368,48 @@ public class ShapeUtil {
     }
 
     public String getGeoTypeAsString() {
-        String name = typeMapper.get(getGeoType());
-        if (name == null) {
-            name = "未知";
+
+        int geoType = getGeoType();
+        switch (geoType) {
+            case wkbPoint:
+                return "点";
+            case wkbPointM:
+                return "点M";
+            case wkbPointZM:
+                return "点ZM";
+            case wkbMultiPoint:
+                return "点集合";
+            case wkbMultiPointM:
+                return "点集合M";
+            case wkbMultiPointZM:
+                return "点集合ZM";
+            case wkbLineString:
+                return "线";
+            case wkbLineStringM:
+                return "线M";
+            case wkbLineStringZM:
+                return "线ZM";
+            case wkbMultiLineString:
+                return "线集合";
+            case wkbMultiLineStringM:
+                return "线集合M";
+            case wkbMultiLineStringZM:
+                return "线集合ZM";
+            case wkbPolygon:
+                return "多边形";
+            case wkbPolygonM:
+                return "多边形M";
+            case wkbPolygonZM:
+                return "多边形ZM";
+            case wkbMultiPolygon:
+                return "多边形集合";
+            case wkbMultiPolygonM:
+                return "多边形集合M";
+            case wkbMultiPolygonZM:
+                return "多边形集合ZM";
+            default:
+                return "未知";
         }
-        return name;
     }
 
     public GeomFieldDefn addGeometry(String name) {
@@ -486,8 +522,7 @@ public class ShapeUtil {
         return geomTransformer.Transform(geometry);
     }
 
-    public GeomTransformer getGeomTransformerToWgs84()
-    {
+    public GeomTransformer getGeomTransformerToWgs84() {
 
         if (getSpatialRef() == null) {
             return null;
