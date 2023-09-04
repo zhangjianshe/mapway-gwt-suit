@@ -378,40 +378,54 @@ public class ShapeUtil {
                 return "点M";
             case wkbPointZM:
                 return "点ZM";
+            case wkbPoint25D:
+                return "点25D";
             case wkbMultiPoint:
                 return "点集合";
             case wkbMultiPointM:
                 return "点集合M";
             case wkbMultiPointZM:
                 return "点集合ZM";
+            case wkbMultiPoint25D:
+                return "点集合25D";
             case wkbLineString:
                 return "线";
             case wkbLineStringM:
                 return "线M";
             case wkbLineStringZM:
                 return "线ZM";
+            case wkbLineString25D:
+                return "线25D";
             case wkbMultiLineString:
                 return "线集合";
             case wkbMultiLineStringM:
                 return "线集合M";
             case wkbMultiLineStringZM:
                 return "线集合ZM";
+            case wkbMultiLineString25D:
+                return "线集合25D";
             case wkbPolygon:
                 return "多边形";
             case wkbPolygonM:
                 return "多边形M";
             case wkbPolygonZM:
                 return "多边形ZM";
+            case wkbPolygon25D:
+                return "多边形25D";
             case wkbMultiPolygon:
                 return "多边形集合";
             case wkbMultiPolygonM:
                 return "多边形集合M";
             case wkbMultiPolygonZM:
                 return "多边形集合ZM";
+            case wkbMultiPolygon25D:
+                return "多边形集合25D";
             default:
                 return "未知类型" + geoType;
         }
     }
+
+
 
     public GeomFieldDefn addGeometry(String name) {
         return addGeometry(name, null);
