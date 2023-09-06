@@ -105,6 +105,21 @@ public class GdalUtil {
         return coordinate;
     }
 
+    /**
+     * 根据行列号计算经纬度
+     * 若geoTransform不是长度为6位的数组会报错
+     * @param y 行号
+     * @param x 列号
+     * @param geoTransform
+     * @return
+     */
+    public static Point calcPointByRowAndCol(double x, double y, double[] geoTransform){
+        double px = geoTransform[0]+x*geoTransform[1]+y*geoTransform[2];
+        double py = geoTransform[3]+x*geoTransform[4]+y*geoTransform[5];
+        Point coordinate = new Point(px, py);
+        return coordinate;
+    }
+
 
     /**
      * 根据行列号计算经纬度
