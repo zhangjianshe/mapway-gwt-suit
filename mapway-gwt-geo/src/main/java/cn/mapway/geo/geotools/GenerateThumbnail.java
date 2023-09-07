@@ -35,15 +35,15 @@ import java.io.IOException;
 @Slf4j
 public class GenerateThumbnail {
 
-    private StyleFactory sf = CommonFactoryFinder.getStyleFactory();
+    private static StyleFactory sf = CommonFactoryFinder.getStyleFactory();
 
-    private FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
+    private static FilterFactory2 ff = CommonFactoryFinder.getFilterFactory2();
 
-    private Style redStyle = createPolygonStyle(Color.RED, 2.0f,null, 0.0f);
+    private static Style redStyle = createPolygonStyle(Color.RED, 2.0f,null, 0.0f);
 
-    private Style rgbStyle = createRGBStyle(1, 2, 3);
+    private static Style rgbStyle = createRGBStyle(1, 2, 3);
 
-    public void generateRaster(File imageUrl, File labelUrl, File thumbnailUrl, int width, int height) throws IOException {
+    public static void generateRaster(File imageUrl, File labelUrl, File thumbnailUrl, int width, int height) throws IOException {
         BufferedImage imageImage = Thumbnails.of(imageUrl).size(width, height).asBufferedImage();
         BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
 
@@ -64,7 +64,7 @@ public class GenerateThumbnail {
      * @param thumbnailUrl 缩略图文件
      * @throws IOException
      */
-    public void generateRaster(File imageUrl, File labelUrl, File thumbnailUrl) throws IOException {
+    public static void generateRaster(File imageUrl, File labelUrl, File thumbnailUrl) throws IOException {
         generateRaster(imageUrl, labelUrl, thumbnailUrl, 256, 256);
     }
 
@@ -77,11 +77,11 @@ public class GenerateThumbnail {
      * @return
      */
     // 根据传入的矢量生成tif,  矢量转栅格
-    public boolean generateVector(File rasterFile, String geojsons,  int splitSize, File exportUrl, boolean gcsFlag) {
+    public static boolean generateVector(File rasterFile, String geojsons,  int splitSize, File exportUrl, boolean gcsFlag) {
         return generateVector(rasterFile, geojsons, splitSize, exportUrl, 0.9, "webp", gcsFlag);
     }
 
-    public boolean generateVector(File rasterFile, String geojsons,  int splitSize, File exportUrl, double quality, String imageFormat, boolean gcsFlag) {
+    public static boolean generateVector(File rasterFile, String geojsons,  int splitSize, File exportUrl, double quality, String imageFormat, boolean gcsFlag) {
         try{
             final MapContent map = new MapContent();
             ReferencedEnvelope mapArea = null;
@@ -174,7 +174,7 @@ public class GenerateThumbnail {
         return true;
     }
 
-    private Style createRGBStyle(int ...channelNum) {
+    private static Style createRGBStyle(int ...channelNum) {
         SelectedChannelType[] sct = new SelectedChannelType[channelNum.length];
         ContrastEnhancement ce = sf.contrastEnhancement(ff.literal(1.0), ContrastMethod.NORMALIZE);
         for (int i = 0; i < 3; i++) {
@@ -186,7 +186,7 @@ public class GenerateThumbnail {
         return SLD.wrapSymbolizers(sym);
     }
 
-    public Style createPolygonStyle(Color outlineColor, float strokeWidth,  Color fillColor, float opacity) {
+    public static Style createPolygonStyle(Color outlineColor, float strokeWidth,  Color fillColor, float opacity) {
         org.geotools.styling.Stroke stroke = sf.createStroke(ff.literal(outlineColor), ff.literal(strokeWidth));
         Fill fill = Fill.NULL;
         if (fillColor != null) {
