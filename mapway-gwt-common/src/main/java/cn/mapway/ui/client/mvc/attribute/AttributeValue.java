@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import jsinterop.annotations.JsType;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

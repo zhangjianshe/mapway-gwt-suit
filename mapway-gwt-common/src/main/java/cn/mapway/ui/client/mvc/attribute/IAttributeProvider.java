@@ -9,7 +9,7 @@ import java.util.List;
  *
  * @author zhang
  */
-public interface IAttributeProvider {
+public interface IAttributeProvider extends IAttributeParser{
     String getAttributeTitle();
 
     /**
@@ -65,5 +65,4 @@ public interface IAttributeProvider {
      * @return
      */
     List<String> isValidate();
-
 }

@@ -4,10 +4,7 @@ import cn.mapway.ui.client.event.IEventHandler;
 import cn.mapway.ui.client.event.ISuccess;
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.mvc.Size;
-import cn.mapway.ui.client.mvc.attribute.AttributeValue;
-import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.IAttributeProvider;
-import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
+import cn.mapway.ui.client.mvc.attribute.*;
 import cn.mapway.ui.client.mvc.decorator.IEnabled;
 import cn.mapway.ui.client.mvc.decorator.IErrorMessage;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;
@@ -28,10 +25,7 @@ import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * CommonEventComposite
@@ -40,8 +34,11 @@ import java.util.Set;
  *
  * @author zhangjianshe@gmail.com
  */
-public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IEventHandler, IProvideSize, IAttributeProvider, IPageTip {
+public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IAttributeInit, IEventHandler, IProvideSize, IAttributeProvider, IPageTip {
+    public final static String TRUE = "true";
     private static final String ATTR_TIP = "tip";
+    //外部提供一个属性提供器
+    IAttributeProvider attributeProvider;
     Set<IAttributeReadyCallback> callbacks;
     Set<String> topics = new HashSet<>();
     List<TipData> tipDataList = new ArrayList<TipData>();
@@ -51,22 +48,23 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
     private String _id;
 
     public CommonEventComposite() {
+        attributeProvider = null;
         _id = randomId();
         callbacks = new HashSet<>();
     }
-    public final static String TRUE ="true";
+
     public static void setElementSelect(com.google.gwt.dom.client.Element element, boolean select) {
         if (select) {
-            element.setAttribute(ISelectable.SELECT_ATTRIBUTE,TRUE);
+            element.setAttribute(ISelectable.SELECT_ATTRIBUTE, TRUE);
         } else {
             element.removeAttribute(ISelectable.SELECT_ATTRIBUTE);
         }
     }
 
-    public boolean isSelected()
-    {
+    public boolean isSelected() {
         return TRUE.equals(getElement().getAttribute(ISelectable.SELECT_ATTRIBUTE));
     }
+
     @Override
     public void setSelect(boolean select) {
         setElementSelect(getWidget().getElement(), select);
@@ -216,31 +214,50 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public String getAttributeTitle() {
+        if (attributeProvider != null) {
+            return attributeProvider.getAttributeTitle();
+        }
         return "";
     }
 
     @Override
     public List<IAttribute> getAttributes() {
+        if (attributeProvider != null) {
+            return attributeProvider.getAttributes();
+        }
         return new ArrayList<>();
     }
 
     @Override
     public String getAttributeSummary() {
+        if (attributeProvider != null) {
+            return attributeProvider.getAttributeSummary();
+        }
         return "";
     }
 
     @Override
     public void commit() {
+        if (attributeProvider != null) {
+            attributeProvider.commit();
+        }
         // 都nothing
     }
 
     @Override
     public List<AttributeValue> flatten() {
+        if (attributeProvider != null) {
+            return attributeProvider.flatten();
+        }
         return new ArrayList<>();
     }
 
     @Override
     public void addAttributeReadyCallback(IAttributeReadyCallback callback) {
+        if (attributeProvider != null) {
+            attributeProvider.addAttributeReadyCallback(callback);
+            return;
+        }
         if (callback == null) {
             return;
         }
@@ -251,6 +268,12 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public void removeAttributeReadyCallback(IAttributeReadyCallback callback) {
+
+        if (attributeProvider != null) {
+            attributeProvider.removeAttributeReadyCallback(callback);
+            return;
+        }
+
         if (callback == null) {
             return;
         }
@@ -259,6 +282,9 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public List<String> isValidate() {
+        if (attributeProvider != null) {
+            return attributeProvider.isValidate();
+        }
         return new ArrayList<>();
     }
 
@@ -267,6 +293,11 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
      */
     @Override
     public void notifyAttributeReady() {
+        if (attributeProvider != null) {
+            attributeProvider.notifyAttributeReady();
+            return;
+        }
+
         for (IAttributeReadyCallback callback : callbacks) {
             callback.onAttributeReady(this);
         }
@@ -384,5 +415,20 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         } else {
             getElement().setAttribute(UIConstants.ERROR_MSG_KEY, message);
         }
+    }
+
+    @Override
+    public void initAttributes(IAttributeProvider attributeProvider) {
+        this.attributeProvider=attributeProvider;
+    }
+
+    @Override
+    public void parseAttribute(List<AttributeValue> values) {
+        if(attributeProvider!=null)
+        {
+            attributeProvider.parseAttribute(values);
+            return;
+        }
+       // not implements
     }
 }

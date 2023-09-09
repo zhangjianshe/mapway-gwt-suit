@@ -1,9 +1,6 @@
 package cn.mapway.ui.client.mvc.decorator.impl;
 
-import cn.mapway.ui.client.mvc.attribute.AttributeValue;
-import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.IAttributeProvider;
-import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
+import cn.mapway.ui.client.mvc.attribute.*;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.ArrayList;
@@ -16,7 +13,7 @@ import java.util.Set;
  *
  * @author zhang
  */
-public class AbstractDecoratorPanel extends SimplePanel implements IAttributeProvider {
+public class AbstractDecoratorPanel extends SimplePanel implements IAttributeProvider, IAttributeParser {
     String mId;
     Set<IAttributeReadyCallback> callbacks;
     public AbstractDecoratorPanel() {
@@ -83,6 +80,11 @@ public class AbstractDecoratorPanel extends SimplePanel implements IAttributePro
     @Override
     public List<String> isValidate() {
         return new ArrayList<>();
+    }
+
+    @Override
+    public void parseAttribute(List<AttributeValue> values) {
+
     }
 
     @Override

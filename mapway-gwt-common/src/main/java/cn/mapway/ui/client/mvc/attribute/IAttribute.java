@@ -8,12 +8,6 @@ package cn.mapway.ui.client.mvc.attribute;
  * @author zhang
  */
 public interface IAttribute {
-    // Shape File  字段类型 0 String 1 Integer 2 Float 3 DateTime 4 Boolean
-    int DT_STRING = 0;
-    int DT_INTEGER = 1;
-    int DT_FLOAT = 2;
-    int DT_DATETIME = 3;
-    int DT_BOOLEAN = 4;
 
 
     String getName();
