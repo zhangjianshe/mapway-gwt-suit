@@ -82,11 +82,15 @@ public class GenerateThumbnail {
     }
 
     public static boolean generateVector(File rasterFile, String geojsons,  int splitSize, File exportUrl, double quality, String imageFormat, boolean gcsFlag) {
+
         try{
             final MapContent map = new MapContent();
             ReferencedEnvelope mapArea = null;
             BufferedImage bi = null;
-            FeatureCollection featureCollection = null;
+            FeatureCollection featureCollection = GeojsonUtils.parseFeatures(geojsons);
+            if(featureCollection.isEmpty()){
+                return emptyLabel(rasterFile, imageFormat, quality, exportUrl);
+            }
             if(gcsFlag){
                 AbstractGridFormat format = GridFormatFinder.findFormat(rasterFile);
                 // this is a bit hacky but does make more geotiffs work
@@ -108,11 +112,9 @@ public class GenerateThumbnail {
                 mapArea = rasterLayer.getBounds();
                 // 初始化输出图像
                 bi = new BufferedImage(splitSize, splitSize, BufferedImage.TYPE_INT_ARGB);
-                featureCollection = GeojsonUtils.parseFeatures(geojsons);
             } else {
                 // 行列号坐标的使用
                 // 处理y轴倒转
-                featureCollection = GeojsonUtils.parseFeatures(geojsons);
                 try(FeatureIterator features = featureCollection.features()){
                     while(features.hasNext()){
                         SimpleFeature next = (SimpleFeature)features.next();
@@ -170,7 +172,30 @@ public class GenerateThumbnail {
                     .toFile(exportUrl);
         }catch (Exception e){
             log.error("exportThumbnailTile error", e);
+            try{
+                return emptyLabel(rasterFile, imageFormat, quality, exportUrl);
+            } catch (Exception ex){
+                log.error("exportThumbnailTile error", ex);
+                return false;
+            }
         }
+        return true;
+    }
+
+    private static boolean emptyLabel(File rasterFile, String imageFormat, double quality, File exportUrl) throws IOException {
+        BufferedImage bi = Images.read(rasterFile);
+        File parentFile = exportUrl.getParentFile();
+        if (!parentFile.exists()) {
+            parentFile.mkdirs();
+        }
+        int subIndex = exportUrl.getName().lastIndexOf(".");
+        if(subIndex != -1){
+            exportUrl = new File(exportUrl.getParentFile(), exportUrl.getName().substring(0, subIndex));
+        }
+        Thumbnails.of(bi).scale(1.0)
+                .outputFormat(imageFormat)
+                .outputQuality(quality)
+                .toFile(exportUrl);
         return true;
     }
 
