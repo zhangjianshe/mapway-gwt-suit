@@ -15,24 +15,7 @@
         <nutz.version>1.r.66</nutz.version>
         <slfj-api.version>1.7.33</slfj-api.version>
         <elementalVersion>1.1.0</elementalVersion>
-        <geotools.version>26.0</geotools.version>
     </properties>
-    <repositories>
-        <repository>
-            <id>osgeo</id>
-            <name>OSGeo Release Repository</name>
-            <url>https://repo.osgeo.org/repository/release/</url>
-            <snapshots><enabled>false</enabled></snapshots>
-            <releases><enabled>true</enabled></releases>
-        </repository>
-        <repository>
-            <id>osgeo-snapshot</id>
-            <name>OSGeo Snapshot Repository</name>
-            <url>https://repo.osgeo.org/repository/snapshot/</url>
-            <snapshots><enabled>true</enabled></snapshots>
-            <releases><enabled>false</enabled></releases>
-        </repository>
-    </repositories>
     <artifactId>mapway-gwt-geo</artifactId>
     <version>${project.parent.version}</version>
     <packaging>gwt-lib</packaging>
@@ -84,63 +67,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slfj-api.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-shapefile</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-epsg-hsql</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-geojson</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools.jdbc</groupId>
-            <artifactId>gt-jdbc-postgis</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-jdbc</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-swing</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-image</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.geotools</groupId>
-            <artifactId>gt-geotiff</artifactId>
-            <version>${geotools.version}</version>
-        </dependency>
-        <!-- webp -->
-        <dependency>
-            <groupId>net.coobird</groupId>
-            <artifactId>thumbnailator</artifactId>
-            <version>0.4.19</version>
-        </dependency>
-        <dependency>
-            <groupId>org.sejda.imageio</groupId>
-            <artifactId>webp-imageio</artifactId>
-            <version>0.1.6</version>
-        </dependency>
-        <!-- commons-lang3版本过低会导致 geotools报错 -->
-        <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-lang3</artifactId>
-            <version>3.11</version>
         </dependency>
     </dependencies>
     <build>
