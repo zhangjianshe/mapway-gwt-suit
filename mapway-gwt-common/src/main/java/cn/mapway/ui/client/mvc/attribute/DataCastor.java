@@ -11,6 +11,35 @@ import java.util.List;
 
 public class DataCastor {
 
+    public static Long castToLong(Object obj) {
+        if (obj instanceof String) {
+            String str = (String) obj;
+            str = str.trim();
+            if (str.length() == 0) {
+                return 0L;
+            }
+            return Long.parseLong(str);
+        } else if (obj instanceof Integer) {
+            Integer v = (Integer) obj;
+            return v.longValue();
+        } else if (obj instanceof Long) {
+            return (Long) obj;
+        } else if (obj instanceof Double) {
+            Double v = (Double) obj;
+            return v.longValue();
+        } else if (obj instanceof Float) {
+            Float v = (Float) obj;
+            return v.longValue();
+        } else if (obj instanceof Number) {
+            Number v = (Number) obj;
+            return v.longValue();
+        } else {
+            Logs.info("转换数据类型错误");
+            return 0L;
+        }
+    }
+
+
     public static Integer castToInteger(Object obj) {
         if (obj instanceof String) {
             String str = (String) obj;
@@ -23,6 +52,9 @@ public class DataCastor {
             return (Integer) obj;
         } else if (obj instanceof Double) {
             Double v = (Double) obj;
+            return v.intValue();
+        } else if (obj instanceof Long) {
+            Long v = (Long) obj;
             return v.intValue();
         } else if (obj instanceof Float) {
             Float v = (Float) obj;
@@ -50,6 +82,9 @@ public class DataCastor {
         } else if (obj instanceof Double) {
             Double v = (Double) obj;
             return Math.abs(v - 0.0001) > 0;
+        } else if (obj instanceof Long) {
+            Long v = (Long) obj;
+            return v != 0;
         } else if (obj instanceof Float) {
             Float v = (Float) obj;
             return Math.abs(v - 0.0001) > 0;
@@ -72,6 +107,9 @@ public class DataCastor {
             return v.toString();
         } else if (obj instanceof Float) {
             Float v = (Float) obj;
+            return v.toString();
+        } else if (obj instanceof Long) {
+            Long v = (Long) obj;
             return v.toString();
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
@@ -96,6 +134,9 @@ public class DataCastor {
         } else if (obj instanceof Double) {
             Double v = (Double) obj;
             return v;
+        } else if (obj instanceof Long) {
+            Long v = (Long) obj;
+            return v.doubleValue();
         } else if (obj instanceof Float) {
             Float v = (Float) obj;
             return v.doubleValue();
@@ -161,7 +202,7 @@ public class DataCastor {
         return stringBuilder.toString();
     }
 
-   public static  List<AttributeValue> attrFromJson(String json) {
+    public static List<AttributeValue> attrFromJson(String json) {
         List<AttributeValue> attributeValues = new ArrayList<>();
         if (json == null || json.length() == 0) {
             return attributeValues;

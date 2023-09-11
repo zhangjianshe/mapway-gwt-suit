@@ -151,6 +151,10 @@ public abstract class AbstractAttributeProvider implements IAttributeProvider, H
         return DataCastor.castToBoolean(obj);
     }
 
+    public Long castToLong(Object obj) {
+        return DataCastor.castToLong(obj);
+    }
+
     @Override
     public void parseAttribute(List<AttributeValue> values) {
         // not implementens
