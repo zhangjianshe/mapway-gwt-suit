@@ -4,6 +4,7 @@ import elemental2.core.JsArray;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
 
 import java.util.List;
 
@@ -157,5 +158,10 @@ public class ChartSerial {
     @JsOverlay
     public final void gauge(String name, List<Object> data) {
         build(name, "gauge", data);
+    }
+
+    @JsOverlay
+    public final void set(String key, Object value){
+        Js.asPropertyMap(this).set(key, value);
     }
 }
