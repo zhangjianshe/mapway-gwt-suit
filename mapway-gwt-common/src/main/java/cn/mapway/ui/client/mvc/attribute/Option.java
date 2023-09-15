@@ -19,11 +19,11 @@ public class Option implements Serializable, IsSerializable {
     boolean initSelected = false;
 
     public Option() {
+        this("", "");
     }
 
     public Option(String text, String value) {
-        this.text = text;
-        this.value = value;
+        this(text, value, "");
     }
 
     public Option(String text, String value, String icon) {

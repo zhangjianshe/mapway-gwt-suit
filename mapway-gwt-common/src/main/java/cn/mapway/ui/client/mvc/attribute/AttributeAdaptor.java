@@ -5,6 +5,8 @@ import cn.mapway.ui.client.tools.JSON;
 import elemental2.core.JsObject;
 import jsinterop.base.Js;
 
+import java.util.List;
+
 /**
  * AttributeAdaptor
  *
@@ -211,6 +213,27 @@ public abstract class AttributeAdaptor implements IAttribute {
 
     public AttributeAdaptor setOptions(String options) {
         this.options = options;
+        if(uiType==InputTypeEnum.INPUT_DROPDOWN.getCode())
+        {
+            //下拉框选择
+            IOptionProvider optionProvider=new IOptionProvider() {
+                List<Option> list = null;
+                @Override
+                public List<Option> getOptions() {
+                    if(list==null)
+                    {
+
+                    }
+                    return list;
+                }
+
+                @Override
+                public void setCallback(IOptionProviderCallback callback) {
+
+                }
+            };
+            setOptionProvider(optionProvider);
+        }
         return this;
     }
 
