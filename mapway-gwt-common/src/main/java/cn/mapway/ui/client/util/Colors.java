@@ -228,6 +228,20 @@ public class Colors {
     }
 
     /**
+     * int to #RRGGBB(AA)
+     * @param color
+     * @param withAlpha
+     * @return
+     */
+    public static String toHexRGBA(int color, boolean withAlpha) {
+        String hex = "#" + toHex(r(color)) + toHex(g(color)) + toHex(b(color));
+        if (withAlpha) {
+            hex += toHex(a(color));
+        }
+        return hex;
+    }
+
+    /**
      * 将 #RRGGBBAA -> int color value
      *
      * @param colorHex
