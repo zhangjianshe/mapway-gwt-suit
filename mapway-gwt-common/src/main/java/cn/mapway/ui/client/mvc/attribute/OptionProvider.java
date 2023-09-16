@@ -74,7 +74,6 @@ public class OptionProvider implements IOptionProvider {
                 }
             }
 
-
         } catch (Exception e) {
             Logs.info(e.getMessage());
         }

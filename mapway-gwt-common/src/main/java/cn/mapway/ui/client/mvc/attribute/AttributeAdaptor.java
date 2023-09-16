@@ -213,25 +213,10 @@ public abstract class AttributeAdaptor implements IAttribute {
 
     public AttributeAdaptor setOptions(String options) {
         this.options = options;
-        if(uiType==InputTypeEnum.INPUT_DROPDOWN.getCode())
-        {
+        if (uiType == InputTypeEnum.INPUT_DROPDOWN.getCode()) {
             //下拉框选择
-            IOptionProvider optionProvider=new IOptionProvider() {
-                List<Option> list = null;
-                @Override
-                public List<Option> getOptions() {
-                    if(list==null)
-                    {
-
-                    }
-                    return list;
-                }
-
-                @Override
-                public void setCallback(IOptionProviderCallback callback) {
-
-                }
-            };
+            OptionProvider optionProvider = new OptionProvider();
+            optionProvider.parse(options);
             setOptionProvider(optionProvider);
         }
         return this;
