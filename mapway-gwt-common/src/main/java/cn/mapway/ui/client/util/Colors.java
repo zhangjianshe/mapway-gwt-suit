@@ -227,6 +227,57 @@ public class Colors {
         return "#ffffff";
     }
 
+    /**
+     * 将 #RRGGBBAA -> int color value
+     *
+     * @param colorHex
+     * @return
+     */
+    public static int fromHex(String colorHex) {
+        if (colorHex == null || colorHex.length() == 0) {
+            return 0;
+        }
+        String hex = colorHex;
+        if (colorHex.startsWith("#")) {
+            hex = colorHex.substring(1);
+        }
+        int color = 0;
+        if (hex.length() >= 6) {
+            // RRGGBBAA
+            int r = Integer.parseInt(hex.substring(0, 2), 16);
+            int g = Integer.parseInt(hex.substring(2, 4), 16);
+            int b = Integer.parseInt(hex.substring(4, 6), 16);
+            color = setR(color, r);
+            color = setG(color, g);
+            color = setB(color, b);
+        }
+        if (hex.length() == 8) {
+            int a = Integer.parseInt(hex.substring(6, 8), 16);
+            color = setA(color, a);
+        } else {
+            color = setA(color, 255);
+        }
+        if (hex.length() == 3) {
+            int r = Integer.parseInt(hex.substring(0, 1), 16);
+            int g = Integer.parseInt(hex.substring(1, 2), 16);
+            int b = Integer.parseInt(hex.substring(2, 3), 16);
+            color = setR(color, r);
+            color = setG(color, g);
+            color = setB(color, b);
+        }
+        if (hex.length() == 4) {
+            int r = Integer.parseInt(hex.substring(0, 1), 16);
+            int g = Integer.parseInt(hex.substring(1, 2), 16);
+            int b = Integer.parseInt(hex.substring(2, 3), 16);
+            int a = Integer.parseInt(hex.substring(3, 4), 16);
+            color = setR(color, r);
+            color = setG(color, g);
+            color = setB(color, b);
+            color = setA(color, a);
+        }
+        return color;
+    }
+
     private static String toHex(int r) {
         String s = Integer.toHexString(r);
         if (s.length() == 1)
@@ -558,13 +609,13 @@ public class Colors {
     }
 
     /**
-     *  // 用户输入了 78% -> 0.78*255
-     *         // 用户输入了 78  -> 78
-     *         // .......  >255 -> 255
-     *         // .......  <0   -> 0
+     * // 用户输入了 78% -> 0.78*255
+     * // 用户输入了 78  -> 78
+     * // .......  >255 -> 255
+     * // .......  <0   -> 0
      *
      * @param value 可以使 AA% 也可以是 [0-255]之间的值
-     * @return  [0-255]之间的值
+     * @return [0-255]之间的值
      */
     public static Integer parseAlpha(String value) {
 

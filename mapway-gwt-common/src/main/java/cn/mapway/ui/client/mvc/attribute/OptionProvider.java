@@ -22,6 +22,10 @@ public class OptionProvider implements IOptionProvider {
     public static native boolean hasLength(Object obj) /*-{
         return typeof obj == 'object' && typeof obj.length == 'number';
     }-*/;
+    public static native String typeOf(Object obj) /*-{
+        return typeof obj;
+    }-*/;
+
 
     public void parse(String optionString) {
 
@@ -32,7 +36,7 @@ public class OptionProvider implements IOptionProvider {
 
         try {
             Object parse = JSON.parse(optionString);
-            String typeof = Js.typeof(parse);
+            String typeof = typeOf(parse);
             if (typeof == "string") {
                 String string = Js.asString(parse);
                 Option option = new Option(string, string);
@@ -50,7 +54,7 @@ public class OptionProvider implements IOptionProvider {
                 JsArrayLike<Object> arrayLike = Js.asArrayLike(parse);
                 for (int i = 0; i < arrayLike.getLength(); i++) {
                     Object item = arrayLike.getAt(i);
-                    typeof = Js.typeof(item);
+                    typeof =typeOf(item);
                     if (typeof == "string") {
                         String string = Js.asString(item);
                         Option option = new Option(string, string);
