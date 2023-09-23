@@ -47,7 +47,6 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
     }
 
 
-
     /**
      * 是否已经初始化了
      */
@@ -75,10 +74,14 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
      * @param hash
      * @return
      */
-    public  HashParameter parseHashParameter(String hash) {
+    public HashParameter parseHashParameter(String hash) {
         HashParameter hashParameter = new HashParameter();
         List<String> hashes = StringUtil.splitIgnoreBlank(hash, ";");
         StringBuilder hashParameterString = new StringBuilder();
+        if (hashes.size() > 0) {
+            hashParameter.hash = hashes.get(0);
+        }
+
         for (int i = 0; i < hashes.size(); i++) {
             String localHash = hashes.get(i);
             if (getModuleInfo().hash.equals(hash)) {
@@ -94,6 +97,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
                 hashParameterString.append(localHash);
             }
         }
+        hashParameter.subHashes = hashParameterString.toString();
         return hashParameter;
     }
 
