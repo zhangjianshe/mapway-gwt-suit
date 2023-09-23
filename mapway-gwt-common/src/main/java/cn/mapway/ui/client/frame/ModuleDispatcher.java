@@ -67,39 +67,65 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
             Logs.info("在模块切换中 开发人员不小心，传入了空的参数");
             return;
         }
+        ModuleInfo moduleInfo = moduleFactory.findModuleInfo(data.getModuleCode());
+        if (moduleInfo == null) {
+            Logs.info("没有模块信息" + data.getModuleCode());
+            return;
+        }
+
         IModule module = moduleFactory.createModule(data.getModuleCode(), true);
         if (module == null) {
             Logs.info("生成模块" + data.getModuleCode() + "错误");
             return;
         }
 
+        if (current != null && current.getModuleInfo().code.equals(data.getModuleCode())) {
+            //模块没有变化 可能是参数变化了
+            HashParameter hashParameter = parseHash(moduleInfo.hash, data.getHash());
+            data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES, hashParameter.subHashes);
+            current.initialize(null, data.getParameters());
+            return;
+        }
+
+
         if (current != null) {
             //保存浏览器导航数据
             History.newItem(current.getModuleInfo().hash, false);
         }
+
         RootLayoutPanel root = RootLayoutPanel.get();
         root.clear();
         current = module;
         root.add(current.getRootWidget());
+
+        HashParameter hashParameter = parseHash(moduleInfo.hash, data.getHash());
+        data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES, hashParameter.subHashes);
+        current.initialize(null, data.getParameters());
+    }
+
+    private HashParameter parseHash(String rootHash, String hash) {
+        HashParameter hashParameter = new HashParameter();
         //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
         // Hash may be like this #2A3F12;34490;443443
         // 提取出第一级模块 然后将其余的模块放入参数中
-        List<String> hashes = StringUtil.splitIgnoreBlank(data.getHash(), ";");
-
-        StringBuilder hashParameter = new StringBuilder();
-        for (int i = 0; i < hashes.size(); i++) {
-            String hash = hashes.get(i);
-            if (module.getModuleInfo().hash.equals(hash)) {
+        List<String> hashes = StringUtil.splitIgnoreBlank(hash, ";");
+        if (hashes.size() > 0) {
+            hashParameter.hash = hashes.get(0);
+        }
+        StringBuilder hashParameterString = new StringBuilder();
+        for (int i = 1; i < hashes.size(); i++) {
+            String hash0 = hashes.get(i);
+            if (hash0.equals(rootHash)) {
                 //模块哈希值与要调度的模块一致 移除
                 continue;
             }
-            if (hashParameter.length() > 0) {
-                hashParameter.append(";");
+            if (hashParameterString.length() > 0) {
+                hashParameterString.append(";");
             }
-            hashParameter.append(hash);
+            hashParameterString.append(hash);
         }
-        data.getParameters().put(KEY_MODULE_HASHES, hashParameter.toString());
-        current.initialize(null, data.getParameters());
+        hashParameter.subHashes = hashParameterString.toString();
+        return hashParameter;
     }
 
     @Override
