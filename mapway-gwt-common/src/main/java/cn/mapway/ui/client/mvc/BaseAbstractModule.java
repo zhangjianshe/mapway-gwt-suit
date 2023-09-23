@@ -75,7 +75,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
      * @param hash
      * @return
      */
-    public static HashParameter parseHashParameter(String hash) {
+    public  HashParameter parseHashParameter(String hash) {
         HashParameter hashParameter = new HashParameter();
         List<String> hashes = StringUtil.splitIgnoreBlank(hash, ";");
         StringBuilder hashParameterString = new StringBuilder();
