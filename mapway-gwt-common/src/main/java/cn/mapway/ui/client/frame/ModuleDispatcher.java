@@ -103,7 +103,7 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
         current.initialize(null, data.getParameters());
     }
 
-    private HashParameter parseHash(String rootHash, String hash) {
+    public static HashParameter parseHash(String rootHash, String hash) {
         HashParameter hashParameter = new HashParameter();
         //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
         // Hash may be like this #2A3F12;34490;443443
