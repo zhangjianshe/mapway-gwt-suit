@@ -11,10 +11,7 @@ import com.google.gwt.i18n.client.constants.TimeZoneConstants;
 import com.google.gwt.regexp.shared.RegExp;
 import elemental2.core.JsObject;
 
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,7 +39,7 @@ public class StringUtil {
         TimeZoneConstants timeZoneConstants = GWT.create(TimeZoneConstants.class);
         timeZoneShanghai = TimeZone.createTimeZone(timeZoneConstants.asiaShanghai());
         df = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT);
-        dfS = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT+".SSS");
+        dfS = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT + ".SSS");
 
     }
 
@@ -95,6 +92,9 @@ public class StringUtil {
     }
 
     public static List<String> splitIgnoreBlank(String s, String regex) {
+        if (s == null || regex == null) {
+            return new ArrayList<>();
+        }
         String[] ss = s.split(regex);
         List<String> list = new LinkedList<String>();
         for (String st : ss) {
@@ -476,10 +476,10 @@ public class StringUtil {
             return (String) obj;
         }
         if (obj instanceof Long) {
-            return obj + "";
+            return String.valueOf(obj);
         }
         if (obj instanceof Integer) {
-            return obj + "";
+            return String.valueOf(obj);
         }
         if (obj instanceof Float) {
             return StringUtil.formatDouble(((Float) obj).doubleValue(), 4);
@@ -491,9 +491,8 @@ public class StringUtil {
         }
     }
 
-    public static double random(double start,double end)
-    {
-      return start+ random.nextDouble()*(end-start);
+    public static double random(double start, double end) {
+        return start + random.nextDouble() * (end - start);
     }
 
     public static Double parseDouble(String value, double defaultValue) {
