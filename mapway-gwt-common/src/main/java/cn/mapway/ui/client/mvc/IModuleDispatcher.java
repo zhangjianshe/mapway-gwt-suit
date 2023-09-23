@@ -7,6 +7,9 @@ package cn.mapway.ui.client.mvc;
  * @author zhangjianshe
  */
 public interface IModuleDispatcher {
+    String MODULE_DISPATCH_EVENT = "MODULE_DISPATCH_EVENT";
+    String MODULE_RETURN_EVENT = "MODULE_DISPATCH_RETURN";
+    String KEY_MODULE_HASHES = "key_module_hashes";
 
     /**
      * 切换模块.

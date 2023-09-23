@@ -5,9 +5,11 @@ import cn.mapway.ui.client.event.IEventHandler;
 import cn.mapway.ui.client.mvc.*;
 import cn.mapway.ui.client.tools.IShowMessage;
 import cn.mapway.ui.client.util.Logs;
+import cn.mapway.ui.client.util.StringUtil;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.ui.RootLayoutPanel;
 
+import java.util.List;
 import java.util.Stack;
 
 /**
@@ -17,6 +19,10 @@ import java.util.Stack;
  * 2.接受来自 eventBus 上的模块调度消息
  * -调度模块
  * -返回之前的模块
+ * <p>
+ * 关于 URL中Hash
+ * 1.之前版本中的hash只支持一级模块 #2A3F12
+ * 2.变更之后支持多级模块的调度 #2A3F12;34490;443443
  *
  * @author zhangjianshe@gmail.com
  */
@@ -25,13 +31,12 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
     /**
      * 全局调度主题
      */
-    public final static String MODULE_DISPATCH_EVENT = "MODULE_DISPATCH_EVENT";
-    public final static String MODULE_RETURN_EVENT = "MODULE_DISPATCH_RETURN";
 
     EventBus eventBus;
     ModuleFactory moduleFactory = BaseAbstractModule.getModuleFactory();
     IModule current = null;
     Stack<IModule> widgets = new Stack<IModule>();
+
 
     /**
      * 全局模块调度器 需要一个全局的事件总线
@@ -43,7 +48,6 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
         this.eventBus.register(MODULE_DISPATCH_EVENT, this);
         this.eventBus.register(MODULE_RETURN_EVENT, this);
     }
-
 
     @Override
     public IModuleDispatcher switchModule(String code, ModuleParameter parameter, boolean saveToHistory) {
@@ -78,9 +82,23 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
         current = module;
         root.add(current.getRootWidget());
         //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
-        if (!module.getModuleInfo().hash.equals(data.getHash())) {
-            data.getParameters().put(data.getHash());
+        // Hash may be like this #2A3F12;34490;443443
+        // 提取出第一级模块 然后将其余的模块放入参数中
+        List<String> hashes = StringUtil.splitIgnoreBlank(data.getHash(), ";");
+
+        StringBuilder hashParameter = new StringBuilder();
+        for (int i = 0; i < hashes.size(); i++) {
+            String hash = hashes.get(i);
+            if (module.getModuleInfo().hash.equals(hash)) {
+                //模块哈希值与要调度的模块一致 移除
+                continue;
+            }
+            if (hashParameter.length() > 0) {
+                hashParameter.append(";");
+            }
+            hashParameter.append(hash);
         }
+        data.getParameters().put(KEY_MODULE_HASHES, hashParameter.toString());
         current.initialize(null, data.getParameters());
     }
 

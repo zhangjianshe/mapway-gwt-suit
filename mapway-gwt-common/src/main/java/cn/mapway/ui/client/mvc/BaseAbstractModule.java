@@ -1,8 +1,10 @@
 package cn.mapway.ui.client.mvc;
 
 import cn.mapway.ui.client.event.MessageObject;
+import cn.mapway.ui.client.frame.HashParameter;
 import cn.mapway.ui.client.mvc.decorator.help.HelpInfo;
 import cn.mapway.ui.client.mvc.decorator.help.IHelpProvider;
+import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
@@ -22,6 +24,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
 
     private static ModuleFactory FACTORY;
     IModuleCallback callback;
+    boolean initialized = false;
     private IModule mParentModule;
     private ModuleParameter mParameter;
 
@@ -43,24 +46,55 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
         return FACTORY;
     }
 
-    boolean initialized=false;
+
+
     /**
      * 是否已经初始化了
      */
-    public boolean hasInitialized()
-    {
+    public boolean hasInitialized() {
         return initialized;
     }
+
     @Override
     public boolean initialize(IModule parentModule, ModuleParameter parameter) {
-        initialized=true;
+        initialized = true;
         if (parameter == null) {
             mParameter = new ModuleParameter();
         } else {
             mParameter = parameter;
         }
         mParentModule = parentModule;
+
+
         return true;
+    }
+
+    /**
+     * 解析HAsh参数
+     *
+     * @param hash
+     * @return
+     */
+    public static HashParameter parseHashParameter(String hash) {
+        HashParameter hashParameter = new HashParameter();
+        List<String> hashes = StringUtil.splitIgnoreBlank(hash, ";");
+        StringBuilder hashParameterString = new StringBuilder();
+        for (int i = 0; i < hashes.size(); i++) {
+            String localHash = hashes.get(i);
+            if (getModuleInfo().hash.equals(hash)) {
+                //模块哈希值与要调度的模块一致 移除
+                continue;
+            }
+            if (hashParameter.hash.length() == 0) {
+                hashParameter.hash = hash;
+            } else {
+                if (hashParameterString.length() > 0) {
+                    hashParameterString.append(";");
+                }
+                hashParameterString.append(localHash);
+            }
+        }
+        return hashParameter;
     }
 
     /**
@@ -76,7 +110,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
 
     @Override
     public void unInitialize() {
-        initialized=false;
+        initialized = false;
     }
 
     @Override
