@@ -82,7 +82,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
             hashParameter.hash = hashes.get(0);
         }
 
-        for (int i = 0; i < hashes.size(); i++) {
+        for (int i = 1; i < hashes.size(); i++) {
             String localHash = hashes.get(i);
             if (getModuleInfo().hash.equals(hash)) {
                 //模块哈希值与要调度的模块一致 移除
