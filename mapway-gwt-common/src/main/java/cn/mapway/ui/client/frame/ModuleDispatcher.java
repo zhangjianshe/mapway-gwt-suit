@@ -81,8 +81,7 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
 
         if (current != null && current.getModuleInfo().code.equals(data.getModuleCode())) {
             //模块没有变化 可能是参数变化了
-            HashParameter hashParameter = parseHash(moduleInfo.hash, data.getHash());
-            data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES, hashParameter.subHashes);
+            data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES,data.getHash());
             current.initialize(null, data.getParameters());
             return;
         }
@@ -98,8 +97,7 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
         current = module;
         root.add(current.getRootWidget());
 
-        HashParameter hashParameter = parseHash(moduleInfo.hash, data.getHash());
-        data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES, hashParameter.subHashes);
+        data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES, data.getHash());
         current.initialize(null, data.getParameters());
     }
 
