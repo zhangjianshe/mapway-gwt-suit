@@ -115,6 +115,10 @@ public class AceEditor extends Composite implements RequiresResize, HasText, Tak
 	 */
 	public native void redisplay() /*-{
 		var editor = this.@cn.mapway.ace.client.AceEditor::editor;
+        if (editor==null || editor.renderer==null)
+		{
+            return;
+		}
 		editor.renderer.onResize(true);
 		editor.renderer.updateFull();
 		editor.resize();

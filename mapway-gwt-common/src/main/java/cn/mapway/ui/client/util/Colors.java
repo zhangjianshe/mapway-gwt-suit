@@ -229,6 +229,7 @@ public class Colors {
 
     /**
      * int to #RRGGBB(AA)
+     *
      * @param color
      * @param withAlpha
      * @return
@@ -519,6 +520,21 @@ public class Colors {
         }
         color.append(")");
         return color.toString();
+    }
+
+    public static int fromRGBA(String rgbaColor) {
+        byte[] bytes = fromRgba(rgbaColor);
+        if (bytes != null) {
+            if (bytes.length == 4) {
+                int color = Colors.fromColorByte(bytes[0], bytes[1], bytes[2], bytes[3]);
+                return color;
+            } else if (bytes.length == 3) {
+                return Colors.fromColorByte(bytes[0], bytes[1], bytes[2], (byte) 0xFF);
+            }
+            else return  0x000000FF;
+        } else {
+            return 0x000000FF;
+        }
     }
 
     /**
