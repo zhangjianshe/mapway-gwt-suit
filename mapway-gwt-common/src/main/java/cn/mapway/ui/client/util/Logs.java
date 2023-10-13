@@ -21,8 +21,17 @@ public class Logs {
         log(message);
     }
 
-   public native static void log(String message) /*-{
+    public native static void log(String message)/*-{
         console.log(message);
+    }-*/;
+
+   public native static void log(String message,String css) /*-{
+    if (css==null){
+        console.log(message);
+    }
+    else{
+        console.log(message,css);
+    }
     }-*/;
 
     public native static void log(Object message) /*-{
