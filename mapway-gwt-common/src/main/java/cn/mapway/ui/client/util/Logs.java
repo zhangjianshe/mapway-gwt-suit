@@ -21,6 +21,14 @@ public class Logs {
         log(message);
     }
 
+    public static void info(String message,String css) {
+        if (debugHandler != null && !debugHandler.getData()) {
+            return;
+        }
+        log(message,css);
+    }
+
+
     public native static void log(String message)/*-{
         console.log(message);
     }-*/;
