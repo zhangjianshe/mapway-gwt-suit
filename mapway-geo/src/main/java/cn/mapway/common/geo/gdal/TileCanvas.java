@@ -34,7 +34,7 @@ public class TileCanvas {
         tileNo = new TileNo(x, y, zoom);
         mercatorBox = WebMercator.tileBoundMercator(x, y, zoom);
         res = WebMercator.resolution(tileNo.getZoom());
-        buffer = new BufferedImage(256, 256, BufferedImage.TYPE_4BYTE_ABGR);
+        buffer = new BufferedImage(256, 256, BufferedImage.TYPE_INT_ARGB);
         graphics = buffer.createGraphics();
         graphics.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     }
