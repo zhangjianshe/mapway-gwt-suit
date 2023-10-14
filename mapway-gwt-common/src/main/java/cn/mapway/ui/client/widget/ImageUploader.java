@@ -87,6 +87,8 @@ public class ImageUploader extends CommonEventComposite {
     FontIcon btnUploader;
     @UiField
     FontIcon btnClear;
+    @UiField
+    FormPanel form;
     int currentImageWidth;
     int currentImageHeight;
     /**
@@ -114,12 +116,12 @@ public class ImageUploader extends CommonEventComposite {
                         "&relPath=" + URL.encodeQueryString(relpath);
                 String actionUrl = action + "?" + sb;
 
-                XMLHttpRequest request=new XMLHttpRequest();
-                FormData data=new FormData();
-                HTMLInputElement inputElement=Js.uncheckedCast(uploader.getElement());
-                data.set("file",inputElement.files.getAt(0));
-                request.open("POST",actionUrl);
-                request.onloadend= p0 -> {
+                XMLHttpRequest request = new XMLHttpRequest();
+                FormData data = new FormData();
+                HTMLInputElement inputElement = Js.uncheckedCast(uploader.getElement());
+                data.set("file", inputElement.files.getAt(0));
+                request.open("POST", actionUrl);
+                request.onloadend = p0 -> {
                     UploadReturn r = (UploadReturn) Global.JSON.parse(request.responseText);
                     if (r.retCode == 0) {
                         CommonEvent ev = CommonEvent.okEvent(r);
@@ -130,6 +132,7 @@ public class ImageUploader extends CommonEventComposite {
                     } else {
                         fireMessage(MessageObject.warn(MessageObject.CODE_FAIL, r.msg));
                     }
+                    form.reset();
                 };
                 request.send(data);
             } else {
@@ -300,7 +303,7 @@ public class ImageUploader extends CommonEventComposite {
     }
 
     private native String removePrev(String html)/*-{
-        return html.replace(/<.*?>/ig,"");
+        return html.replace(/<.*?>/ig, "");
     }-*/;
 
     /**
