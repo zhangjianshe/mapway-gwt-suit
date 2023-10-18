@@ -35,7 +35,7 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
         setIconUnicode(text);
     }
 
-    public void asToolButton(){
+    public void asToolButton() {
         setStyleName("ai-tool-btn");
     }
 
@@ -158,7 +158,11 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
      */
     public void setIconUnicode(String text) {
         iconUnicode = text;
-        getElement().setInnerHTML("&#x" + text);
+        if (iconUnicode == null || iconUnicode.length() == 0) {
+            getElement().setInnerHTML("");
+        } else {
+            getElement().setInnerHTML("&#x" + text);
+        }
     }
 
     @Override
