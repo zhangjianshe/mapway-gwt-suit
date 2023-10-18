@@ -113,6 +113,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int TOOLS = 100;
     public final static int CONVERT = 101;
     public final static int COPY = 102;
+    public final static int EXPAND = 103;
+    public final static int SHRINK = 104;
 
 
     public final static int OK = 200;
@@ -133,6 +135,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent expandEvent(Object data) {
+        return new CommonEvent(EXPAND, data);
+    }
+    public static CommonEvent shrinkEvent(Object data) {
+        return new CommonEvent(SHRINK, data);
     }
 
     public static CommonEvent toolsEvent(Object data) {
@@ -919,6 +927,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isConvert() {
         return CONVERT == this.type;
+    }
+    public boolean isExpand() {
+        return EXPAND == this.type;
+    }
+    public boolean isShrink() {
+        return SHRINK == this.type;
     }
 
     @Override
