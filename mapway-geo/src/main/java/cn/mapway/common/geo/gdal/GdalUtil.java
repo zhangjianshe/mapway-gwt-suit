@@ -38,14 +38,14 @@ public class GdalUtil {
      * @param geoTransform
      * @return
      */
-    public static int[] calcPointByLonAndlat(double x, double y, double[] geoTransform){
+    public static double[] calcPointByLonAndlat(double x, double y, double[] geoTransform){
         double dTemp = geoTransform[1] * geoTransform[5] - geoTransform[2] *geoTransform[4];
         double xPixel= (geoTransform[5] * (x - geoTransform[0]) - geoTransform[2] * (x - geoTransform[3])) / dTemp;
         double yPixel = (geoTransform[1] * (y - geoTransform[3]) - geoTransform[4] * (y - geoTransform[0])) / dTemp;
 
-        int[] result = new int[2];
-        result[0] =(int) Math.round(xPixel);
-        result[1] =(int) Math.round(yPixel);
+        double[] result = new double[2];
+        result[0] = xPixel;
+        result[1] = yPixel;
         return result;
     }
 
@@ -57,22 +57,20 @@ public class GdalUtil {
      * @param geoTransform
      * @return
      */
-    public static int[] calcPointByLonAndlat(double x, double y, List<Double> geoTransform){
+    public static double[] calcPointByLonAndlat(double x, double y, List<Double> geoTransform){
         double[] doubles = transformDoubleArrays(geoTransform);
-        return calcPointByLonAndlat(y, x , doubles);
+        return calcPointByLonAndlat(x, y , doubles);
     }
 
     /**
      * 根据行列号计算经纬度
      * 若geoTransform不是长度为6位的数组会报错
-     * @param i 行号
-     * @param j 列号
      * @param geoTransform
      * @return
      */
-    public static Point calcPointByRowAndCol(int i, int j, double[] geoTransform){
-        double px = geoTransform[0]+j*geoTransform[1]+i*geoTransform[2];
-        double py = geoTransform[3]+j*geoTransform[4]+i*geoTransform[5];
+    public static Point calcPointByRowAndCol(int x, int y, double[] geoTransform){
+        double px = geoTransform[0] + x * geoTransform[1] + y * geoTransform[2];
+        double py = geoTransform[3] + x * geoTransform[4] + y * geoTransform[5];
         Point coordinate = new Point(px, py);
         return coordinate;
     }
@@ -80,14 +78,44 @@ public class GdalUtil {
     /**
      * 根据行列号计算经纬度
      * 若geoTransform不是长度为6位的数组会报错
-     * @param i 行号
-     * @param j 列号
+     * @param y 行号
+     * @param x 列号
      * @param geoTransform
      * @return
      */
-    public static Point calcPointByRowAndCol(int i, int j, Double[] geoTransform){
-        double px = geoTransform[0]+j*geoTransform[1]+i*geoTransform[2];
-        double py = geoTransform[3]+j*geoTransform[4]+i*geoTransform[5];
+    public static Point calcPointByRowAndCol(int x, int y, Double[] geoTransform){
+        double px = geoTransform[0]+x*geoTransform[1]+y*geoTransform[2];
+        double py = geoTransform[3]+x*geoTransform[4]+y*geoTransform[5];
+        Point coordinate = new Point(px, py);
+        return coordinate;
+    }
+
+    /**
+     * 根据行列号计算经纬度
+     * 若geoTransform不是长度为6位的数组会报错
+     * @param y 行号
+     * @param x 列号
+     * @param geoTransform
+     * @return
+     */
+    public static Point calcPointByRowAndCol(double x, double y, Double[] geoTransform){
+        double px = geoTransform[0]+x*geoTransform[1]+y*geoTransform[2];
+        double py = geoTransform[3]+x*geoTransform[4]+y*geoTransform[5];
+        Point coordinate = new Point(px, py);
+        return coordinate;
+    }
+
+    /**
+     * 根据行列号计算经纬度
+     * 若geoTransform不是长度为6位的数组会报错
+     * @param y 行号
+     * @param x 列号
+     * @param geoTransform
+     * @return
+     */
+    public static Point calcPointByRowAndCol(double x, double y, double[] geoTransform){
+        double px = geoTransform[0]+x*geoTransform[1]+y*geoTransform[2];
+        double py = geoTransform[3]+x*geoTransform[4]+y*geoTransform[5];
         Point coordinate = new Point(px, py);
         return coordinate;
     }
