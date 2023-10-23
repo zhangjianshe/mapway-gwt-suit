@@ -69,6 +69,8 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         this.addDomHandler(this, ClickEvent.getType());
         downArrow.addClickHandler(this);
         popupPanel.setAutoHideEnabled(true);
+        //缺省最大300像素高
+        setPopupMaxHeight(300);
     }
 
     public void setPopupMaxHeight(int maxHeight) {
