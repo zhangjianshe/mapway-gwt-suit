@@ -1,4 +1,4 @@
-package cn.mapway.geo.geotools;
+package cn.mapway.common.geo.geotools;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;

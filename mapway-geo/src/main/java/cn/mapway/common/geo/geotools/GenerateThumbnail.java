@@ -1,4 +1,4 @@
-package cn.mapway.geo.geotools;
+package cn.mapway.common.geo.geotools;
 
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;

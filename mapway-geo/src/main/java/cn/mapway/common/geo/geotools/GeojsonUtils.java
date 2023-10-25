@@ -1,4 +1,4 @@
-package cn.mapway.geo.geotools;
+package cn.mapway.common.geo.geotools;
 
 import org.apache.commons.io.FileUtils;
 import org.geotools.data.collection.ListFeatureCollection;
