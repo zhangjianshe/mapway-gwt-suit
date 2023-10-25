@@ -1,0 +1,47 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:buttons="urn:import:cn.mapway.ui.client.widget.buttons"
+
+>
+    <ui:style>
+        .panel {
+            display: flex;
+            justify-content: end;
+            align-items: center;
+            gap: 5px;
+            padding-right: 10px;
+        }
+
+        .box {
+            background-color: #f0f0f0;
+            display: grid;
+            grid-template-columns: 2fr 1fr 400px;
+        }
+
+        .msg {
+            justify-self: start;
+            align-self: center;
+            padding-left: 10px;
+            text-wrap: balance;
+            overflow-wrap: break-word;
+            white-space: break-spaces;
+            width: 100%;
+            max-width: 100%;
+            overflow: auto;
+            max-height: 60px;
+        }
+
+        .warn {
+            justify-self: end;
+            align-self: center;
+            padding-right: 10px;
+        }</ui:style>
+    <g:HTMLPanel styleName="{style.box}">
+        <g:Label addStyleNames="{style.msg}" ui:field="lbMessage"/>
+        <g:Label addStyleNames="{style.warn}" ui:field="lbWarn"/>
+        <g:HTMLPanel styleName="{style.panel}">
+            <buttons:AiButton ui:field="btnSave">保存</buttons:AiButton>
+            <buttons:AiButton buttonStyle="second" ui:field="btnCancel">取消</buttons:AiButton>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>
