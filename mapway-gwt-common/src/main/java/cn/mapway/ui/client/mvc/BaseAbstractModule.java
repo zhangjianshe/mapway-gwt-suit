@@ -71,35 +71,15 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
 
     /**
      * 解析HAsh参数
+     * 324525;238;32432
+     * 模块ID  模块参数
+     * 本函数的功能 提取第一个参数到hash中
      *
      * @param hash
      * @return
      */
     public HashParameter parseHashParameter(String hash) {
-        HashParameter hashParameter = new HashParameter();
-        List<String> hashes = StringUtil.splitIgnoreBlank(hash, ModuleDispatcher.urlSeperator);
-        StringBuilder hashParameterString = new StringBuilder();
-        if (hashes.size() > 0) {
-            hashParameter.hash = hashes.get(0);
-        }
-
-        for (int i = 1; i < hashes.size(); i++) {
-            String localHash = hashes.get(i);
-            if (getModuleInfo().hash.equals(hash)) {
-                //模块哈希值与要调度的模块一致 移除
-                continue;
-            }
-            if (hashParameter.hash.length() == 0) {
-                hashParameter.hash = hash;
-            } else {
-                if (hashParameterString.length() > 0) {
-                    hashParameterString.append(";");
-                }
-                hashParameterString.append(localHash);
-            }
-        }
-        hashParameter.subHashes = hashParameterString.toString();
-        return hashParameter;
+        return ModuleDispatcher.parseHashParameter(getModuleInfo().hash, hash);
     }
 
     /**

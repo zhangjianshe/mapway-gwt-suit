@@ -5,7 +5,7 @@ public class HashParameter {
     /**
      * 模块的子模块hash值
      */
-    public String hash="";
+    public String code ="";
 
     /**
      * 子模块的参数

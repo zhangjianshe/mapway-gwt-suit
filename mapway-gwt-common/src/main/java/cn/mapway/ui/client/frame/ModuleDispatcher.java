@@ -27,8 +27,8 @@ import java.util.Stack;
  * @author zhangjianshe@gmail.com
  */
 public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShowMessage {
-
     public static final String urlSeperator = "[;!]";
+
     /**
      * 全局调度主题
      */
@@ -49,28 +49,46 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
         this.eventBus.register(MODULE_RETURN_EVENT, this);
     }
 
-    public static HashParameter parseHash(String rootHash, String hash) {
+    /**
+     * * 解析HAsh参数
+     * * 324525;238;32432
+     * * 模块ID  模块参数
+     * * 本函数的功能 提取第一个参数到hash中
+     *
+     * @param excludeFirst 第一个参数过滤
+     * @param hash
+     * @return
+     */
+    public static HashParameter parseHashParameter(String excludeFirst, String hash) {
+        if (hash == null || hash.length() == 0) {
+            return new HashParameter();
+        }
+        if (excludeFirst == null) {
+            excludeFirst = "";
+
+        }
+
         HashParameter hashParameter = new HashParameter();
-        //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
-        // Hash may be like this #2A3F12;34490;443443
-        // 提取出第一级模块 然后将其余的模块放入参数中
         List<String> hashes = StringUtil.splitIgnoreBlank(hash, urlSeperator);
-        if (hashes.size() > 0) {
-            hashParameter.hash = hashes.get(0);
-        }
-        StringBuilder hashParameterString = new StringBuilder();
-        for (int i = 1; i < hashes.size(); i++) {
-            String hash0 = hashes.get(i);
-            if (hash0.equals(rootHash)) {
-                //模块哈希值与要调度的模块一致 移除
-                continue;
+        boolean findHash = false;
+        StringBuilder paras = new StringBuilder();
+        for (int index = 0; index < hashes.size(); index++) {
+            String v = hashes.get(index);
+            if (!findHash) {
+                //找到第一个参数
+                if (!excludeFirst.equals(v)){
+                    findHash = true;
+                    hashParameter.code = v;
+                }
+            } else {
+                if (paras.length() > 0) {
+                    paras.append(";").append(v);
+                } else {
+                    paras.append(v);
+                }
             }
-            if (hashParameterString.length() > 0) {
-                hashParameterString.append(";");
-            }
-            hashParameterString.append(hash);
         }
-        hashParameter.subHashes = hashParameterString.toString();
+        hashParameter.subHashes = paras.toString();
         return hashParameter;
     }
 
