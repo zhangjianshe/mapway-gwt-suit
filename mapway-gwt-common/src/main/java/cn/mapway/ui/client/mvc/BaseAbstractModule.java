@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc;
 
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.frame.HashParameter;
+import cn.mapway.ui.client.frame.ModuleDispatcher;
 import cn.mapway.ui.client.mvc.decorator.help.HelpInfo;
 import cn.mapway.ui.client.mvc.decorator.help.IHelpProvider;
 import cn.mapway.ui.client.util.StringUtil;
@@ -76,7 +77,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
      */
     public HashParameter parseHashParameter(String hash) {
         HashParameter hashParameter = new HashParameter();
-        List<String> hashes = StringUtil.splitIgnoreBlank(hash, ";");
+        List<String> hashes = StringUtil.splitIgnoreBlank(hash, ModuleDispatcher.urlSeperator);
         StringBuilder hashParameterString = new StringBuilder();
         if (hashes.size() > 0) {
             hashParameter.hash = hashes.get(0);
