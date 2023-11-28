@@ -26,6 +26,7 @@ import org.opengis.style.ContrastMethod;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +50,37 @@ public class GenerateThumbnail {
         // 若波段数大于3 则只取前三个波段
         if(imageImage.getRaster().getNumBands() > 3){
             BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            bufferedImage.getGraphics().drawImage(imageImage, 0, 0, null);
+            Raster srcData = imageImage.getData();
+            WritableRaster dest = bufferedImage.getRaster();
+            int[] pixel = new int[srcData.getNumBands()];
+            int[] destPixel = new int[3];
+            for (int y = 0; y < srcData.getHeight(); y++) {
+                for (int x = 0; x < srcData.getWidth(); x++) {
+                    srcData.getPixel(x, y, pixel);
+                    destPixel[0] = pixel[3];
+                    destPixel[1] = pixel[2];
+                    destPixel[2] = pixel[1];
+                    dest.setPixel(x, y, destPixel);
+                }
+            }
+            imageImage = bufferedImage;
+        } else if(imageImage.getRaster().getNumBands() < 3){
+            // 认为它是单波段
+            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Raster srcData = imageImage.getData();
+            WritableRaster dest = bufferedImage.getRaster();
+            // 不一定是 int 需要根据波段类型来确定
+            int[] pixel = new int[srcData.getNumBands()];
+            int[] destPixel = new int[3];
+            for (int y = 0; y < srcData.getHeight(); y++) {
+                for (int x = 0; x < srcData.getWidth(); x++) {
+                    srcData.getPixel(x, y, pixel);
+                    destPixel[0] = pixel[0];
+                    destPixel[1] = pixel[0];
+                    destPixel[2] = pixel[0];
+                    dest.setPixel(x, y, destPixel);
+                }
+            }
             imageImage = bufferedImage;
         }
         BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
@@ -231,9 +262,9 @@ public class GenerateThumbnail {
     }
 
     public static void main(String[] args) throws IOException {
-        String imageUrl = "D:\\数据\\t\\4波段\\image\\1299683.tif";
-        String labelUrl = "D:\\数据\\t\\4波段\\label\\1299683.tif";
-        File thumbnailUrl = new File("D:\\数据\\t\\4波段\\thumbnail\\1299683.webp");
+        String imageUrl = "F:\\数据\\4波段\\image\\1299683.tif";
+        String labelUrl = "F:\\数据\\4波段\\label\\1299683.tif";
+        File thumbnailUrl = new File("F:\\数据\\4波段\\thumbnail\\1299683.webp");
         int width = 256;
         int height = 256;
 
@@ -241,9 +272,41 @@ public class GenerateThumbnail {
         // 若波段数大于3 则只取前三个波段
         if(imageImage.getRaster().getNumBands() > 3){
             BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            WritableRaster raster = bufferedImage.getRaster();
+            Raster srcData = imageImage.getData();
+            WritableRaster dest = bufferedImage.getRaster();
+            int[] pixel = new int[srcData.getNumBands()];
+            int[] destPixel = new int[3];
+            for (int y = 0; y < srcData.getHeight(); y++) {
+                for (int x = 0; x < srcData.getWidth(); x++) {
+                    srcData.getPixel(x, y, pixel);
+                    destPixel[0] = pixel[3];
+                    destPixel[1] = pixel[2];
+                    destPixel[2] = pixel[1];
+                    dest.setPixel(x, y, destPixel);
+                }
+            }
+            imageImage = bufferedImage;
+        } else if(imageImage.getRaster().getNumBands() < 3){
+            // 认为它是单波段
+            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            Raster srcData = imageImage.getData();
 
-            bufferedImage.getGraphics().drawImage(imageImage, 0, 0, null);
+            // TODO 后续需要更新 暴帅 现在还不支持单波段的不同格式, 以及配色表
+            int type = imageImage.getType();
+
+            WritableRaster dest = bufferedImage.getRaster();
+            // 不一定是 int 需要根据波段类型来确定
+            int[] pixel = new int[srcData.getNumBands()];
+            int[] destPixel = new int[3];
+            for (int y = 0; y < srcData.getHeight(); y++) {
+                for (int x = 0; x < srcData.getWidth(); x++) {
+                    srcData.getPixel(x, y, pixel);
+                    destPixel[0] = pixel[0];
+                    destPixel[1] = pixel[0];
+                    destPixel[2] = pixel[0];
+                    dest.setPixel(x, y, destPixel);
+                }
+            }
             imageImage = bufferedImage;
         }
         BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
