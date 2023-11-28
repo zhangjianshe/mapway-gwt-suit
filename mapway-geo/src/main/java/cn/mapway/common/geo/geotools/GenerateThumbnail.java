@@ -26,6 +26,7 @@ import org.opengis.style.ContrastMethod;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 
@@ -230,13 +231,21 @@ public class GenerateThumbnail {
     }
 
     public static void main(String[] args) throws IOException {
-        String imageUrl = "D:\\数据\\t\\Q_208_95_835_382___15360___8192.jpg";
-        String labelUrl = "D:\\数据\\t\\Q_208_95_835_382___15360___8192.tif";
-        File thumbnailUrl = new File("D:\\数据\\t\\0_1.webp");
+        String imageUrl = "D:\\数据\\t\\4波段\\image\\1299683.tif";
+        String labelUrl = "D:\\数据\\t\\4波段\\label\\1299683.tif";
+        File thumbnailUrl = new File("D:\\数据\\t\\4波段\\thumbnail\\1299683.webp");
         int width = 256;
         int height = 256;
 
         BufferedImage imageImage = Thumbnails.of(imageUrl).size(width, height).asBufferedImage();
+        // 若波段数大于3 则只取前三个波段
+        if(imageImage.getRaster().getNumBands() > 3){
+            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            WritableRaster raster = bufferedImage.getRaster();
+
+            bufferedImage.getGraphics().drawImage(imageImage, 0, 0, null);
+            imageImage = bufferedImage;
+        }
         BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
 
         BufferedImage cannyImg = new Canny().getCannyImg(labelImage, imageImage);
