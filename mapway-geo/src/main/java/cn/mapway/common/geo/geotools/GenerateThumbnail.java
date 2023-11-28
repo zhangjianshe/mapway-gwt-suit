@@ -45,6 +45,12 @@ public class GenerateThumbnail {
 
     public static void generateRaster(File imageUrl, File labelUrl, File thumbnailUrl, int width, int height) throws IOException {
         BufferedImage imageImage = Thumbnails.of(imageUrl).size(width, height).asBufferedImage();
+        // 若波段数大于3 则只取前三个波段
+        if(imageImage.getRaster().getNumBands() > 3){
+            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
+            bufferedImage.getGraphics().drawImage(imageImage, 0, 0, null);
+            imageImage = bufferedImage;
+        }
         BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
 
         Color color = new Color(255, 0, 0);
