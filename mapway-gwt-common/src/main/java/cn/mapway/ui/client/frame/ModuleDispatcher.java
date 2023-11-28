@@ -27,6 +27,7 @@ import java.util.Stack;
  * @author zhangjianshe@gmail.com
  */
 public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShowMessage {
+    public static final String urlSeperator = "[;!]";
 
     /**
      * 全局调度主题
@@ -37,7 +38,6 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
     IModule current = null;
     Stack<IModule> widgets = new Stack<IModule>();
 
-
     /**
      * 全局模块调度器 需要一个全局的事件总线
      *
@@ -47,6 +47,49 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
         this.eventBus = eventBus;
         this.eventBus.register(MODULE_DISPATCH_EVENT, this);
         this.eventBus.register(MODULE_RETURN_EVENT, this);
+    }
+
+    /**
+     * * 解析HAsh参数
+     * * 324525;238;32432
+     * * 模块ID  模块参数
+     * * 本函数的功能 提取第一个参数到hash中
+     *
+     * @param excludeFirst 第一个参数过滤
+     * @param hash
+     * @return
+     */
+    public static HashParameter parseHashParameter(String excludeFirst, String hash) {
+        if (hash == null || hash.length() == 0) {
+            return new HashParameter();
+        }
+        if (excludeFirst == null) {
+            excludeFirst = "";
+
+        }
+
+        HashParameter hashParameter = new HashParameter();
+        List<String> hashes = StringUtil.splitIgnoreBlank(hash, urlSeperator);
+        boolean findHash = false;
+        StringBuilder paras = new StringBuilder();
+        for (int index = 0; index < hashes.size(); index++) {
+            String v = hashes.get(index);
+            if (!findHash) {
+                //找到第一个参数
+                if (!excludeFirst.equals(v)){
+                    findHash = true;
+                    hashParameter.code = v;
+                }
+            } else {
+                if (paras.length() > 0) {
+                    paras.append(";").append(v);
+                } else {
+                    paras.append(v);
+                }
+            }
+        }
+        hashParameter.subHashes = paras.toString();
+        return hashParameter;
     }
 
     @Override
@@ -81,7 +124,7 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
 
         if (current != null && current.getModuleInfo().code.equals(data.getModuleCode())) {
             //模块没有变化 可能是参数变化了
-            data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES,data.getHash());
+            data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES, data.getHash());
             current.initialize(null, data.getParameters());
             return;
         }
@@ -99,31 +142,6 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
 
         data.getParameters().put(IModuleDispatcher.KEY_MODULE_HASHES, data.getHash());
         current.initialize(null, data.getParameters());
-    }
-
-    public static HashParameter parseHash(String rootHash, String hash) {
-        HashParameter hashParameter = new HashParameter();
-        //这里需要处理一下 mainwindow的hash值 如果 data.gethash == mainwindow的hash 则不需要放入参数中
-        // Hash may be like this #2A3F12;34490;443443
-        // 提取出第一级模块 然后将其余的模块放入参数中
-        List<String> hashes = StringUtil.splitIgnoreBlank(hash, ";");
-        if (hashes.size() > 0) {
-            hashParameter.hash = hashes.get(0);
-        }
-        StringBuilder hashParameterString = new StringBuilder();
-        for (int i = 1; i < hashes.size(); i++) {
-            String hash0 = hashes.get(i);
-            if (hash0.equals(rootHash)) {
-                //模块哈希值与要调度的模块一致 移除
-                continue;
-            }
-            if (hashParameterString.length() > 0) {
-                hashParameterString.append(";");
-            }
-            hashParameterString.append(hash);
-        }
-        hashParameter.subHashes = hashParameterString.toString();
-        return hashParameter;
     }
 
     @Override
@@ -144,13 +162,9 @@ public class ModuleDispatcher implements IModuleDispatcher, IEventHandler, IShow
 
     @Override
     public void showMessage(int level, Integer code, String message) {
-        if (current != null) {
+        if (current instanceof IShowMessage) {
             IShowMessage showMessage = (IShowMessage) current;
-            if (showMessage != null) {
-                showMessage.showMessage(level, code, message);
-            } else {
-                Logs.info(message);
-            }
+            showMessage.showMessage(level, code, message);
         } else {
             Logs.info(message);
         }

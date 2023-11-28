@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute;
 
 import cn.mapway.ui.client.tools.JSON;
 import cn.mapway.ui.client.util.Logs;
+import com.ibm.icu.impl.coll.BOCSU;
 import elemental2.core.JsArray;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
@@ -33,6 +34,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.longValue();
+        }  else if (obj instanceof Boolean) {
+            Boolean v = (Boolean) obj;
+            return v?1L:0L;
         } else {
             Logs.info("转换数据类型错误");
             return 0L;
@@ -62,6 +66,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.intValue();
+        }  else if (obj instanceof Boolean) {
+            Boolean v = (Boolean) obj;
+            return v?1:0;
         } else {
             Logs.info("转换数据类型错误");
             return 0;
@@ -91,6 +98,8 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.intValue() != 0;
+        }  else if (obj instanceof Boolean) {
+           return (Boolean) obj;
         } else {
             Logs.info("转换数据类型错误");
             return false;
@@ -114,6 +123,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.toString();
+        }  else if (obj instanceof Boolean) {
+            Boolean v = (Boolean) obj;
+            return v?"true":"false";
         } else {
             Logs.info("转换数据类型错误");
             return "";
@@ -143,6 +155,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.doubleValue();
+        }  else if (obj instanceof Boolean) {
+            Boolean v = (Boolean) obj;
+            return v?1.0:0.0;
         } else {
             Logs.info("转换数据类型错误");
             return 0.;
@@ -169,6 +184,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.floatValue();
+        }  else if (obj instanceof Boolean) {
+            Boolean v = (Boolean) obj;
+            return v?1.0f:0.0f;
         } else {
             Logs.info("转换数据类型错误");
             return 0f;

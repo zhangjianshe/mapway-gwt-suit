@@ -93,6 +93,9 @@ public class AiButton extends Button implements IData, ISelectable {
             setAttribute(BUTTON_STYLE_KEY, style);
         }
     }
+    public String getButtonStyle() {
+        return getElement().getAttribute(BUTTON_STYLE_KEY);
+    }
 
     public String getText(){
         if(StringUtil.isBlank(spanContext)){
