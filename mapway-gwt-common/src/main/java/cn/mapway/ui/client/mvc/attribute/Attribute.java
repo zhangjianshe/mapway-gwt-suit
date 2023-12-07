@@ -31,7 +31,7 @@ public class Attribute implements IAttribute {
     /**
      * 自定义模块代码
      */
-    private String moduleCode;
+    private String editorModuleCode;
 
 
     /**
@@ -168,8 +168,8 @@ public class Attribute implements IAttribute {
      * @return
      */
     @Override
-    public String getModuleCode() {
-        return moduleCode;
+    public String getEditorModuleCode() {
+        return editorModuleCode;
     }
 
     @Override
@@ -177,7 +177,7 @@ public class Attribute implements IAttribute {
         return options;
     }
 
-    public void setModuleCode(String moduleCode) {
-        this.moduleCode = moduleCode;
+    public void setEditorModuleCode(String editorModuleCode) {
+        this.editorModuleCode = editorModuleCode;
     }
 }

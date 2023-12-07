@@ -54,6 +54,6 @@ public interface IAttribute {
      *
      * @return
      */
-    String getModuleCode();
+    String getEditorModuleCode();
 
 }

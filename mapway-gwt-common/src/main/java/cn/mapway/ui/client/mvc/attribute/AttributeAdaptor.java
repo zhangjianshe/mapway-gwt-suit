@@ -32,11 +32,11 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String options = "";
 
     @Override
-    public String getModuleCode() {
+    public String getEditorModuleCode() {
         return moduleCode;
     }
 
-    public void setModuleCode(String moduleCode) {
+    public void setEditorModuleCode(String moduleCode) {
         this.moduleCode = moduleCode;
     }
 

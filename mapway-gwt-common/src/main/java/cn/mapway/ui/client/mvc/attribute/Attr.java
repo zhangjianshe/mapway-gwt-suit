@@ -88,6 +88,6 @@ public @interface Attr {
     String options() default "";
 
     //自定义输入框的模块代码
-    String moduleCode() default "";
+    String editorModuleCode() default "";
 
 }
