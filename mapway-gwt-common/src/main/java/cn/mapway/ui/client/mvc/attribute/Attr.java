@@ -87,4 +87,7 @@ public @interface Attr {
     //某种参数自定义的选项 一般为json字符串 由使用者解释
     String options() default "";
 
+    //自定义输入框的模块代码
+    String moduleCode() default "";
+
 }

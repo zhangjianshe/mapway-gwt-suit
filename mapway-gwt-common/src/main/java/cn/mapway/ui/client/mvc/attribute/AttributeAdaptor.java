@@ -30,6 +30,17 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String errorTip = "";
     protected String icon = "";
     protected String options = "";
+
+    @Override
+    public String getModuleCode() {
+        return moduleCode;
+    }
+
+    public void setModuleCode(String moduleCode) {
+        this.moduleCode = moduleCode;
+    }
+
+    protected String moduleCode="";
     protected IOptionProvider optionProvider = null;
 
     public AttributeAdaptor(String name) {

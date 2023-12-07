@@ -47,4 +47,13 @@ public interface IAttribute {
 
     IOptionProvider getOptionProvider();//选项提供者
 
+    /**
+     * 如果输入类型为10 INPUT_CUSTOM
+     * 会根据这返回值 创建一个模块，该模块具备 HasValue 和 HasValueChangeHandler 接口
+     * 系统会根据这个模块代码 创建模块 并展示
+     *
+     * @return
+     */
+    String getModuleCode();
+
 }

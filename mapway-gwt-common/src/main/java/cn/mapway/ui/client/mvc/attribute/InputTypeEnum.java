@@ -24,7 +24,8 @@ public enum InputTypeEnum {
     INPUT_SLIDER(6, "滑动条"),
     INPUT_PATH_ALL(7, "目录或者文件"),
     INPUT_TEXTAREA(8, "多行文本"),
-    INPUT_MULTI_FILE(9, "多文件目录输入");
+    INPUT_MULTI_FILE(9, "多文件目录输入"),
+    INPUT_CUSTOM(10, "自定义输入类型");
 
     int code;
     String name;
