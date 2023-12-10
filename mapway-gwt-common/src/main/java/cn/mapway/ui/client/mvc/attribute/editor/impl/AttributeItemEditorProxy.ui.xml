@@ -1,0 +1,32 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style type="cn.mapway.ui.client.mvc.attribute.editor.impl.AttributeItemEditorProxy.SStyle">
+        .layout3 {
+            display: grid;
+            grid-gap: 4px;
+            grid-template-columns: 120px 1fr 80px;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .layout2 {
+            display: grid;
+            grid-gap: 4px;
+            grid-template-columns: 120px 1fr;
+            align-items: center;
+            justify-content: space-between;
+        }
+        .error{
+            color:red;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .head {
+            font-weight: bold;
+            font-style: italic;
+        }</ui:style>
+    <g:HTMLPanel styleName="{style.layout2}" ui:field="box">
+        <g:Label ui:field="lbHeader" styleName="{style.head}"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

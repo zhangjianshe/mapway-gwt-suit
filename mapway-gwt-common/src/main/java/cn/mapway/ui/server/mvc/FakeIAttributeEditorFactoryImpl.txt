@@ -1,0 +1,48 @@
+
+
+    private static Map<String, IAttributeEditor> SINGLE_INSTANCE;
+
+    public AttributeEditorFactoryImpl() {
+        SINGLE_INSTANCE = new HashMap<>();
+    }
+
+    /**
+     * 创建编辑器
+     * 实现逻辑为
+     * 根据列表 依次创建
+     *
+     * @param code  编辑器的唯一代码
+     * @param reuse 是否重用
+     * @return
+     */
+    @Override
+    public IAttributeEditor createEditor(String code, boolean reuse) {
+
+        if (reuse) {
+            IAttributeEditor editor = SINGLE_INSTANCE.get(code);
+            if (editor == null) {
+                editor = createOne(code);
+                SINGLE_INSTANCE.put(code, editor);
+            }
+            return editor;
+        } else {
+            return createOne(code);
+        }
+    }
+
+    private IAttributeEditor createOne(String code) {
+        // 这段代码 放在这里是为了下面的代码更有一致性
+        if (code == null || code.length() == 0) {
+            return null;
+        }
+        //下面的逻辑为 编译器自动生成的逻辑 根据每一个实现的属性编辑器创建一个生成代码
+//         else if("".equals(code))
+//         {
+//             return new XXXXEDITOR();
+//         }
+        //ATTRIBUTE_EDITOR_CREATOR_LIST
+
+
+        return null;
+    }
+

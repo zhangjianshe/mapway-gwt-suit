@@ -1,0 +1,7 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:color="urn:import:cn.mapway.ui.client.widget.color">
+    <g:HTMLPanel>
+        <color:AiColor ui:field="txtColor"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

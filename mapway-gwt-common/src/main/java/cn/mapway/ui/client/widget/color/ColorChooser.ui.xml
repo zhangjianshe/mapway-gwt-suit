@@ -1,0 +1,62 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:c="urn:import:cn.mapway.ui.client.widget" xmlns:color="urn:import:cn.mapway.ui.client.widget.color"
+>
+    <ui:style>
+        .box {
+            border: solid 1px transparent;
+        }
+
+        .box:HOVER {
+            border: solid 1px #f0f0f0;
+        }
+
+        .box:hover input[h="true"] {
+            border-right: solid 1px #f0f0f0;
+        }
+
+        .box[select=true] {
+            border: solid 1px skyblue;
+        }
+
+
+        .pt {
+            text-transform: uppercase;
+        }
+
+        .round {
+            border-radius: 7px;
+            border: solid 1px rgba(0, 0, 0, 0.5);
+        }</ui:style>
+    <g:DockLayoutPanel ui:field="root">
+        <g:north size="300">
+            <color:ColorCanvas ui:field="colorCanvas"/>
+        </g:north>
+        <g:north size="100">
+            <g:HTMLPanel>
+                <g:HorizontalPanel width="100%" spacing="5" horizontalAlignment="center" verticalAlignment="middle">
+                    <g:cell size="50">
+                        <g:Label></g:Label>
+                    </g:cell>
+                    <g:VerticalPanel spacing="5">
+                        <color:HueChooser ui:field="hueSelector" addStyleNames="{style.round}"/>
+                        <color:TransparentChooser ui:field="transparentSelector"/>
+                    </g:VerticalPanel>
+                </g:HorizontalPanel>
+                <g:HorizontalPanel width="100%" spacing="3" horizontalAlignment="center" verticalAlignment="middle">
+                    <g:cell size="35">
+                        <c:Dropdown width="35px" popupMaxHeight="120" ui:field="ddlType"/>
+                    </g:cell>
+                    <g:cell horizontalAlignment="right">
+                        <g:HorizontalPanel styleName="{style.box}" ui:field="colorPanel">
+                            <g:TextBox ui:field="txtR" width="40px" styleName="style-edit temp {style.pt}"/>
+                            <g:TextBox ui:field="txtG" width="40px" styleName="style-edit temp {style.pt}"/>
+                            <g:TextBox ui:field="txtB" width="40px" styleName="style-edit temp {style.pt}"/>
+                            <g:TextBox ui:field="txtAlpha" width="45px" styleName="style-edit {style.pt}"/>
+                        </g:HorizontalPanel>
+                    </g:cell>
+                </g:HorizontalPanel>
+            </g:HTMLPanel>
+        </g:north>
+    </g:DockLayoutPanel>
+</ui:UiBinder>
