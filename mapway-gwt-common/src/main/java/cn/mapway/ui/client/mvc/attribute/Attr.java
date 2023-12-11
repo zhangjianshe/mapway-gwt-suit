@@ -90,4 +90,10 @@ public @interface Attr {
     //自定义输入框的模块代码
     String editorModuleCode() default "";
 
+    /**
+     * 编辑器属性 JSON serial String
+     *
+     * @return
+     */
+    String editorOptions() default "{}";
 }

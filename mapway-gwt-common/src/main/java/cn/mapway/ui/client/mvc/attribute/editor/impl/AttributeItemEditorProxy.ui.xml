@@ -3,28 +3,42 @@
     <ui:style type="cn.mapway.ui.client.mvc.attribute.editor.impl.AttributeItemEditorProxy.SStyle">
         .layout3 {
             display: grid;
-            grid-gap: 4px;
+            grid-gap: 8px;
             grid-template-columns: 120px 1fr 80px;
             align-items: center;
             justify-content: space-between;
+            justify-items: flex-end;
+            border-bottom: solid 1px rgba(0, 0, 0, 0.2);
+            padding: 4px 0;
+            min-height: 43px;
         }
 
         .layout2 {
             display: grid;
-            grid-gap: 4px;
+            grid-gap: 8px;
             grid-template-columns: 120px 1fr;
             align-items: center;
             justify-content: space-between;
+            justify-items: flex-end;
+            border-bottom: solid 1px rgba(0, 0, 0, 0.1);
+            padding: 4px 0;
+            min-height: 43px;
         }
-        .error{
-            color:red;
+
+        .error {
+            color: red;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            width: 100%;
+            cursor: default;
         }
+
         .head {
             font-weight: bold;
             font-style: italic;
+            cursor: default;
+            justify-self: flex-start;
         }</ui:style>
     <g:HTMLPanel styleName="{style.layout2}" ui:field="box">
         <g:Label ui:field="lbHeader" styleName="{style.head}"/>

@@ -56,6 +56,9 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
         updateUI();
     }
 
+    /**
+     * 当数据发生变化后 调用这个方法更新界面的数据
+     */
     public void updateUI() {
         IAttribute attribute = getAttribute();
         if (getAttribute().isReadonly()) {

@@ -5,8 +5,6 @@ import cn.mapway.ui.client.tools.JSON;
 import elemental2.core.JsObject;
 import jsinterop.base.Js;
 
-import java.util.List;
-
 /**
  * AttributeAdaptor
  *
@@ -30,17 +28,8 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String errorTip = "";
     protected String icon = "";
     protected String options = "";
-
-    @Override
-    public String getEditorModuleCode() {
-        return moduleCode;
-    }
-
-    public void setEditorModuleCode(String moduleCode) {
-        this.moduleCode = moduleCode;
-    }
-
-    protected String moduleCode="";
+    protected String editorOptions = "{}";
+    protected String moduleCode = "";
     protected IOptionProvider optionProvider = null;
 
     public AttributeAdaptor(String name) {
@@ -54,13 +43,35 @@ public abstract class AttributeAdaptor implements IAttribute {
     public AttributeAdaptor() {
         this("", "", DbFieldType.FLD_TYPE_STRING.getCode(), InputTypeEnum.INPUT_TEXTBOX.code, "");
     }
-
     public AttributeAdaptor(String name, String altName, int dataType, int uiType, String defaultValue) {
         this.name = name;
         this.altName = altName;
         this.dataType = dataType;
         this.uiType = uiType;
         this.defaultValue = defaultValue;
+    }
+
+    @Override
+    public String getEditorOptions() {
+        return editorOptions;
+    }
+
+    public AttributeAdaptor setEditorOptions(String editorOptions) {
+        this.editorOptions = editorOptions;
+        if (editorOptions == null || editorOptions.length() == 0) {
+            this.editorOptions = "{}";
+        }
+        return this;
+    }
+
+    @Override
+    public String getEditorModuleCode() {
+        return moduleCode;
+    }
+
+    public AttributeAdaptor setEditorModuleCode(String moduleCode) {
+        this.moduleCode = moduleCode;
+        return this;
     }
 
     @Override

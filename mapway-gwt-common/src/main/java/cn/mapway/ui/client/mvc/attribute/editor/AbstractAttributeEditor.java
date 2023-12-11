@@ -4,7 +4,6 @@ import cn.mapway.ui.client.db.DbFieldType;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.tools.JSON;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
@@ -18,12 +17,22 @@ import elemental2.core.JsObject;
  * 继承类实现 setValue getValue
  * 提供 popupWidget 会提供一个 button进行选择
  * 提供 DisplayWidget 会显示widget 没有 会使用缺省的 TextBox
+ * <p>
+ * 如何自定义个一个属性编辑器 参考 TextBoxAttributeEditor
+ * 1.继承此类
+ * 2.提供一个属性编辑器的CODE
+ * 3.重载 setAttribute getDisplayWidget getPopupWidget
  */
 public abstract class AbstractAttributeEditor<T> extends CommonEventComposite implements IAttributeEditor<T> {
     IAttribute attribute;
     EditorOption editorOption;
     private Object data;
 
+    /**
+     * 返回编辑器弹出窗的缺省大小
+     *
+     * @return
+     */
     @Override
     public Size getSize() {
         return new Size(700, 600);
@@ -33,10 +42,21 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         return attribute;
     }
 
+    /**
+     * 获取编辑器选项
+     *
+     * @return
+     */
     public EditorOption getEditorOption() {
         return editorOption;
     }
 
+    /**
+     * 更新编辑器的某个选项
+     *
+     * @param key
+     * @param value
+     */
     public void updateEditorOption(String key, Object value) {
         if (key != null) {
             getEditorOption().set(key, value);
@@ -44,6 +64,9 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         }
     }
 
+    /**
+     * 更新所有的编辑器选项
+     */
     public void updateAllEditorOption() {
         onEditorOptionChanged(null);
     }
@@ -51,23 +74,27 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
     /**
      * 某个编辑属性改变了值
      *
-     * @param key
+     * @param key 如果key is null or empty 更新所有的属性编辑器组件的选项
      */
     public void onEditorOptionChanged(String key) {
 
     }
 
     /**
-     * @param attribute
+     * 设置组件编辑器的内容
+     *
+     * @param editorOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
+     * @param attribute    属性编辑器对应的属性内容
      */
     @Override
     public void setAttribute(EditorOption editorOption, IAttribute attribute) {
         assert attribute != null;
         this.attribute = attribute;
-        this.editorOption = editorOption;
-        if (this.editorOption == null) {
-            this.editorOption = new EditorOption();
-        }
+        this.editorOption = new EditorOption();
+        //先从定义中获取 编辑器选项
+        this.editorOption.parseOptionValue(attribute.getEditorOptions());
+        //将传入的选项和 定义的选项merge
+        this.editorOption.merge(editorOption);
     }
 
     @Override
@@ -80,11 +107,19 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         data = obj;
     }
 
+    /**
+     * 当数据发生变化后 调用这个方法更新界面的数据
+     */
     @Override
-    public void updateUI(){
+    public void updateUI() {
 
     }
 
+    /**
+     * 获取弹出的窗口内容
+     *
+     * @return
+     */
     @Override
     public Widget getPopupWidget() {
         return null;
@@ -164,7 +199,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
 
         if (obj instanceof JsObject) {
             JsObject jsObject = (JsObject) obj;
-            return JSON.stringify(obj);
+            return jsObject.toString();
         }
         return DataCastor.castToString(obj);
     }

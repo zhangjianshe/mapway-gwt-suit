@@ -56,4 +56,11 @@ public interface IAttribute {
      */
     String getEditorModuleCode();
 
+
+    /**
+     * 属性对应编辑器的信息
+     * @return
+     */
+    String getEditorOptions();
+
 }

@@ -33,6 +33,12 @@ public class Attribute implements IAttribute {
      */
     private String editorModuleCode;
 
+    private String editorOptions;
+
+    @Override
+    public String getEditorOptions(){
+        return editorOptions;
+    }
 
     /**
      * 简单为本狂
