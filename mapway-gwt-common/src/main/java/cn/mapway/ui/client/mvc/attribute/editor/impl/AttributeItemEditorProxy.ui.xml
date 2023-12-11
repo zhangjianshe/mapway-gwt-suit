@@ -35,10 +35,10 @@
         }
 
         .head {
-            font-weight: bold;
-            font-style: italic;
             cursor: default;
             justify-self: flex-start;
+            padding-left: 1rem;
+            align-self: center;
         }</ui:style>
     <g:HTMLPanel styleName="{style.layout2}" ui:field="box">
         <g:Label ui:field="lbHeader" styleName="{style.head}"/>

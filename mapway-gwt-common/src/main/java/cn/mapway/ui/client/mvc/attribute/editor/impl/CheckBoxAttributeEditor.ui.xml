@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:buttons="urn:import:cn.mapway.ui.client.widget.buttons">
     <g:HTMLPanel>
-        <g:SimpleCheckBox ui:field="checkBox"/>
+        <buttons:AiCheckBox ui:field="checkBox"/>
     </g:HTMLPanel>
 </ui:UiBinder>

@@ -40,9 +40,22 @@ public abstract class AttributeAdaptor implements IAttribute {
         this(name, alterName, DbFieldType.FLD_TYPE_STRING.getCode(), InputTypeEnum.INPUT_TEXTBOX.code, null);
     }
 
+    /**
+     * 构建一个自定义模块的属性
+     *
+     * @param name           输出名称
+     * @param customEditCode 编辑器代码
+     * @param dataType       数据类型
+     */
+    public AttributeAdaptor(String name, String alterName, String customEditCode, int dataType) {
+        this(name, alterName, dataType, InputTypeEnum.INPUT_CUSTOM_EDITOR.code, "");
+        this.setEditorModuleCode(customEditCode);
+    }
+
     public AttributeAdaptor() {
         this("", "", DbFieldType.FLD_TYPE_STRING.getCode(), InputTypeEnum.INPUT_TEXTBOX.code, "");
     }
+
     public AttributeAdaptor(String name, String altName, int dataType, int uiType, String defaultValue) {
         this.name = name;
         this.altName = altName;
@@ -255,4 +268,5 @@ public abstract class AttributeAdaptor implements IAttribute {
         slider.continueReport = continueReport;
         return JSON.stringify(slider);
     }
+
 }

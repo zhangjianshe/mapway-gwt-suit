@@ -5,11 +5,11 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.widget.buttons.AiCheckBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.SimpleCheckBox;
 import com.google.gwt.user.client.ui.Widget;
 
 @AttributeEditor(CheckBoxAttributeEditor.EDITOR_CODE)
@@ -17,7 +17,8 @@ public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
     public static final String EDITOR_CODE = "CHECKBOX_EDITOR";
     private static final CheckBoxAttributeEditorUiBinder ourUiBinder = GWT.create(CheckBoxAttributeEditorUiBinder.class);
     @UiField
-    SimpleCheckBox checkBox;
+    AiCheckBox checkBox;
+
     public CheckBoxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         checkBox.addValueChangeHandler(event -> {
@@ -42,8 +43,8 @@ public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
 
 
     @Override
-    public void setAttribute(EditorOption editorOption,IAttribute attribute) {
-        super.setAttribute(editorOption,attribute);
+    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
+        super.setAttribute(editorOption, attribute);
         updateUI();
     }
 
