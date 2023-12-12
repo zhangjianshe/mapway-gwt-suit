@@ -108,10 +108,11 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
     }
 
     /**
-     * 当数据发生变化后 调用这个方法更新界面的数据
+     * 重载 这个方法进行弹出窗口设置
+     * @param editorOption
      */
     @Override
-    public void updateUI() {
+    public void popupInit(EditorOption editorOption) {
 
     }
 
@@ -125,15 +126,6 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         return null;
     }
 
-    /**
-     * 返回缺省的显示组件
-     *
-     * @return
-     */
-    @Override
-    public Widget getDisplayWidget() {
-        return null;
-    }
 
 
     /**

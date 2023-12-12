@@ -13,7 +13,6 @@ import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.*;
-import elemental2.core.JsObject;
 
 public class AttributeItemEditorProxy extends Composite {
     private static final AttributeItemEditorProxyUiBinder ourUiBinder = GWT.create(AttributeItemEditorProxyUiBinder.class);
@@ -108,10 +107,6 @@ public class AttributeItemEditorProxy extends Composite {
         attributeEditor.updateAllEditorOption();
     }
 
-    public void updateUI(){
-        attributeEditor.updateUI();
-    }
-
 
     private void loadEditor(String code) {
 
@@ -164,14 +159,11 @@ public class AttributeItemEditorProxy extends Composite {
         popup.setPixelSize(size.getXAsInt(), size.getYAsInt());
         popup.addCommonHandler(commonEvent -> {
             if (commonEvent.isOk()) {
-                JsObject jsObject = commonEvent.getValue();
-                if (jsObject != null) {
-                    attributeEditor.setValue(jsObject, true);
-                }
+                attributeEditor.setValue(commonEvent.getValue(), true);
             }
             popup.hide(true);
         });
-        attributeEditor.loadPopupData();
+        attributeEditor.popupInit(getEditorOption());
         popup.showRelativeTo(popupWidget);
 
     }

@@ -48,10 +48,6 @@ public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
         updateUI();
     }
 
-    @Override
-    public void loadPopupData() {
-
-    }
 
     public void updateUI() {
         IAttribute attribute = getAttribute();

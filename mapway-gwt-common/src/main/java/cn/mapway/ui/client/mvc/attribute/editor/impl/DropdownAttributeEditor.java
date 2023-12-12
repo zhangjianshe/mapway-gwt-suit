@@ -40,10 +40,6 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
         return EDITOR_CODE;
     }
 
-    @Override
-    public void loadPopupData() {
-
-    }
 
     @Override
     public Widget getDisplayWidget() {

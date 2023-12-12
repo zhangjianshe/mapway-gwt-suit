@@ -47,15 +47,13 @@ public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
 
     Size getSize();
 
-    // 加载popup window's data
-    void loadPopupData();
-
     void updateEditorOption(String key, Object value);
 
     void updateAllEditorOption();
 
     /**
-     * 根据数值 更新UI
+     * 需要显示弹出框的时候 会调用这个方法
+     * @param editorOption
      */
-    void updateUI();
+    void popupInit(EditorOption editorOption);
 }
