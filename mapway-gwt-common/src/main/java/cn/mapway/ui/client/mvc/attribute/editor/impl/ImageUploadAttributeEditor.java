@@ -19,7 +19,11 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 图片上传相关属性编辑器
  */
-@AttributeEditor(ImageUploadAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value = ImageUploadAttributeEditor.EDITOR_CODE,
+        name= "图像选择",
+        group = "运行时",
+        summary = "上传一个图像",
+        author = "ZJS")
 public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "IMAGE_UPLOAD_EDITOR";
     private static final ImageUploadAttributeEditorUiBinder ourUiBinder = GWT.create(ImageUploadAttributeEditorUiBinder.class);
@@ -39,7 +43,6 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
     public String getCode() {
         return EDITOR_CODE;
     }
-
 
 
     @Override

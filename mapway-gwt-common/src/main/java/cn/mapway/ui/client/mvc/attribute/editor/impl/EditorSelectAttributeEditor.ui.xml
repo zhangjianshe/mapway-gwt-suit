@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:buttons="urn:import:cn.mapway.ui.client.widget.buttons"
+             xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree">
+    <ui:style>
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 80px;
+            align-items: center;
+            grid-gap: 4px;
+            width: 100%;
+        }</ui:style>
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="box" styleName="{style.grid}">
+            <g:TextBox ui:field="txtName" readOnly="true"/>
+            <buttons:AiButton ui:field="btnSelector">选择</buttons:AiButton>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

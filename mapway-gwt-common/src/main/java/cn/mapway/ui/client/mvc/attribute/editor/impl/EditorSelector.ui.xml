@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree"
+             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog">
+    <ui:style>
+        .left {
+            background-color: #f0f0f0;
+        }</ui:style>
+    <g:DockLayoutPanel>
+        <g:west size="200">
+            <g:ScrollPanel addStyleNames="{style.left}">
+                <tree:ZTree ui:field="catalog"/>
+            </g:ScrollPanel>
+        </g:west>
+        <g:center>
+            <g:ScrollPanel>
+                <g:FlexTable styleName="ai-table" ui:field="table"/>
+            </g:ScrollPanel>
+        </g:center>
+        <g:south size="68">
+            <dialog:SaveBar ui:field="saveBar"/>
+        </g:south>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

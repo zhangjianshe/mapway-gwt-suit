@@ -15,7 +15,11 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 颜色  属性编辑
  */
-@AttributeEditor(ColorBoxAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value=ColorBoxAttributeEditor.EDITOR_CODE,
+        name = "颜色编辑器",
+        group = "运行时",
+        summary = "选择一个颜色#RGBA",
+        author = "ZJS")
 public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "COLOR_EDITOR";
     private static final ColorBoxAttributeEditorUiBinder ourUiBinder = GWT.create(ColorBoxAttributeEditorUiBinder.class);

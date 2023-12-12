@@ -64,13 +64,13 @@ public class AttributeEditorGenerator extends Generator {
         PrintWriter printWriter = context.tryCreate(logger, genPackageName, genClassName);
 
         StringBuilder createCodes = new StringBuilder();
-
+        StringBuilder editorListAppend = new StringBuilder();
         if (printWriter != null) {
             // 源代码生成器
             SourceWriter sourceWriter = composer.createSourceWriter(context, printWriter);
-            createCodesList(clazzes, createCodes);
+            createCodesList(clazzes, createCodes, editorListAppend);
             String fileContent = readTemplate();
-            fileContent = replaceAll(fileContent, createCodes.toString());
+            fileContent = replaceAll(fileContent, createCodes.toString(), editorListAppend.toString());
             // 写入磁盘
             sourceWriter.print(fileContent);
             sourceWriter.commit(logger);
@@ -83,12 +83,15 @@ public class AttributeEditorGenerator extends Generator {
      * //         {
      * //             return new XXXXEDITOR();
      * //         }
+     * <p>
+     * //  editors.add(new AttributeEditorInfo(code,name,group).setAuthor(author).setSummary(summary));
      *
      * @param clazzes
      * @param createCodes
+     * @param editorListAppend
      */
 
-    private void createCodesList(List<JClassType> clazzes, StringBuilder createCodes) {
+    private void createCodesList(List<JClassType> clazzes, StringBuilder createCodes, StringBuilder editorListAppend) {
         Set<String> processed = new HashSet<>();
         for (JClassType clazzType : clazzes) {
             AttributeEditor attributeEditor = clazzType.getAnnotation(AttributeEditor.class);
@@ -107,6 +110,15 @@ public class AttributeEditorGenerator extends Generator {
                 log.error(clazzType.getName() + "  AttributeEditor's code is duplicate");
                 continue;
             }
+            String addCode = "\r\n   editors.add(new AttributeEditorInfo(%s,%s,%s).setAuthor(%s).setSummary(%s));";
+            addCode = String.format(addCode,
+                    strEscape(attributeEditor.value()),
+                    strEscape(attributeEditor.name()),
+                    strEscape(attributeEditor.group()),
+                    strEscape(attributeEditor.author()),
+                    strEscape(attributeEditor.summary())
+            );
+            editorListAppend.append(addCode);
 
             createCodes.append("\r\n else if(code.equals(\"" + code + "\"))");
             createCodes.append("\r\n {");
@@ -117,6 +129,13 @@ public class AttributeEditorGenerator extends Generator {
         }
     }
 
+    public String strEscape(String stringData) {
+        if (stringData != null) {
+            stringData = stringData.replaceAll("\"", "\\\\\"");
+        }
+        return "\"" + stringData + "\"";
+    }
+
     private String readTemplate() {
         String fileName = "FakeIAttributeEditorFactoryImpl.txt";
         InputStream inputStream = this.getClass().getResourceAsStream(fileName);
@@ -124,9 +143,10 @@ public class AttributeEditorGenerator extends Generator {
         return Lang.readAll(Streams.utf8r(inputStream));
     }
 
-    private String replaceAll(String source, String createCodes) {
+    private String replaceAll(String source, String createCodes, String listCodes) {
         Map<String, Object> mapper = new HashMap<String, Object>();
         mapper.put("//ATTRIBUTE_EDITOR_CREATOR_LIST", createCodes);
+        mapper.put("//EDITOR_LIST_APPEND", listCodes);
 
         String data = Strings.replaceBy(source, mapper);
         return data;

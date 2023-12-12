@@ -1,11 +1,20 @@
 
 
     private static Map<String, IAttributeEditor> SINGLE_INSTANCE;
-
+    private List<AttributeEditorInfo> editors;
     public AttributeEditorFactoryImpl() {
         SINGLE_INSTANCE = new HashMap<>();
+        editors = new ArrayList<>();
+
+        //EDITOR_LIST_APPEND
+        //editors.add(new AttributeEditorInfo(code,name,group).setAuthor(author).setSummary(summary));
     }
 
+    @Override
+    public List<AttributeEditorInfo> getEditors()
+    {
+        return editors;
+    }
     /**
      * 创建编辑器
      * 实现逻辑为

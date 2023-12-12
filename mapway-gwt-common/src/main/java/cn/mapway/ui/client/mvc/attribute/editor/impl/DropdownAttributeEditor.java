@@ -15,7 +15,11 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 下拉框的属性编辑器
  */
-@AttributeEditor(DropdownAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value=DropdownAttributeEditor.EDITOR_CODE,
+        name = "下拉框编辑器",
+        group = "运行时",
+        summary = "一组数据的选择器",
+        author = "ZJS")
 public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "DROPDOWN_EDITOR";
     private static final DropdownAttributeEditorUiBinder ourUiBinder = GWT.create(DropdownAttributeEditorUiBinder.class);

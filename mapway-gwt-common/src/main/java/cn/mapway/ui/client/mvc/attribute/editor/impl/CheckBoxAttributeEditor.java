@@ -12,7 +12,11 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-@AttributeEditor(CheckBoxAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value=CheckBoxAttributeEditor.EDITOR_CODE,
+        name = "布尔型编辑器",
+        group = "运行时",
+        summary = "布尔型的编辑器",
+        author = "ZJS")
 public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
     public static final String EDITOR_CODE = "CHECKBOX_EDITOR";
     private static final CheckBoxAttributeEditorUiBinder ourUiBinder = GWT.create(CheckBoxAttributeEditorUiBinder.class);

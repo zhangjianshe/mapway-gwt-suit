@@ -14,7 +14,11 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 文本框编辑器
  */
-@AttributeEditor(TextboxAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value = TextboxAttributeEditor.EDITOR_CODE,
+        name = "单行文本编辑器",
+        group = "运行时",
+        summary = "文本输入",
+        author = "ZJS")
 public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "TEXTBOX_EDITOR";
     private static final TextboxAttributeEditorUiBinder ourUiBinder = GWT.create(TextboxAttributeEditorUiBinder.class);
@@ -38,7 +42,6 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     public String getCode() {
         return EDITOR_CODE;
     }
-
 
 
     @Override
