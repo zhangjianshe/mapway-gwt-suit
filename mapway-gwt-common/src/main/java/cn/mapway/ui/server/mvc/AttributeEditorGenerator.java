@@ -57,6 +57,8 @@ public class AttributeEditorGenerator extends Generator {
         composer.addImplementedInterface(IAttributeEditorFactory.class.getCanonicalName());
         // 代理类要引用的类包
         composer.addImport("com.google.gwt.core.client.GWT");
+        composer.addImport(List.class.getCanonicalName());
+        composer.addImport(ArrayList.class.getCanonicalName());
         composer.addImport(Map.class.getCanonicalName());
         composer.addImport(HashMap.class.getCanonicalName());
 
