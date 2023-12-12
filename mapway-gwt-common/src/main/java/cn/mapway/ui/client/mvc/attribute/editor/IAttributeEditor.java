@@ -13,6 +13,9 @@ import com.google.gwt.user.client.ui.Widget;
  * 2.提供一个缺省的大小
  */
 public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
+    String CATALOG_RUNTIME = "运行时";
+    String CATALOG_DESIGN = "设计时";
+
     /**
      * 编辑器的唯一识别代码
      *
@@ -53,6 +56,7 @@ public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
 
     /**
      * 需要显示弹出框的时候 会调用这个方法
+     *
      * @param editorOption
      */
     void popupInit(EditorOption editorOption);

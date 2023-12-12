@@ -7,6 +7,8 @@ import java.util.List;
  * 编译器会扫描源代码 生成这个接口的实现类
  */
 public interface IAttributeEditorFactory {
+
+
     /**
      * 创建编辑器
      * 实现逻辑为
