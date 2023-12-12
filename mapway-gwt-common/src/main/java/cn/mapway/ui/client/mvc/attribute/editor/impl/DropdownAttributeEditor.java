@@ -4,6 +4,7 @@ import cn.mapway.ui.client.mvc.attribute.*;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.Dropdown;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -17,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 @AttributeEditor(value=DropdownAttributeEditor.EDITOR_CODE,
         name = "下拉框编辑器",
-        group = "运行时",
+        group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "一组数据的选择器",
         author = "ZJS")
 public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {

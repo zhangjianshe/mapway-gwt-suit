@@ -6,6 +6,7 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.ImageUploader;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.UploadReturn;
@@ -21,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 @AttributeEditor(value = ImageUploadAttributeEditor.EDITOR_CODE,
         name= "图像选择",
-        group = "运行时",
+        group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "上传一个图像",
         author = "ZJS")
 public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> {

@@ -5,6 +5,7 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.buttons.AiCheckBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -14,7 +15,7 @@ import com.google.gwt.user.client.ui.Widget;
 
 @AttributeEditor(value=CheckBoxAttributeEditor.EDITOR_CODE,
         name = "布尔型编辑器",
-        group = "运行时",
+        group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "布尔型的编辑器",
         author = "ZJS")
 public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {

@@ -4,6 +4,7 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.color.AiColor;
 import cn.mapway.ui.client.widget.color.ColorBox;
 import com.google.gwt.core.client.GWT;
@@ -17,7 +18,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 @AttributeEditor(value=ColorBoxAttributeEditor.EDITOR_CODE,
         name = "颜色编辑器",
-        group = "运行时",
+        group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "选择一个颜色#RGBA",
         author = "ZJS")
 public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {

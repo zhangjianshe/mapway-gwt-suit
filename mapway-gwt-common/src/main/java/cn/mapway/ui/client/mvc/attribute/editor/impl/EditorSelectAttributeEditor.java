@@ -21,7 +21,7 @@ import java.util.List;
  */
 @AttributeEditor(value = EditorSelectAttributeEditor.EDITOR_CODE,
         name = "编辑器选择",
-        group = "设计阶段",
+        group = IAttributeEditor.CATALOG_DESIGN,
         summary = "选择一个个字段的属性编辑器",
         author = "ZJS")
 public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String> {

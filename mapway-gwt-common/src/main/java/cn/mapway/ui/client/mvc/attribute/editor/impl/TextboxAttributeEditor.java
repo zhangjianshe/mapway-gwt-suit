@@ -4,6 +4,7 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -16,7 +17,7 @@ import com.google.gwt.user.client.ui.Widget;
  */
 @AttributeEditor(value = TextboxAttributeEditor.EDITOR_CODE,
         name = "单行文本编辑器",
-        group = "运行时",
+        group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "文本输入",
         author = "ZJS")
 public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
