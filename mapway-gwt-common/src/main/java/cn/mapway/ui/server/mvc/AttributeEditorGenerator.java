@@ -112,7 +112,7 @@ public class AttributeEditorGenerator extends Generator {
                 log.error(clazzType.getName() + "  AttributeEditor's code is duplicate");
                 continue;
             }
-            String addCode = "\r\n   editors.add(new AttributeEditorInfo(%s,%s,%s).setAuthor(%s).setSummary(%s).setRank(%d).setIcon(%s);";
+            String addCode = "\r\n   editors.add(new AttributeEditorInfo(%s,%s,%s).setAuthor(%s).setSummary(%s).setRank(%d).setIcon(%s));";
             addCode = String.format(addCode,
                     strEscape(attributeEditor.value()),
                     strEscape(attributeEditor.name()),
