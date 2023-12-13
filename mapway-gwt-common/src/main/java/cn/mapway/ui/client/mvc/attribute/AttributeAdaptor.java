@@ -32,6 +32,8 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String moduleCode = "";
     protected IOptionProvider optionProvider = null;
 
+    protected boolean initVisible = true;
+
     public AttributeAdaptor(String name) {
         this(name, null, 0, 0, null);
     }
@@ -228,6 +230,22 @@ public abstract class AttributeAdaptor implements IAttribute {
 
     public AttributeAdaptor setIcon(String icon) {
         this.icon = icon;
+        return this;
+    }
+
+    @Override
+    public boolean isInitVisible() {
+        return initVisible;
+    }
+
+    /**
+     * 设置初始显示
+     *
+     * @param visible
+     * @return
+     */
+    public AttributeAdaptor setInitVisible(Boolean visible) {
+        this.initVisible = visible;
         return this;
     }
 
