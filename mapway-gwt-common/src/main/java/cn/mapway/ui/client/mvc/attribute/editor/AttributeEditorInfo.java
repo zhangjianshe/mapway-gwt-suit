@@ -27,6 +27,7 @@ public class AttributeEditorInfo {
      */
     public String author;
 
+
     public AttributeEditorInfo(String code, String name, String group) {
         this.code = code;
         this.name = name;

@@ -12,7 +12,7 @@
         }</ui:style>
     <g:HTMLPanel>
         <g:HTMLPanel ui:field="box" styleName="{style.grid}">
-            <g:TextBox ui:field="txtName" readOnly="true"/>
+            <g:TextBox ui:field="txtName" styleName="ai-input" readOnly="true"/>
             <buttons:AiButton ui:field="btnSelector">选择</buttons:AiButton>
         </g:HTMLPanel>
     </g:HTMLPanel>

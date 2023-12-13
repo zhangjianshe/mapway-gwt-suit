@@ -4,11 +4,12 @@
     <ui:style>
         .left {
             background-color: #f0f0f0;
-        }</ui:style>
+        }
+    </ui:style>
     <g:DockLayoutPanel>
-        <g:west size="200">
+        <g:west size="160">
             <g:ScrollPanel addStyleNames="{style.left}">
-                <tree:ZTree ui:field="catalog"/>
+                <tree:ZTree width="100%" ui:field="catalog"/>
             </g:ScrollPanel>
         </g:west>
         <g:center>
@@ -16,8 +17,8 @@
                 <g:FlexTable styleName="ai-table" ui:field="table"/>
             </g:ScrollPanel>
         </g:center>
-        <g:south size="68">
-            <dialog:SaveBar ui:field="saveBar"/>
+        <g:south size="58">
+            <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
         </g:south>
     </g:DockLayoutPanel>
 </ui:UiBinder>

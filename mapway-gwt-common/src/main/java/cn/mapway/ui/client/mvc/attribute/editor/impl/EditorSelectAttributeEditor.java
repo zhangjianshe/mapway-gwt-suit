@@ -63,24 +63,43 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         Popup<EditorSelector> popup = EditorSelector.getPopup(true);
         popup.addCommonHandler(event1 -> {
             if (event1.isOk()) {
-                AttributeEditorInfo editorInfo = event1.getValue();
-                getAttribute().setValue(editorInfo.code);
-                txtName.setValue(editorInfo.name);
+                EditorValue editorDesignOption = event1.getValue();
+                getAttribute().setValue(editorDesignOption.toJSON());
+
+                txtName.setValue(editorDesignOption.name);
             }
+            popup.hide(true);
         });
         popup.showRelativeTo(box);
     }
 
+    /**
+     * 编辑器的数据应该是一个JSON字符串
+     * {
+     * "code":"ZJJSJSJ",
+     * "options":{
+     * ...
+     * }
+     * }
+     *
+     * @param editorOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
+     * @param attribute    属性编辑器对应的属性内容
+     */
     @Override
     public void setAttribute(EditorOption editorOption, IAttribute attribute) {
         super.setAttribute(editorOption, attribute);
-        String code = DataCastor.castToString(attribute.getValue());
-        AttributeEditorInfo editorInfo = findInfoByCode(code);
+        String value = DataCastor.castToString(attribute.getValue());
+
+        EditorValue designOption = EditorValue.parse(value);
+
+        AttributeEditorInfo editorInfo = findInfoByCode(designOption.code);
         if (editorInfo == null) {
-            txtName.setValue("无效属性编辑器");
+            txtName.setValue(designOption.code + " Editor invalid.");
         } else {
             txtName.setValue(editorInfo.name);
         }
+        //合并编辑器选项
+        getEditorOption().merge(designOption.toEditorOption());
 
     }
 

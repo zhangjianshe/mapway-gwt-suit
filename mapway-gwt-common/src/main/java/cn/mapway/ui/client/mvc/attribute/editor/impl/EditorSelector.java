@@ -3,6 +3,8 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
+import cn.mapway.ui.client.mvc.attribute.editor.EditorValue;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.dialog.Popup;
 import cn.mapway.ui.client.widget.dialog.SaveBar;
@@ -16,8 +18,10 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -42,20 +46,21 @@ public class EditorSelector extends CommonEventComposite {
     public EditorSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
         update();
+        groups = new HashMap<>();
         loadData();
         table.addClickHandler(event -> {
             HTMLTable.Cell cellForEvent = table.getCellForEvent(event);
             int rowIndex = cellForEvent.getRowIndex();
-            if (rowIndex < 0 || rowIndex >= table.getRowCount()) {
+            if (rowIndex < 1 || rowIndex >= table.getRowCount()) {
                 return;
             }
             HTMLTable.RowFormatter rowFormatter = table.getRowFormatter();
-            if (selectRow >= 0) {
+            if (selectRow >= 1) {
                 rowFormatter.getElement(selectRow).removeAttribute(SELECT_ATTRIBUTE);
             }
             selectRow = rowIndex;
             rowFormatter.getElement(selectRow).setAttribute(SELECT_ATTRIBUTE, "true");
-            selectEditor = currentList.get(rowIndex);
+            selectEditor = currentList.get(rowIndex - 1); //" minus 1 " because we add a header line in the table
             update();
         });
     }
@@ -77,10 +82,11 @@ public class EditorSelector extends CommonEventComposite {
     }
 
     private void loadData() {
+        groups.clear();
         List<AttributeEditorInfo> editors = AttributeEditorFactory.get().getEditors();
         for (AttributeEditorInfo info : editors) {
             if (info.group == null || info.group.length() == 0) {
-                info.group = "系统编辑器";
+                info.group = IAttributeEditor.CATALOG_UNKNOWN;
             }
             List<AttributeEditorInfo> infos = groups.get(info.group);
             if (infos == null) {
@@ -115,11 +121,22 @@ public class EditorSelector extends CommonEventComposite {
         }
     }
 
+    private Label header(String name) {
+        Label label = new Label(name);
+        label.setStyleName("ai-header");
+        return label;
+    }
+
     private void renderData(List<AttributeEditorInfo> infos) {
         table.removeAllRows();
         int row = 0;
         int col = 0;
+        table.setWidget(row, col++, header("名称"));
+        table.setWidget(row, col++, header("作者"));
+        table.setWidget(row, col++, header("介绍"));
+        row++;
         for (AttributeEditorInfo info : infos) {
+            col = 0;
             table.setText(row, col++, info.name);
             table.setText(row, col++, info.author);
             table.setText(row, col++, info.summary);
@@ -134,7 +151,10 @@ public class EditorSelector extends CommonEventComposite {
     @UiHandler("saveBar")
     public void saveBarCommon(CommonEvent event) {
         if (event.isOk()) {
-            fireEvent(CommonEvent.okEvent(selectEditor));
+            EditorValue editorValue = new EditorValue();
+            editorValue.code = selectEditor.code;
+            editorValue.name = selectEditor.name;
+            fireEvent(CommonEvent.okEvent(editorValue));
         } else {
             fireEvent(event);
         }
@@ -142,7 +162,7 @@ public class EditorSelector extends CommonEventComposite {
 
     @Override
     public Size requireDefaultSize() {
-        return new Size(500, 380);
+        return new Size(600, 380);
     }
 
 

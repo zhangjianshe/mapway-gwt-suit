@@ -16,6 +16,7 @@ public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
     String CATALOG_RUNTIME = "运行时";
     String CATALOG_DESIGN = "设计时";
     String CATALOG_BUSINESS = "业务数据";
+    String CATALOG_UNKNOWN = "无分类";
 
     /**
      * 编辑器的唯一识别代码
