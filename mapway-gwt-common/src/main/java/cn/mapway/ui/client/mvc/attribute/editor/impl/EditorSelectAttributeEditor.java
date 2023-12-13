@@ -63,7 +63,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         Popup<EditorSelector> popup = EditorSelector.getPopup(true);
         popup.addCommonHandler(event1 -> {
             if (event1.isOk()) {
-                EditorValue editorDesignOption = event1.getValue();
+                AttributeEditorMetaData editorDesignOption = event1.getValue();
                 getAttribute().setValue(editorDesignOption.toJSON());
 
                 txtName.setValue(editorDesignOption.name);
@@ -90,7 +90,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         super.setAttribute(editorOption, attribute);
         String value = DataCastor.castToString(attribute.getValue());
 
-        EditorValue designOption = EditorValue.parse(value);
+        AttributeEditorMetaData designOption = AttributeEditorMetaData.parse(value);
 
         AttributeEditorInfo editorInfo = findInfoByCode(designOption.code);
         if (editorInfo == null) {

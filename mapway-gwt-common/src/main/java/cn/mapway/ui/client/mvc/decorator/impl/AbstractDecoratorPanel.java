@@ -1,6 +1,9 @@
 package cn.mapway.ui.client.mvc.decorator.impl;
 
 import cn.mapway.ui.client.mvc.attribute.*;
+import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
+import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.SimplePanel;
 
 import java.util.ArrayList;
@@ -16,6 +19,7 @@ import java.util.Set;
 public class AbstractDecoratorPanel extends SimplePanel implements IAttributeProvider, IAttributeParser {
     String mId;
     Set<IAttributeReadyCallback> callbacks;
+
     public AbstractDecoratorPanel() {
         callbacks = new HashSet<>();
     }
@@ -94,4 +98,8 @@ public class AbstractDecoratorPanel extends SimplePanel implements IAttributePro
         }
     }
 
+    @Override
+    public HandlerRegistration addAttributeStateChangeHandler(AttributeStateChangeEventHandler handler) {
+        return addHandler(handler, AttributeStateChangeEvent.TYPE);
+    }
 }

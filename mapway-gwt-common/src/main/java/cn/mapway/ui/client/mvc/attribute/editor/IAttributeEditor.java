@@ -4,15 +4,13 @@ import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;
 import cn.mapway.ui.client.tools.IData;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 属性编辑器的约束接口
- * 1.可以设置 Value 读取 Value Value变更事件  Value 类型是一个 JsObject
  * 2.提供一个缺省的大小
  */
-public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
+public interface IAttributeEditor<T> extends IProvideSize, IData {
     String CATALOG_RUNTIME = "运行时";
     String CATALOG_DESIGN = "设计时";
     String CATALOG_BUSINESS = "业务数据";
@@ -26,13 +24,6 @@ public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
     String getCode();
 
     /**
-     * 返回弹出面板
-     *
-     * @return
-     */
-    Widget getPopupWidget();
-
-    /**
      * 显示显示面板
      *
      * @return
@@ -40,7 +31,14 @@ public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
     Widget getDisplayWidget();
 
 
-    void setEnabled(boolean enabled);
+    void setReadonly(boolean readonly);
+
+    /**
+     * 设置编辑器显示或者隐藏
+     *
+     * @param visible
+     */
+    void setVisible(boolean visible);
 
     /**
      * 设置属性代理对象
@@ -57,9 +55,9 @@ public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
     void updateAllEditorOption();
 
     /**
-     * 需要显示弹出框的时候 会调用这个方法
+     * 属性变化通知事件
      *
-     * @param editorOption
+     * @param handler
      */
-    void popupInit(EditorOption editorOption);
+    void setValueChangedHandler(IAttributeEditorValueChangedHandler handler);
 }

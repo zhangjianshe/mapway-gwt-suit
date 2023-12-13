@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
-import cn.mapway.ui.client.db.DbFieldType;
+import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
+import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
 import cn.mapway.ui.client.tools.JSON;
 import elemental2.core.JsObject;
 import jsinterop.base.Js;
@@ -16,7 +17,6 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String name;
     protected String altName;
     protected int dataType;
-    protected int uiType;
     protected String defaultValue;
     protected String description;
     protected Boolean readOnly = false;
@@ -28,18 +28,17 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String errorTip = "";
     protected String icon = "";
     protected String options = "";
-    protected String editorOptions = "{}";
-    protected String moduleCode = "";
+    protected AttributeEditorMetaData editorMetaData;
     protected IOptionProvider optionProvider = null;
-
     protected boolean initVisible = true;
+    private String id;
 
     public AttributeAdaptor(String name) {
-        this(name, null, 0, 0, null);
+        this(name, name);
     }
 
     public AttributeAdaptor(String name, String alterName) {
-        this(name, alterName, DbFieldType.FLD_TYPE_STRING.getCode(), InputTypeEnum.INPUT_TEXTBOX.code, null);
+        this(name, alterName, TextboxAttributeEditor.EDITOR_CODE);
     }
 
     /**
@@ -47,45 +46,35 @@ public abstract class AttributeAdaptor implements IAttribute {
      *
      * @param name           输出名称
      * @param customEditCode 编辑器代码
-     * @param dataType       数据类型
      */
-    public AttributeAdaptor(String name, String alterName, String customEditCode, int dataType) {
-        this(name, alterName, dataType, InputTypeEnum.INPUT_CUSTOM_EDITOR.code, "");
-        this.setEditorModuleCode(customEditCode);
+    public AttributeAdaptor(String name, String alterName, String customEditCode) {
+        editorMetaData = new AttributeEditorMetaData();
+        editorMetaData.code = customEditCode;
+        editorMetaData.name = name;
+        this.altName = alterName;
     }
 
     public AttributeAdaptor() {
-        this("", "", DbFieldType.FLD_TYPE_STRING.getCode(), InputTypeEnum.INPUT_TEXTBOX.code, "");
+        this("未命名", "未命名");
     }
 
-    public AttributeAdaptor(String name, String altName, int dataType, int uiType, String defaultValue) {
-        this.name = name;
-        this.altName = altName;
-        this.dataType = dataType;
-        this.uiType = uiType;
-        this.defaultValue = defaultValue;
+
+    public String getId() {
+        return id;
     }
 
     @Override
-    public String getEditorOptions() {
-        return editorOptions;
+    public AttributeEditorMetaData getEditorMetaData() {
+        return editorMetaData;
     }
 
-    public AttributeAdaptor setEditorOptions(String editorOptions) {
-        this.editorOptions = editorOptions;
-        if (editorOptions == null || editorOptions.length() == 0) {
-            this.editorOptions = "{}";
-        }
+    public AttributeAdaptor setEditorMetaData(AttributeEditorMetaData metaData) {
+        this.editorMetaData = metaData;
         return this;
     }
 
-    @Override
-    public String getEditorModuleCode() {
-        return moduleCode;
-    }
-
-    public AttributeAdaptor setEditorModuleCode(String moduleCode) {
-        this.moduleCode = moduleCode;
+    public AttributeAdaptor parseEditorMetaData(String jsonData) {
+        editorMetaData = AttributeEditorMetaData.parse(jsonData);
         return this;
     }
 
@@ -163,15 +152,6 @@ public abstract class AttributeAdaptor implements IAttribute {
         return this;
     }
 
-    @Override
-    public int getInputType() {
-        return uiType;
-    }
-
-    public AttributeAdaptor setInputType(int inputType) {
-        this.uiType = inputType;
-        return this;
-    }
 
     @Override
     public String getValidateRegx() {
@@ -266,12 +246,7 @@ public abstract class AttributeAdaptor implements IAttribute {
 
     public AttributeAdaptor setOptions(String options) {
         this.options = options;
-        if (uiType == InputTypeEnum.INPUT_DROPDOWN.getCode()) {
-            //下拉框选择
-            OptionProvider optionProvider = new OptionProvider();
-            optionProvider.parse(options);
-            setOptionProvider(optionProvider);
-        }
+        //TODO 处理此处逻辑 很有可能不再使用了
         return this;
     }
 

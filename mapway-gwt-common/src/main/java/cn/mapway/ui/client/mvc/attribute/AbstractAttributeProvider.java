@@ -1,5 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
+import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
+import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
@@ -87,7 +89,7 @@ public abstract class AbstractAttributeProvider implements IAttributeProvider, H
             } else {
                 value = "";
             }
-            values.add(new AttributeValue(attribute.getName(), attribute.getAltName(), value, attribute.getInputType()));
+            values.add(new AttributeValue(attribute.getName(), attribute.getAltName(), value, InputTypeEnum.INPUT_OTHERS.code));
         }
         return values;
     }
@@ -158,5 +160,10 @@ public abstract class AbstractAttributeProvider implements IAttributeProvider, H
     @Override
     public void parseAttribute(List<AttributeValue> values) {
         // not implementens
+    }
+
+    @Override
+    public HandlerRegistration addAttributeStateChangeHandler(AttributeStateChangeEventHandler handler) {
+        return eventBus.addHandler(AttributeStateChangeEvent.TYPE, handler);
     }
 }

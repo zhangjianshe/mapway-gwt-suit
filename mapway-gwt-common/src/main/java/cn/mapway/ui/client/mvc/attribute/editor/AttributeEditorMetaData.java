@@ -10,8 +10,11 @@ import jsinterop.annotations.JsType;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
+/**
+ * 属性编辑器信息 根据此可以构建一个编辑器实例
+ */
 @JsType(isNative = true, name = "Object", namespace = JsPackage.GLOBAL)
-public class EditorValue {
+public class AttributeEditorMetaData {
     /**
      * 编辑器代码
      */
@@ -29,8 +32,8 @@ public class EditorValue {
      * @return
      */
     @JsOverlay
-    public static EditorValue parse(String json) {
-        EditorValue editorValue = null;
+    public static AttributeEditorMetaData parse(String json) {
+        AttributeEditorMetaData editorValue = null;
         if (json != null && json.length() >= 2) {
             try {
                 editorValue = Js.uncheckedCast(Global.JSON.parse(json));
@@ -39,7 +42,7 @@ public class EditorValue {
             }
         }
         if (editorValue == null) {
-            editorValue = new EditorValue();
+            editorValue = new AttributeEditorMetaData();
         }
         if (editorValue.code == null || editorValue.code.length() == 0) {
             editorValue.code = TextboxAttributeEditor.EDITOR_CODE;

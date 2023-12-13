@@ -5,6 +5,8 @@ import cn.mapway.ui.client.event.ISuccess;
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.*;
+import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
+import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
 import cn.mapway.ui.client.mvc.decorator.IEnabled;
 import cn.mapway.ui.client.mvc.decorator.IErrorMessage;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;
@@ -25,7 +27,10 @@ import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * CommonEventComposite
@@ -202,13 +207,17 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public void setEnabled(boolean enabled) {
+        setReadonly(!enabled);
+    }
+
+    public void setReadonly(boolean readonly) {
         com.google.gwt.dom.client.Element element = getWidget().getElement();
-        if (enabled) {
-            element.setAttribute(IEnabled.ENABLED_ATTRIBUTE, "true");
-            element.getStyle().clearProperty("pointerEvents");
-        } else {
+        if (readonly) {
             element.setAttribute(IEnabled.ENABLED_ATTRIBUTE, "false");
             element.getStyle().setProperty("pointerEvents", "auto");
+        } else {
+            element.removeClassName(IEnabled.ENABLED_ATTRIBUTE);
+            element.getStyle().clearProperty("pointerEvents");
         }
     }
 
@@ -419,16 +428,19 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public void initAttributes(IAttributeProvider attributeProvider) {
-        this.attributeProvider=attributeProvider;
+        this.attributeProvider = attributeProvider;
     }
 
     @Override
     public void parseAttribute(List<AttributeValue> values) {
-        if(attributeProvider!=null)
-        {
+        if (attributeProvider != null) {
             attributeProvider.parseAttribute(values);
-            return;
         }
-       // not implements
+        // not implements
+    }
+
+    @Override
+    public HandlerRegistration addAttributeStateChangeHandler(AttributeStateChangeEventHandler handler) {
+        return addHandler(handler, AttributeStateChangeEvent.TYPE);
     }
 }

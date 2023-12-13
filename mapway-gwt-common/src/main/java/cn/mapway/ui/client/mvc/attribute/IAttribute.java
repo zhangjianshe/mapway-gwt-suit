@@ -1,6 +1,8 @@
 package cn.mapway.ui.client.mvc.attribute;
 
 
+import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
+
 /**
  * IAttribute
  * 用于描述一个属性
@@ -9,6 +11,12 @@ package cn.mapway.ui.client.mvc.attribute;
  */
 public interface IAttribute {
 
+    /**
+     * 唯一ID
+     *
+     * @return
+     */
+    String getId();
 
     String getName();
 
@@ -28,8 +36,6 @@ public interface IAttribute {
 
     int getDataType();
 
-    int getInputType();
-
     String getValidateRegx();
 
     String getGroup();
@@ -47,22 +53,14 @@ public interface IAttribute {
 
     IOptionProvider getOptionProvider();//选项提供者
 
-    /**
-     * 如果输入类型为10 INPUT_CUSTOM
-     * 会根据这返回值 创建一个模块，该模块具备 HasValue 和 HasValueChangeHandler 接口
-     * 系统会根据这个模块代码 创建模块 并展示
-     *
-     * @return
-     */
-    String getEditorModuleCode();
-
 
     /**
-     * 属性对应编辑器的信息
+     * 属性对应编辑器的元数据
+     * 解析为 AttributeEditorMetaData 数据
      *
-     * @return
+     * @return AttributeEditorMetaData
      */
-    String getEditorOptions();
+    AttributeEditorMetaData getEditorMetaData();
 
     /**
      * 是否初始化显示

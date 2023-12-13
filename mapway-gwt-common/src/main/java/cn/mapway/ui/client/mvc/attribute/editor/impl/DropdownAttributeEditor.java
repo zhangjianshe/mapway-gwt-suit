@@ -31,7 +31,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
         initWidget(ourUiBinder.createAndBindUi(this));
         ddlDropdown.addValueChangeHandler(event -> {
             Object obj = event.getValue();
-            ValueChangeEvent.fire(this, DataCastor.castToString(obj));
+            getAttribute().setValue(DataCastor.castToString(obj));
         });
     }
 

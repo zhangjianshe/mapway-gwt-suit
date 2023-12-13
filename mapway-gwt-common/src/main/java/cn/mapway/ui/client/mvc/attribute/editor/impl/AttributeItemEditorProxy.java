@@ -1,18 +1,20 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
-import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.InputTypeEnum;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
+import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
-import cn.mapway.ui.client.widget.dialog.Popup;
+import cn.mapway.ui.client.util.Logs;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 public class AttributeItemEditorProxy extends Composite {
     private static final AttributeItemEditorProxyUiBinder ourUiBinder = GWT.create(AttributeItemEditorProxyUiBinder.class);
@@ -45,40 +47,17 @@ public class AttributeItemEditorProxy extends Composite {
     }
 
 
+    public IAttributeEditor getEditor() {
+        return attributeEditor;
+    }
+
     private void toUI() {
-        InputTypeEnum inputTypeEnum = InputTypeEnum.valueOfCode(attribute.getInputType());
-        switch (inputTypeEnum) {
-            case INPUT_CUSTOM_EDITOR:
-                loadEditor(attribute.getEditorModuleCode());
-                return;
-            case INPUT_COLOR:
-                loadEditor(ColorBoxAttributeEditor.EDITOR_CODE);
-                return;
-            case INPUT_DROPDOWN:
-                loadEditor(DropdownAttributeEditor.EDITOR_CODE);
-                return;
-            case INPUT_CHECKBOX:
-                loadEditor(CheckBoxAttributeEditor.EDITOR_CODE);
-                return;
-            case INPUT_TEXTAREA:
-                loadEditor("TEXTAREA_EDITOR");
-                return;
-            case INPUT_SLIDER:
-                loadEditor("SLIDER_EDITOR");
-                return;
-            case INPUT_FILE:
-            case INPUT_PATH:
-            case INPUT_PATH_ALL:
-            case INPUT_MULTI_FILE:
-                loadEditor("FILE_DIR_EDITOR");
-                return;
-            case INPUT_TEXTBOX:
-            case INPUT_OTHERS:
-                loadEditor(TextboxAttributeEditor.EDITOR_CODE);
-                return;
-            default:
-                errorInput("不支持类型 " + inputTypeEnum.getName());
+        if (attribute == null) {
+            Logs.info("Attribute is null in attributeItemEditorProxy");
+            return;
         }
+        AttributeEditorMetaData editorMetaData = attribute.getEditorMetaData();
+        loadEditor(editorMetaData.code);
     }
 
     private void errorInput(String msg) {
@@ -121,51 +100,27 @@ public class AttributeItemEditorProxy extends Composite {
         }
 
         Widget displayWidget = attributeEditor.getDisplayWidget();
-        final Widget popupWidget = attributeEditor.getPopupWidget();
         int columnCount = 1;
         if (displayWidget != null) {
             box.add(displayWidget);
             columnCount++;
         }
 
-        if (popupWidget != null) {
-            Button btn = new Button("选择");
-            box.add(btn);
-            columnCount++;
-            btn.addClickHandler(event -> {
-                showPopup(box, attributeEditor);
-            });
-        }
-        if (columnCount == 2) {
-            box.setStyleName(style.layout2());
-        } else if (columnCount == 3) {
-            box.setStyleName(style.layout3());
-        }
         //让属性编辑器 自己处理数据逻辑
         attributeEditor.setAttribute(editorOption, attribute);
 
     }
 
+
     /**
-     * 弹出对话框
+     * 运行编辑器是否可以编辑
      *
-     * @param popupWidget
-     * @param attributeEditor
+     * @param readOnly
      */
-    private void showPopup(Widget popupWidget, IAttributeEditor attributeEditor) {
-
-        Popup<Widget> popup = new Popup<>(attributeEditor.getPopupWidget());
-        Size size = attributeEditor.getSize();
-        popup.setPixelSize(size.getXAsInt(), size.getYAsInt());
-        popup.addCommonHandler(commonEvent -> {
-            if (commonEvent.isOk()) {
-                attributeEditor.setValue(commonEvent.getValue(), true);
-            }
-            popup.hide(true);
-        });
-        attributeEditor.popupInit(getEditorOption());
-        popup.showRelativeTo(popupWidget);
-
+    public void setEditorReadOnly(boolean readOnly) {
+        if (attributeEditor != null) {
+            attributeEditor.setReadonly(readOnly);
+        }
     }
 
     private String getAttributeName() {
@@ -181,8 +136,6 @@ public class AttributeItemEditorProxy extends Composite {
     interface SStyle extends CssResource {
 
         String layout2();
-
-        String layout3();
 
         String head();
 

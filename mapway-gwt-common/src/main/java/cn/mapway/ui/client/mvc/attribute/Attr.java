@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
 import cn.mapway.ui.client.db.DbFieldType;
+import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
 
 import java.lang.annotation.*;
 
@@ -20,7 +21,7 @@ public @interface Attr {
 
     DbFieldType dataType() default DbFieldType.FLD_TYPE_STRING;
 
-    InputTypeEnum inputType() default InputTypeEnum.INPUT_TEXTBOX;
+    String editCode() default TextboxAttributeEditor.EDITOR_CODE;
 
     /**
      * 属性的缺省值
@@ -86,9 +87,6 @@ public @interface Attr {
 
     //某种参数自定义的选项 一般为json字符串 由使用者解释
     String options() default "";
-
-    //自定义输入框的模块代码
-    String editorModuleCode() default "";
 
     /**
      * 编辑器属性 JSON serial String
