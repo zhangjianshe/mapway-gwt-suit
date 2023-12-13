@@ -59,8 +59,18 @@ public interface IAttribute {
 
     /**
      * 属性对应编辑器的信息
+     *
      * @return
      */
     String getEditorOptions();
+
+    /**
+     * 是否初始化显示
+     *
+     * @return
+     */
+    default boolean isInitVisible() {
+        return true;
+    }
 
 }
