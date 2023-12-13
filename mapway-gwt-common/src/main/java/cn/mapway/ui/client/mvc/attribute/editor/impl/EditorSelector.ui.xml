@@ -10,18 +10,16 @@
             border-spacing: 0;
         }
 
-        .table tr {
+        .table > tbody > tr {
             border-bottom: 1px solid #f0f0f0;
+            height: 35px;
         }
 
         .table > tbody > tr:first-child {
-            background-color: #464646;
+            background-color: #e0e0e0;
             line-height: 35px;
         }
 
-        .table > tbody > tr:first-child .ai-header {
-            color: white;
-        }
 
         .table tr[select="true"] {
             background-color: skyblue;
@@ -36,18 +34,19 @@
         }
     </ui:style>
     <g:DockLayoutPanel>
+        <g:south size="58">
+            <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
+        </g:south>
         <g:west size="160">
             <g:ScrollPanel addStyleNames="ai-border-right">
                 <tree:ZTree width="100%" ui:field="catalog"/>
             </g:ScrollPanel>
         </g:west>
         <g:center>
-            <g:ScrollPanel styleName="ai-panel-content">
-                <g:FlexTable styleName="{style.table}" ui:field="table"/>
+            <g:ScrollPanel>
+                <g:FlexTable width="100%" cellPadding="4px" styleName="{style.table}" ui:field="table"/>
             </g:ScrollPanel>
         </g:center>
-        <g:south size="58">
-            <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
-        </g:south>
+
     </g:DockLayoutPanel>
 </ui:UiBinder>
