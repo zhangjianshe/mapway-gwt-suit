@@ -3,6 +3,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.design;
 
 import cn.mapway.ui.client.util.Logs;
 import elemental2.core.Global;
+import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsType;
 import jsinterop.base.Js;
@@ -21,7 +22,8 @@ public class DesignOption {
      * @param options
      * @return
      */
-    public static DesignOption parse(String options) {
+    @JsOverlay
+    public final static DesignOption parse(String options) {
 
         Object parse = null;
         try {
