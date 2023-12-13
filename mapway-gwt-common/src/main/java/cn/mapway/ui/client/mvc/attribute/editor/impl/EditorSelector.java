@@ -153,6 +153,9 @@ public class EditorSelector extends CommonEventComposite {
 
     private void update() {
         saveBar.enableSave(selectEditor != null);
+        if (selectEditor != null) {
+            saveBar.message(selectEditor.name);
+        }
     }
 
     @UiHandler("saveBar")
@@ -169,7 +172,7 @@ public class EditorSelector extends CommonEventComposite {
 
     @Override
     public Size requireDefaultSize() {
-        return new Size(600, 380);
+        return new Size(700, 420);
     }
 
 

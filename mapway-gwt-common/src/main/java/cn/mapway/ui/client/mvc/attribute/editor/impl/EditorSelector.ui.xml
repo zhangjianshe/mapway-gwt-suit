@@ -15,21 +15,25 @@
             height: 35px;
         }
 
-        .table > tbody > tr:first-child {
-            background-color: #e0e0e0;
-            line-height: 35px;
+        .table > tbody > tr > td {
+            padding: 4px;
+            cursor: default;
         }
 
-
-        .table tr[select="true"] {
+        .table > tbody > tr:first-child {
             background-color: skyblue;
         }
 
-        .table tr:hover {
+
+        .table > tobdy > tr[select="true"] {
+            background-color: #f0f0f0;
+        }
+
+        .table > tbody > tr:hover {
             background-color: lightblue;
         }
 
-        .table tr:hover:nth-child(n+2) {
+        .table > tbody > tr:nth-child(n+2) {
             background-color: #f0f0f0;
         }
     </ui:style>
