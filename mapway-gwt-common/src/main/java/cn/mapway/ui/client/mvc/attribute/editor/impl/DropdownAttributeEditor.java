@@ -6,6 +6,7 @@ import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesign;
 import cn.mapway.ui.client.widget.Dropdown;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -28,6 +29,8 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     private static final DropdownAttributeEditorUiBinder ourUiBinder = GWT.create(DropdownAttributeEditorUiBinder.class);
     @UiField
     Dropdown ddlDropdown;
+    @UiField
+    DropdownListDesign designWidget;
 
     public DropdownAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -35,6 +38,15 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             Object obj = event.getValue();
             getAttribute().setValue(DataCastor.castToString(obj));
         });
+    }
+
+    /**
+     * 设计期间的参数设计器
+     *
+     * @return
+     */
+    public DropdownListDesign getDesignWidget() {
+        return designWidget;
     }
 
     /**
