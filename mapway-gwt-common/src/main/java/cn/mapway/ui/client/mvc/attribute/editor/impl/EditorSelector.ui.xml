@@ -44,7 +44,7 @@
         </g:west>
         <g:center>
             <g:ScrollPanel>
-                <g:FlexTable width="100%" cellPadding="4px" styleName="{style.table}" ui:field="table"/>
+                <g:FlexTable width="100%" cellPadding="4" styleName="{style.table}" ui:field="table"/>
             </g:ScrollPanel>
         </g:center>
 
