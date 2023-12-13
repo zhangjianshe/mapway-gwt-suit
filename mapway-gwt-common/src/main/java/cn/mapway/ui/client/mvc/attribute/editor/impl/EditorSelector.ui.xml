@@ -36,6 +36,10 @@
         .table > tbody > tr:nth-child(n+2) {
             background-color: #f0f0f0;
         }
+
+        .panel {
+            padding: 4px;
+        }
     </ui:style>
     <g:DockLayoutPanel>
         <g:south size="58">
@@ -47,17 +51,14 @@
             </g:ScrollPanel>
         </g:west>
         <g:east size="300">
-            <g:DockLayoutPanel styleName="ai-border-left">
-                <g:north size="60">
+            <g:ScrollPanel styleName="{style.panel}">
+                <g:VerticalPanel width="100%" spacing="6">
                     <g:HTMLPanel ui:field="previewPlaceholder">
-
                     </g:HTMLPanel>
-                </g:north>
-                <g:center>
-                    <g:ScrollPanel ui:field="designPanel">
-                    </g:ScrollPanel>
-                </g:center>
-            </g:DockLayoutPanel>
+                    <g:HTMLPanel ui:field="designPanel">
+                    </g:HTMLPanel>
+                </g:VerticalPanel>
+            </g:ScrollPanel>
         </g:east>
         <g:center>
             <g:ScrollPanel>

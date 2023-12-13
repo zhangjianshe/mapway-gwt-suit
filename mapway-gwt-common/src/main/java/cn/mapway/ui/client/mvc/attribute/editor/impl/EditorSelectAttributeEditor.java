@@ -66,10 +66,11 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         Popup<EditorSelector> popup = EditorSelector.getPopup(true);
         popup.addCommonHandler(event1 -> {
             if (event1.isOk()) {
-                AttributeEditorMetaData editorDesignOption = event1.getValue();
-                getAttribute().setValue(editorDesignOption.toJSON());
-
-                txtName.setValue(editorDesignOption.name);
+                if(getAttribute()!=null) {
+                    AttributeEditorMetaData editorDesignOption = event1.getValue();
+                    getAttribute().setValue(editorDesignOption.toJSON());
+                    txtName.setValue(editorDesignOption.name);
+                }
             }
             popup.hide(true);
         });
@@ -93,10 +94,9 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
     @Override
     public void setAttribute(EditorOption editorOption, IAttribute attribute) {
         super.setAttribute(editorOption, attribute);
+
         String value = DataCastor.castToString(attribute.getValue());
-
         AttributeEditorMetaData designOption = AttributeEditorMetaData.parse(value);
-
         AttributeEditorInfo editorInfo = findInfoByCode(designOption.code);
         if (editorInfo == null) {
             txtName.setValue(designOption.code + " Editor invalid.");

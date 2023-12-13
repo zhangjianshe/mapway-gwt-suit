@@ -35,8 +35,10 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     public DropdownAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         ddlDropdown.addValueChangeHandler(event -> {
-            Object obj = event.getValue();
-            getAttribute().setValue(DataCastor.castToString(obj));
+            if (getAttribute() != null) {
+                Object obj = event.getValue();
+                getAttribute().setValue(DataCastor.castToString(obj));
+            }
         });
     }
 
@@ -45,7 +47,8 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
      *
      * @return
      */
-    public DropdownListDesign getDesignWidget() {
+    @Override
+    public DropdownListDesign getDesigner() {
         return designWidget;
     }
 
@@ -76,7 +79,10 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
      */
     public void updateUI() {
         IAttribute attribute = getAttribute();
-        if (getAttribute().isReadonly()) {
+        if (attribute == null) {
+            return;
+        }
+        if (attribute.isReadonly()) {
             ddlDropdown.setEnabled(false);
         }
 

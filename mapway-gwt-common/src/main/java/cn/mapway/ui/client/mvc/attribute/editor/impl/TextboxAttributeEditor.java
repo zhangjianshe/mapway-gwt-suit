@@ -32,7 +32,9 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     public TextboxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         txtBox.addChangeHandler(event -> {
-            getAttribute().setValue(castToValue(txtBox.getValue()));
+            if (getAttribute() != null) {
+                getAttribute().setValue(castToValue(txtBox.getValue()));
+            }
         });
     }
 
@@ -62,6 +64,9 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
 
     public void updateUI() {
         IAttribute attribute = getAttribute();
+        if (attribute == null) {
+            return;
+        }
         if (getAttribute().isReadonly()) {
             txtBox.setReadOnly(true);
         }

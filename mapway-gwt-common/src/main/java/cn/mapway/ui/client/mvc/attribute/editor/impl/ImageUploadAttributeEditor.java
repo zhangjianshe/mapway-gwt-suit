@@ -22,7 +22,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 图片上传相关属性编辑器
  */
 @AttributeEditor(value = ImageUploadAttributeEditor.EDITOR_CODE,
-        name= "图像选择",
+        name = "图像选择",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "上传一个图像",
         author = "ZJS",
@@ -67,6 +67,10 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
     public void updateUI() {
         processEditorOption();
         IAttribute attribute = getAttribute();
+        if (attribute == null) {
+            return;
+
+        }
 
         Object obj = attribute.getValue();
         imageUploader.setUrl(DataCastor.castToString(obj));
@@ -90,9 +94,11 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         if (event.isMessage()) {
             fireMessage(event.getValue());
         } else if (event.isOk()) {
-            UploadReturn uploadReturn = event.getValue();
-            getAttribute().setValue(uploadReturn.relPath);
-            fireMessage(MessageObject.info(0, "上传图片成功，请保存"));
+            if (getAttribute() != null) {
+                UploadReturn uploadReturn = event.getValue();
+                getAttribute().setValue(uploadReturn.relPath);
+                fireMessage(MessageObject.info(0, "上传图片成功，请保存"));
+            }
         }
     }
 

@@ -3,6 +3,6 @@
              xmlns:design="urn:import:cn.mapway.ui.client.mvc.attribute.editor.design">
     <g:HTMLPanel>
         <widget:Dropdown ui:field="ddlDropdown"/>
-        <design:DropdownListDesign ui:field="designWidget"/>
+        <design:DropdownListDesign width="100%" ui:field="designWidget"/>
     </g:HTMLPanel>
 </ui:UiBinder>

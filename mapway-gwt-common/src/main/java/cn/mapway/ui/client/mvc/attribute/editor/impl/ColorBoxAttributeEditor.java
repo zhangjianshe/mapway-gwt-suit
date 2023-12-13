@@ -7,7 +7,6 @@ import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.color.AiColor;
-import cn.mapway.ui.client.widget.color.ColorBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -17,7 +16,7 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 颜色  属性编辑
  */
-@AttributeEditor(value=ColorBoxAttributeEditor.EDITOR_CODE,
+@AttributeEditor(value = ColorBoxAttributeEditor.EDITOR_CODE,
         name = "颜色编辑器",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "选择一个颜色#RGBA",
@@ -33,7 +32,9 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
     public ColorBoxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         txtColor.addValueChangeHandler(event -> {
-            getAttribute().setValue(txtColor.getValue());
+            if (getAttribute() != null) {
+                getAttribute().setValue(txtColor.getValue());
+            }
         });
     }
 
@@ -56,14 +57,16 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
 
     @Override
     public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption,attribute);
+        super.setAttribute(editorOption, attribute);
         updateUI();
     }
 
     public void updateUI() {
         IAttribute attribute = getAttribute();
-        Object obj = attribute.getValue();
-        txtColor.setValue(castToString(obj));
+        if (attribute != null) {
+            Object obj = attribute.getValue();
+            txtColor.setValue(castToString(obj));
+        }
     }
 
     interface ColorBoxAttributeEditorUiBinder extends UiBinder<HTMLPanel, ColorBoxAttributeEditor> {

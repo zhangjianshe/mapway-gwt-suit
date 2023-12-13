@@ -143,6 +143,7 @@ public class ColorChooser extends CommonEventComposite implements IData<ColorDat
         ColorChooser colorChooser = new ColorChooser();
         Popup<ColorChooser> popup = new Popup<>(colorChooser);
         popup.setGlassEnabled(false);
+        popup.setAutoHideEnabled(true);
         return popup;
     }
 

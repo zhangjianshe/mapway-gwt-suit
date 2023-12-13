@@ -31,7 +31,7 @@ public class EditorSelector extends CommonEventComposite {
     @UiField
     SaveBar saveBar;
     @UiField
-    ScrollPanel designPanel;
+    HTMLPanel designPanel;
     @UiField
     HTMLPanel previewPlaceholder;
     AttributeEditorInfo selectEditor = null;
