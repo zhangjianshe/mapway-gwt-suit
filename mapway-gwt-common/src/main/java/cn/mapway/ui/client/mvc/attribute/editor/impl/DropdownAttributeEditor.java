@@ -6,13 +6,19 @@ import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.design.DesignOption;
 import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesign;
+import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesignData;
+import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.Dropdown;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.core.Global;
+import elemental2.core.JsArray;
+import jsinterop.base.Js;
 
 /**
  * 下拉框的属性编辑器
@@ -89,10 +95,27 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
         IOptionProvider optionProvider = attribute.getOptionProvider();
         if (optionProvider != null) {
             setOptionProvider(optionProvider);
-        } else if (attribute.getOptions() != null && attribute.getOptions().length() > 0) {
-            OptionProvider optionProvider1 = new OptionProvider();
-            optionProvider1.parse(attribute.getOptions());
-            setOptionProvider(optionProvider1);
+        } else if (!StringUtil.isBlank(getEditorOption().getDesignOptions())) {
+
+            DesignOption designOption = DesignOption.parse(getEditorOption().getDesignOptions());
+            if (designOption.code.equals(getCode())) {
+                JsArray<DropdownListDesignData> designDataJsArray;
+                //对头
+                try {
+                    designDataJsArray = Js.uncheckedCast(Global.JSON.parse(designOption.options));
+                } catch (Exception e) {
+                    designDataJsArray = new JsArray<>();
+                }
+                OptionProvider optionProvider1 = new OptionProvider();
+                for (int i = 0; i < designDataJsArray.length; i++) {
+                    DropdownListDesignData data = designDataJsArray.getAt(i);
+                    Option option = new Option(data.key, data.value);
+                    option.setInitSelected(data.init);
+                    optionProvider1.getOptions().add(option);
+                }
+                setOptionProvider(optionProvider1);
+            }
+
         }
 
         Object obj = attribute.getValue();
