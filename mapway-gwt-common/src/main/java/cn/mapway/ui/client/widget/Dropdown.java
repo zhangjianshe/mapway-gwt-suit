@@ -16,6 +16,7 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     }
 
     public void setPopupMaxHeight(int maxHeight) {
-        popupPanel.setHeight(maxHeight + "px");
+        popupPanel.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
     }
 
     public void setLabel(String txt) {
