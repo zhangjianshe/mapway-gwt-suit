@@ -3,6 +3,7 @@ package cn.mapway.ui.client.mvc.attribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
 import cn.mapway.ui.client.tools.JSON;
+import cn.mapway.ui.client.util.StringUtil;
 import elemental2.core.JsObject;
 import jsinterop.base.Js;
 
@@ -31,7 +32,7 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected AttributeEditorMetaData editorMetaData;
     protected IOptionProvider optionProvider = null;
     protected boolean initVisible = true;
-    private String id;
+    private final String id;
 
     public AttributeAdaptor(String name) {
         this(name, name);
@@ -48,6 +49,7 @@ public abstract class AttributeAdaptor implements IAttribute {
      * @param customEditCode 编辑器代码
      */
     public AttributeAdaptor(String name, String alterName, String customEditCode) {
+        this.id = StringUtil.randomString(8);
         editorMetaData = new AttributeEditorMetaData();
         editorMetaData.code = customEditCode;
         editorMetaData.name = name;

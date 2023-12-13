@@ -10,6 +10,8 @@ import jsinterop.annotations.JsType;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
+import java.util.function.BiConsumer;
+
 /**
  * 属性编辑器信息 根据此可以构建一个编辑器实例
  */
@@ -79,5 +81,37 @@ public class AttributeEditorMetaData {
             editorOption.set(key, propertyMap.get(key));
         });
         return editorOption;
+    }
+
+    @JsOverlay
+    public final AttributeEditorMetaData mergeEditorOption(EditorOption editorOption) {
+        if (editorOption != null) {
+            if (options == null) {
+                options = new JsObject();
+            }
+            JsPropertyMap<Object> propertyMap = Js.asPropertyMap(options);
+            editorOption.getOptions().forEach(new BiConsumer<String, Object>() {
+                @Override
+                public void accept(String key, Object value) {
+                    propertyMap.set(key, value);
+                }
+            });
+
+        }
+        return this;
+    }
+
+    /**
+     * merge edition option
+     * @param editorOptionJson is a  json object
+     *                         {
+     *                          key:value
+     *                         }
+     * @return
+     */
+    @JsOverlay
+    public final AttributeEditorMetaData mergeEditorOptionString(String editorOptionJson) {
+        EditorOption editorOption=EditorOption.parse(editorOptionJson);
+        return mergeEditorOption(editorOption);
     }
 }

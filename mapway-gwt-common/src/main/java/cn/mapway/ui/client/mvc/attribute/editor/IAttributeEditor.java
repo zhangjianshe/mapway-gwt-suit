@@ -13,8 +13,9 @@ import com.google.gwt.user.client.ui.Widget;
 public interface IAttributeEditor<T> extends IProvideSize, IData {
     String CATALOG_RUNTIME = "运行时";
     String CATALOG_DESIGN = "设计时";
-    String CATALOG_BUSINESS = "业务数据";
+    String CATALOG_BUSINESS = "业务编辑器";
     String CATALOG_UNKNOWN = "无分类";
+    String CATALOG_SYSTEM = "系统编辑器";
 
     /**
      * 编辑器的唯一识别代码

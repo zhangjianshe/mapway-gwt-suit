@@ -6,6 +6,7 @@ import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.CommonEventComposite;
+import cn.mapway.ui.client.widget.FontIcon;
 import cn.mapway.ui.client.widget.dialog.Popup;
 import cn.mapway.ui.client.widget.dialog.SaveBar;
 import cn.mapway.ui.client.widget.tree.ImageTextItem;
@@ -20,10 +21,7 @@ import com.google.gwt.user.client.ui.FlexTable;
 import com.google.gwt.user.client.ui.HTMLTable;
 import com.google.gwt.user.client.ui.Label;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 编辑器选择
@@ -107,6 +105,11 @@ public class EditorSelector extends CommonEventComposite {
         if (fireItem != null) {
             catalog.setValue(fireItem, true);
         }
+
+        //排序
+        groups.values().forEach(list -> {
+            Collections.sort(list, Comparator.comparingInt(i -> i.rank));
+        });
     }
 
     @UiHandler("catalog")
@@ -131,17 +134,21 @@ public class EditorSelector extends CommonEventComposite {
         table.removeAllRows();
         int row = 0;
         int col = 0;
+        table.setWidget(row, col++, header("#"));
         table.setWidget(row, col++, header("名称"));
         table.setWidget(row, col++, header("作者"));
         table.setWidget(row, col++, header("介绍"));
         row++;
+        HTMLTable.ColumnFormatter columnFormatter = table.getColumnFormatter();
         for (AttributeEditorInfo info : infos) {
             col = 0;
+            table.setWidget(row, col++, new FontIcon<>(info.icon));
             table.setText(row, col++, info.name);
             table.setText(row, col++, info.author);
             table.setText(row, col++, info.summary);
             row++;
         }
+        columnFormatter.setWidth(0, "30px");
     }
 
     private void update() {

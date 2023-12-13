@@ -2,19 +2,48 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree"
              xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog">
     <ui:style>
-        .left {
+        .table {
+            overflow: hidden;
+            width: 100%;
+            max-width: 100%;
+            border-collapse: collapse;
+            border-spacing: 0;
+        }
+
+        .table tr {
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .table > tbody > tr:first-child {
+            background-color: #464646;
+            line-height: 35px;
+        }
+
+        .table > tbody > tr:first-child .ai-header {
+            color: white;
+        }
+
+        .table tr[select="true"] {
+            background-color: skyblue;
+        }
+
+        .table tr:hover {
+            background-color: lightblue;
+        }
+
+        .table tr:hover:nth-child(n+2) {
             background-color: #f0f0f0;
         }
     </ui:style>
     <g:DockLayoutPanel>
         <g:west size="160">
-            <g:ScrollPanel addStyleNames="{style.left}">
+            <g:ScrollPanel addStyleNames="ai-border-right">
                 <tree:ZTree width="100%" ui:field="catalog"/>
             </g:ScrollPanel>
         </g:west>
         <g:center>
-            <g:ScrollPanel>
-                <g:FlexTable styleName="ai-table" ui:field="table"/>
+            <g:ScrollPanel styleName="ai-panel-content">
+                <g:FlexTable styleName="{style.table}" ui:field="table"/>
             </g:ScrollPanel>
         </g:center>
         <g:south size="58">

@@ -27,6 +27,9 @@ public class AttributeEditorInfo {
      */
     public String author;
 
+    public String icon;
+    public int rank;
+
 
     public AttributeEditorInfo(String code, String name, String group) {
         this.code = code;
@@ -43,4 +46,15 @@ public class AttributeEditorInfo {
         this.summary = summary;
         return this;
     }
+
+    public AttributeEditorInfo setRank(int rank) {
+        this.rank = rank;
+        return this;
+    }
+
+    public AttributeEditorInfo setIcon(String icon) {
+        this.icon = icon;
+        return this;
+    }
+
 }

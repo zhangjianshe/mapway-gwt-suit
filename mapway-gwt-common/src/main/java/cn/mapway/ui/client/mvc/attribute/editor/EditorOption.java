@@ -15,6 +15,9 @@ public class EditorOption {
     public final static String KEY_IMAGE_UPLOAD_REL = "upload_action_rel";
     public final static String KEY_WIDTH = "width";
     public final static String KEY_HEIGHT = "height";
+    public final static String KEY_SELECT_FILE_TYPE = "select_file_type";
+    public final static String KEY_FILE_SUFFIX = "file_suffix";
+
     Map<String, Object> options;
 
     public EditorOption() {
@@ -28,6 +31,15 @@ public class EditorOption {
     public EditorOption(String key, Object value) {
         this();
         options.put(key, value);
+    }
+
+    /**
+     * 获取选项
+     *
+     * @return
+     */
+    public Map<String, Object> getOptions() {
+        return options;
     }
 
     public EditorOption set(String key, Object value) {
@@ -96,6 +108,13 @@ public class EditorOption {
         } catch (Exception e) {
             Logs.info("Error parsing JSON String " + jsonString);
         }
+    }
+
+    public  final static EditorOption parse(String json)
+    {
+         EditorOption option = new EditorOption();
+         option.parseOptionValue(json);
+         return option;
     }
 
     public void parseOptionJsObject(JsObject jsObject) {
