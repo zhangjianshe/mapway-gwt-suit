@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
@@ -23,7 +24,9 @@ import java.util.List;
         name = "编辑器选择",
         group = IAttributeEditor.CATALOG_DESIGN,
         summary = "就是您正在使用的编辑器",
-        author = "ZJS")
+        author = "ZJS",
+        icon = Fonts.XUANZE
+)
 public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "ATTR_SELECT_EDITOR";
     private static final EditorSelectAttributeEditorUiBinder ourUiBinder = GWT.create(EditorSelectAttributeEditorUiBinder.class);
@@ -70,6 +73,8 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             }
             popup.hide(true);
         });
+        //设置设计时的参数字符串
+        popup.getContent().setDesignOptions(getEditorOption().getDesignOptions());
         popup.showRelativeTo(box);
     }
 

@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.event.MessageObject;
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
@@ -24,7 +25,9 @@ import com.google.gwt.user.client.ui.Widget;
         name= "图像选择",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "上传一个图像",
-        author = "ZJS")
+        author = "ZJS",
+        icon = Fonts.ENHANCE_COLOR
+)
 public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "IMAGE_UPLOAD_EDITOR";
     private static final ImageUploadAttributeEditorUiBinder ourUiBinder = GWT.create(ImageUploadAttributeEditorUiBinder.class);

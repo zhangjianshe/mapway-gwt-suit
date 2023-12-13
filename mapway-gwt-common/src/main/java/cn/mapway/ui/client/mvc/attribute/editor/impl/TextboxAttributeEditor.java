@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
@@ -19,7 +20,9 @@ import com.google.gwt.user.client.ui.Widget;
         name = "单行文本编辑器",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "文本输入",
-        author = "ZJS")
+        author = "ZJS",
+        icon = Fonts.RENAME
+)
 public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "TEXTBOX_EDITOR";
     private static final TextboxAttributeEditorUiBinder ourUiBinder = GWT.create(TextboxAttributeEditorUiBinder.class);

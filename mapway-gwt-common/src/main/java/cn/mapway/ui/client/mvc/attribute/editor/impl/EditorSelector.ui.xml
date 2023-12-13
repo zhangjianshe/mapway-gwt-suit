@@ -25,7 +25,7 @@
         }
 
 
-        .table > tobdy > tr[select="true"] {
+        .table > tbody > tr[select="true"] {
             background-color: #f0f0f0;
         }
 
@@ -46,6 +46,19 @@
                 <tree:ZTree width="100%" ui:field="catalog"/>
             </g:ScrollPanel>
         </g:west>
+        <g:east size="300">
+            <g:DockLayoutPanel styleName="ai-border-left">
+                <g:north size="60">
+                    <g:HTMLPanel ui:field="previewPlaceholder">
+
+                    </g:HTMLPanel>
+                </g:north>
+                <g:center>
+                    <g:ScrollPanel ui:field="designPanel">
+                    </g:ScrollPanel>
+                </g:center>
+            </g:DockLayoutPanel>
+        </g:east>
         <g:center>
             <g:ScrollPanel>
                 <g:FlexTable width="100%" cellPadding="4" styleName="{style.table}" ui:field="table"/>

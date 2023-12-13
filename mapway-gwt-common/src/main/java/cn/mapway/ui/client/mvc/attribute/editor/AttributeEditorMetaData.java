@@ -66,6 +66,37 @@ public class AttributeEditorMetaData {
     }
 
     /**
+     * 设置属性
+     *
+     * @param key
+     * @param value
+     * @return
+     */
+    @JsOverlay
+    public final AttributeEditorMetaData set(String key, String value) {
+        if (options == null) {
+            options = new JsObject();
+        }
+        Js.asPropertyMap(options).set(key, value);
+        return this;
+    }
+
+    /**
+     * 设置设计时的参数数据
+     *
+     * @param optionsString
+     * @return
+     */
+    @JsOverlay
+    public final AttributeEditorMetaData setDesignOption(String optionsString) {
+        if (optionsString == null) {
+            optionsString = "";
+        }
+        return set(EditorOption.KEY_DESIGN_OPTIONS, optionsString);
+    }
+
+
+    /**
      * 将选项信息转移到 editorOptionzhong 中
      *
      * @return
@@ -103,15 +134,16 @@ public class AttributeEditorMetaData {
 
     /**
      * merge edition option
+     *
      * @param editorOptionJson is a  json object
      *                         {
-     *                          key:value
+     *                         key:value
      *                         }
      * @return
      */
     @JsOverlay
     public final AttributeEditorMetaData mergeEditorOptionString(String editorOptionJson) {
-        EditorOption editorOption=EditorOption.parse(editorOptionJson);
+        EditorOption editorOption = EditorOption.parse(editorOptionJson);
         return mergeEditorOption(editorOption);
     }
 }

@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
@@ -17,7 +18,9 @@ import com.google.gwt.user.client.ui.Widget;
         name = "布尔型编辑器",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "布尔型的编辑器",
-        author = "ZJS")
+        author = "ZJS",
+        icon = Fonts.CONTROLER
+)
 public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
     public static final String EDITOR_CODE = "CHECKBOX_EDITOR";
     private static final CheckBoxAttributeEditorUiBinder ourUiBinder = GWT.create(CheckBoxAttributeEditorUiBinder.class);

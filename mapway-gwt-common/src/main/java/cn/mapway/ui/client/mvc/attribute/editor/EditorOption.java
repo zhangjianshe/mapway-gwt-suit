@@ -17,6 +17,7 @@ public class EditorOption {
     public final static String KEY_HEIGHT = "height";
     public final static String KEY_SELECT_FILE_TYPE = "select_file_type";
     public final static String KEY_FILE_SUFFIX = "file_suffix";
+    public final static String KEY_DESIGN_OPTIONS = "design_options";
 
     Map<String, Object> options;
 
@@ -31,6 +32,30 @@ public class EditorOption {
     public EditorOption(String key, Object value) {
         this();
         options.put(key, value);
+    }
+
+    public final static EditorOption parse(String json) {
+        EditorOption option = new EditorOption();
+        option.parseOptionValue(json);
+        return option;
+    }
+
+    /**
+     * 获取设计时的字符串
+     *
+     * @return
+     */
+    public String getDesignOptions() {
+        return (String) get(KEY_DESIGN_OPTIONS);
+    }
+
+    /**
+     * 设置设计时的字符串
+     *
+     * @param options
+     */
+    public void setDesignOptions(String options) {
+        set(KEY_DESIGN_OPTIONS, options);
     }
 
     /**
@@ -108,13 +133,6 @@ public class EditorOption {
         } catch (Exception e) {
             Logs.info("Error parsing JSON String " + jsonString);
         }
-    }
-
-    public  final static EditorOption parse(String json)
-    {
-         EditorOption option = new EditorOption();
-         option.parseOptionValue(json);
-         return option;
     }
 
     public void parseOptionJsObject(JsObject jsObject) {

@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.*;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
@@ -7,7 +8,6 @@ import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.Dropdown;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -16,11 +16,13 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 下拉框的属性编辑器
  */
-@AttributeEditor(value=DropdownAttributeEditor.EDITOR_CODE,
+@AttributeEditor(value = DropdownAttributeEditor.EDITOR_CODE,
         name = "下拉框编辑器",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "一组数据的选择器",
-        author = "ZJS")
+        author = "ZJS",
+        icon = Fonts.DROPDOWN
+)
 public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "DROPDOWN_EDITOR";
     private static final DropdownAttributeEditorUiBinder ourUiBinder = GWT.create(DropdownAttributeEditorUiBinder.class);

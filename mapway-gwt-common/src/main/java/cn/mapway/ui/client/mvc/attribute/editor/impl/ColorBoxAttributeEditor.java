@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
@@ -20,7 +21,9 @@ import com.google.gwt.user.client.ui.Widget;
         name = "颜色编辑器",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "选择一个颜色#RGBA",
-        author = "ZJS")
+        author = "ZJS",
+        icon = Fonts.COLORS
+)
 public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "COLOR_EDITOR";
     private static final ColorBoxAttributeEditorUiBinder ourUiBinder = GWT.create(ColorBoxAttributeEditorUiBinder.class);
