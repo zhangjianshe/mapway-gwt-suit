@@ -15,7 +15,6 @@ import jsinterop.base.Js;
 
 public abstract class AttributeAdaptor implements IAttribute {
 
-    protected String name;
     protected String altName;
     protected int dataType;
     protected String defaultValue;
@@ -82,18 +81,18 @@ public abstract class AttributeAdaptor implements IAttribute {
 
     @Override
     public String getName() {
-        return name;
+        return editorMetaData.name;
     }
 
     public AttributeAdaptor setName(String name) {
-        this.name = name;
+        this.editorMetaData.name = name;
         return this;
     }
 
     @Override
     public String getAltName() {
         if (this.altName == null) {
-            return this.name;
+            return this.editorMetaData.name;
         } else {
             return this.altName;
         }
