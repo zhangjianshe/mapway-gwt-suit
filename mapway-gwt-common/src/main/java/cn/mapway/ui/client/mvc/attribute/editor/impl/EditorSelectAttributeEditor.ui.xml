@@ -1,7 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:buttons="urn:import:cn.mapway.ui.client.widget.buttons"
-             xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree">
+>
     <ui:style>
         .grid {
             display: grid;

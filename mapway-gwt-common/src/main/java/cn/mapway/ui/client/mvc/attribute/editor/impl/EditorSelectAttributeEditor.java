@@ -22,7 +22,7 @@ import java.util.List;
 @AttributeEditor(value = EditorSelectAttributeEditor.EDITOR_CODE,
         name = "编辑器选择",
         group = IAttributeEditor.CATALOG_DESIGN,
-        summary = "选择一个个字段的属性编辑器",
+        summary = "就是您正在使用的编辑器",
         author = "ZJS")
 public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "ATTR_SELECT_EDITOR";
