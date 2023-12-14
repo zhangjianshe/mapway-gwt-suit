@@ -44,6 +44,7 @@ public class EditorSelector extends CommonEventComposite {
 
     IEditorDesigner currentDesign = null;
     EditorOption currentEditValue;
+    String initEditCoder;
 
     public EditorSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -56,16 +57,7 @@ public class EditorSelector extends CommonEventComposite {
             if (rowIndex < 1 || rowIndex >= table.getRowCount()) {
                 return;
             }
-            HTMLTable.RowFormatter rowFormatter = table.getRowFormatter();
-            if (selectRow >= 1) {
-                rowFormatter.getElement(selectRow).removeAttribute(SELECT_ATTRIBUTE);
-            }
-            selectRow = rowIndex;
-            rowFormatter.getElement(selectRow).setAttribute(SELECT_ATTRIBUTE, "true");
-            selectEditor = currentList.get(rowIndex - 1); //" minus 1 " because we add a header line in the table
-            update();
-            //新选择了一个设计期重新渲染 属性编辑器的参数设计UI
-            renderSelectDesign(selectEditor);
+            selectTableRow(rowIndex);
         });
     }
 
@@ -83,6 +75,19 @@ public class EditorSelector extends CommonEventComposite {
     private static Popup<EditorSelector> createOne() {
         EditorSelector selector = new EditorSelector();
         return new Popup<>(selector);
+    }
+
+    private void selectTableRow(int rowIndex) {
+        HTMLTable.RowFormatter rowFormatter = table.getRowFormatter();
+        if (selectRow >= 1) {
+            rowFormatter.getElement(selectRow).removeAttribute(SELECT_ATTRIBUTE);
+        }
+        selectRow = rowIndex;
+        rowFormatter.getElement(selectRow).setAttribute(SELECT_ATTRIBUTE, "true");
+        selectEditor = currentList.get(rowIndex - 1); //" minus 1 " because we add a header line in the table
+        update();
+        //新选择了一个设计期重新渲染 属性编辑器的参数设计UI
+        renderSelectDesign(selectEditor);
     }
 
     /**
@@ -176,15 +181,23 @@ public class EditorSelector extends CommonEventComposite {
         table.setWidget(row, col++, header("名称"));
         table.setWidget(row, col++, header("介绍"));
         row++;
+        int selectedIndex = -1;
         HTMLTable.ColumnFormatter columnFormatter = table.getColumnFormatter();
         for (AttributeEditorInfo info : infos) {
             col = 0;
             table.setWidget(row, col++, new FontIcon<>(info.icon));
             table.setText(row, col++, info.name);
             table.setText(row, col++, info.summary);
+            if (info.code.equals(initEditCoder)) {
+                selectedIndex = row;
+            }
             row++;
         }
         columnFormatter.setWidth(0, "30px");
+
+        if (selectedIndex >= 1) {
+            selectTableRow(selectedIndex);
+        }
     }
 
     private void update() {
@@ -225,6 +238,45 @@ public class EditorSelector extends CommonEventComposite {
      */
     public void editorValue(EditorOption editValue) {
         currentEditValue = editValue;
+        //缺省选中 editValue 对应的组件
+        initEditCoder = (String) editValue.get(EditorOption.KEY_EDITOR_CODE);
+        String selectKey = "";
+        for (String key : groups.keySet()) {
+            for (AttributeEditorInfo info : groups.get(key)) {
+                if (info.code.equals(initEditCoder)) {
+                    selectKey = key;
+                    break;
+                }
+            }
+            if (selectKey.length() > 0) {
+                break;
+            }
+        }
+
+        if (selectKey.length() > 0) {
+            ImageTextItem groupItem = findItemByGroupKey(selectKey);
+            if (groupItem != null) {
+                catalog.setValue(groupItem, true);
+            }
+        }
+    }
+
+    /**
+     * 未来支持多级支持
+     *
+     * @param groupKey
+     * @return
+     */
+    private ImageTextItem findItemByGroupKey(String groupKey) {
+        for (int i = 0; i < catalog.getWidgetCount(); i++) {
+            Widget widget = catalog.getWidget(i);
+            if (widget instanceof ImageTextItem) {
+                if (((ImageTextItem) widget).getText().equals(groupKey)) {
+                    return (ImageTextItem) widget;
+                }
+            }
+        }
+        return null;
     }
 
     interface EditorSelectorUiBinder extends UiBinder<DockLayoutPanel, EditorSelector> {
