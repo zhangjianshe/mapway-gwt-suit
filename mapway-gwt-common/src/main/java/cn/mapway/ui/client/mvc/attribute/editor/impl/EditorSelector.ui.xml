@@ -2,45 +2,23 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree"
              xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog">
     <ui:style>
-        .table {
-            overflow: hidden;
-            width: 100%;
-            max-width: 100%;
-            border-collapse: collapse;
-            border-spacing: 0;
-        }
 
-        .table > tbody > tr {
-            border-bottom: 1px solid #f0f0f0;
-            height: 35px;
-        }
-
-        .table > tbody > tr > td {
-            padding: 4px;
-            cursor: default;
-        }
-
-        .table > tbody > tr:first-child {
-            background-color: skyblue;
-        }
-
-
-        .table > tbody > tr[select="true"] {
-            background-color: #f0f0f0;
-        }
-
-        .table > tbody > tr:hover {
-            background-color: lightblue;
-        }
-
-        .table > tbody > tr:nth-child(n+2) {
-            background-color: #f0f0f0;
-        }
 
         .panel {
             padding: 4px;
         }
-    </ui:style>
+
+        .summary {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            justify-items: center;
+        }</ui:style>
     <g:DockLayoutPanel>
         <g:south size="58">
             <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
@@ -60,9 +38,14 @@
                 </g:VerticalPanel>
             </g:ScrollPanel>
         </g:east>
+        <g:north size="70">
+            <g:HTMLPanel styleName="{style.flex}">
+                <g:Label ui:field="lbSummary" styleName="{style.summary}"/>
+            </g:HTMLPanel>
+        </g:north>
         <g:center>
             <g:ScrollPanel>
-                <g:FlexTable width="100%" cellPadding="4" styleName="{style.table}" ui:field="table"/>
+                <g:FlexTable width="100%" cellPadding="4" styleName="att-table" ui:field="table"/>
             </g:ScrollPanel>
         </g:center>
 

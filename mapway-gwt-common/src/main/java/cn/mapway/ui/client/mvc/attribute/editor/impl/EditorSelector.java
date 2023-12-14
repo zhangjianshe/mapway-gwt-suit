@@ -36,6 +36,8 @@ public class EditorSelector extends CommonEventComposite {
     HTMLPanel designPanel;
     @UiField
     HTMLPanel previewPlaceholder;
+    @UiField
+    Label lbSummary;
     AttributeEditorInfo selectEditor = null;
     Map<String, List<AttributeEditorInfo>> groups;
 
@@ -138,14 +140,16 @@ public class EditorSelector extends CommonEventComposite {
                 fireItem = item;
             }
         }
-        if (fireItem != null) {
-            catalog.setValue(fireItem, true);
-        }
+
 
         //排序
         groups.values().forEach(list -> {
             Collections.sort(list, Comparator.comparingInt(i -> i.rank));
         });
+
+        if (fireItem != null) {
+            catalog.setValue(fireItem, true);
+        }
     }
 
     @UiHandler("catalog")
@@ -158,6 +162,7 @@ public class EditorSelector extends CommonEventComposite {
             currentList = (List<AttributeEditorInfo>) item.getData();
             renderData(currentList);
             clearPreview();
+            lbSummary.setText("分组中共有编辑器" + currentList.size() + "个");
         }
     }
 
