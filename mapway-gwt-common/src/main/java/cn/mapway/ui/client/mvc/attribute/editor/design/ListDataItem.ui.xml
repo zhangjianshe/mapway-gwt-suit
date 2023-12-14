@@ -5,6 +5,8 @@
     <ui:style>
         .box {
             display: flex;
+            gap: 4px;
+            margin-bottom: 4px;
         }
     </ui:style>
     <g:HTMLPanel styleName="{style.box}">

@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.design;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
@@ -30,6 +31,7 @@ public class ListDataItem extends CommonEventComposite implements IData<Dropdown
 
     public ListDataItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        btnDelete.setIconUnicode(Fonts.REMOVE);
     }
 
     @Override
