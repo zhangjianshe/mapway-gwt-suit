@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.mvc.Size;
+import cn.mapway.ui.client.mvc.attribute.AttributeAdaptor;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
@@ -38,6 +39,8 @@ public class EditorSelector extends CommonEventComposite {
     HTMLPanel previewPlaceholder;
     @UiField
     Label lbSummary;
+    @UiField
+    AttributeItemEditorProxy preview;
     AttributeEditorInfo selectEditor = null;
     Map<String, List<AttributeEditorInfo>> groups;
 
@@ -98,21 +101,30 @@ public class EditorSelector extends CommonEventComposite {
      * @param selectEditor 设计期的编辑器信息
      */
     private void renderSelectDesign(AttributeEditorInfo selectEditor) {
+
         clearPreview();
-        IAttributeEditor editor = AttributeEditorFactory.get().createEditor(selectEditor.code, false);
-        if (editor == null) {
-            previewPlaceholder.add(new Label("创建组件失败"));
-        } else {
-            previewPlaceholder.add(editor.getDisplayWidget());
-            currentDesign = editor.getDesigner();
-            if (currentDesign != null) {
-                Widget designWidget = currentDesign.getDesignRoot();
-                designPanel.add(designWidget);
-                if (selectEditor.code.equals(this.currentEditValue.get(EditorOption.KEY_EDITOR_CODE))) {
-                    //原来的设计器和新选择的设计类型一致
-                    JsObject jsObject = Js.uncheckedCast(Global.JSON.parse(currentDesign.getDesignOptions()));
-                    currentDesign.setDesignOptions(jsObject);
-                }
+        previewPlaceholder.setVisible(true);
+        //顶一个一 FakeAttribute
+        AttributeAdaptor adaptor = new AttributeAdaptor("preview", selectEditor.name, selectEditor.code) {
+            @Override
+            public Object getValue() {
+                return null;
+            }
+
+            @Override
+            public void setValue(Object value) {
+            }
+        };
+        preview.createEditorInstance(adaptor);
+
+        currentDesign = preview.getEditor().getDesigner();
+        if (currentDesign != null) {
+            Widget designWidget = currentDesign.getDesignRoot();
+            designPanel.add(designWidget);
+            if (selectEditor.code.equals(this.currentEditValue.get(EditorOption.KEY_EDITOR_CODE))) {
+                //原来的设计器和新选择的设计类型一致 currentEditValue 用户之前选中的编辑器里的设计数据
+                JsObject jsObject = Js.uncheckedCast(Global.JSON.parse(currentEditValue.getDesignOptions()));
+                currentDesign.setDesignOptions(jsObject);
             }
         }
     }
@@ -168,7 +180,7 @@ public class EditorSelector extends CommonEventComposite {
 
     private void clearPreview() {
         designPanel.clear();
-        previewPlaceholder.clear();
+        previewPlaceholder.setVisible(false);
         currentDesign = null;
     }
 

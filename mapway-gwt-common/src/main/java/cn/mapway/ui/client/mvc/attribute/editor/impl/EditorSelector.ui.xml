@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree"
-             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog">
+             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog"
+             xmlns:impl="urn:import:cn.mapway.ui.client.mvc.attribute.editor.impl">
     <ui:style>
 
 
@@ -32,6 +33,7 @@
             <g:ScrollPanel styleName="ai-border-left {style.panel}">
                 <g:VerticalPanel width="100%" spacing="6">
                     <g:HTMLPanel ui:field="previewPlaceholder">
+                        <impl:AttributeItemEditorProxy ui:field="preview"/>
                     </g:HTMLPanel>
                     <g:HTMLPanel ui:field="designPanel">
                     </g:HTMLPanel>

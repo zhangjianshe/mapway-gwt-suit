@@ -14,7 +14,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 
-@AttributeEditor(value=CheckBoxAttributeEditor.EDITOR_CODE,
+@AttributeEditor(value = CheckBoxAttributeEditor.EDITOR_CODE,
         name = "布尔型编辑器",
         group = IAttributeEditor.CATALOG_RUNTIME,
         summary = "布尔型的编辑器",
@@ -59,6 +59,9 @@ public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
 
     public void updateUI() {
         IAttribute attribute = getAttribute();
+        if (attribute == null) {
+            return;
+        }
         if (getAttribute().isReadonly()) {
             checkBox.setEnabled(false);
         }
