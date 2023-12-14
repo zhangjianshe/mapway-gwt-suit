@@ -6,7 +6,6 @@ import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.design.DesignOption;
 import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesign;
 import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesignData;
 import cn.mapway.ui.client.util.StringUtil;
@@ -92,34 +91,33 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             ddlDropdown.setEnabled(false);
         }
 
+        //父组件保证了次值一定不为空
+        EditorOption editorOption = getEditorOption();
+        // designOptions 是一个JSON字符串 会根据不同的编辑器组件有不同的数据结构
+        String designOptions = editorOption.getDesignOptions();
+
         IOptionProvider optionProvider = attribute.getOptionProvider();
         if (optionProvider != null) {
             setOptionProvider(optionProvider);
-        } else if (!StringUtil.isBlank(getEditorOption().getDesignOptions())) {
-
-            DesignOption designOption = DesignOption.parse(getEditorOption().getDesignOptions());
-            if (designOption.code.equals(getCode())) {
-                JsArray<DropdownListDesignData> designDataJsArray;
-                //对头
-                try {
-                    designDataJsArray = Js.uncheckedCast(Global.JSON.parse(designOption.options));
-                } catch (Exception e) {
-                    designDataJsArray = new JsArray<>();
-                }
-                OptionProvider optionProvider1 = new OptionProvider();
-                for (int i = 0; i < designDataJsArray.length; i++) {
-                    DropdownListDesignData data = designDataJsArray.getAt(i);
-                    Option option = new Option(data.key, data.value);
-                    option.setInitSelected(data.init);
-                    optionProvider1.getOptions().add(option);
-                }
-                setOptionProvider(optionProvider1);
+        } else if (!StringUtil.isBlank(designOptions)) {
+            JsArray<DropdownListDesignData> designDataJsArray;
+            //对头
+            try {
+                designDataJsArray = Js.uncheckedCast(Global.JSON.parse(designOptions));
+            } catch (Exception e) {
+                designDataJsArray = new JsArray<>();
             }
-
+            OptionProvider optionProvider1 = new OptionProvider();
+            for (int i = 0; i < designDataJsArray.length; i++) {
+                DropdownListDesignData data = designDataJsArray.getAt(i);
+                Option option = new Option(data.key, data.value);
+                option.setInitSelected(data.init);
+                optionProvider1.getOptions().add(option);
+            }
+            setOptionProvider(optionProvider1);
         }
-
-        Object obj = attribute.getValue();
-        ddlDropdown.setValue(obj, true);
+        Object obj = getAttribute().getValue();
+        ddlDropdown.setValue(obj, false);
     }
 
     private void setOptionProvider(IOptionProvider provider) {

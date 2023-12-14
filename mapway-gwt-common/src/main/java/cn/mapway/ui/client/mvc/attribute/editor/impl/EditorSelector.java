@@ -1,8 +1,8 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.mvc.Size;
+import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
-import cn.mapway.ui.client.mvc.attribute.editor.design.DesignOption;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
 import cn.mapway.ui.client.widget.dialog.Popup;
@@ -39,8 +39,9 @@ public class EditorSelector extends CommonEventComposite {
 
     int selectRow = -1;
     List<AttributeEditorInfo> currentList;
-    DesignOption designOption;
+
     IEditorDesigner currentDesign = null;
+    IAttribute currentEditAttribute;
 
     public EditorSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -61,6 +62,7 @@ public class EditorSelector extends CommonEventComposite {
             rowFormatter.getElement(selectRow).setAttribute(SELECT_ATTRIBUTE, "true");
             selectEditor = currentList.get(rowIndex - 1); //" minus 1 " because we add a header line in the table
             update();
+            //新选择了一个设计期重新渲染 属性编辑器的参数设计UI
             renderSelectDesign(selectEditor);
         });
     }
@@ -84,7 +86,7 @@ public class EditorSelector extends CommonEventComposite {
     /**
      * 切换组件时 重新设置组件参数UI
      *
-     * @param selectEditor
+     * @param selectEditor 设计期的编辑器信息
      */
     private void renderSelectDesign(AttributeEditorInfo selectEditor) {
         clearPreview();
@@ -97,9 +99,9 @@ public class EditorSelector extends CommonEventComposite {
             if (currentDesign != null) {
                 Widget designWidget = currentDesign.getDesignRoot();
                 designPanel.add(designWidget);
-                if (designOption != null && editor.getCode().equals(designOption.code)) {
-                    //原来的设计属性与选择的属性一致
-                    currentDesign.parseDesignOptions(designOption.options);
+                if (currentEditAttribute.getEditorCode().equals(selectEditor.code)) {
+                    //原来的设计器和新选择的设计类型一致
+                    currentDesign.parseDesignOptions(currentEditAttribute.getDesignOption().getDesignOptions());
                 }
             }
         }
@@ -194,18 +196,14 @@ public class EditorSelector extends CommonEventComposite {
     @UiHandler("saveBar")
     public void saveBarCommon(CommonEvent event) {
         if (event.isOk()) {
-            AttributeEditorMetaData editorValue = new AttributeEditorMetaData();
-            editorValue.code = selectEditor.code;
-            editorValue.name = selectEditor.name;
+            EditorOption option = new EditorOption();
+            option.set(EditorOption.KEY_EDITOR_CODE,selectEditor.code);
+            option.set(EditorOption.KEY_EDITOR_NAME,selectEditor.name);
+
             if (currentDesign != null) {
-                if (designOption == null) {
-                    designOption = new DesignOption();
-                }
-                designOption.code = selectEditor.code;
-                designOption.options = currentDesign.toDesignOptions();
-                editorValue.setDesignOption(designOption.options);
+                option.setDesignOptions(currentDesign.toDesignOptions());
             }
-            fireEvent(CommonEvent.okEvent(editorValue));
+            fireEvent(CommonEvent.okEvent(option));
         } else {
             fireEvent(event);
         }
@@ -218,13 +216,15 @@ public class EditorSelector extends CommonEventComposite {
 
     /**
      * 设置设计时的参数
+     * 每一个属性都对应一个设计期的参数 在弹出这个对话框的期间这个值是不变的
+     * 除非用户选择了其他的编辑器，并且同时变更了在点击OK按钮后 会重新变更这个数据 传递给属性定义
+     * 每次弹出 必须调用这个方法
      *
-     * @param designOptions
+     * @param attribute
      */
-    public void setDesignOptions(String designOptions) {
-        designOption = DesignOption.parse(designOptions);
+    public void editAttribute(IAttribute attribute) {
+        currentEditAttribute = attribute;
     }
-
 
     interface EditorSelectorUiBinder extends UiBinder<DockLayoutPanel, EditorSelector> {
     }

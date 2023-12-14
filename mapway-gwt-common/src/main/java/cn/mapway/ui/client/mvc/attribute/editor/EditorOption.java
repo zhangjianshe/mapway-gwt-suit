@@ -18,6 +18,8 @@ public class EditorOption {
     public final static String KEY_SELECT_FILE_TYPE = "select_file_type";
     public final static String KEY_FILE_SUFFIX = "file_suffix";
     public final static String KEY_DESIGN_OPTIONS = "design_options";
+    public static final String KEY_EDITOR_CODE = "editor_code";
+    public static final String KEY_EDITOR_NAME = "editor_name";
 
     Map<String, Object> options;
 

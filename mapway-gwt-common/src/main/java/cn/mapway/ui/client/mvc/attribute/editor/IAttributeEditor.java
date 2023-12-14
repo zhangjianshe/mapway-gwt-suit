@@ -49,6 +49,18 @@ public interface IAttributeEditor<T> extends IProvideSize, IData {
      */
     void setAttribute(EditorOption editOption, IAttribute attribute);
 
+    /**
+     * 获取编辑器对应的属性定义
+     *
+     * @return
+     */
+    IAttribute getAttribute();
+
+    /**
+     * 编辑器的缺省大小
+     *
+     * @return
+     */
     Size getSize();
 
     void updateEditorOption(String key, Object value);

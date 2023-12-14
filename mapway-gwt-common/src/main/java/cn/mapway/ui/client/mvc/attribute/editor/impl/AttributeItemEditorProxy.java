@@ -2,8 +2,6 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
-import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.util.Logs;
 import com.google.gwt.core.client.GWT;
@@ -16,6 +14,10 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
+/**
+ * 所有编辑器组件的一个代理
+ * [name   :    EDITOR]
+ */
 public class AttributeItemEditorProxy extends Composite {
     private static final AttributeItemEditorProxyUiBinder ourUiBinder = GWT.create(AttributeItemEditorProxyUiBinder.class);
     @UiField
@@ -25,39 +27,53 @@ public class AttributeItemEditorProxy extends Composite {
     @UiField
     HTMLPanel box;
     IAttributeEditor attributeEditor;
-    EditorOption editorOption;
-    private IAttribute attribute;
 
     public AttributeItemEditorProxy() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
-    public void setAttribute(EditorOption editorOption, IAttribute obj) {
-        this.attribute = obj;
-        this.editorOption = editorOption;
-        toUI();
+    /**
+     * 创建编辑器实例
+     *
+     * @param attribute     编辑器组件的定义(属性的定义)
+     */
+    public void createEditorInstance(IAttribute attribute) {
+        if (attribute == null || attribute.getEditorCode() == null) {
+            Logs.info("Attribute is null or editorCode is null in AttributeItemEditorProxy");
+            return;
+        }
+
+        box.clear();
+        box.add(lbHeader);
+
+        //创建统一的属性列表编辑UI
+        attributeEditor = AttributeEditorFactory.get().createEditor(attribute.getEditorCode(), false);
+        if (attributeEditor == null) {
+            errorInput("创建属性组件出错" + attribute.getEditorCode());
+            return;
+        }
+
+        Widget displayWidget = attributeEditor.getDisplayWidget();
+        box.add(displayWidget);
+
+        //让属性编辑器 自己处理数据逻辑
+        attributeEditor.setAttribute(attribute.getRuntimeOption(), attribute);
+
+        //
+        lbHeader.setText(getAttributeName());
     }
 
     public IAttribute getAttribute() {
-        return attribute;
-    }
-
-    public EditorOption getEditorOption() {
-        return editorOption;
+        if (attributeEditor != null) {
+            return attributeEditor.getAttribute();
+        } else {
+            return null;
+        }
     }
 
 
     public IAttributeEditor getEditor() {
         return attributeEditor;
-    }
-
-    private void toUI() {
-        if (attribute == null) {
-            Logs.info("Attribute is null in attributeItemEditorProxy");
-            return;
-        }
-        AttributeEditorMetaData editorMetaData = attribute.getEditorMetaData();
-        loadEditor(editorMetaData.code);
     }
 
     private void errorInput(String msg) {
@@ -87,31 +103,6 @@ public class AttributeItemEditorProxy extends Composite {
     }
 
 
-    private void loadEditor(String code) {
-
-        box.clear();
-        box.add(lbHeader);
-        lbHeader.setText(getAttributeName());
-        //创建统一的属性列表编辑UI
-        attributeEditor = AttributeEditorFactory.get().createEditor(code, false);
-        if (attributeEditor == null) {
-            errorInput("创建属性组件出错" + code);
-            return;
-        }
-
-        Widget displayWidget = attributeEditor.getDisplayWidget();
-        int columnCount = 1;
-        if (displayWidget != null) {
-            box.add(displayWidget);
-            columnCount++;
-        }
-
-        //让属性编辑器 自己处理数据逻辑
-        attributeEditor.setAttribute(editorOption, attribute);
-
-    }
-
-
     /**
      * 运行编辑器是否可以编辑
      *
@@ -123,11 +114,22 @@ public class AttributeItemEditorProxy extends Composite {
         }
     }
 
+    /**
+     * 获取属性的名称
+     *
+     * @return
+     */
     private String getAttributeName() {
-        if (attribute.getAltName() != null && attribute.getAltName().length() > 0) {
-            return attribute.getAltName();
+        if (attributeEditor == null) {
+            return "没有编辑器定义";
+        } else {
+            IAttribute attribute = attributeEditor.getAttribute();
+            if (attribute.getAltName() != null && attribute.getAltName().length() > 0) {
+                return attribute.getAltName();
+            } else {
+                return attribute.getName();
+            }
         }
-        return attribute.getName();
     }
 
     interface AttributeItemEditorProxyUiBinder extends UiBinder<HTMLPanel, AttributeItemEditorProxy> {

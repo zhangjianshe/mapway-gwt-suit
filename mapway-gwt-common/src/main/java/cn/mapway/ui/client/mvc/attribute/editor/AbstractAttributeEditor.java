@@ -41,6 +41,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
 
     /**
      * 获取编辑器选项
+     * 这个选项一定不为空 并且融合了 设计期和运行期 的所有编辑器参数选项
      *
      * @return
      */
@@ -79,17 +80,34 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
 
     /**
      * 设置组件编辑器的内容
+     * 通过组件工厂 AttributeEditorFactory 创建一个编辑器组件实例后
+     * 子组件必须首先调用此方法 处理一些基础数据
+     * 参见下拉框编辑器的设计 DropdownAttributeEditor
      *
-     * @param editorOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
-     * @param attribute    属性编辑器对应的属性内容
+     * @param runtimeOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
+     * @param attribute     属性编辑器对应的属性内容
      */
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
         assert attribute != null;
         this.attribute = attribute;
-        this.editorOption = new EditorOption();
-        //将传入的选项和 定义的选项merge
-        this.editorOption.merge(attribute.getEditorMetaData().toEditorOption());
+        if (runtimeOption == null) {
+            //没有运行时期的组件参数
+            if (attribute.getDesignOption() != null) {
+                //有设计七的组件参数
+                this.editorOption = attribute.getDesignOption();
+            } else {
+                //缺省没有组件参数
+                this.editorOption = new EditorOption();
+            }
+        } else {
+            //有运行时期的组件参数
+            this.editorOption = runtimeOption;
+            //合并设计时期的组件参数
+            this.editorOption.merge(attribute.getDesignOption());
+        }
+        //经过上面的配置
+        //子组件可以处理所有的组件参数了
     }
 
     @Override

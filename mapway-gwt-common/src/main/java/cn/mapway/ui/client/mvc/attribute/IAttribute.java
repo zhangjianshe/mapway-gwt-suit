@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
 
-import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
+import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 
 /**
  * IAttribute
@@ -55,12 +55,23 @@ public interface IAttribute {
 
 
     /**
-     * 属性对应编辑器的元数据
+     * 获取设计时期的组件选项
      * 解析为 AttributeEditorMetaData 数据
      *
      * @return AttributeEditorMetaData
      */
-    AttributeEditorMetaData getEditorMetaData();
+    EditorOption getDesignOption();
+
+
+    /**
+     * 获取运行时期 的参数
+     *
+     * @return
+     */
+    default EditorOption getRuntimeOption() {
+        return null;
+    }
+
 
     /**
      * 是否初始化显示
@@ -70,5 +81,15 @@ public interface IAttribute {
     default boolean isInitVisible() {
         return true;
     }
+
+    /**
+     * 编辑器组件的 代码
+     * 可以通过这个方法获取创建组件需要的必要数据  编辑器代码
+     *
+     * @return
+     */
+    String getEditorCode();
+
+
 
 }

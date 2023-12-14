@@ -1,6 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute;
 
-import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorMetaData;
+import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
 import cn.mapway.ui.client.tools.JSON;
 import cn.mapway.ui.client.util.StringUtil;
@@ -15,6 +15,7 @@ import jsinterop.base.Js;
 
 public abstract class AttributeAdaptor implements IAttribute {
 
+    private final String id;
     protected String altName;
     protected int dataType;
     protected String defaultValue;
@@ -28,10 +29,13 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String errorTip = "";
     protected String icon = "";
     protected String options = "";
-    protected AttributeEditorMetaData editorMetaData;
+    protected EditorOption designOption;
     protected IOptionProvider optionProvider = null;
     protected boolean initVisible = true;
-    private final String id;
+    // 属性名称
+    protected String name;
+    private String editorCode;
+    private EditorOption runtimeOption;
 
     public AttributeAdaptor(String name) {
         this(name, name);
@@ -48,10 +52,12 @@ public abstract class AttributeAdaptor implements IAttribute {
      * @param customEditCode 编辑器代码
      */
     public AttributeAdaptor(String name, String alterName, String customEditCode) {
+        //每个属性定义都会有一个唯一的实力ID
         this.id = StringUtil.randomString(8);
-        editorMetaData = new AttributeEditorMetaData();
-        editorMetaData.code = customEditCode;
-        editorMetaData.name = name;
+
+        //编辑器代码
+        this.editorCode = customEditCode;
+        this.name = name;
         this.altName = alterName;
     }
 
@@ -65,37 +71,75 @@ public abstract class AttributeAdaptor implements IAttribute {
     }
 
     @Override
-    public AttributeEditorMetaData getEditorMetaData() {
-        return editorMetaData;
+    public EditorOption getRuntimeOption() {
+        return runtimeOption;
     }
 
-    public AttributeAdaptor setEditorMetaData(AttributeEditorMetaData metaData) {
-        this.editorMetaData = metaData;
+    public void setRuntimeOption(EditorOption runtimeOption) {
+        this.runtimeOption = runtimeOption;
+    }
+
+    @Override
+    public EditorOption getDesignOption() {
+        return designOption;
+    }
+
+
+    /**
+     * 解析设计器的组件参数
+     *
+     * @param designOptionJson
+     * @return
+     */
+    public AttributeAdaptor parseDesignOption(String designOptionJson) {
+        this.designOption = EditorOption.parse(designOptionJson);
         return this;
     }
 
-    public AttributeAdaptor parseEditorMetaData(String jsonData) {
-        editorMetaData = AttributeEditorMetaData.parse(jsonData);
+    /**
+     * editor JSON字符串中包含了所有的额编辑器信息
+     * 处理编辑器代码 editorCode 以及设计器的参数 designOpotions
+     *
+     * @return
+     */
+    public AttributeAdaptor parseEditor(String editor) {
+        EditorOption option = EditorOption.parse(editor);
+        Object o = option.get(EditorOption.KEY_EDITOR_CODE);
+        if (o instanceof String) {
+            editorCode = (String) o;
+        }
+
+        if (designOption == null) {
+            designOption = EditorOption.parse(option.getDesignOptions());
+        } else {
+            designOption.merge(EditorOption.parse(option.getDesignOptions()));
+        }
         return this;
     }
 
     @Override
     public String getName() {
-        return editorMetaData.name;
+        return name;
     }
 
     public AttributeAdaptor setName(String name) {
-        this.editorMetaData.name = name;
+        this.name = name;
         return this;
+    }
+
+    /**
+     * editorCode is a readonly property
+     * 只有通过构造函数设定
+     *
+     * @return
+     */
+    public String getEditorCode() {
+        return editorCode;
     }
 
     @Override
     public String getAltName() {
-        if (this.altName == null) {
-            return this.editorMetaData.name;
-        } else {
-            return this.altName;
-        }
+        return altName;
     }
 
     public AttributeAdaptor setAltName(String altName) {

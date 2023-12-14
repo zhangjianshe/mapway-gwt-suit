@@ -67,45 +67,35 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         popup.addCommonHandler(event1 -> {
             if (event1.isOk()) {
                 if(getAttribute()!=null) {
-                    AttributeEditorMetaData editorDesignOption = event1.getValue();
-                    getAttribute().setValue(editorDesignOption.toJSON());
-                    txtName.setValue(editorDesignOption.name);
+                    //这个是保存在 属性定义的 编辑器字段中的数据
+                    EditorOption editorDesignOption = event1.getValue();
+                    txtName.setValue((String) editorDesignOption.get(EditorOption.KEY_EDITOR_NAME));
+                    getAttribute().setValue(editorDesignOption.toJson());
                 }
             }
             popup.hide(true);
         });
         //设置设计时的参数字符串
-        popup.getContent().setDesignOptions(getEditorOption().getDesignOptions());
+        popup.getContent().editAttribute(getAttribute());
         popup.showRelativeTo(box);
     }
 
     /**
      * 编辑器的数据应该是一个JSON字符串
-     * {
-     * "code":"ZJJSJSJ",
-     * "options":{
-     * ...
-     * }
-     * }
      *
-     * @param editorOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
+     * @param runtimeOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
      * @param attribute    属性编辑器对应的属性内容
      */
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption, attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
 
-        String value = DataCastor.castToString(attribute.getValue());
-        AttributeEditorMetaData designOption = AttributeEditorMetaData.parse(value);
-        AttributeEditorInfo editorInfo = findInfoByCode(designOption.code);
+        AttributeEditorInfo editorInfo = findInfoByCode(attribute.getEditorCode());
         if (editorInfo == null) {
-            txtName.setValue(designOption.code + " Editor invalid.");
+            txtName.setValue(attribute.getEditorCode() + " Editor invalid.");
         } else {
             txtName.setValue(editorInfo.name);
         }
-        //合并编辑器选项
-        getEditorOption().merge(designOption.toEditorOption());
-
     }
 
     AttributeEditorInfo findInfoByCode(String code) {
