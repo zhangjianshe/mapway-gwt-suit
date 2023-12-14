@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute;
 
 
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import elemental2.core.JsObject;
 
 /**
  * IAttribute
@@ -56,11 +57,11 @@ public interface IAttribute {
 
     /**
      * 获取设计时期的组件选项
-     * 解析为 AttributeEditorMetaData 数据
+     * 解析为 JsObject 数据
      *
      * @return AttributeEditorMetaData
      */
-    EditorOption getDesignOption();
+    JsObject getDesignOption();
 
 
     /**

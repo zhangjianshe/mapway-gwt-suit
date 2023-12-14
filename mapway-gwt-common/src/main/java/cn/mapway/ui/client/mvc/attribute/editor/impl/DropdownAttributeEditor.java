@@ -8,7 +8,7 @@ import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesign;
 import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesignData;
-import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.widget.Dropdown;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -16,8 +16,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.core.Global;
-import elemental2.core.JsArray;
+import elemental2.core.JsObject;
 import jsinterop.base.Js;
+import jsinterop.base.JsArrayLike;
 
 /**
  * 下拉框的属性编辑器
@@ -91,30 +92,31 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             ddlDropdown.setEnabled(false);
         }
 
-        //父组件保证了次值一定不为空
-        EditorOption editorOption = getEditorOption();
-        // designOptions 是一个JSON字符串 会根据不同的编辑器组件有不同的数据结构
-        String designOptions = editorOption.getDesignOptions();
+        JsObject designOptions = getAttribute().getDesignOption();
+
+        Logs.info("dropdown editor design options: " + Global.JSON.stringify(designOptions));
 
         IOptionProvider optionProvider = attribute.getOptionProvider();
         if (optionProvider != null) {
             setOptionProvider(optionProvider);
-        } else if (!StringUtil.isBlank(designOptions)) {
-            JsArray<DropdownListDesignData> designDataJsArray;
-            //对头
+        } else if (designOptions != null) {
             try {
-                designDataJsArray = Js.uncheckedCast(Global.JSON.parse(designOptions));
+
+                JsArrayLike<Object> arrayLike = Js.asArrayLike(designOptions);
+                OptionProvider optionProvider1 = new OptionProvider();
+
+                for (int i = 0; i < arrayLike.getLength(); i++) {
+                    Object o = arrayLike.getAt(i);
+                    DropdownListDesignData data = Js.uncheckedCast(o);
+                    Option option = new Option(data.key, data.value);
+                    option.setInitSelected(data.init);
+                    optionProvider1.getOptions().add(option);
+                }
+                setOptionProvider(optionProvider1);
+
             } catch (Exception e) {
-                designDataJsArray = new JsArray<>();
+                Logs.info("extract dropdwon list data error " + e.getMessage());
             }
-            OptionProvider optionProvider1 = new OptionProvider();
-            for (int i = 0; i < designDataJsArray.length; i++) {
-                DropdownListDesignData data = designDataJsArray.getAt(i);
-                Option option = new Option(data.key, data.value);
-                option.setInitSelected(data.init);
-                optionProvider1.getOptions().add(option);
-            }
-            setOptionProvider(optionProvider1);
         }
         Object obj = getAttribute().getValue();
         ddlDropdown.setValue(obj, false);

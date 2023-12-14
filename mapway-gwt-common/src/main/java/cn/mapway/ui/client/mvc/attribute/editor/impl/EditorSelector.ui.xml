@@ -51,7 +51,7 @@
             </g:ScrollPanel>
         </g:west>
         <g:east size="300">
-            <g:ScrollPanel styleName="{style.panel}">
+            <g:ScrollPanel styleName="ai-border-left {style.panel}">
                 <g:VerticalPanel width="100%" spacing="6">
                     <g:HTMLPanel ui:field="previewPlaceholder">
                     </g:HTMLPanel>

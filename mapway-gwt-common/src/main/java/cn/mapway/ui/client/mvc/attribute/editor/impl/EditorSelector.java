@@ -14,6 +14,9 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
+import elemental2.core.Global;
+import elemental2.core.JsObject;
+import jsinterop.base.Js;
 
 import java.util.*;
 
@@ -100,7 +103,8 @@ public class EditorSelector extends CommonEventComposite {
                 designPanel.add(designWidget);
                 if (selectEditor.code.equals(this.currentEditValue.get(EditorOption.KEY_EDITOR_CODE))) {
                     //原来的设计器和新选择的设计类型一致
-                    currentDesign.parseDesignOptions(currentEditValue.getDesignOptions());
+                    JsObject jsObject = Js.uncheckedCast(Global.JSON.parse(currentDesign.getDesignOptions()));
+                    currentDesign.setDesignOptions(jsObject);
                 }
             }
         }
@@ -170,7 +174,6 @@ public class EditorSelector extends CommonEventComposite {
         int col = 0;
         table.setWidget(row, col++, header("#"));
         table.setWidget(row, col++, header("名称"));
-        table.setWidget(row, col++, header("作者"));
         table.setWidget(row, col++, header("介绍"));
         row++;
         HTMLTable.ColumnFormatter columnFormatter = table.getColumnFormatter();
@@ -178,7 +181,6 @@ public class EditorSelector extends CommonEventComposite {
             col = 0;
             table.setWidget(row, col++, new FontIcon<>(info.icon));
             table.setText(row, col++, info.name);
-            table.setText(row, col++, info.author);
             table.setText(row, col++, info.summary);
             row++;
         }
@@ -200,7 +202,7 @@ public class EditorSelector extends CommonEventComposite {
             option.set(EditorOption.KEY_EDITOR_NAME, selectEditor.name);
 
             if (currentDesign != null) {
-                option.setDesignOptions(currentDesign.toDesignOptions());
+                option.setDesignOptions(currentDesign.getDesignOptions());
             }
             fireEvent(CommonEvent.okEvent(option));
         } else {

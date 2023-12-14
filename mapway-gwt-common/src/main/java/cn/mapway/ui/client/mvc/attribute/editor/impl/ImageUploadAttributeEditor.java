@@ -80,7 +80,8 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
      * 处理编辑器参数
      */
     private void processEditorOption() {
-        imageUploader.setAction(getEditorOption().getImageUploadAction(), getEditorOption().getImageUploadRelPath());
+        imageUploader.setAction(option(EditorOption.KEY_IMAGE_UPLOAD_ACTION,""),
+                option(EditorOption.KEY_IMAGE_UPLOAD_REL,"project"));
     }
 
     @Override

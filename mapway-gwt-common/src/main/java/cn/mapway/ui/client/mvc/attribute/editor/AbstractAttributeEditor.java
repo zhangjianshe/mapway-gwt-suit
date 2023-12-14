@@ -6,6 +6,8 @@ import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import elemental2.core.JsObject;
+import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 /**
  * 抽象的属性编辑器基类
@@ -20,7 +22,7 @@ import elemental2.core.JsObject;
  */
 public abstract class AbstractAttributeEditor<T> extends CommonEventComposite implements IAttributeEditor<T> {
     IAttribute attribute;
-    EditorOption editorOption;
+    EditorOption runtimeOption;
     private Object data;
 
     private IAttributeEditorValueChangedHandler attributeValueChangedHandler;
@@ -45,8 +47,46 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      *
      * @return
      */
-    public EditorOption getEditorOption() {
-        return editorOption;
+    public EditorOption getRuntimeOption() {
+        return runtimeOption;
+    }
+
+    /**
+     * 首先从运行时中寻找参数
+     * 然后从 设计时中寻找参数
+     *
+     * @param name
+     * @param defaultValue
+     * @return
+     */
+    public  <T>  T option(String name, T defaultValue) {
+        if (name == null || name.length() == 0) {
+            return defaultValue;
+        }
+        if (runtimeOption != null) {
+            Object o = runtimeOption.get(name);
+            if (o != null) {
+                return (T)o;
+            }
+        }
+        if (getAttribute() == null) {
+            return defaultValue;
+        }
+        JsObject designData = getAttribute().getDesignOption();
+        if (designData == null) {
+            return defaultValue;
+        }
+        try {
+            JsPropertyMap mapper = Js.asPropertyMap(defaultValue);
+            Object o = mapper.get(name);
+            if (o != null) {
+                return (T)o;
+            }
+        } catch (Exception e) {
+            return defaultValue;
+        }
+        return defaultValue;
+
     }
 
     /**
@@ -57,7 +97,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      */
     public void updateEditorOption(String key, Object value) {
         if (key != null) {
-            getEditorOption().set(key, value);
+            getRuntimeOption().set(key, value);
             onEditorOptionChanged(key);
         }
     }
@@ -91,21 +131,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
     public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
         assert attribute != null;
         this.attribute = attribute;
-        if (runtimeOption == null) {
-            //没有运行时期的组件参数
-            if (attribute.getDesignOption() != null) {
-                //有设计七的组件参数
-                this.editorOption = attribute.getDesignOption();
-            } else {
-                //缺省没有组件参数
-                this.editorOption = new EditorOption();
-            }
-        } else {
-            //有运行时期的组件参数
-            this.editorOption = runtimeOption;
-            //合并设计时期的组件参数
-            this.editorOption.merge(attribute.getDesignOption());
-        }
+        this.runtimeOption = runtimeOption;
         //经过上面的配置
         //子组件可以处理所有的组件参数了
     }

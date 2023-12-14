@@ -13,6 +13,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
+import elemental2.core.JsObject;
 import jsinterop.base.Js;
 
 public class DropdownListDesign extends Composite implements IEditorDesigner {
@@ -43,14 +44,28 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
     }
 
     /**
-     * 解析参数
+     * 将设计的参数数据转化为字符串 JSON
      *
-     * @param options
+     * @return
      */
     @Override
-    public void parseDesignOptions(String options) {
+    public String getDesignOptions() {
+        if (designDataJsArray == null) {
+            return "[]";
+        } else {
+            return Global.JSON.stringify(designDataJsArray);
+        }
+    }
+
+    /**
+     * 解析参数
+     *
+     * @param designOptions
+     */
+    @Override
+    public void setDesignOptions(JsObject designOptions) {
         try {
-            designDataJsArray = Js.uncheckedCast(Global.JSON.parse(options));
+            designDataJsArray = Js.uncheckedCast(designOptions);
         } catch (Exception e) {
             designDataJsArray = new JsArray<>();
         }
@@ -66,19 +81,6 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
         }
     }
 
-    /**
-     * 将设计的参数数据转化为字符串 JSON
-     *
-     * @return
-     */
-    @Override
-    public String toDesignOptions() {
-        if (designDataJsArray == null) {
-            return "[]";
-        } else {
-            return Global.JSON.stringify(designDataJsArray);
-        }
-    }
 
     @UiHandler("btnPlus")
     public void btnPlusClick(ClickEvent event) {

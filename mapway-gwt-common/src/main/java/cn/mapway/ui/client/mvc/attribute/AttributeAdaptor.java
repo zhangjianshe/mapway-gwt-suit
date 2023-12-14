@@ -3,7 +3,9 @@ package cn.mapway.ui.client.mvc.attribute;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
 import cn.mapway.ui.client.tools.JSON;
+import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.util.StringUtil;
+import elemental2.core.Global;
 import elemental2.core.JsObject;
 import jsinterop.base.Js;
 
@@ -29,7 +31,10 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected String errorTip = "";
     protected String icon = "";
     protected String options = "";
-    protected EditorOption designOption;
+    /**
+     * 设计期间的选项
+     */
+    protected JsObject designOption;
     protected IOptionProvider optionProvider = null;
     protected boolean initVisible = true;
     // 属性名称
@@ -80,7 +85,7 @@ public abstract class AttributeAdaptor implements IAttribute {
     }
 
     @Override
-    public EditorOption getDesignOption() {
+    public JsObject getDesignOption() {
         return designOption;
     }
 
@@ -92,7 +97,16 @@ public abstract class AttributeAdaptor implements IAttribute {
      * @return
      */
     public AttributeAdaptor parseDesignOption(String designOptionJson) {
-        this.designOption = EditorOption.parse(designOptionJson);
+        if (designOptionJson == null || designOptionJson.length() == 0) {
+            designOption = new JsObject();
+            return this;
+        }
+        try {
+            this.designOption = Js.uncheckedCast(Global.JSON.parse(designOptionJson));
+        } catch (Exception e) {
+            Logs.info("parseEditor error " + designOptionJson);
+            designOption = new JsObject();
+        }
         return this;
     }
 
@@ -108,13 +122,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         if (o instanceof String) {
             editorCode = (String) o;
         }
-
-        if (designOption == null) {
-            designOption = EditorOption.parse(option.getDesignOptions());
-        } else {
-            designOption.merge(EditorOption.parse(option.getDesignOptions()));
-        }
-        return this;
+        return parseDesignOption(option.getDesignOptions());
     }
 
     @Override
