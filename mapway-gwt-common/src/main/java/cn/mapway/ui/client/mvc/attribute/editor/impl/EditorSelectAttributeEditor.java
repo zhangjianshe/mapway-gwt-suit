@@ -75,8 +75,13 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             }
             popup.hide(true);
         });
-        //设置设计时的参数字符串
-        popup.getContent().editAttribute();
+        //editorValue 是编辑器选择的数据结构
+        // {
+        //   code
+        //   name
+        //   designOptions
+        // }
+        popup.getContent().editorValue(editorValue);
         popup.showRelativeTo(box);
     }
     EditorOption editorValue;
