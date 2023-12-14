@@ -66,7 +66,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         Popup<EditorSelector> popup = EditorSelector.getPopup(true);
         popup.addCommonHandler(event1 -> {
             if (event1.isOk()) {
-                if(getAttribute()!=null) {
+                if (getAttribute() != null) {
                     //这个是保存在 属性定义的 编辑器字段中的数据
                     EditorOption editorDesignOption = event1.getValue();
                     txtName.setValue((String) editorDesignOption.get(EditorOption.KEY_EDITOR_NAME));
@@ -76,25 +76,34 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             popup.hide(true);
         });
         //设置设计时的参数字符串
-        popup.getContent().editAttribute(getAttribute());
+        popup.getContent().editAttribute();
         popup.showRelativeTo(box);
     }
-
+    EditorOption editorValue;
     /**
      * 编辑器的数据应该是一个JSON字符串
      *
      * @param runtimeOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
-     * @param attribute    属性编辑器对应的属性内容
+     * @param attribute     属性编辑器对应的属性内容
      */
     @Override
     public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
         super.setAttribute(runtimeOption, attribute);
 
-        AttributeEditorInfo editorInfo = findInfoByCode(attribute.getEditorCode());
-        if (editorInfo == null) {
-            txtName.setValue(attribute.getEditorCode() + " Editor invalid.");
+        // attribute.getValue()  is a json string ,which contains code name and designOptions String
+        // this editorData self dose not contain  a designOptions
+        editorValue = EditorOption.parse(DataCastor.castToString(attribute.getValue()));
+        String editorCode = (String) editorValue.get(EditorOption.KEY_EDITOR_CODE);
+        String editorName = (String) editorValue.get(EditorOption.KEY_EDITOR_NAME);
+        if (editorCode == null || editorCode.length() == 0) {
+            editorCode = TextboxAttributeEditor.EDITOR_CODE;
+            AttributeEditorInfo info = findInfoByCode(editorCode);
+            txtName.setValue(info.name);
+            editorValue.set(EditorOption.KEY_EDITOR_CODE,info.code);
+            editorValue.set(EditorOption.KEY_EDITOR_NAME,info.name);
+            editorValue.setDesignOptions("");
         } else {
-            txtName.setValue(editorInfo.name);
+            txtName.setValue(editorName);
         }
     }
 

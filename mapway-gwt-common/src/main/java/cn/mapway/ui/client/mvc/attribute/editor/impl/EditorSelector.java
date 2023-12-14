@@ -1,7 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.mvc.Size;
-import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
@@ -41,7 +40,7 @@ public class EditorSelector extends CommonEventComposite {
     List<AttributeEditorInfo> currentList;
 
     IEditorDesigner currentDesign = null;
-    IAttribute currentEditAttribute;
+    EditorOption currentEditValue;
 
     public EditorSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -99,9 +98,9 @@ public class EditorSelector extends CommonEventComposite {
             if (currentDesign != null) {
                 Widget designWidget = currentDesign.getDesignRoot();
                 designPanel.add(designWidget);
-                if (currentEditAttribute.getEditorCode().equals(selectEditor.code)) {
+                if (selectEditor.code.equals(this.currentEditValue.get(EditorOption.KEY_EDITOR_CODE))) {
                     //原来的设计器和新选择的设计类型一致
-                    currentDesign.parseDesignOptions(currentEditAttribute.getDesignOption().getDesignOptions());
+                    currentDesign.parseDesignOptions(currentEditValue.getDesignOptions());
                 }
             }
         }
@@ -197,8 +196,8 @@ public class EditorSelector extends CommonEventComposite {
     public void saveBarCommon(CommonEvent event) {
         if (event.isOk()) {
             EditorOption option = new EditorOption();
-            option.set(EditorOption.KEY_EDITOR_CODE,selectEditor.code);
-            option.set(EditorOption.KEY_EDITOR_NAME,selectEditor.name);
+            option.set(EditorOption.KEY_EDITOR_CODE, selectEditor.code);
+            option.set(EditorOption.KEY_EDITOR_NAME, selectEditor.name);
 
             if (currentDesign != null) {
                 option.setDesignOptions(currentDesign.toDesignOptions());
@@ -220,10 +219,10 @@ public class EditorSelector extends CommonEventComposite {
      * 除非用户选择了其他的编辑器，并且同时变更了在点击OK按钮后 会重新变更这个数据 传递给属性定义
      * 每次弹出 必须调用这个方法
      *
-     * @param attribute
+     * @param editValue
      */
-    public void editAttribute(IAttribute attribute) {
-        currentEditAttribute = attribute;
+    public void editorValue(EditorOption editValue) {
+        currentEditValue = editValue;
     }
 
     interface EditorSelectorUiBinder extends UiBinder<DockLayoutPanel, EditorSelector> {
