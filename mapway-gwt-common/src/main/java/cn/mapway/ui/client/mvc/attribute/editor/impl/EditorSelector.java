@@ -155,13 +155,13 @@ public class EditorSelector extends CommonEventComposite {
     @UiHandler("catalog")
     public void catalogCommon(CommonEvent event) {
         if (event.isSelect()) {
+            clearPreview();
             selectRow = -1;
             selectEditor = null;
             update();
             ImageTextItem item = event.getValue();
             currentList = (List<AttributeEditorInfo>) item.getData();
             renderData(currentList);
-            clearPreview();
             lbSummary.setText("分组中共有编辑器" + currentList.size() + "个");
         }
     }

@@ -45,7 +45,7 @@
         </g:north>
         <g:center>
             <g:ScrollPanel>
-                <g:FlexTable width="100%" cellPadding="4" styleName="att-table" ui:field="table"/>
+                <g:FlexTable width="100%" cellPadding="4" styleName="attr-table" ui:field="table"/>
             </g:ScrollPanel>
         </g:center>
 

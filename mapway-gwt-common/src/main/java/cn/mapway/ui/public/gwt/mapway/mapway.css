@@ -149,9 +149,16 @@
     padding: 4px;
     cursor: default;
 }
+.attr-table > tbody > tr:hover {
+    background-color: #e0e0e0;
+}
+
+.attr-table > tbody > tr:nth-child(2n+3) {
+    background-color: #f0f0f0;
+}
 
 .attr-table > tbody > tr:first-child {
-    background-color: skyblue;
+    background-color: #d0d0d0;
 }
 
 
@@ -159,10 +166,3 @@
     background-color: skyblue;
 }
 
-.attr-table > tbody > tr:hover {
-    background-color: lightblue;
-}
-
-.attr-table > tbody > tr:nth-child(n+2) {
-    background-color: #f0f0f0;
-}
