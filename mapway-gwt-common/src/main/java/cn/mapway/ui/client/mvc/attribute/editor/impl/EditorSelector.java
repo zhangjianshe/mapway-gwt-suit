@@ -123,8 +123,12 @@ public class EditorSelector extends CommonEventComposite {
             designPanel.add(designWidget);
             if (selectEditor.code.equals(this.currentEditValue.get(EditorOption.KEY_EDITOR_CODE))) {
                 //原来的设计器和新选择的设计类型一致 currentEditValue 用户之前选中的编辑器里的设计数据
-                JsObject jsObject = Js.uncheckedCast(Global.JSON.parse(currentEditValue.getDesignOptions()));
-                currentDesign.setDesignOptions(jsObject);
+                try {
+                    JsObject jsObject = Js.uncheckedCast(Global.JSON.parse(currentEditValue.getDesignOptions()));
+                    currentDesign.setDesignOptions(jsObject);
+                } catch (Exception e) {
+                    currentDesign.setDesignOptions(new JsObject());
+                }
             }
         }
     }

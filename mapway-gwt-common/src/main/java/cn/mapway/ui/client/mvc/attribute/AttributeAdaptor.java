@@ -2,7 +2,6 @@ package cn.mapway.ui.client.mvc.attribute;
 
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
-import cn.mapway.ui.client.tools.JSON;
 import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.util.StringUtil;
 import elemental2.core.Global;
@@ -64,6 +63,8 @@ public abstract class AttributeAdaptor implements IAttribute {
         this.editorCode = customEditCode;
         this.name = name;
         this.altName = alterName;
+
+        this.runtimeOption = new EditorOption();
     }
 
     public AttributeAdaptor() {
@@ -81,7 +82,11 @@ public abstract class AttributeAdaptor implements IAttribute {
     }
 
     public void setRuntimeOption(EditorOption runtimeOption) {
-        this.runtimeOption = runtimeOption;
+        if (runtimeOption == null) {
+            this.runtimeOption = new EditorOption();
+        } else {
+            this.runtimeOption = runtimeOption;
+        }
     }
 
     @Override
@@ -301,18 +306,6 @@ public abstract class AttributeAdaptor implements IAttribute {
         this.options = options;
         //TODO 处理此处逻辑 很有可能不再使用了
         return this;
-    }
-
-    public String sliderProperty(double min, double max, double step, String unit, double exponent, boolean continueReport) {
-        JsObject object = JsObject.create(null);
-        SlideProperty slider = Js.uncheckedCast(object);
-        slider.min = min;
-        slider.max = max;
-        slider.step = step;
-        slider.unit = unit;
-        slider.exponent = exponent;
-        slider.continueReport = continueReport;
-        return JSON.stringify(slider);
     }
 
 }

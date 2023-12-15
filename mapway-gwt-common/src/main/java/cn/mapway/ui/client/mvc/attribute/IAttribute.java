@@ -70,7 +70,7 @@ public interface IAttribute {
      * @return
      */
     default EditorOption getRuntimeOption() {
-        return null;
+        return new EditorOption();
     }
 
 

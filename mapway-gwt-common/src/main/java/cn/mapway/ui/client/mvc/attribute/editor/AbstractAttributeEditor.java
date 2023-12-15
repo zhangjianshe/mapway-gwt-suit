@@ -59,14 +59,14 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      * @param defaultValue
      * @return
      */
-    public  <T>  T option(String name, T defaultValue) {
+    public <T> T option(String name, T defaultValue) {
         if (name == null || name.length() == 0) {
             return defaultValue;
         }
         if (runtimeOption != null) {
             Object o = runtimeOption.get(name);
             if (o != null) {
-                return (T)o;
+                return (T) o;
             }
         }
         if (getAttribute() == null) {
@@ -77,10 +77,10 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
             return defaultValue;
         }
         try {
-            JsPropertyMap mapper = Js.asPropertyMap(defaultValue);
+            JsPropertyMap mapper = Js.asPropertyMap(designData);
             Object o = mapper.get(name);
             if (o != null) {
-                return (T)o;
+                return (T) o;
             }
         } catch (Exception e) {
             return defaultValue;
@@ -131,9 +131,13 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
     public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
         assert attribute != null;
         this.attribute = attribute;
+
         this.runtimeOption = runtimeOption;
-        //经过上面的配置
-        //子组件可以处理所有的组件参数了
+        //check if it is null
+        if (runtimeOption == null) {
+            this.runtimeOption = new EditorOption();
+        }
+
     }
 
     @Override

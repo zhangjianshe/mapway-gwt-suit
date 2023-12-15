@@ -4,8 +4,13 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.util.Logs;
+import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
+import cn.mapway.ui.shared.HasCommonHandlers;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -18,7 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 所有编辑器组件的一个代理
  * [name   :    EDITOR]
  */
-public class AttributeItemEditorProxy extends Composite {
+public class AttributeItemEditorProxy extends Composite implements HasCommonHandlers {
     private static final AttributeItemEditorProxyUiBinder ourUiBinder = GWT.create(AttributeItemEditorProxyUiBinder.class);
     @UiField
     Label lbHeader;
@@ -30,12 +35,26 @@ public class AttributeItemEditorProxy extends Composite {
 
     public AttributeItemEditorProxy() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        //用户点击 触发提示事件
+        addDomHandler(event -> {
+            fireSummaryEvent();
+        }, MouseOverEvent.getType());
+    }
+
+    private void fireSummaryEvent() {
+        if (attributeEditor != null && attributeEditor.getAttribute() != null) {
+            String description = attributeEditor.getAttribute().getDescription();
+            if (description == null) {
+                description = "";
+            }
+            fireEvent(CommonEvent.infoEvent(description));
+        }
     }
 
     /**
      * 创建编辑器实例
      *
-     * @param attribute     编辑器组件的定义(属性的定义)
+     * @param attribute 编辑器组件的定义(属性的定义)
      */
     public void createEditorInstance(IAttribute attribute) {
         if (attribute == null || attribute.getEditorCode() == null) {
@@ -130,6 +149,11 @@ public class AttributeItemEditorProxy extends Composite {
                 return attribute.getName();
             }
         }
+    }
+
+    @Override
+    public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
+        return addHandler(handler, CommonEvent.TYPE);
     }
 
     interface AttributeItemEditorProxyUiBinder extends UiBinder<HTMLPanel, AttributeItemEditorProxy> {
