@@ -44,9 +44,10 @@
      * @param code
      * @return
      */
+    @Override
     public AttributeEditorInfo findByCode(String code)
     {
-        if(code==null|| code.length==0)
+        if(code==null|| code.length()==0)
         {
         return null;
         }
@@ -60,7 +61,7 @@
         return null;
     }
 
-    @Override
+
     private IAttributeEditor createOne(String code) {
         // 这段代码 放在这里是为了下面的代码更有一致性
         if (code == null || code.length() == 0) {
