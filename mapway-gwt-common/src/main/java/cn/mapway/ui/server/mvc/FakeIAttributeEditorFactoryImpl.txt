@@ -38,7 +38,29 @@
             return createOne(code);
         }
     }
+   /**
+     * 根据代码查找属性编辑器元数据
+     *
+     * @param code
+     * @return
+     */
+    public AttributeEditorInfo findByCode(String code)
+    {
+        if(code==null|| code.length==0)
+        {
+        return null;
+        }
+        for( AttributeEditorInfo info:editors)
+        {
+             if(code.equals(info.code))
+             {
+             return info;
+             }
+        }
+        return null;
+    }
 
+    @Override
     private IAttributeEditor createOne(String code) {
         // 这段代码 放在这里是为了下面的代码更有一致性
         if (code == null || code.length() == 0) {
@@ -50,7 +72,6 @@
 //             return new XXXXEDITOR();
 //         }
         //ATTRIBUTE_EDITOR_CREATOR_LIST
-
 
         return null;
     }

@@ -26,4 +26,12 @@ public interface IAttributeEditorFactory {
      * @return
      */
     List<AttributeEditorInfo> getEditors();
+
+    /**
+     * 根据代码查找属性编辑器元数据
+     *
+     * @param code
+     * @return
+     */
+    AttributeEditorInfo findByCode(String code);
 }

@@ -44,6 +44,7 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     };
     Label label;
     Object currentData;
+    boolean enabled = true;
 
     public Dropdown() {
         super();
@@ -74,7 +75,7 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     }
 
     public void setPopupMaxHeight(int maxHeight) {
-        popupPanel.setHeight(maxHeight + "px");
+        popupPanel.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
     }
 
     public void setLabel(String txt) {
@@ -162,7 +163,6 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         return item;
     }
 
-
     public ImageTextItem addItem(String iconFontUnicode, String name, Object value) {
         ImageTextItem item = new ImageTextItem(iconFontUnicode, name);
         item.setStyleName("dropdown-item");
@@ -190,10 +190,9 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
 
     @Override
     public void setErrorMessage(String message) {
-        if(message==null || message.length()==0) {
+        if (message == null || message.length() == 0) {
             getElement().removeAttribute(UIConstants.ERROR_MSG_KEY);
-        }
-        else{
+        } else {
             getElement().setAttribute(UIConstants.ERROR_MSG_KEY, message);
         }
     }
@@ -222,7 +221,8 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     public void setSelectedIndex(int index) {
         setSelectedIndex(index, true);
     }
-    public void setSelectedIndex(int index,boolean fireEvent) {
+
+    public void setSelectedIndex(int index, boolean fireEvent) {
         if (index >= 0 && index < upPanel.getWidgetCount()) {
             ImageTextItem item = (ImageTextItem) upPanel.getWidget(index);
             displayItem(item, fireEvent);
@@ -278,8 +278,6 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     public Object getCurrentData() {
         return currentData;
     }
-
-    boolean enabled = true;
 
     public void setEnabled(boolean b) {
         enabled = b;

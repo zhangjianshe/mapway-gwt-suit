@@ -9,8 +9,12 @@
             justify-content: space-between;
             justify-items: flex-end;
             border-bottom: solid 1px rgba(0, 0, 0, 0.1);
-            padding: 4px 0;
+            padding: 4px 0 4px 8px;
             min-height: 43px;
+        }
+
+        .layout2:hover {
+            background: linear-gradient(45deg, #bdedff, transparent);
         }
 
         .error {
