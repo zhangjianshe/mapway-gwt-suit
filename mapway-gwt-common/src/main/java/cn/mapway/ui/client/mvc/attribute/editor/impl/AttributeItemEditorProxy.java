@@ -45,8 +45,12 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         if (attributeEditor != null && attributeEditor.getAttribute() != null) {
             String description = attributeEditor.getAttribute().getDescription();
             if (description == null) {
+                description = attributeEditor.getAttribute().getTip();
+            }
+            if (description == null) {
                 description = "";
             }
+
             fireEvent(CommonEvent.infoEvent(description));
         }
     }
