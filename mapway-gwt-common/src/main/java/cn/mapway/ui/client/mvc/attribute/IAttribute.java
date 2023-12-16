@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
 
+import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import elemental2.core.JsObject;
 
@@ -92,5 +93,18 @@ public interface IAttribute {
     String getEditorCode();
 
 
+    /**
+     * 编辑这个属性需要的属性编辑器信息 将会替代 上面的getEditorCode designOption getOptions等字段
+     * 完成后 上面的字段将会被删除
+     *
+     * @return
+     */
+    IEditorData getEditorData();
 
+    /**
+     * 对象转换为 Json字符串
+     * this is a string ' not escape for charactor " \ ' ~~
+     * @return
+     */
+    String toJSON();
 }

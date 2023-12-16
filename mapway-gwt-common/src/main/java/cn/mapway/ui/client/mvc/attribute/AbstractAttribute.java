@@ -1,5 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
+import cn.mapway.ui.client.mvc.attribute.design.EditorDataFormat;
+import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
 import cn.mapway.ui.client.util.Logs;
@@ -7,6 +9,7 @@ import cn.mapway.ui.client.util.StringUtil;
 import elemental2.core.Global;
 import elemental2.core.JsObject;
 import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 /**
  * AttributeAdaptor
@@ -14,7 +17,7 @@ import jsinterop.base.Js;
  * @author zhang
  */
 
-public abstract class AttributeAdaptor implements IAttribute {
+public abstract class AbstractAttribute implements IAttribute {
 
     private final String id;
     protected String altName;
@@ -38,14 +41,15 @@ public abstract class AttributeAdaptor implements IAttribute {
     protected boolean initVisible = true;
     // 属性名称
     protected String name;
+    IEditorData editorData;
     private String editorCode;
     private EditorOption runtimeOption;
 
-    public AttributeAdaptor(String name) {
+    public AbstractAttribute(String name) {
         this(name, name);
     }
 
-    public AttributeAdaptor(String name, String alterName) {
+    public AbstractAttribute(String name, String alterName) {
         this(name, alterName, TextboxAttributeEditor.EDITOR_CODE);
     }
 
@@ -55,7 +59,7 @@ public abstract class AttributeAdaptor implements IAttribute {
      * @param name           输出名称
      * @param customEditCode 编辑器代码
      */
-    public AttributeAdaptor(String name, String alterName, String customEditCode) {
+    public AbstractAttribute(String name, String alterName, String customEditCode) {
         //每个属性定义都会有一个唯一的实力ID
         this.id = StringUtil.randomString(8);
 
@@ -67,10 +71,10 @@ public abstract class AttributeAdaptor implements IAttribute {
         this.runtimeOption = new EditorOption();
     }
 
-    public AttributeAdaptor() {
+
+    public AbstractAttribute() {
         this("未命名", "未命名");
     }
-
 
     public String getId() {
         return id;
@@ -94,14 +98,13 @@ public abstract class AttributeAdaptor implements IAttribute {
         return designOption;
     }
 
-
     /**
      * 解析设计器的组件参数
      *
      * @param designOptionJson
      * @return
      */
-    public AttributeAdaptor parseDesignOption(String designOptionJson) {
+    public AbstractAttribute parseDesignOption(String designOptionJson) {
         if (designOptionJson == null || designOptionJson.length() == 0) {
             designOption = new JsObject();
             return this;
@@ -121,7 +124,7 @@ public abstract class AttributeAdaptor implements IAttribute {
      *
      * @return
      */
-    public AttributeAdaptor parseEditor(String editor) {
+    public AbstractAttribute parseEditor(String editor) {
         EditorOption option = EditorOption.parse(editor);
         Object o = option.get(EditorOption.KEY_EDITOR_CODE);
         if (o instanceof String) {
@@ -135,7 +138,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return name;
     }
 
-    public AttributeAdaptor setName(String name) {
+    public AbstractAttribute setName(String name) {
         this.name = name;
         return this;
     }
@@ -155,7 +158,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return altName;
     }
 
-    public AttributeAdaptor setAltName(String altName) {
+    public AbstractAttribute setAltName(String altName) {
         this.altName = altName;
         return this;
     }
@@ -165,7 +168,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return defaultValue;
     }
 
-    public AttributeAdaptor setDefaultValue(String defaultValue) {
+    public AbstractAttribute setDefaultValue(String defaultValue) {
         this.defaultValue = defaultValue;
         return this;
     }
@@ -175,7 +178,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return description;
     }
 
-    public AttributeAdaptor setDescription(String description) {
+    public AbstractAttribute setDescription(String description) {
         this.description = description;
         return this;
     }
@@ -185,7 +188,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return readOnly;
     }
 
-    public AttributeAdaptor setReadOnly(boolean readOnly) {
+    public AbstractAttribute setReadOnly(boolean readOnly) {
         this.readOnly = readOnly;
         return this;
     }
@@ -195,7 +198,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return required;
     }
 
-    public AttributeAdaptor setRequired(boolean required) {
+    public AbstractAttribute setRequired(boolean required) {
         this.required = required;
         return this;
     }
@@ -205,18 +208,17 @@ public abstract class AttributeAdaptor implements IAttribute {
         return dataType;
     }
 
-    public AttributeAdaptor setDataType(int dataType) {
+    public AbstractAttribute setDataType(int dataType) {
         this.dataType = dataType;
         return this;
     }
-
 
     @Override
     public String getValidateRegx() {
         return validator;
     }
 
-    public AttributeAdaptor setValidateRegx(String validateRegx) {
+    public AbstractAttribute setValidateRegx(String validateRegx) {
         this.validator = validateRegx;
         return this;
     }
@@ -226,7 +228,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return group;
     }
 
-    public AttributeAdaptor setGroup(String group) {
+    public AbstractAttribute setGroup(String group) {
         this.group = group;
         return this;
     }
@@ -236,7 +238,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return rank;
     }
 
-    public AttributeAdaptor setRank(int rank) {
+    public AbstractAttribute setRank(int rank) {
         this.rank = rank;
         return this;
     }
@@ -246,7 +248,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return tip;
     }
 
-    public AttributeAdaptor setTip(String tip) {
+    public AbstractAttribute setTip(String tip) {
         this.tip = tip;
         return this;
     }
@@ -256,7 +258,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return errorTip;
     }
 
-    public AttributeAdaptor setErrorTip(String errorTip) {
+    public AbstractAttribute setErrorTip(String errorTip) {
         this.errorTip = errorTip;
         return this;
     }
@@ -266,7 +268,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return icon;
     }
 
-    public AttributeAdaptor setIcon(String icon) {
+    public AbstractAttribute setIcon(String icon) {
         this.icon = icon;
         return this;
     }
@@ -282,7 +284,7 @@ public abstract class AttributeAdaptor implements IAttribute {
      * @param visible
      * @return
      */
-    public AttributeAdaptor setInitVisible(Boolean visible) {
+    public AbstractAttribute setInitVisible(Boolean visible) {
         this.initVisible = visible;
         return this;
     }
@@ -292,7 +294,7 @@ public abstract class AttributeAdaptor implements IAttribute {
         return optionProvider;
     }
 
-    public AttributeAdaptor setOptionProvider(IOptionProvider optionProvider) {
+    public AbstractAttribute setOptionProvider(IOptionProvider optionProvider) {
         this.optionProvider = optionProvider;
         return this;
     }
@@ -302,10 +304,49 @@ public abstract class AttributeAdaptor implements IAttribute {
         return options;
     }
 
-    public AttributeAdaptor setOptions(String options) {
+    public AbstractAttribute setOptions(String options) {
         this.options = options;
         //TODO 处理此处逻辑 很有可能不再使用了
         return this;
+    }
+
+    @Override
+    public IEditorData getEditorData() {
+        return editorData;
+    }
+
+    public void setEditorData(IEditorData editorData) {
+        this.editorData = editorData;
+    }
+
+    /**
+     * 这个方法 把一个属性定义信息转化为JSON对象的字符串
+     *
+     * @return
+     */
+    @Override
+    public String toJSON() {
+
+        JsPropertyMap object = JsPropertyMap.of("id", id);
+        object.set("name", name);
+        object.set("altName", altName);
+        object.set("dataType", dataType);
+        object.set("defaultValue", defaultValue);
+        object.set("description", description);
+        object.set("readOnly", readOnly);
+        object.set("required", required);
+        object.set("initVisible", initVisible);
+        object.set("validator", validator);
+        object.set("rank", rank);
+        object.set("tip", tip);
+        object.set("errorTip", errorTip);
+        object.set("icon", icon);
+        if (getEditorData() != null) {
+            object.set("editorData", getEditorData().save(EditorDataFormat.EDF_JSON));
+        } else {
+            object.set("editorData", "");
+        }
+        return Global.JSON.stringify(object);
     }
 
 }

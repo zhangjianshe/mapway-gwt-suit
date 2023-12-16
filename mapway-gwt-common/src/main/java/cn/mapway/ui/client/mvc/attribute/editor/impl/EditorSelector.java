@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.mvc.Size;
-import cn.mapway.ui.client.mvc.attribute.AttributeAdaptor;
+import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
@@ -105,7 +105,7 @@ public class EditorSelector extends CommonEventComposite {
         clearPreview();
         previewPlaceholder.setVisible(true);
         //顶一个一 FakeAttribute
-        AttributeAdaptor adaptor = new AttributeAdaptor("preview", selectEditor.name, selectEditor.code) {
+        AbstractAttribute adaptor = new AbstractAttribute("preview", selectEditor.name, selectEditor.code) {
             @Override
             public Object getValue() {
                 return null;
