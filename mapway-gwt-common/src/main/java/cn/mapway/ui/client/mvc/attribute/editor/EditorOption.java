@@ -17,9 +17,10 @@ public class EditorOption {
     public final static String KEY_HEIGHT = "height";
     public final static String KEY_SELECT_FILE_TYPE = "select_file_type";
     public final static String KEY_FILE_SUFFIX = "file_suffix";
-    public final static String KEY_DESIGN_OPTIONS = "design_options";
-    public static final String KEY_EDITOR_CODE = "editor_code";
-    public static final String KEY_EDITOR_NAME = "editor_name";
+    public final static String KEY_OPTIONS = "options";
+    public static final String KEY_EDITOR_CODE = "editorCode";
+    public static final String KEY_EDITOR_NAME = "editorName";
+    public static final String KEY_DROPDOWN_OPTIONS = "dropdown_options";
 
     Map<String, Object> options;
 
@@ -42,23 +43,7 @@ public class EditorOption {
         return option;
     }
 
-    /**
-     * 获取设计时的字符串
-     *
-     * @return
-     */
-    public String getDesignOptions() {
-        return (String) get(KEY_DESIGN_OPTIONS);
-    }
 
-    /**
-     * 设置设计时的字符串
-     *
-     * @param options
-     */
-    public void setDesignOptions(String options) {
-        set(KEY_DESIGN_OPTIONS, options);
-    }
 
     /**
      * 获取选项

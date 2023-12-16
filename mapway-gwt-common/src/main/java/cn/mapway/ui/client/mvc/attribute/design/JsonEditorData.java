@@ -16,7 +16,7 @@ public class JsonEditorData {
     public String editorCode;
     public String editorName;
 
-    public JsArrayLike<JsonAttribute> parameters;
+    public JsArrayLike<ParameterValue> parameters;
 
 
     protected JsonEditorData() {

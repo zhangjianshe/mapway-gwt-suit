@@ -1,18 +1,21 @@
 package cn.mapway.ui.client.mvc.attribute;
 
+import cn.mapway.ui.client.mvc.attribute.design.EditorData;
 import cn.mapway.ui.client.mvc.attribute.design.EditorDataFormat;
 import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
-import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.util.StringUtil;
 import elemental2.core.Global;
-import elemental2.core.JsObject;
+import elemental2.core.JsArray;
+import elemental2.dom.DomGlobal;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
 /**
- * AttributeAdaptor
+ * AbstractAttribute
+ * 提供大部分的属性定义接口
  *
  * @author zhang
  */
@@ -32,17 +35,13 @@ public abstract class AbstractAttribute implements IAttribute {
     protected String tip = "";
     protected String errorTip = "";
     protected String icon = "";
-    protected String options = "";
-    /**
-     * 设计期间的选项
-     */
-    protected JsObject designOption;
+
     protected IOptionProvider optionProvider = null;
     protected boolean initVisible = true;
     // 属性名称
     protected String name;
     IEditorData editorData;
-    private String editorCode;
+
     private EditorOption runtimeOption;
 
     public AbstractAttribute(String name) {
@@ -64,7 +63,9 @@ public abstract class AbstractAttribute implements IAttribute {
         this.id = StringUtil.randomString(8);
 
         //编辑器代码
-        this.editorCode = customEditCode;
+        EditorData editorData1 = new EditorData();
+        editorData1.setEditorCode(customEditCode);
+        this.editorData = editorData1;
         this.name = name;
         this.altName = alterName;
 
@@ -93,27 +94,21 @@ public abstract class AbstractAttribute implements IAttribute {
         }
     }
 
-    @Override
-    public JsObject getDesignOption() {
-        return designOption;
-    }
 
     /**
      * 解析设计器的组件参数
      *
-     * @param designOptionJson
+     * @param parameters is a list [{IAttribute},{IAttribute}]
      * @return
      */
-    public AbstractAttribute parseDesignOption(String designOptionJson) {
-        if (designOptionJson == null || designOptionJson.length() == 0) {
-            designOption = new JsObject();
-            return this;
-        }
+    public AbstractAttribute parseParameters(String parameters) {
         try {
-            this.designOption = Js.uncheckedCast(Global.JSON.parse(designOptionJson));
+            JsArray<ParameterValue> attributes = Js.uncheckedCast(Global.JSON.parse(parameters));
+            for (int i = 0; i < attributes.length; i++) {
+                getEditorData().getParameterValues().add(attributes.getAt(i));
+            }
         } catch (Exception e) {
-            Logs.info("parseEditor error " + designOptionJson);
-            designOption = new JsObject();
+            DomGlobal.console.log("Error parsing (AbstractAttribute) parameters " + parameters);
         }
         return this;
     }
@@ -125,12 +120,8 @@ public abstract class AbstractAttribute implements IAttribute {
      * @return
      */
     public AbstractAttribute parseEditor(String editor) {
-        EditorOption option = EditorOption.parse(editor);
-        Object o = option.get(EditorOption.KEY_EDITOR_CODE);
-        if (o instanceof String) {
-            editorCode = (String) o;
-        }
-        return parseDesignOption(option.getDesignOptions());
+        getEditorData().load(editor, EditorDataFormat.EDF_JSON);
+        return this;
     }
 
     @Override
@@ -143,15 +134,6 @@ public abstract class AbstractAttribute implements IAttribute {
         return this;
     }
 
-    /**
-     * editorCode is a readonly property
-     * 只有通过构造函数设定
-     *
-     * @return
-     */
-    public String getEditorCode() {
-        return editorCode;
-    }
 
     @Override
     public String getAltName() {
@@ -301,12 +283,33 @@ public abstract class AbstractAttribute implements IAttribute {
 
     @Override
     public String getOptions() {
-        return options;
+        ParameterValue parameter = getEditorData().findParameterValue(EditorOption.KEY_OPTIONS);
+        if (parameter != null) {
+            return (String) parameter.value;
+        }
+        return "";
     }
 
     public AbstractAttribute setOptions(String options) {
-        this.options = options;
-        //TODO 处理此处逻辑 很有可能不再使用了
+        ParameterValue parameterValue = new ParameterValue();
+        parameterValue.name = EditorOption.KEY_OPTIONS;
+        parameterValue.value = options;
+        getEditorData().getParameterValues().add(parameterValue);
+        return this;
+    }
+
+    /**
+     * 添加一个设计器参数值
+     *
+     * @param name
+     * @param value
+     * @return
+     */
+    public AbstractAttribute addParameterValue(String name, String value) {
+        ParameterValue parameterValue = new ParameterValue();
+        parameterValue.name = name;
+        parameterValue.value = value;
+        getEditorData().getParameterValues().add(parameterValue);
         return this;
     }
 
@@ -316,6 +319,7 @@ public abstract class AbstractAttribute implements IAttribute {
     }
 
     public void setEditorData(IEditorData editorData) {
+        assert editorData != null;
         this.editorData = editorData;
     }
 
@@ -341,11 +345,8 @@ public abstract class AbstractAttribute implements IAttribute {
         object.set("tip", tip);
         object.set("errorTip", errorTip);
         object.set("icon", icon);
-        if (getEditorData() != null) {
-            object.set("editorData", getEditorData().save(EditorDataFormat.EDF_JSON));
-        } else {
-            object.set("editorData", "");
-        }
+        object.set("editorData", getEditorData().save(EditorDataFormat.EDF_JSON));
+
         return Global.JSON.stringify(object);
     }
 

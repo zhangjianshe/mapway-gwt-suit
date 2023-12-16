@@ -1,9 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.design;
 
-import cn.mapway.ui.client.mvc.attribute.IAttribute;
-
 import java.util.List;
-import java.util.Map;
 
 /**
  * 描述一个属性编辑器 IAttributeEditor 创建时所需要的所有信息
@@ -55,5 +52,14 @@ public interface IEditorData {
      *
      * @return
      */
-    List<IAttribute> getParameters();
+    List<ParameterValue> getParameterValues();
+
+
+    /**
+     * 查找 [key] 的参数信息
+     *
+     * @param key
+     * @return
+     */
+    ParameterValue findParameterValue(String key);
 }

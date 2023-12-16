@@ -4,6 +4,8 @@ import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
@@ -55,8 +57,8 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
     }
 
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption, attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 
@@ -69,19 +71,24 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         IAttribute attribute = getAttribute();
         if (attribute == null) {
             return;
-
         }
 
         Object obj = attribute.getValue();
         imageUploader.setUrl(DataCastor.castToString(obj));
+
+        //需要设定高度
+        String height = option(EditorOption.KEY_HEIGHT, "80px");
+        getDisplayWidget().setHeight(height);
+
+
     }
 
     /**
      * 处理编辑器参数
      */
     private void processEditorOption() {
-        imageUploader.setAction(option(EditorOption.KEY_IMAGE_UPLOAD_ACTION,""),
-                option(EditorOption.KEY_IMAGE_UPLOAD_REL,"project"));
+        imageUploader.setAction(option(EditorOption.KEY_IMAGE_UPLOAD_ACTION, ""),
+                option(EditorOption.KEY_IMAGE_UPLOAD_REL, "project"));
     }
 
     @Override

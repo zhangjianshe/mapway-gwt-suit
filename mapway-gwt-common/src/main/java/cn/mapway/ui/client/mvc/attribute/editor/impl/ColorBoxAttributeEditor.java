@@ -56,8 +56,8 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
 
 
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption, attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 

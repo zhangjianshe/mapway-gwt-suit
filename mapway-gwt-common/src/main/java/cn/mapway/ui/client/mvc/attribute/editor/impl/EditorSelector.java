@@ -2,6 +2,8 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.EditorData;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
@@ -15,9 +17,6 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.*;
-import elemental2.core.Global;
-import elemental2.core.JsObject;
-import jsinterop.base.Js;
 
 import java.util.*;
 
@@ -48,8 +47,9 @@ public class EditorSelector extends CommonEventComposite {
     List<AttributeEditorInfo> currentList;
 
     IEditorDesigner currentDesign = null;
-    EditorOption currentEditValue;
-    String initEditCoder;
+    //正在编辑的属性中定义的editorData实例
+    EditorData currentEditData;
+    String initEditorCode;
 
     public EditorSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -121,14 +121,9 @@ public class EditorSelector extends CommonEventComposite {
         if (currentDesign != null) {
             Widget designWidget = currentDesign.getDesignRoot();
             designPanel.add(designWidget);
-            if (selectEditor.code.equals(this.currentEditValue.get(EditorOption.KEY_EDITOR_CODE))) {
+            if (selectEditor.code.equals(this.currentEditData.getEditorCode())) {
                 //原来的设计器和新选择的设计类型一致 currentEditValue 用户之前选中的编辑器里的设计数据
-                try {
-                    JsObject jsObject = Js.uncheckedCast(Global.JSON.parse(currentEditValue.getDesignOptions()));
-                    currentDesign.setDesignOptions(jsObject);
-                } catch (Exception e) {
-                    currentDesign.setDesignOptions(new JsObject());
-                }
+                currentDesign.updateValue(currentEditData.getParameterValues());
             }
         }
     }
@@ -209,7 +204,7 @@ public class EditorSelector extends CommonEventComposite {
             table.setWidget(row, col++, new FontIcon<>(info.icon));
             table.setText(row, col++, info.name);
             table.setText(row, col++, info.summary);
-            if (info.code.equals(initEditCoder)) {
+            if (info.code.equals(initEditorCode)) {
                 selectedIndex = row;
             }
             row++;
@@ -231,14 +226,16 @@ public class EditorSelector extends CommonEventComposite {
     @UiHandler("saveBar")
     public void saveBarCommon(CommonEvent event) {
         if (event.isOk()) {
-            EditorOption option = new EditorOption();
-            option.set(EditorOption.KEY_EDITOR_CODE, selectEditor.code);
-            option.set(EditorOption.KEY_EDITOR_NAME, selectEditor.name);
-
             if (currentDesign != null) {
-                option.setDesignOptions(currentDesign.getDesignOptions());
+                List<ParameterValue> values = currentDesign.getParameterValues();
+                EditorData editorData = new EditorData();
+                editorData.setEditorCode(selectEditor.code);
+                editorData.setEditorName(selectEditor.name);
+                if (values != null) {
+                    editorData.getParameterValues().addAll(values);
+                }
+                fireEvent(CommonEvent.okEvent(editorData));
             }
-            fireEvent(CommonEvent.okEvent(option));
         } else {
             fireEvent(event);
         }
@@ -257,14 +254,14 @@ public class EditorSelector extends CommonEventComposite {
      *
      * @param editValue
      */
-    public void editorValue(EditorOption editValue) {
-        currentEditValue = editValue;
+    public void editorValue(EditorData editValue) {
+        currentEditData = editValue;
         //缺省选中 editValue 对应的组件
-        initEditCoder = (String) editValue.get(EditorOption.KEY_EDITOR_CODE);
+        initEditorCode = currentEditData.getEditorCode();
         String selectKey = "";
         for (String key : groups.keySet()) {
             for (AttributeEditorInfo info : groups.get(key)) {
-                if (info.code.equals(initEditCoder)) {
+                if (info.code.equals(initEditorCode)) {
                     selectKey = key;
                     break;
                 }

@@ -4,10 +4,10 @@ import cn.mapway.ui.client.db.DbFieldType;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import elemental2.core.JsObject;
-import jsinterop.base.Js;
-import jsinterop.base.JsPropertyMap;
 
 /**
  * 抽象的属性编辑器基类
@@ -72,18 +72,10 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         if (getAttribute() == null) {
             return defaultValue;
         }
-        JsObject designData = getAttribute().getDesignOption();
-        if (designData == null) {
-            return defaultValue;
-        }
-        try {
-            JsPropertyMap mapper = Js.asPropertyMap(designData);
-            Object o = mapper.get(name);
-            if (o != null) {
-                return (T) o;
-            }
-        } catch (Exception e) {
-            return defaultValue;
+        IEditorData editorData = getAttribute().getEditorData();
+        if (editorData != null) {
+            ParameterValue parameter = editorData.findParameterValue(name);
+            return (T) readAttributeValue(parameter, defaultValue);
         }
         return defaultValue;
 
@@ -201,4 +193,21 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
             attributeValueChangedHandler.onAttributeChanged(this, getAttribute());
         }
     }
+
+    /**
+     * 读取attribute的值 如果为空 返回缺省值
+     *
+     * @param attribute
+     * @param defaultValue
+     * @param <D>
+     * @return
+     */
+    public Object readAttributeValue(ParameterValue attribute, Object defaultValue) {
+        if (attribute == null || attribute.value == null) {
+            return defaultValue;
+        }
+        return attribute.value;
+    }
+
+
 }

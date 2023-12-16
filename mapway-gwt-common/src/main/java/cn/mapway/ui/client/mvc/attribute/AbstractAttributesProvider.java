@@ -16,7 +16,7 @@ import java.util.Set;
 
 /**
  * AbstractAttributeProvider
- * 提供属性提供器的大部分功能
+ * 提供属性列表 提供器的大部分功能
  * @author zhang
  */
 public abstract class AbstractAttributesProvider implements IAttributesProvider, HasCommonHandlers {

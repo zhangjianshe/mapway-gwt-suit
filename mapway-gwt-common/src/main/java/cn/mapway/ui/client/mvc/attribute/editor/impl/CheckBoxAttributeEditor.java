@@ -51,8 +51,8 @@ public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
 
 
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption, attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 

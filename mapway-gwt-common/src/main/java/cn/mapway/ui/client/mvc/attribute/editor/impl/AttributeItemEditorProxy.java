@@ -61,7 +61,7 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
      * @param attribute 编辑器组件的定义(属性的定义)
      */
     public void createEditorInstance(IAttribute attribute) {
-        if (attribute == null || attribute.getEditorCode() == null) {
+        if (attribute == null || attribute.getEditorData() == null || attribute.getEditorData().getEditorCode() == null) {
             Logs.info("Attribute is null or editorCode is null in AttributeItemEditorProxy");
             return;
         }
@@ -70,9 +70,9 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         box.add(lbHeader);
 
         //创建统一的属性列表编辑UI
-        attributeEditor = AttributeEditorFactory.get().createEditor(attribute.getEditorCode(), false);
+        attributeEditor = AttributeEditorFactory.get().createEditor(attribute.getEditorData().getEditorCode(), false);
         if (attributeEditor == null) {
-            errorInput("创建属性组件出错" + attribute.getEditorCode());
+            errorInput("创建属性组件出错" + attribute.getEditorData().getEditorCode());
             return;
         }
 
@@ -80,10 +80,11 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         box.add(displayWidget);
 
         //让属性编辑器 自己处理数据逻辑
+        // attribute.getEditorData() 返回实例化这个属性编辑器的所有数据
         attributeEditor.setAttribute(attribute.getRuntimeOption(), attribute);
-
-        //
+        //属性名称
         lbHeader.setText(getAttributeName());
+
     }
 
     public IAttribute getAttribute() {
@@ -158,6 +159,15 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
     @Override
     public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
         return addHandler(handler, CommonEvent.TYPE);
+    }
+
+    /**
+     * 从 attribute获取数据渲染界面
+     */
+    public void updateUI() {
+        if (attributeEditor != null) {
+            attributeEditor.updateUI();
+        }
     }
 
     interface AttributeItemEditorProxyUiBinder extends UiBinder<HTMLPanel, AttributeItemEditorProxy> {

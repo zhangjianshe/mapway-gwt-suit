@@ -1,21 +1,18 @@
 package cn.mapway.ui.client.mvc.attribute.editor.design;
 
+import cn.mapway.ui.client.mvc.attribute.AbstractAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
-import cn.mapway.ui.client.mvc.attribute.DataCastor;
-import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
+import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
-import cn.mapway.ui.client.mvc.attribute.simple.SimpleAttributeEditor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
-import elemental2.core.Global;
-import elemental2.core.JsObject;
-import jsinterop.base.Js;
-import jsinterop.base.JsPropertyMap;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -24,11 +21,10 @@ import java.util.List;
 public class CommonEditorParameterDesigner extends Composite implements IEditorDesigner {
     private static final CommonEditorParameterDesignerUiBinder ourUiBinder = GWT.create(CommonEditorParameterDesignerUiBinder.class);
     @UiField
-    SimpleAttributeEditor designer;
+    SimpleObjectInspector designer;
 
-    public CommonEditorParameterDesigner(IAttributesProvider provider) {
+    public CommonEditorParameterDesigner() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        designer.setData(provider);
     }
 
 
@@ -42,33 +38,70 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
         return designer;
     }
 
+    /**
+     * 获取参数设计器中的数据
+     *
+     * @return
+     */
     @Override
-    public String getDesignOptions() {
-        List<AttributeValue> flatten = designer.getData().flatten();
-        JsPropertyMap propertyMap = JsPropertyMap.of();
-        for (AttributeValue attributeValue : flatten) {
-            String key = attributeValue.getName();
-            propertyMap.set(key, attributeValue.getValue());
-        }
-        return Global.JSON.stringify(propertyMap);
+    public List<IAttribute> getParameters() {
+        return designer.getAttributes();
     }
 
+    /**
+     * 获取编辑组件的参数数据
+     *
+     * @return
+     */
     @Override
-    public void setDesignOptions(JsObject designOptions) {
-        if (designOptions == null) {
+    public List<ParameterValue> getParameterValues() {
+        if (getParameters() == null || getParameters().size() == 0) {
+            return new ArrayList();
+        }
+        List<ParameterValue> values = new ArrayList<>();
+        for (IAttribute attribute : getParameters()) {
+            ParameterValue parameterValue = new ParameterValue();
+            parameterValue.value = attribute.getValue();
+            parameterValue.name = attribute.getName();
+            values.add(parameterValue);
+        }
+        return values;
+    }
+
+    /**
+     * 初始化参数设计器
+     *
+     * @param parameters
+     */
+    @Override
+    public void setParameters(String title, List<IAttribute> parameters) {
+        AbstractAttributesProvider attributesProvider = new AbstractAttributesProvider(title) {
+        };
+        if (parameters != null) {
+            attributesProvider.getAttributes().addAll(parameters);
+        }
+        designer.setData(attributesProvider);
+    }
+
+    /**
+     * 上面两个方法 用于构造UI 这个方法用于更新数据 这个数据是保存在Editor中的
+     *
+     * @param parameterValues
+     */
+    @Override
+    public void updateValue(List<ParameterValue> parameterValues) {
+        if (parameterValues == null || parameterValues.size() == 0) {
             return;
         }
-
-        JsPropertyMap propertyMap = Js.asPropertyMap(designOptions);
-
-        List<AttributeValue> flatten = designer.getData().flatten();
-        for (AttributeValue attributeValue : flatten) {
-            String key = attributeValue.getName();
-            Object obj = propertyMap.get(key);
-            attributeValue.setValue(DataCastor.castToString(obj));
+        List<AttributeValue> values = new ArrayList<>(parameterValues.size());
+        for (ParameterValue value : parameterValues) {
+            AttributeValue attributeValue = new AttributeValue();
+            attributeValue.setName(value.name);
+            attributeValue.setValue((String) value.value);
         }
-        //设置属性值
-        designer.updateValue(flatten);
+        //所有参数数据更新完毕
+        designer.updateValue(values);
+
     }
 
 

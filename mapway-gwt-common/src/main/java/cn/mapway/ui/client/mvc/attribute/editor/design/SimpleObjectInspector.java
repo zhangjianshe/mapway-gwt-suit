@@ -1,10 +1,10 @@
-package cn.mapway.ui.client.mvc.attribute.simple;
+package cn.mapway.ui.client.mvc.attribute.editor.design;
 
 
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
+import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.AttributeItemEditorProxy;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
@@ -24,11 +24,12 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * 简单的属性编辑器
+ * 简单的对象属性检查器
+ * 接受一个 IAttributesProvider
  *
  * @author zhang
  */
-public class SimpleAttributeEditor extends CommonEventComposite implements IData<IAttributesProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler {
+public class SimpleObjectInspector extends CommonEventComposite implements IData<IAttributesProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler {
     private static final AttributeEditorUiBinder ourUiBinder = GWT.create(AttributeEditorUiBinder.class);
     Map<String, SimpleAttributeGroup> groups = new HashMap<>();
     @UiField
@@ -36,15 +37,13 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
     @UiField
     Label lbHeader;
 
-
-    List<AttributeValue> values;
     int labelWidth = 150;
     HandlerRegistration stateChangeHandler;
     private IAttributesProvider data;
 
 
     @UiConstructor()
-    public SimpleAttributeEditor() {
+    public SimpleObjectInspector() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
 
@@ -69,23 +68,23 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
         }
         //同步加载属性
         toUI();
-        updateValue(this.values);
     }
 
     /**
      * 更新属性界面的值
      * 根据altName字段进行匹配
      *
-     * @param values
+     * @param values null 从 IAttribute中getValue获取数据更新UI
      */
     public void updateValue(List<AttributeValue> values) {
-        this.values = values;
         lbHeader.setTitle(getData().getAttributeTitle());
-        if (this.values != null && groups != null) {
-            for (SimpleAttributeGroup group : groups.values()) {
-                group.updateValue(values);
-            }
+        if (groups == null || groups.size() == 0) {
+            return;
         }
+        for (SimpleAttributeGroup group : groups.values()) {
+            group.updateValue(values);
+        }
+
     }
 
 
@@ -95,7 +94,6 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
     private void toUI() {
         //清空界面
         clear();
-
         for (IAttribute attribute : data.getAttributes()) {
             SimpleAttributeGroup group = sureGroup(attribute);
             // attribute 中包含了设计器的组件参数
@@ -143,7 +141,6 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
     @Override
     public void onAttributeReady(IAttributesProvider attributeProvider) {
         toUI();
-        updateValue(this.values);
     }
 
 
@@ -201,7 +198,7 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
         return null;
     }
 
-    interface AttributeEditorUiBinder extends UiBinder<HTMLPanel, SimpleAttributeEditor> {
+    interface AttributeEditorUiBinder extends UiBinder<HTMLPanel, SimpleObjectInspector> {
     }
 
 }

@@ -11,7 +11,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 2.提供一个缺省的大小
  * D is design option data type
  */
-public interface IAttributeEditor<T,D> extends IProvideSize, IData {
+public interface IAttributeEditor extends IProvideSize, IData {
     String CATALOG_RUNTIME = "运行时";
     String CATALOG_DESIGN = "设计时";
     String CATALOG_BUSINESS = "业务编辑器";
@@ -45,10 +45,10 @@ public interface IAttributeEditor<T,D> extends IProvideSize, IData {
     /**
      * 设置属性代理对象
      *
-     * @param editOption 编辑器的选项 由编辑器自己决定里面的值
+     * @param runtimeOption 编辑器的选项 由编辑器自己决定里面的值
      * @param attribute
      */
-    void setAttribute(EditorOption editOption, IAttribute attribute);
+    void setAttribute(EditorOption runtimeOption, IAttribute attribute);
 
     /**
      * 获取编辑器对应的属性定义
@@ -86,4 +86,8 @@ public interface IAttributeEditor<T,D> extends IProvideSize, IData {
     }
 
 
+    /**
+     * 从 attribtue 中获取Value更新界面
+     */
+    void updateUI();
 }

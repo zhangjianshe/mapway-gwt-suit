@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.design;
 
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
 import jsinterop.base.JsPropertyMap;
@@ -20,7 +21,7 @@ public class EditorData implements IEditorData {
      */
     String errorMessage;
 
-    List<IAttribute> parameters;
+    List<ParameterValue> parameters;
 
     public EditorData() {
         editorCode = "";
@@ -38,6 +39,11 @@ public class EditorData implements IEditorData {
         return editorCode;
     }
 
+    public EditorData setEditorCode(String editorCode) {
+        this.editorCode = editorCode;
+        return this;
+    }
+
     /**
      * 编辑器名称
      *
@@ -46,6 +52,11 @@ public class EditorData implements IEditorData {
     @Override
     public String getEditorName() {
         return editorName;
+    }
+
+    public EditorData setEditorName(String editorName) {
+        this.editorName = editorName;
+        return this;
     }
 
     /**
@@ -57,6 +68,7 @@ public class EditorData implements IEditorData {
     public String getErrorMessage() {
         return errorMessage;
     }
+
 
     /**
      * Version1 only support JSON format
@@ -81,7 +93,7 @@ public class EditorData implements IEditorData {
         this.editorName = dataJson.editorName;
         if (dataJson.parameters != null && dataJson.parameters.getLength() > 0) {
             for (int i = 0; i < dataJson.parameters.getLength(); i++) {
-                JsonAttribute jsonAttribute = dataJson.parameters.getAt(i);
+                ParameterValue jsonAttribute = dataJson.parameters.getAt(i);
                 parameters.add(jsonAttribute);
             }
         }
@@ -97,11 +109,11 @@ public class EditorData implements IEditorData {
     @Override
     public Object save(EditorDataFormat format) {
         JsPropertyMap obj = JsPropertyMap.of
-                ("editorCode", editorCode,
-                        "editorName", editorName
+                (EditorOption.KEY_EDITOR_CODE, editorCode,
+                        EditorOption.KEY_EDITOR_CODE, editorName
                 );
         JsArray params = new JsArray();
-        for (IAttribute attribute : parameters) {
+        for (ParameterValue attribute : parameters) {
             params.push(attribute.toJSON());
         }
         obj.set("parameters", Global.JSON.stringify(params));
@@ -114,7 +126,27 @@ public class EditorData implements IEditorData {
      * @return
      */
     @Override
-    public List<IAttribute> getParameters() {
+    public List<ParameterValue> getParameterValues() {
         return parameters;
+    }
+
+    /**
+     * 查找 名字为key 的参数描述信息
+     *
+     * @param key
+     * @return
+     */
+    @Override
+    public ParameterValue findParameterValue(String key) {
+        if (key == null || key.length() == 0 || parameters == null || parameters.size() == 0) {
+            return null;
+        }
+
+        for (ParameterValue value : parameters) {
+            if (value.name.equals(key)) {
+                return value;
+            }
+        }
+        return null;
     }
 }

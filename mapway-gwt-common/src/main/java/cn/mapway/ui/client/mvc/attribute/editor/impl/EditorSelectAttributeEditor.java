@@ -1,8 +1,9 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.fonts.Fonts;
-import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.EditorData;
+import cn.mapway.ui.client.mvc.attribute.design.EditorDataFormat;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.widget.buttons.AiButton;
 import cn.mapway.ui.client.widget.dialog.Popup;
@@ -14,6 +15,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.dom.DomGlobal;
 
 import java.util.List;
 
@@ -36,6 +38,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
     AiButton btnSelector;
     @UiField
     HTMLPanel box;
+    EditorData editorData;
 
     public EditorSelectAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -68,23 +71,17 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             if (event1.isOk()) {
                 if (getAttribute() != null) {
                     //这个是保存在 属性定义的 编辑器字段中的数据
-                    EditorOption editorDesignOption = event1.getValue();
-                    txtName.setValue((String) editorDesignOption.get(EditorOption.KEY_EDITOR_NAME));
-                    getAttribute().setValue(editorDesignOption.toJson());
+                    editorData = event1.getValue();
+                    txtName.setValue(editorData.getEditorName());
+                    getAttribute().setValue(editorData.save(EditorDataFormat.EDF_JSON));
                 }
             }
             popup.hide(true);
         });
-        //editorValue 是编辑器选择的数据结构
-        // {
-        //   code
-        //   name
-        //   designOptions
-        // }
-        popup.getContent().editorValue(editorValue);
+        popup.getContent().editorValue(editorData);
         popup.showRelativeTo(box);
     }
-    EditorOption editorValue;
+
     /**
      * 编辑器的数据应该是一个JSON字符串
      *
@@ -95,20 +92,31 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
     public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
         super.setAttribute(runtimeOption, attribute);
 
-        // attribute.getValue()  is a json string ,which contains code name and designOptions String
-        // this editorData self dose not contain  a designOptions
-        editorValue = EditorOption.parse(DataCastor.castToString(attribute.getValue()));
-        String editorCode = (String) editorValue.get(EditorOption.KEY_EDITOR_CODE);
-        String editorName = (String) editorValue.get(EditorOption.KEY_EDITOR_NAME);
+        updateUI();
+    }
+
+    @Override
+    public void updateUI() {
+        if (getAttribute() == null) {
+            return;
+        }
+        editorData = new EditorData();
+        editorData.load(getAttribute().getValue(), EditorDataFormat.EDF_JSON);
+
+        AttributeEditorInfo info;
+
+        String editorCode = editorData.getEditorCode();
+
         if (editorCode == null || editorCode.length() == 0) {
             editorCode = TextboxAttributeEditor.EDITOR_CODE;
-            AttributeEditorInfo info = findInfoByCode(editorCode);
-            txtName.setValue(info.name);
-            editorValue.set(EditorOption.KEY_EDITOR_CODE,info.code);
-            editorValue.set(EditorOption.KEY_EDITOR_NAME,info.name);
-            editorValue.setDesignOptions("");
+        }
+        info = findInfoByCode(editorCode);
+        if (info == null) {
+            DomGlobal.console.error("load editor data error in Editor SelectAttributeEditor.");
         } else {
-            txtName.setValue(editorName);
+            txtName.setValue(info.name);
+            editorData.setEditorCode(info.code);
+            editorData.setEditorName(info.name);
         }
     }
 

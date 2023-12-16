@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.*;
+import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
@@ -16,7 +17,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.core.Global;
-import elemental2.core.JsObject;
+import elemental2.core.JsArray;
 import jsinterop.base.Js;
 import jsinterop.base.JsArrayLike;
 
@@ -75,8 +76,8 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     }
 
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption, attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 
@@ -92,17 +93,20 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             ddlDropdown.setEnabled(false);
         }
 
-        JsObject designOptions = getAttribute().getDesignOption();
-
-        Logs.info("dropdown editor design options: " + Global.JSON.stringify(designOptions));
+        String dropdownParameter = option(EditorOption.KEY_DROPDOWN_OPTIONS,null);
 
         IOptionProvider optionProvider = attribute.getOptionProvider();
         if (optionProvider != null) {
             setOptionProvider(optionProvider);
-        } else if (designOptions != null) {
+        } else if (dropdownParameter != null) {
             try {
-
-                JsArrayLike<Object> arrayLike = Js.asArrayLike(designOptions);
+                JsArrayLike<DropdownListDesignData> arrayLike;
+                try {
+                    String dataString = DataCastor.castToString(dropdownParameter);
+                    arrayLike = Js.uncheckedCast(Global.JSON.parse(dataString));
+                } catch (Exception e) {
+                    arrayLike = new JsArray<>();
+                }
                 OptionProvider optionProvider1 = new OptionProvider();
 
                 for (int i = 0; i < arrayLike.getLength(); i++) {

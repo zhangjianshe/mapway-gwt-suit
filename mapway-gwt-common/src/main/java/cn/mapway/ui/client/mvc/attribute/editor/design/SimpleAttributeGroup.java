@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.attribute.simple;
+package cn.mapway.ui.client.mvc.attribute.editor.design;
 
 
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
@@ -72,15 +72,26 @@ public class SimpleAttributeGroup extends CommonEventComposite {
      * @param values
      */
     public void updateValue(List<AttributeValue> values) {
-        for (int i = 0; i < slot.getWidgetCount(); i++) {
-            Widget w = slot.getWidget(i);
-            if (w instanceof AttributeItemEditorProxy) {
-                AttributeItemEditorProxy proxy = (AttributeItemEditorProxy) w;
-                String attributeName = proxy.getAttribute().getName();
-                for (AttributeValue attributeValue : values) {
-                    if (attributeValue.getName().equals(attributeName)) {
-                        proxy.getAttribute().setValue(attributeValue.getValue());
-                        break;
+        if (values == null) {
+            for (int i = 0; i < slot.getWidgetCount(); i++) {
+                Widget w = slot.getWidget(i);
+                if (w instanceof AttributeItemEditorProxy) {
+                    AttributeItemEditorProxy proxy = (AttributeItemEditorProxy) w;
+                    proxy.updateUI();
+                }
+            }
+        } else {
+            for (int i = 0; i < slot.getWidgetCount(); i++) {
+                Widget w = slot.getWidget(i);
+                if (w instanceof AttributeItemEditorProxy) {
+                    AttributeItemEditorProxy proxy = (AttributeItemEditorProxy) w;
+                    String attributeName = proxy.getAttribute().getName();
+                    for (AttributeValue attributeValue : values) {
+                        if (attributeValue.getName().equals(attributeName)) {
+                            proxy.getAttribute().setValue(attributeValue.getValue());
+                            proxy.updateUI();
+                            break;
+                        }
                     }
                 }
             }

@@ -32,6 +32,12 @@ public class ListDataItem extends CommonEventComposite implements IData<Dropdown
     public ListDataItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
         btnDelete.setIconUnicode(Fonts.REMOVE);
+        txtKey.addChangeHandler(event -> {
+            data.key = txtKey.getValue();
+        });
+        txtValue.addChangeHandler(event -> {
+            data.value = txtValue.getValue();
+        });
     }
 
     @Override
