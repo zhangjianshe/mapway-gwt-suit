@@ -11,7 +11,7 @@ import java.util.List;
  *
  * @author zhang
  */
-public interface IAttributesProvider extends IAttributesParser, HasAttributeStateChangeHandler {
+public interface IAttributesProvider extends IAttributeValuesUpdator, HasAttributeStateChangeHandler {
     String getAttributeTitle();
 
     /**

@@ -3,8 +3,10 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.EditorData;
-import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
-import cn.mapway.ui.client.mvc.attribute.editor.*;
+import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
+import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
 import cn.mapway.ui.client.widget.dialog.Popup;
@@ -226,13 +228,13 @@ public class EditorSelector extends CommonEventComposite {
     @UiHandler("saveBar")
     public void saveBarCommon(CommonEvent event) {
         if (event.isOk()) {
-            if (currentDesign != null) {
-                List<ParameterValue> values = currentDesign.getParameterValues();
+            if (selectEditor != null) {
+
                 EditorData editorData = new EditorData();
                 editorData.setEditorCode(selectEditor.code);
                 editorData.setEditorName(selectEditor.name);
-                if (values != null) {
-                    editorData.getParameterValues().addAll(values);
+                if (currentDesign != null && currentDesign.getParameterValues() != null) {
+                    editorData.getParameterValues().addAll(currentDesign.getParameterValues());
                 }
                 fireEvent(CommonEvent.okEvent(editorData));
             }

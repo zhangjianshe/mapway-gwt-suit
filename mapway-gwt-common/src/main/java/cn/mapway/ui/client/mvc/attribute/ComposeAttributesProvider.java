@@ -7,7 +7,7 @@ import java.util.List;
  * 联合属性提供器
  * 可以组合几个属性提供其为一个
  */
-public class ComposeAttributeProvider extends AbstractAttributesProvider implements IAttributeReadyCallback {
+public class ComposeAttributesProvider extends AbstractAttributesProvider implements IAttributeReadyCallback {
 
     List<IAttributesProvider> providers = new ArrayList<>();
 

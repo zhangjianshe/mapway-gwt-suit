@@ -193,7 +193,7 @@ public class DataCastor {
         }
     }
 
-    public static String attrsToJson(List<AttributeValue> attributeValues) {
+    public static String attrsValueToJson(List<AttributeValue> attributeValues) {
         if (attributeValues == null) {
             return "[]";
         }
@@ -220,7 +220,7 @@ public class DataCastor {
         return stringBuilder.toString();
     }
 
-    public static List<AttributeValue> attrFromJson(String json) {
+    public static List<AttributeValue> attrsValueFromJson(String json) {
         List<AttributeValue> attributeValues = new ArrayList<>();
         if (json == null || json.length() == 0) {
             return attributeValues;

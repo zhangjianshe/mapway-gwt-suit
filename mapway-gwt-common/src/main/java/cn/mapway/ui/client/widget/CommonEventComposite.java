@@ -432,9 +432,9 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
     }
 
     @Override
-    public void parseAttribute(List<AttributeValue> values) {
+    public void updateAttributeValues(List<AttributeValue> values) {
         if (attributeProvider != null) {
-            attributeProvider.parseAttribute(values);
+            attributeProvider.updateAttributeValues(values);
         }
         // not implements
     }

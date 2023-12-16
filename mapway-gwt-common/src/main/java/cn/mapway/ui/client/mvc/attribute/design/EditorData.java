@@ -1,10 +1,10 @@
 package cn.mapway.ui.client.mvc.attribute.design;
 
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
-import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
+import elemental2.dom.DomGlobal;
 import jsinterop.base.JsPropertyMap;
 
 import java.util.ArrayList;
@@ -59,6 +59,14 @@ public class EditorData implements IEditorData {
         return this;
     }
 
+    public EditorData addParameter(String name, Object value) {
+        ParameterValue parameterValue = new ParameterValue();
+        parameterValue.name = name;
+        parameterValue.value = value;
+        parameters.add(parameterValue);
+        return this;
+    }
+
     /**
      * 获取错误消息
      *
@@ -93,8 +101,12 @@ public class EditorData implements IEditorData {
         this.editorName = dataJson.editorName;
         if (dataJson.parameters != null && dataJson.parameters.getLength() > 0) {
             for (int i = 0; i < dataJson.parameters.getLength(); i++) {
-                ParameterValue jsonAttribute = dataJson.parameters.getAt(i);
-                parameters.add(jsonAttribute);
+                try {
+                    ParameterValue jsonAttribute = dataJson.parameters.getAt(i);
+                    parameters.add(jsonAttribute);
+                } catch (Exception e) {
+                    DomGlobal.console.error(e.getMessage());
+                }
             }
         }
         return true;
@@ -110,13 +122,13 @@ public class EditorData implements IEditorData {
     public Object save(EditorDataFormat format) {
         JsPropertyMap obj = JsPropertyMap.of
                 (EditorOption.KEY_EDITOR_CODE, editorCode,
-                        EditorOption.KEY_EDITOR_CODE, editorName
+                        EditorOption.KEY_EDITOR_NAME, editorName
                 );
         JsArray params = new JsArray();
         for (ParameterValue attribute : parameters) {
-            params.push(attribute.toJSON());
+            params.push(attribute);
         }
-        obj.set("parameters", Global.JSON.stringify(params));
+        obj.set("parameters", params);
         return Global.JSON.stringify(obj);
     }
 

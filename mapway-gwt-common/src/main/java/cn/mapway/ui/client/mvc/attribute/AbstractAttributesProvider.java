@@ -17,6 +17,7 @@ import java.util.Set;
 /**
  * AbstractAttributeProvider
  * 提供属性列表 提供器的大部分功能
+ *
  * @author zhang
  */
 public abstract class AbstractAttributesProvider implements IAttributesProvider, HasCommonHandlers {
@@ -164,8 +165,18 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
     }
 
     @Override
-    public void parseAttribute(List<AttributeValue> values) {
-        // not implementens
+    public void updateAttributeValues(List<AttributeValue> values) {
+        if (values == null || values.size() == 0 || getAttributes() == null || getAttributes().size() == 0) {
+            return;
+        }
+        for (AttributeValue attributeValue : values) {
+            for (IAttribute attribute : getAttributes()) {
+                if (attribute.getName().equals(attributeValue.getName())) {
+                    attribute.setValue(attributeValue.value);
+                    break;
+                }
+            }
+        }
     }
 
     @Override

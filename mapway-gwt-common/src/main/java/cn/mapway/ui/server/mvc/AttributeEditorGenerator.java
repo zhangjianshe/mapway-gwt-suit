@@ -1,6 +1,7 @@
 package cn.mapway.ui.server.mvc;
 
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditorFactory;
 import com.google.gwt.core.ext.Generator;
@@ -61,6 +62,7 @@ public class AttributeEditorGenerator extends Generator {
         composer.addImport(ArrayList.class.getCanonicalName());
         composer.addImport(Map.class.getCanonicalName());
         composer.addImport(HashMap.class.getCanonicalName());
+        composer.addImport(AttributeEditorInfo.class.getCanonicalName());
 
         // 创建一个源代码生成器对象
         PrintWriter printWriter = context.tryCreate(logger, genPackageName, genClassName);

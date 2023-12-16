@@ -1,7 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.design;
 
 import elemental2.core.Global;
-import jdk.nashorn.internal.objects.annotations.Property;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -13,13 +12,13 @@ import jsinterop.annotations.JsType;
 @JsType(isNative = true, name = "Object", namespace = JsPackage.GLOBAL)
 public class ParameterValue {
 
-    @Property
+    @JsProperty
     public String name;
     @JsProperty
     public Object value;
 
     @JsOverlay
-    public String toJSON() {
+    public final String toJSON() {
         return Global.JSON.stringify(this);
     }
 }

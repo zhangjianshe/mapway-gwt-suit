@@ -16,7 +16,7 @@ import java.util.Set;
  *
  * @author zhang
  */
-public class AbstractDecoratorPanel extends SimplePanel implements IAttributesProvider, IAttributesParser {
+public class AbstractDecoratorPanel extends SimplePanel implements IAttributesProvider, IAttributeValuesUpdator {
     String mId;
     Set<IAttributeReadyCallback> callbacks;
 
@@ -87,7 +87,7 @@ public class AbstractDecoratorPanel extends SimplePanel implements IAttributesPr
     }
 
     @Override
-    public void parseAttribute(List<AttributeValue> values) {
+    public void updateAttributeValues(List<AttributeValue> values) {
 
     }
 
