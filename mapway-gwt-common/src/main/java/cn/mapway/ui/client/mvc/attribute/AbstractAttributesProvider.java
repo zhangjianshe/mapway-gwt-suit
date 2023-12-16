@@ -19,17 +19,17 @@ import java.util.Set;
  * 提供属性提供器的大部分功能
  * @author zhang
  */
-public abstract class AbstractAttributeProvider implements IAttributeProvider, HasCommonHandlers {
+public abstract class AbstractAttributesProvider implements IAttributesProvider, HasCommonHandlers {
     SimpleEventBus eventBus;
     List<IAttribute> attributes;
     Set<IAttributeReadyCallback> callbacks;
     String title;
 
-    public AbstractAttributeProvider() {
+    public AbstractAttributesProvider() {
         this("");
     }
 
-    public AbstractAttributeProvider(String title) {
+    public AbstractAttributesProvider(String title) {
         this.title = title;
         eventBus = new SimpleEventBus();
         attributes = new ArrayList<IAttribute>();

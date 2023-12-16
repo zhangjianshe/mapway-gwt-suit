@@ -39,11 +39,11 @@ import java.util.Set;
  *
  * @author zhangjianshe@gmail.com
  */
-public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IAttributeInit, IEventHandler, IProvideSize, IAttributeProvider, IPageTip {
+public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IAttributeInit, IEventHandler, IProvideSize, IAttributesProvider, IPageTip {
     public final static String TRUE = "true";
     private static final String ATTR_TIP = "tip";
     //外部提供一个属性提供器
-    IAttributeProvider attributeProvider;
+    IAttributesProvider attributeProvider;
     Set<IAttributeReadyCallback> callbacks;
     Set<String> topics = new HashSet<>();
     List<TipData> tipDataList = new ArrayList<TipData>();
@@ -427,7 +427,7 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
     }
 
     @Override
-    public void initAttributes(IAttributeProvider attributeProvider) {
+    public void initAttributes(IAttributesProvider attributeProvider) {
         this.attributeProvider = attributeProvider;
     }
 

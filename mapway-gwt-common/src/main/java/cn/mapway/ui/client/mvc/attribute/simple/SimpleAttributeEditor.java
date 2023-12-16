@@ -3,7 +3,7 @@ package cn.mapway.ui.client.mvc.attribute.simple;
 
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.IAttributeProvider;
+import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.AttributeItemEditorProxy;
@@ -28,7 +28,7 @@ import java.util.Map;
  *
  * @author zhang
  */
-public class SimpleAttributeEditor extends CommonEventComposite implements IData<IAttributeProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler {
+public class SimpleAttributeEditor extends CommonEventComposite implements IData<IAttributesProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler {
     private static final AttributeEditorUiBinder ourUiBinder = GWT.create(AttributeEditorUiBinder.class);
     Map<String, SimpleAttributeGroup> groups = new HashMap<>();
     @UiField
@@ -40,7 +40,7 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
     List<AttributeValue> values;
     int labelWidth = 150;
     HandlerRegistration stateChangeHandler;
-    private IAttributeProvider data;
+    private IAttributesProvider data;
 
 
     @UiConstructor()
@@ -49,12 +49,12 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
     }
 
     @Override
-    public IAttributeProvider getData() {
+    public IAttributesProvider getData() {
         return data;
     }
 
     @Override
-    public void setData(IAttributeProvider obj) {
+    public void setData(IAttributesProvider obj) {
         if (data != null) {
             data.removeAttributeReadyCallback(this);
         }
@@ -141,7 +141,7 @@ public class SimpleAttributeEditor extends CommonEventComposite implements IData
 
 
     @Override
-    public void onAttributeReady(IAttributeProvider attributeProvider) {
+    public void onAttributeReady(IAttributesProvider attributeProvider) {
         toUI();
         updateValue(this.values);
     }

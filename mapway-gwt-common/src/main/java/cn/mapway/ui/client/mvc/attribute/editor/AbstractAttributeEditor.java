@@ -20,7 +20,7 @@ import jsinterop.base.JsPropertyMap;
  * 2.提供一个属性编辑器的CODE
  * 3.重载 setAttribute getDisplayWidget getPopupWidget
  */
-public abstract class AbstractAttributeEditor<T> extends CommonEventComposite implements IAttributeEditor<T> {
+public abstract class AbstractAttributeEditor<T> extends CommonEventComposite implements IAttributeEditor {
     IAttribute attribute;
     EditorOption runtimeOption;
     private Object data;

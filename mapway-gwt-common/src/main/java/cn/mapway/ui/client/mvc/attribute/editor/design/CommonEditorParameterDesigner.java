@@ -2,7 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.design;
 
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
-import cn.mapway.ui.client.mvc.attribute.IAttributeProvider;
+import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
 import cn.mapway.ui.client.mvc.attribute.simple.SimpleAttributeEditor;
 import com.google.gwt.core.client.GWT;
@@ -26,7 +26,7 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
     @UiField
     SimpleAttributeEditor designer;
 
-    public CommonEditorParameterDesigner(IAttributeProvider provider) {
+    public CommonEditorParameterDesigner(IAttributesProvider provider) {
         initWidget(ourUiBinder.createAndBindUi(this));
         designer.setData(provider);
     }

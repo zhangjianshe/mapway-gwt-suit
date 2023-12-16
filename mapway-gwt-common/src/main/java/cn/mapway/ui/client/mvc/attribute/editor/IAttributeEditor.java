@@ -9,8 +9,9 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 属性编辑器的约束接口
  * 2.提供一个缺省的大小
+ * D is design option data type
  */
-public interface IAttributeEditor<T> extends IProvideSize, IData {
+public interface IAttributeEditor<T,D> extends IProvideSize, IData {
     String CATALOG_RUNTIME = "运行时";
     String CATALOG_DESIGN = "设计时";
     String CATALOG_BUSINESS = "业务编辑器";
@@ -83,4 +84,6 @@ public interface IAttributeEditor<T> extends IProvideSize, IData {
     default IEditorDesigner getDesigner() {
         return null;
     }
+
+
 }

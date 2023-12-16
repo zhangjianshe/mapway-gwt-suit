@@ -7,11 +7,11 @@ import java.util.List;
  * 联合属性提供器
  * 可以组合几个属性提供其为一个
  */
-public class ComposeAttributeProvider extends AbstractAttributeProvider implements IAttributeReadyCallback {
+public class ComposeAttributeProvider extends AbstractAttributesProvider implements IAttributeReadyCallback {
 
-    List<IAttributeProvider> providers = new ArrayList<>();
+    List<IAttributesProvider> providers = new ArrayList<>();
 
-    public void addProvider(IAttributeProvider attributeProvider) {
+    public void addProvider(IAttributesProvider attributeProvider) {
         attributeProvider.addAttributeReadyCallback(this);
         providers.add(attributeProvider);
     }
@@ -19,7 +19,7 @@ public class ComposeAttributeProvider extends AbstractAttributeProvider implemen
     @Override
     public String getAttributeSummary() {
         String html = "";
-        for (IAttributeProvider attributeProvider : providers) {
+        for (IAttributesProvider attributeProvider : providers) {
             html += attributeProvider.getAttributeSummary();
         }
         return html;
@@ -37,7 +37,7 @@ public class ComposeAttributeProvider extends AbstractAttributeProvider implemen
     public List<IAttribute> getAttributes() {
 
         List<IAttribute> attributes = new ArrayList<>();
-        for (IAttributeProvider attributeProvider : providers) {
+        for (IAttributesProvider attributeProvider : providers) {
             attributes.addAll(attributeProvider.getAttributes());
         }
         return attributes;
@@ -45,7 +45,7 @@ public class ComposeAttributeProvider extends AbstractAttributeProvider implemen
     }
 
     public void clearProviders() {
-        for (IAttributeProvider attributeProvider : providers) {
+        for (IAttributesProvider attributeProvider : providers) {
             attributeProvider.removeAttributeReadyCallback(this);
         }
         providers.clear();
@@ -58,7 +58,7 @@ public class ComposeAttributeProvider extends AbstractAttributeProvider implemen
      * @param attributeProvider
      */
     @Override
-    public void onAttributeReady(IAttributeProvider attributeProvider) {
+    public void onAttributeReady(IAttributesProvider attributeProvider) {
         notifyAttributeReady();
     }
 }

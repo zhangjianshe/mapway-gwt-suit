@@ -16,7 +16,7 @@ import java.util.Set;
  *
  * @author zhang
  */
-public class AbstractDecoratorPanel extends SimplePanel implements IAttributeProvider, IAttributeParser {
+public class AbstractDecoratorPanel extends SimplePanel implements IAttributesProvider, IAttributesParser {
     String mId;
     Set<IAttributeReadyCallback> callbacks;
 

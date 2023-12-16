@@ -2,7 +2,7 @@ package cn.mapway.ui.client.mvc.attribute;
 
 import java.util.List;
 
-public interface IAttributeParser {
+public interface IAttributesParser {
 
     void parseAttribute(List<AttributeValue> values);
 }
