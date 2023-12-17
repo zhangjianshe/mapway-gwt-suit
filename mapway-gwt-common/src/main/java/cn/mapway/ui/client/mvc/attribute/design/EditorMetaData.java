@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * 编辑器元数据
  */
-public class EditorMetaMetaData implements IEditorMetaData {
+public class EditorMetaData implements IEditorMetaData {
     String editorCode;
     String editorName;
     /**
@@ -23,7 +23,7 @@ public class EditorMetaMetaData implements IEditorMetaData {
 
     List<ParameterValue> parameters;
 
-    public EditorMetaMetaData() {
+    public EditorMetaData() {
         editorCode = "";
         editorName = "";
         parameters = new ArrayList<>();
@@ -39,7 +39,7 @@ public class EditorMetaMetaData implements IEditorMetaData {
         return editorCode;
     }
 
-    public EditorMetaMetaData setEditorCode(String editorCode) {
+    public EditorMetaData setEditorCode(String editorCode) {
         this.editorCode = editorCode;
         return this;
     }
@@ -54,12 +54,12 @@ public class EditorMetaMetaData implements IEditorMetaData {
         return editorName;
     }
 
-    public EditorMetaMetaData setEditorName(String editorName) {
+    public EditorMetaData setEditorName(String editorName) {
         this.editorName = editorName;
         return this;
     }
 
-    public EditorMetaMetaData addParameter(String name, Object value) {
+    public EditorMetaData addParameter(String name, Object value) {
         ParameterValue parameterValue = new ParameterValue();
         parameterValue.name = name;
         parameterValue.value = value;
@@ -86,7 +86,7 @@ public class EditorMetaMetaData implements IEditorMetaData {
      * @return
      */
     @Override
-    public boolean load(Object data, EditorDataFormat format) {
+    public boolean load(Object data, EditorMetaDataFormat format) {
         if (data == null) {
             errorMessage = "load editor data is null";
             return false;
@@ -119,7 +119,7 @@ public class EditorMetaMetaData implements IEditorMetaData {
      * @return
      */
     @Override
-    public Object save(EditorDataFormat format) {
+    public Object save(EditorMetaDataFormat format) {
         JsPropertyMap obj = JsPropertyMap.of
                 (EditorOption.KEY_EDITOR_CODE, editorCode,
                         EditorOption.KEY_EDITOR_NAME, editorName

@@ -36,7 +36,7 @@ public interface IEditorMetaData {
      * @param format
      * @return
      */
-    boolean load(Object data, EditorDataFormat format);
+    boolean load(Object data, EditorMetaDataFormat format);
 
     /**
      * 系列化数据到字符串中
@@ -44,7 +44,7 @@ public interface IEditorMetaData {
      * @param format
      * @return
      */
-    Object save(EditorDataFormat format);
+    Object save(EditorMetaDataFormat format);
 
 
     /**

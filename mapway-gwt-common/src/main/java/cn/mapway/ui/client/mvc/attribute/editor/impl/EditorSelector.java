@@ -2,7 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
-import cn.mapway.ui.client.mvc.attribute.design.EditorMetaMetaData;
+import cn.mapway.ui.client.mvc.attribute.design.EditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
@@ -50,7 +50,7 @@ public class EditorSelector extends CommonEventComposite {
 
     IEditorDesigner currentDesign = null;
     //正在编辑的属性中定义的editorData实例
-    EditorMetaMetaData currentEditData;
+    EditorMetaData currentEditData;
     String initEditorCode;
 
     public EditorSelector() {
@@ -230,7 +230,7 @@ public class EditorSelector extends CommonEventComposite {
         if (event.isOk()) {
             if (selectEditor != null) {
 
-                EditorMetaMetaData editorMetaData = new EditorMetaMetaData();
+                EditorMetaData editorMetaData = new EditorMetaData();
                 editorMetaData.setEditorCode(selectEditor.code);
                 editorMetaData.setEditorName(selectEditor.name);
                 if (currentDesign != null && currentDesign.getParameterValues() != null) {
@@ -256,7 +256,7 @@ public class EditorSelector extends CommonEventComposite {
      *
      * @param editValue
      */
-    public void editorValue(EditorMetaMetaData editValue) {
+    public void editorValue(EditorMetaData editValue) {
         currentEditData = editValue;
         //缺省选中 editValue 对应的组件
         initEditorCode = currentEditData.getEditorCode();

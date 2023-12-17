@@ -2,8 +2,8 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.design.EditorMetaMetaData;
-import cn.mapway.ui.client.mvc.attribute.design.EditorDataFormat;
+import cn.mapway.ui.client.mvc.attribute.design.EditorMetaData;
+import cn.mapway.ui.client.mvc.attribute.design.EditorMetaDataFormat;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.widget.buttons.AiButton;
 import cn.mapway.ui.client.widget.dialog.Popup;
@@ -38,7 +38,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
     AiButton btnSelector;
     @UiField
     HTMLPanel box;
-    EditorMetaMetaData editorMetaData;
+    EditorMetaData editorMetaData;
 
     public EditorSelectAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -73,7 +73,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
                     //这个是保存在 属性定义的 编辑器字段中的数据
                     editorMetaData = event1.getValue();
                     txtName.setValue(editorMetaData.getEditorName());
-                    getAttribute().setValue(editorMetaData.save(EditorDataFormat.EDF_JSON));
+                    getAttribute().setValue(editorMetaData.save(EditorMetaDataFormat.EDF_JSON));
                 }
             }
             popup.hide(true);
@@ -100,8 +100,8 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         if (getAttribute() == null) {
             return;
         }
-        editorMetaData = new EditorMetaMetaData();
-        editorMetaData.load(getAttribute().getValue(), EditorDataFormat.EDF_JSON);
+        editorMetaData = new EditorMetaData();
+        editorMetaData.load(getAttribute().getValue(), EditorMetaDataFormat.EDF_JSON);
 
         AttributeEditorInfo info;
 

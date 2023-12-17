@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
-import cn.mapway.ui.client.mvc.attribute.design.EditorMetaMetaData;
-import cn.mapway.ui.client.mvc.attribute.design.EditorDataFormat;
+import cn.mapway.ui.client.mvc.attribute.design.EditorMetaData;
+import cn.mapway.ui.client.mvc.attribute.design.EditorMetaDataFormat;
 import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
@@ -63,7 +63,7 @@ public abstract class AbstractAttribute implements IAttribute {
         this.id = StringUtil.randomString(8);
 
         //编辑器代码
-        EditorMetaMetaData editorMetaData1 = new EditorMetaMetaData();
+        EditorMetaData editorMetaData1 = new EditorMetaData();
         editorMetaData1.setEditorCode(customEditCode);
         this.editorData = editorMetaData1;
         this.name = name;
@@ -120,7 +120,7 @@ public abstract class AbstractAttribute implements IAttribute {
      * @return
      */
     public AbstractAttribute parseEditor(String editor) {
-        getEditorData().load(editor, EditorDataFormat.EDF_JSON);
+        getEditorData().load(editor, EditorMetaDataFormat.EDF_JSON);
         return this;
     }
 
@@ -345,7 +345,7 @@ public abstract class AbstractAttribute implements IAttribute {
         object.set("tip", tip);
         object.set("errorTip", errorTip);
         object.set("icon", icon);
-        object.set("editorData", getEditorData().save(EditorDataFormat.EDF_JSON));
+        object.set("editorData", getEditorData().save(EditorMetaDataFormat.EDF_JSON));
 
         return Global.JSON.stringify(object);
     }
