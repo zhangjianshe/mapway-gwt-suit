@@ -87,6 +87,15 @@ public interface IAttributeEditor extends IProvideSize, IData {
 
 
     /**
+     * 根据用户的参数信息 提示给用户
+     *
+     * @return
+     */
+    default String getTip() {
+        return "";
+    }
+
+    /**
      * 从 attribtue 中获取Value更新界面
      */
     void updateUI();

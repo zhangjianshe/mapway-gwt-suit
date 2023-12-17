@@ -92,7 +92,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             ddlDropdown.setEnabled(false);
         }
 
-        String dropdownParameter = option(EditorOption.KEY_DROPDOWN_OPTIONS,null);
+        String dropdownParameter = option(EditorOption.KEY_DROPDOWN_OPTIONS, null);
 
         IOptionProvider optionProvider = attribute.getOptionProvider();
         if (optionProvider != null) {
@@ -127,10 +127,18 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
 
     private void setOptionProvider(IOptionProvider provider) {
         ddlDropdown.clear();
+
+        Object selectedValue = null;
         if (provider != null) {
             for (Option option : provider.getOptions()) {
                 ddlDropdown.addItem(option.getIcon(), option.getText(), option.getValue());
+                if (option.isInitSelected()) {
+                    selectedValue = option.getValue();
+                }
             }
+        }
+        if (selectedValue != null) {
+            ddlDropdown.setValue(selectedValue);
         }
     }
 

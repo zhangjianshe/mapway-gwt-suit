@@ -13,7 +13,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.TextBox;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.DomGlobal;
 
@@ -33,7 +33,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
     public static final String EDITOR_CODE = "ATTR_SELECT_EDITOR";
     private static final EditorSelectAttributeEditorUiBinder ourUiBinder = GWT.create(EditorSelectAttributeEditorUiBinder.class);
     @UiField
-    TextBox txtName;
+    Label txtName;
     @UiField
     AiButton btnSelector;
     @UiField
@@ -72,7 +72,14 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
                 if (getAttribute() != null) {
                     //这个是保存在 属性定义的 编辑器字段中的数据
                     EditorMetaData newSelectedEditorMetaData = event1.getValue();
-                    txtName.setValue(newSelectedEditorMetaData.getEditorName());
+                    AttributeEditorInfo info = AttributeEditorFactory.get().findByCode(newSelectedEditorMetaData.getEditorCode());
+                    String html = "";
+                    if (info.icon != null && info.icon.length() > 0) {
+                        html = Fonts.toHtmlEntity(info.icon) + info.name;
+                    } else {
+                        html = info.name;
+                    }
+                    showSelected(html);
                     getAttribute().setValue(newSelectedEditorMetaData.save(EditorMetaDataFormat.EDF_JSON));
                 }
             }
@@ -113,11 +120,22 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         info = findInfoByCode(editorCode);
         if (info == null) {
             DomGlobal.console.error("load editor data error in Editor SelectAttributeEditor.");
+            txtName.setText("ERROR " + editorCode);
         } else {
-            txtName.setValue(info.name);
+            String html = "";
+            if (info.icon != null && info.icon.length() > 0) {
+                html = Fonts.toHtmlEntity(info.icon) + info.name;
+            } else {
+                html = info.name;
+            }
+            showSelected(html);
             editorMetaData.setEditorCode(info.code);
             editorMetaData.setEditorName(info.name);
         }
+    }
+
+    private void showSelected(String html) {
+        txtName.getElement().setInnerHTML(html);
     }
 
     AttributeEditorInfo findInfoByCode(String code) {

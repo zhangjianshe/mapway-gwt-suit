@@ -9,10 +9,21 @@
             align-items: center;
             grid-gap: 4px;
             width: 100%;
-        }</ui:style>
+        }
+
+        .lb {
+            background-color: #f0f0f0;
+            overflow: hidden;
+            width: 100%;
+            line-height: 34px;
+            text-overflow: ellipsis;
+            font-weight: normal;
+            text-wrap: nowrap;
+        }
+    </ui:style>
     <g:HTMLPanel>
         <g:HTMLPanel ui:field="box" styleName="{style.grid}">
-            <g:TextBox ui:field="txtName" styleName="ai-input" readOnly="true"/>
+            <g:Label ui:field="txtName" styleName="ai-input {style.lb}"/>
             <buttons:AiButton ui:field="btnSelector">选择</buttons:AiButton>
         </g:HTMLPanel>
     </g:HTMLPanel>
