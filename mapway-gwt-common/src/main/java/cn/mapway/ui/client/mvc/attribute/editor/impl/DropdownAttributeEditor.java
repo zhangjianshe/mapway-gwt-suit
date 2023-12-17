@@ -2,7 +2,6 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.*;
-import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;

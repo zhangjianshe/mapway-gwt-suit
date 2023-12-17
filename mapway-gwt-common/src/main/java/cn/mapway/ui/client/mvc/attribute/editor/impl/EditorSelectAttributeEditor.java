@@ -2,7 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.design.EditorData;
+import cn.mapway.ui.client.mvc.attribute.design.EditorMetaMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.EditorDataFormat;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.widget.buttons.AiButton;
@@ -38,7 +38,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
     AiButton btnSelector;
     @UiField
     HTMLPanel box;
-    EditorData editorData;
+    EditorMetaMetaData editorMetaData;
 
     public EditorSelectAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -71,14 +71,14 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             if (event1.isOk()) {
                 if (getAttribute() != null) {
                     //这个是保存在 属性定义的 编辑器字段中的数据
-                    editorData = event1.getValue();
-                    txtName.setValue(editorData.getEditorName());
-                    getAttribute().setValue(editorData.save(EditorDataFormat.EDF_JSON));
+                    editorMetaData = event1.getValue();
+                    txtName.setValue(editorMetaData.getEditorName());
+                    getAttribute().setValue(editorMetaData.save(EditorDataFormat.EDF_JSON));
                 }
             }
             popup.hide(true);
         });
-        popup.getContent().editorValue(editorData);
+        popup.getContent().editorValue(editorMetaData);
         popup.showRelativeTo(box);
     }
 
@@ -100,12 +100,12 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         if (getAttribute() == null) {
             return;
         }
-        editorData = new EditorData();
-        editorData.load(getAttribute().getValue(), EditorDataFormat.EDF_JSON);
+        editorMetaData = new EditorMetaMetaData();
+        editorMetaData.load(getAttribute().getValue(), EditorDataFormat.EDF_JSON);
 
         AttributeEditorInfo info;
 
-        String editorCode = editorData.getEditorCode();
+        String editorCode = editorMetaData.getEditorCode();
 
         if (editorCode == null || editorCode.length() == 0) {
             editorCode = TextboxAttributeEditor.EDITOR_CODE;
@@ -115,8 +115,8 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             DomGlobal.console.error("load editor data error in Editor SelectAttributeEditor.");
         } else {
             txtName.setValue(info.name);
-            editorData.setEditorCode(info.code);
-            editorData.setEditorName(info.name);
+            editorMetaData.setEditorCode(info.code);
+            editorMetaData.setEditorName(info.name);
         }
     }
 

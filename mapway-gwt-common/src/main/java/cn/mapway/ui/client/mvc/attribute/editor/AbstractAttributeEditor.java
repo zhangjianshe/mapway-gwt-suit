@@ -4,7 +4,7 @@ import cn.mapway.ui.client.db.DbFieldType;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
+import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import elemental2.core.JsObject;
@@ -72,7 +72,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         if (getAttribute() == null) {
             return defaultValue;
         }
-        IEditorData editorData = getAttribute().getEditorData();
+        IEditorMetaData editorData = getAttribute().getEditorData();
         if (editorData != null) {
             ParameterValue parameter = editorData.findParameterValue(name);
             return (T) readAttributeValue(parameter, defaultValue);

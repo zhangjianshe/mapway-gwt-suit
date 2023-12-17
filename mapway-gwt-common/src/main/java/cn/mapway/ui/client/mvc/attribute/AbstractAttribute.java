@@ -1,8 +1,8 @@
 package cn.mapway.ui.client.mvc.attribute;
 
-import cn.mapway.ui.client.mvc.attribute.design.EditorData;
+import cn.mapway.ui.client.mvc.attribute.design.EditorMetaMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.EditorDataFormat;
-import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
+import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
@@ -40,7 +40,7 @@ public abstract class AbstractAttribute implements IAttribute {
     protected boolean initVisible = true;
     // 属性名称
     protected String name;
-    IEditorData editorData;
+    IEditorMetaData editorData;
 
     private EditorOption runtimeOption;
 
@@ -63,9 +63,9 @@ public abstract class AbstractAttribute implements IAttribute {
         this.id = StringUtil.randomString(8);
 
         //编辑器代码
-        EditorData editorData1 = new EditorData();
-        editorData1.setEditorCode(customEditCode);
-        this.editorData = editorData1;
+        EditorMetaMetaData editorMetaData1 = new EditorMetaMetaData();
+        editorMetaData1.setEditorCode(customEditCode);
+        this.editorData = editorMetaData1;
         this.name = name;
         this.altName = alterName;
 
@@ -314,11 +314,11 @@ public abstract class AbstractAttribute implements IAttribute {
     }
 
     @Override
-    public IEditorData getEditorData() {
+    public IEditorMetaData getEditorData() {
         return editorData;
     }
 
-    public void setEditorData(IEditorData editorData) {
+    public void setEditorData(IEditorMetaData editorData) {
         assert editorData != null;
         this.editorData = editorData;
     }

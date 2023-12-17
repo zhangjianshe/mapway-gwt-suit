@@ -7,7 +7,7 @@ import java.util.List;
  * 此信息可以被序列化到持久化格式中 （JSON|XML|BYTE|ELSE）
  * 编辑器实例化的时候必须需要这样一个对象
  */
-public interface IEditorData {
+public interface IEditorMetaData {
     /**
      * 获取编辑器的代码
      *

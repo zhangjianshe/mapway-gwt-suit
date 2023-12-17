@@ -1,9 +1,8 @@
 package cn.mapway.ui.client.mvc.attribute;
 
 
-import cn.mapway.ui.client.mvc.attribute.design.IEditorData;
+import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
-import elemental2.core.JsObject;
 
 /**
  * IAttribute
@@ -82,7 +81,7 @@ public interface IAttribute {
      *
      * @return
      */
-    IEditorData getEditorData();
+    IEditorMetaData getEditorData();
 
     /**
      * 对象转换为 Json字符串

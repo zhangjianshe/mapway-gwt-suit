@@ -11,9 +11,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * 编辑器实例的所有数据
+ * 编辑器元数据
  */
-public class EditorData implements IEditorData {
+public class EditorMetaMetaData implements IEditorMetaData {
     String editorCode;
     String editorName;
     /**
@@ -23,7 +23,7 @@ public class EditorData implements IEditorData {
 
     List<ParameterValue> parameters;
 
-    public EditorData() {
+    public EditorMetaMetaData() {
         editorCode = "";
         editorName = "";
         parameters = new ArrayList<>();
@@ -39,7 +39,7 @@ public class EditorData implements IEditorData {
         return editorCode;
     }
 
-    public EditorData setEditorCode(String editorCode) {
+    public EditorMetaMetaData setEditorCode(String editorCode) {
         this.editorCode = editorCode;
         return this;
     }
@@ -54,12 +54,12 @@ public class EditorData implements IEditorData {
         return editorName;
     }
 
-    public EditorData setEditorName(String editorName) {
+    public EditorMetaMetaData setEditorName(String editorName) {
         this.editorName = editorName;
         return this;
     }
 
-    public EditorData addParameter(String name, Object value) {
+    public EditorMetaMetaData addParameter(String name, Object value) {
         ParameterValue parameterValue = new ParameterValue();
         parameterValue.name = name;
         parameterValue.value = value;
