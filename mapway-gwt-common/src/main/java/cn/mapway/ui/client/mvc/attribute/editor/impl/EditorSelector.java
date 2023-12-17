@@ -8,11 +8,8 @@ import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
 import cn.mapway.ui.client.widget.CommonEventComposite;
-import cn.mapway.ui.client.widget.FontIcon;
 import cn.mapway.ui.client.widget.dialog.Popup;
 import cn.mapway.ui.client.widget.dialog.SaveBar;
-import cn.mapway.ui.client.widget.tree.ImageTextItem;
-import cn.mapway.ui.client.widget.tree.ZTree;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -28,10 +25,7 @@ import java.util.*;
 public class EditorSelector extends CommonEventComposite {
     private static final EditorSelectorUiBinder ourUiBinder = GWT.create(EditorSelectorUiBinder.class);
     private static Popup<EditorSelector> popup;
-    @UiField
-    ZTree catalog;
-    @UiField
-    FlexTable table;
+
     @UiField
     SaveBar saveBar;
     @UiField
@@ -42,30 +36,31 @@ public class EditorSelector extends CommonEventComposite {
     Label lbSummary;
     @UiField
     AttributeItemEditorProxy preview;
+    @UiField
+    TabLayoutPanel tableLayout;
     AttributeEditorInfo selectEditor = null;
-    Map<String, List<AttributeEditorInfo>> groups;
-
-    int selectRow = -1;
-    List<AttributeEditorInfo> currentList;
 
     IEditorDesigner currentDesign = null;
     //正在编辑的属性中定义的editorData实例
     EditorMetaData currentEditData;
     String initEditorCode;
+    Map<String, EditorHorizontalPanel> panelCache = new HashMap<>();
 
     public EditorSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
         update();
-        groups = new HashMap<>();
-        loadData();
-        table.addClickHandler(event -> {
-            HTMLTable.Cell cellForEvent = table.getCellForEvent(event);
-            int rowIndex = cellForEvent.getRowIndex();
-            if (rowIndex < 1 || rowIndex >= table.getRowCount()) {
-                return;
+
+
+        tableLayout.addSelectionHandler(event -> {
+            Widget tabWidget = tableLayout.getTabWidget(event.getSelectedItem());
+            if (tabWidget instanceof EditorHorizontalPanel) {
+                EditorHorizontalPanel horizontalPanel = (EditorHorizontalPanel) tabWidget;
+                horizontalPanel.selectEditorCode(initEditorCode);
             }
-            selectTableRow(rowIndex);
         });
+
+        loadData();
+
     }
 
     public static Popup<EditorSelector> getPopup(boolean reuse) {
@@ -84,28 +79,50 @@ public class EditorSelector extends CommonEventComposite {
         return new Popup<>(selector);
     }
 
-    private void selectTableRow(int rowIndex) {
-        HTMLTable.RowFormatter rowFormatter = table.getRowFormatter();
-        if (selectRow >= 1) {
-            rowFormatter.getElement(selectRow).removeAttribute(SELECT_ATTRIBUTE);
+
+    private void loadData() {
+
+        panelCache.clear();
+
+        Map<String, List<AttributeEditorInfo>> groups = new HashMap<>();
+
+        List<AttributeEditorInfo> editors = AttributeEditorFactory.get().getEditors();
+        for (AttributeEditorInfo info : editors) {
+            if (info.group == null || info.group.length() == 0) {
+                info.group = IAttributeEditor.CATALOG_UNKNOWN;
+            }
+            List<AttributeEditorInfo> group = groups.get(info.group);
+            if (group == null) {
+                group = new ArrayList<>();
+                groups.put(info.group, group);
+            }
+            group.add(info);
         }
-        selectRow = rowIndex;
-        rowFormatter.getElement(selectRow).setAttribute(SELECT_ATTRIBUTE, "true");
-        selectEditor = currentList.get(rowIndex - 1); //" minus 1 " because we add a header line in the table
-        update();
-        //新选择了一个设计期重新渲染 属性编辑器的参数设计UI
-        renderSelectDesign(selectEditor);
+        //排序
+        groups.values().forEach(list -> {
+            Collections.sort(list, Comparator.comparingInt(i -> i.rank));
+        });
+        //分好组后创建 UI
+
+
+        for (String key : groups.keySet()) {
+            EditorHorizontalPanel panel = new EditorHorizontalPanel();
+            panel.addCommonHandler(event -> {
+                if (event.isSelect()) {
+                    selectEditor = event.getValue();
+                    changePreview();
+                }
+            });
+            panel.setData(groups.get(key));
+            String html = "<span style='font-size:1.1rem;'>" + key + "</span>";
+            tableLayout.add(panel, html, true);
+            panelCache.put(key, panel);
+        }
+
     }
 
-    /**
-     * 切换组件时 重新设置组件参数UI
-     *
-     * @param selectEditor 设计期的编辑器信息
-     */
-    private void renderSelectDesign(AttributeEditorInfo selectEditor) {
-
-        clearPreview();
-        previewPlaceholder.setVisible(true);
+    private void changePreview() {
+        designPanel.clear();
         //顶一个一 FakeAttribute
         AbstractAttribute adaptor = new AbstractAttribute("preview", selectEditor.name, selectEditor.code) {
             @Override
@@ -127,96 +144,18 @@ public class EditorSelector extends CommonEventComposite {
                 //原来的设计器和新选择的设计类型一致 currentEditValue 用户之前选中的编辑器里的设计数据
                 currentDesign.updateValue(currentEditData.getParameterValues());
             }
+        } else {
+            HTML html = new HTML("该输入组件无需参数");
+            html.setStyleName("ai-flex-panel");
+            html.setHeight("200px");
+            designPanel.add(html);
         }
+        AttributeEditorInfo info = AttributeEditorFactory.get().findByCode(selectEditor.code);
+        String tip = info.name + " (" + info.summary + ") " + preview.getEditor().getEditorTip();
+        lbSummary.setText(tip);
+        update();
     }
 
-    private void loadData() {
-        groups.clear();
-        List<AttributeEditorInfo> editors = AttributeEditorFactory.get().getEditors();
-        for (AttributeEditorInfo info : editors) {
-            if (info.group == null || info.group.length() == 0) {
-                info.group = IAttributeEditor.CATALOG_UNKNOWN;
-            }
-            List<AttributeEditorInfo> infos = groups.get(info.group);
-            if (infos == null) {
-                infos = new ArrayList<>();
-                groups.put(info.group, infos);
-            }
-            infos.add(info);
-        }
-
-        ImageTextItem fireItem = null;
-        for (String key : groups.keySet()) {
-            ImageTextItem item = catalog.addItem(null, key, null);
-            item.setData(groups.get(key));
-            if (fireItem == null) {
-                fireItem = item;
-            }
-        }
-
-
-        //排序
-        groups.values().forEach(list -> {
-            Collections.sort(list, Comparator.comparingInt(i -> i.rank));
-        });
-
-        if (fireItem != null) {
-            catalog.setValue(fireItem, true);
-        }
-    }
-
-    @UiHandler("catalog")
-    public void catalogCommon(CommonEvent event) {
-        if (event.isSelect()) {
-            clearPreview();
-            selectRow = -1;
-            selectEditor = null;
-            update();
-            ImageTextItem item = event.getValue();
-            currentList = (List<AttributeEditorInfo>) item.getData();
-            renderData(currentList);
-            lbSummary.setText("分组中共有编辑器" + currentList.size() + "个");
-        }
-    }
-
-    private void clearPreview() {
-        designPanel.clear();
-        previewPlaceholder.setVisible(false);
-        currentDesign = null;
-    }
-
-    private Label header(String name) {
-        Label label = new Label(name);
-        label.setStyleName("ai-header");
-        return label;
-    }
-
-    private void renderData(List<AttributeEditorInfo> infos) {
-        table.removeAllRows();
-        int row = 0;
-        int col = 0;
-        table.setWidget(row, col++, header("#"));
-        table.setWidget(row, col++, header("名称"));
-        table.setWidget(row, col++, header("介绍"));
-        row++;
-        int selectedIndex = -1;
-        HTMLTable.ColumnFormatter columnFormatter = table.getColumnFormatter();
-        for (AttributeEditorInfo info : infos) {
-            col = 0;
-            table.setWidget(row, col++, new FontIcon<>(info.icon));
-            table.setText(row, col++, info.name);
-            table.setText(row, col++, info.summary);
-            if (info.code.equals(initEditorCode)) {
-                selectedIndex = row;
-            }
-            row++;
-        }
-        columnFormatter.setWidth(0, "30px");
-
-        if (selectedIndex >= 1) {
-            selectTableRow(selectedIndex);
-        }
-    }
 
     private void update() {
         saveBar.enableSave(selectEditor != null);
@@ -260,44 +199,10 @@ public class EditorSelector extends CommonEventComposite {
         currentEditData = editValue;
         //缺省选中 editValue 对应的组件
         initEditorCode = currentEditData.getEditorCode();
-        String selectKey = "";
-        for (String key : groups.keySet()) {
-            for (AttributeEditorInfo info : groups.get(key)) {
-                if (info.code.equals(initEditorCode)) {
-                    selectKey = key;
-                    break;
-                }
-            }
-            if (selectKey.length() > 0) {
-                break;
-            }
-        }
-
-        if (selectKey.length() > 0) {
-            ImageTextItem groupItem = findItemByGroupKey(selectKey);
-            if (groupItem != null) {
-                catalog.setValue(groupItem, true);
-            }
-        }
+        AttributeEditorInfo info = AttributeEditorFactory.get().findByCode(editValue.getEditorCode());
+        tableLayout.selectTab(panelCache.get(info.group), true);
     }
 
-    /**
-     * 未来支持多级支持
-     *
-     * @param groupKey
-     * @return
-     */
-    private ImageTextItem findItemByGroupKey(String groupKey) {
-        for (int i = 0; i < catalog.getWidgetCount(); i++) {
-            Widget widget = catalog.getWidget(i);
-            if (widget instanceof ImageTextItem) {
-                if (((ImageTextItem) widget).getText().equals(groupKey)) {
-                    return (ImageTextItem) widget;
-                }
-            }
-        }
-        return null;
-    }
 
     interface EditorSelectorUiBinder extends UiBinder<DockLayoutPanel, EditorSelector> {
     }

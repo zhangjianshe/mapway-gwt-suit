@@ -50,7 +50,8 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
             if (description == null) {
                 description = "";
             }
-
+            //添加对参数的理解提示信息
+            description += attributeEditor.getEditorTip();
             fireEvent(CommonEvent.infoEvent(description));
         }
     }

@@ -1,5 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree"
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog"
              xmlns:impl="urn:import:cn.mapway.ui.client.mvc.attribute.editor.impl">
     <ui:style>
@@ -10,7 +10,6 @@
         }
 
         .summary {
-            font-weight: bold;
             font-size: 1.1rem;
         }
 
@@ -19,37 +18,44 @@
             justify-content: center;
             align-items: center;
             justify-items: center;
-        }</ui:style>
+        }
+
+        .preview {
+            background-color: white;
+            width: 70%;
+        }
+
+        .tab {
+            border-bottom: solid 1px #f0f0f0;
+        }
+
+        .tab .gwt-TabLayoutPanelContent {
+            padding: 0;
+        }
+    </ui:style>
     <g:DockLayoutPanel>
         <g:south size="58">
             <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
         </g:south>
-        <g:west size="160">
-            <g:ScrollPanel addStyleNames="ai-border-right">
-                <tree:ZTree width="100%" ui:field="catalog"/>
-            </g:ScrollPanel>
-        </g:west>
+        <g:north size="145">
+            <g:TabLayoutPanel barHeight="50" ui:field="tableLayout" addStyleNames="{style.tab}">
+            </g:TabLayoutPanel>
+        </g:north>
         <g:east size="300">
             <g:ScrollPanel styleName="ai-border-left {style.panel}">
-                <g:VerticalPanel width="100%" spacing="6">
-                    <g:HTMLPanel ui:field="previewPlaceholder">
-                        <impl:AttributeItemEditorProxy ui:field="preview"/>
-                    </g:HTMLPanel>
-                    <g:HTMLPanel ui:field="designPanel">
-                    </g:HTMLPanel>
-                </g:VerticalPanel>
+                <g:HTMLPanel ui:field="designPanel">
+                </g:HTMLPanel>
             </g:ScrollPanel>
         </g:east>
-        <g:north size="70">
-            <g:HTMLPanel styleName="{style.flex}">
+        <g:south size="70">
+            <g:HTMLPanel addStyleNames="{style.flex}">
                 <g:Label ui:field="lbSummary" styleName="{style.summary}"/>
             </g:HTMLPanel>
-        </g:north>
+        </g:south>
         <g:center>
-            <g:ScrollPanel>
-                <g:FlexTable width="100%" cellPadding="4" styleName="attr-table" ui:field="table"/>
-            </g:ScrollPanel>
+            <g:HTMLPanel ui:field="previewPlaceholder" styleName="{style.flex}">
+                <impl:AttributeItemEditorProxy addStyleNames="{style.preview}" ui:field="preview"/>
+            </g:HTMLPanel>
         </g:center>
-
     </g:DockLayoutPanel>
 </ui:UiBinder>

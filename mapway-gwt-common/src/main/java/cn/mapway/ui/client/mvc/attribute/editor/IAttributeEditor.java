@@ -91,7 +91,7 @@ public interface IAttributeEditor extends IProvideSize, IData {
      *
      * @return
      */
-    default String getTip() {
+    default String getEditorTip() {
         return "";
     }
 
