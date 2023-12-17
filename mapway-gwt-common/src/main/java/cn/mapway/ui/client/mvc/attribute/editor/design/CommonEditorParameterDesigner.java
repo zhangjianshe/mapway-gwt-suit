@@ -45,7 +45,7 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
      */
     @Override
     public List<IAttribute> getParameters() {
-        return designer.getAttributes();
+        return designer.getData().getAttributes();
     }
 
     /**
@@ -60,10 +60,7 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
         }
         List<ParameterValue> values = new ArrayList<>();
         for (IAttribute attribute : getParameters()) {
-            ParameterValue parameterValue = new ParameterValue();
-            parameterValue.value = attribute.getValue();
-            parameterValue.name = attribute.getName();
-            values.add(parameterValue);
+            values.add(ParameterValue.create(attribute.getName(), attribute.getValue()));
         }
         return values;
     }
@@ -93,11 +90,13 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
         if (parameterValues == null || parameterValues.size() == 0) {
             return;
         }
+        //参谋数值转换为 AttributeValues
         List<AttributeValue> values = new ArrayList<>(parameterValues.size());
         for (ParameterValue value : parameterValues) {
             AttributeValue attributeValue = new AttributeValue();
             attributeValue.setName(value.name);
             attributeValue.setValue((String) value.value);
+            values.add(attributeValue);
         }
         //所有参数数据更新完毕
         designer.updateValue(values);

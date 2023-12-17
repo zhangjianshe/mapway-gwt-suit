@@ -16,6 +16,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiConstructor;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 
@@ -29,7 +30,7 @@ import java.util.Map;
  *
  * @author zhang
  */
-public class SimpleObjectInspector extends CommonEventComposite implements IData<IAttributesProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler {
+public class SimpleObjectInspector extends Composite implements IData<IAttributesProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler {
     private static final AttributeEditorUiBinder ourUiBinder = GWT.create(AttributeEditorUiBinder.class);
     Map<String, SimpleAttributeGroup> groups = new HashMap<>();
     @UiField

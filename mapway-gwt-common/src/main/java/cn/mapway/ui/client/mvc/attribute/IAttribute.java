@@ -81,7 +81,7 @@ public interface IAttribute {
      *
      * @return
      */
-    IEditorMetaData getEditorData();
+    IEditorMetaData getEditorMetaData();
 
     /**
      * 对象转换为 Json字符串

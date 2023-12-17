@@ -72,7 +72,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         if (getAttribute() == null) {
             return defaultValue;
         }
-        IEditorMetaData editorData = getAttribute().getEditorData();
+        IEditorMetaData editorData = getAttribute().getEditorMetaData();
         if (editorData != null) {
             ParameterValue parameter = editorData.findParameterValue(name);
             return (T) readAttributeValue(parameter, defaultValue);

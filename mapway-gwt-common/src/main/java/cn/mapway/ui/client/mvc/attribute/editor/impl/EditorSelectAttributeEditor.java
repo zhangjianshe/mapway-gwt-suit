@@ -71,9 +71,9 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             if (event1.isOk()) {
                 if (getAttribute() != null) {
                     //这个是保存在 属性定义的 编辑器字段中的数据
-                    editorMetaData = event1.getValue();
-                    txtName.setValue(editorMetaData.getEditorName());
-                    getAttribute().setValue(editorMetaData.save(EditorMetaDataFormat.EDF_JSON));
+                    EditorMetaData newSelectedEditorMetaData = event1.getValue();
+                    txtName.setValue(newSelectedEditorMetaData.getEditorName());
+                    getAttribute().setValue(newSelectedEditorMetaData.save(EditorMetaDataFormat.EDF_JSON));
                 }
             }
             popup.hide(true);

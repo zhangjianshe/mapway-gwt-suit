@@ -18,6 +18,14 @@ public class ParameterValue {
     public Object value;
 
     @JsOverlay
+    public final static ParameterValue create(String name, Object value) {
+        ParameterValue pv = new ParameterValue();
+        pv.value = value;
+        pv.name = name;
+        return pv;
+    }
+
+    @JsOverlay
     public final String toJSON() {
         return Global.JSON.stringify(this);
     }

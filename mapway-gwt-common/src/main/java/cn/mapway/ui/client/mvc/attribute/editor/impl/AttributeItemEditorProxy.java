@@ -61,7 +61,7 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
      * @param attribute 编辑器组件的定义(属性的定义)
      */
     public void createEditorInstance(IAttribute attribute) {
-        if (attribute == null || attribute.getEditorData() == null || attribute.getEditorData().getEditorCode() == null) {
+        if (attribute == null || attribute.getEditorMetaData() == null || attribute.getEditorMetaData().getEditorCode() == null) {
             Logs.info("Attribute is null or editorCode is null in AttributeItemEditorProxy");
             return;
         }
@@ -70,9 +70,9 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         box.add(lbHeader);
 
         //创建统一的属性列表编辑UI
-        attributeEditor = AttributeEditorFactory.get().createEditor(attribute.getEditorData().getEditorCode(), false);
+        attributeEditor = AttributeEditorFactory.get().createEditor(attribute.getEditorMetaData().getEditorCode(), false);
         if (attributeEditor == null) {
-            errorInput("创建属性组件出错" + attribute.getEditorData().getEditorCode());
+            errorInput("创建属性组件出错" + attribute.getEditorMetaData().getEditorCode());
             return;
         }
 

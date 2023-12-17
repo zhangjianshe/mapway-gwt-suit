@@ -14,11 +14,11 @@ public interface IAttributeEditorFactory {
      * 实现逻辑为
      * 根据列表 依次创建
      *
-     * @param code  编辑器的唯一代码
+     * @param editorCode  编辑器的唯一代码
      * @param reuse 是否重用
      * @return
      */
-    IAttributeEditor createEditor(String code, boolean reuse);
+    IAttributeEditor createEditor(String editorCode, boolean reuse);
 
     /**
      * 返回系统中所有的属性编辑器

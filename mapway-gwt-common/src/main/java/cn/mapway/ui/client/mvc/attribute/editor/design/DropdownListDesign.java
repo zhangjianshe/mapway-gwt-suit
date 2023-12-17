@@ -67,17 +67,18 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
      */
     @Override
     public List<ParameterValue> getParameterValues() {
+        //yes all the dropdown options is save to one string as a json string.
         List<ParameterValue> values = new ArrayList<ParameterValue>();
+
+        JsArray<DropdownListDesignData> dropdownOptions = new JsArray<>();
         for (int i = 0; i < list.getWidgetCount(); i++) {
             Widget widget = list.getWidget(i);
             if (widget instanceof ListDataItem) {
                 DropdownListDesignData data = ((ListDataItem) widget).getData();
-                ParameterValue parameterValue = new ParameterValue();
-                parameterValue.name = data.key;
-                parameterValue.value = data.value;
-                values.add(parameterValue);
+                dropdownOptions.push(data);
             }
         }
+        values.add(ParameterValue.create(EditorOption.KEY_DROPDOWN_OPTIONS, Global.JSON.stringify(dropdownOptions)));
         return values;
     }
 
@@ -90,7 +91,7 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
     @Override
     public void setParameters(String title, List<IAttribute> parameters) {
         this.parameters = parameters;
-        // 不需要属性定义
+
     }
 
     /**
@@ -106,12 +107,13 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
             ParameterValue attribute = findParameterValue(parameterValues, EditorOption.KEY_DROPDOWN_OPTIONS);
             if (attribute == null || attribute.value == null) {
                 designDataJsArray = new JsArray<>();
-            }
-            try {
-                designDataJsArray = Js.uncheckedCast(Global.JSON.parse((String) attribute.value));
-            } catch (Exception e) {
-                DomGlobal.console.info("Error parsing dropdown options " + attribute.value);
-                designDataJsArray = new JsArray<>();
+            } else {
+                try {
+                    designDataJsArray = Js.uncheckedCast(Global.JSON.parse((String) attribute.value));
+                } catch (Exception e) {
+                    DomGlobal.console.info("Error parsing dropdown options " + attribute.value);
+                    designDataJsArray = new JsArray<>();
+                }
             }
         }
 

@@ -105,7 +105,7 @@ public abstract class AbstractAttribute implements IAttribute {
         try {
             JsArray<ParameterValue> attributes = Js.uncheckedCast(Global.JSON.parse(parameters));
             for (int i = 0; i < attributes.length; i++) {
-                getEditorData().getParameterValues().add(attributes.getAt(i));
+                getEditorMetaData().getParameterValues().add(attributes.getAt(i));
             }
         } catch (Exception e) {
             DomGlobal.console.log("Error parsing (AbstractAttribute) parameters " + parameters);
@@ -120,7 +120,7 @@ public abstract class AbstractAttribute implements IAttribute {
      * @return
      */
     public AbstractAttribute parseEditor(String editor) {
-        getEditorData().load(editor, EditorMetaDataFormat.EDF_JSON);
+        getEditorMetaData().load(editor, EditorMetaDataFormat.EDF_JSON);
         return this;
     }
 
@@ -283,7 +283,7 @@ public abstract class AbstractAttribute implements IAttribute {
 
     @Override
     public String getOptions() {
-        ParameterValue parameter = getEditorData().findParameterValue(EditorOption.KEY_OPTIONS);
+        ParameterValue parameter = getEditorMetaData().findParameterValue(EditorOption.KEY_OPTIONS);
         if (parameter != null) {
             return (String) parameter.value;
         }
@@ -294,7 +294,7 @@ public abstract class AbstractAttribute implements IAttribute {
         ParameterValue parameterValue = new ParameterValue();
         parameterValue.name = EditorOption.KEY_OPTIONS;
         parameterValue.value = options;
-        getEditorData().getParameterValues().add(parameterValue);
+        getEditorMetaData().getParameterValues().add(parameterValue);
         return this;
     }
 
@@ -309,12 +309,12 @@ public abstract class AbstractAttribute implements IAttribute {
         ParameterValue parameterValue = new ParameterValue();
         parameterValue.name = name;
         parameterValue.value = value;
-        getEditorData().getParameterValues().add(parameterValue);
+        getEditorMetaData().getParameterValues().add(parameterValue);
         return this;
     }
 
     @Override
-    public IEditorMetaData getEditorData() {
+    public IEditorMetaData getEditorMetaData() {
         return editorData;
     }
 
@@ -345,7 +345,7 @@ public abstract class AbstractAttribute implements IAttribute {
         object.set("tip", tip);
         object.set("errorTip", errorTip);
         object.set("icon", icon);
-        object.set("editorData", getEditorData().save(EditorMetaDataFormat.EDF_JSON));
+        object.set("editorData", getEditorMetaData().save(EditorMetaDataFormat.EDF_JSON));
 
         return Global.JSON.stringify(object);
     }
