@@ -52,16 +52,15 @@ public class EditorSelector extends CommonEventComposite {
 
 
         tableLayout.addSelectionHandler(event -> {
-            Widget tabWidget = tableLayout.getTabWidget(event.getSelectedItem());
+            Widget tabWidget = tableLayout.getWidget(event.getSelectedItem());
             if (tabWidget instanceof EditorHorizontalPanel) {
                 EditorHorizontalPanel horizontalPanel = (EditorHorizontalPanel) tabWidget;
                 horizontalPanel.selectEditorCode(initEditorCode);
             }
         });
-
         loadData();
-
     }
+
 
     public static Popup<EditorSelector> getPopup(boolean reuse) {
         if (reuse) {
@@ -200,7 +199,17 @@ public class EditorSelector extends CommonEventComposite {
         //缺省选中 editValue 对应的组件
         initEditorCode = currentEditData.getEditorCode();
         AttributeEditorInfo info = AttributeEditorFactory.get().findByCode(editValue.getEditorCode());
-        tableLayout.selectTab(panelCache.get(info.group), true);
+
+        int widgetIndex = tableLayout.getWidgetIndex(panelCache.get(info.group));
+        if (widgetIndex == tableLayout.getSelectedIndex()) {
+            //不切换分组 需要手工触发事件
+            Widget tabWidget = tableLayout.getWidget(widgetIndex);
+            if (tabWidget instanceof EditorHorizontalPanel) {
+                ((EditorHorizontalPanel) tabWidget).selectEditorCode(initEditorCode);
+            }
+        } else {
+            tableLayout.selectTab(widgetIndex, true);
+        }
     }
 
 

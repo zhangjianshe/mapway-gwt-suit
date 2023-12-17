@@ -85,8 +85,9 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             }
             popup.hide(true);
         });
-        popup.getContent().editorValue(editorMetaData);
         popup.showRelativeTo(box);
+        popup.getContent().editorValue(editorMetaData);
+
     }
 
     /**

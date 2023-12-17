@@ -68,6 +68,7 @@ public class EditorHorizontalPanel extends CommonEventComposite implements IData
 
     public void selectEditorCode(String initEditorCode) {
         if (initEditorCode == null || initEditorCode.length() == 0) {
+            return;
         }
 
         for (int i = 0; i < list.getWidgetCount(); i++) {

@@ -18,21 +18,26 @@
             justify-content: center;
             align-items: center;
             justify-items: center;
+            background-image: url(img/grid.png);
+            flex-direction: column;
+            gap: 40px;
         }
 
         .preview {
             background-color: white;
             width: 70%;
+            border: solid 2px #cccccc;
+            padding: 8px 10px;
         }
 
         .tab {
             border-bottom: solid 1px #f0f0f0;
         }
 
-        .tab .gwt-TabLayoutPanelContent {
-            padding: 0;
-        }
-    </ui:style>
+        .text {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }</ui:style>
     <g:DockLayoutPanel>
         <g:south size="58">
             <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
@@ -47,14 +52,11 @@
                 </g:HTMLPanel>
             </g:ScrollPanel>
         </g:east>
-        <g:south size="70">
-            <g:HTMLPanel addStyleNames="{style.flex}">
-                <g:Label ui:field="lbSummary" styleName="{style.summary}"/>
-            </g:HTMLPanel>
-        </g:south>
         <g:center>
             <g:HTMLPanel ui:field="previewPlaceholder" styleName="{style.flex}">
+                <g:Label styleName="{style.text}">预览</g:Label>
                 <impl:AttributeItemEditorProxy addStyleNames="{style.preview}" ui:field="preview"/>
+                <g:Label ui:field="lbSummary" styleName="{style.summary}"/>
             </g:HTMLPanel>
         </g:center>
     </g:DockLayoutPanel>
