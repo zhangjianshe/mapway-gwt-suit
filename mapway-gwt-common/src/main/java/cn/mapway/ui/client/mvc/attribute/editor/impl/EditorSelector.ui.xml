@@ -1,0 +1,63 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog"
+             xmlns:impl="urn:import:cn.mapway.ui.client.mvc.attribute.editor.impl">
+    <ui:style>
+
+
+        .panel {
+            padding: 4px;
+        }
+
+        .summary {
+            font-size: 1.1rem;
+        }
+
+        .flex {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            justify-items: center;
+            background-image: url(img/grid.png);
+            flex-direction: column;
+            gap: 40px;
+        }
+
+        .preview {
+            background-color: white;
+            width: 70%;
+            border: solid 2px #cccccc;
+            padding: 8px 10px;
+        }
+
+        .tab {
+            border-bottom: solid 1px #f0f0f0;
+        }
+
+        .text {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }</ui:style>
+    <g:DockLayoutPanel>
+        <g:south size="58">
+            <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
+        </g:south>
+        <g:north size="145">
+            <g:TabLayoutPanel barHeight="50" ui:field="tableLayout" addStyleNames="{style.tab}">
+            </g:TabLayoutPanel>
+        </g:north>
+        <g:east size="300">
+            <g:ScrollPanel styleName="ai-border-left {style.panel}">
+                <g:HTMLPanel ui:field="designPanel">
+                </g:HTMLPanel>
+            </g:ScrollPanel>
+        </g:east>
+        <g:center>
+            <g:HTMLPanel ui:field="previewPlaceholder" styleName="{style.flex}">
+                <g:Label styleName="{style.text}">预览</g:Label>
+                <impl:AttributeItemEditorProxy addStyleNames="{style.preview}" ui:field="preview"/>
+                <g:Label ui:field="lbSummary" styleName="{style.summary}"/>
+            </g:HTMLPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

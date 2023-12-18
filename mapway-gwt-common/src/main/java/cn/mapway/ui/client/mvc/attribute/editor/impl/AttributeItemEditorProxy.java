@@ -1,21 +1,29 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
-import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.InputTypeEnum;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
-import cn.mapway.ui.client.widget.dialog.Popup;
+import cn.mapway.ui.client.util.Logs;
+import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
+import cn.mapway.ui.shared.HasCommonHandlers;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.*;
-import elemental2.core.JsObject;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
-public class AttributeItemEditorProxy extends Composite {
+/**
+ * 所有编辑器组件的一个代理
+ * [name   :    EDITOR]
+ */
+public class AttributeItemEditorProxy extends Composite implements HasCommonHandlers {
     private static final AttributeItemEditorProxyUiBinder ourUiBinder = GWT.create(AttributeItemEditorProxyUiBinder.class);
     @UiField
     Label lbHeader;
@@ -24,62 +32,73 @@ public class AttributeItemEditorProxy extends Composite {
     @UiField
     HTMLPanel box;
     IAttributeEditor attributeEditor;
-    EditorOption editorOption;
-    private IAttribute attribute;
 
     public AttributeItemEditorProxy() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        //用户点击 触发提示事件
+        addDomHandler(event -> {
+            fireSummaryEvent();
+        }, MouseOverEvent.getType());
     }
 
-    public void setAttribute(EditorOption editorOption, IAttribute obj) {
-        this.attribute = obj;
-        this.editorOption = editorOption;
-        toUI();
+    private void fireSummaryEvent() {
+        if (attributeEditor != null && attributeEditor.getAttribute() != null) {
+            String description = attributeEditor.getAttribute().getDescription();
+            if (description == null) {
+                description = attributeEditor.getAttribute().getTip();
+            }
+            if (description == null) {
+                description = "";
+            }
+            //添加对参数的理解提示信息
+            description += attributeEditor.getEditorTip();
+            fireEvent(CommonEvent.infoEvent(description));
+        }
+    }
+
+    /**
+     * 创建编辑器实例
+     *
+     * @param attribute 编辑器组件的定义(属性的定义)
+     */
+    public void createEditorInstance(IAttribute attribute) {
+        if (attribute == null || attribute.getEditorMetaData() == null || attribute.getEditorMetaData().getEditorCode() == null) {
+            Logs.info("Attribute is null or editorCode is null in AttributeItemEditorProxy");
+            return;
+        }
+
+        box.clear();
+        box.add(lbHeader);
+
+        //创建统一的属性列表编辑UI
+        attributeEditor = AttributeEditorFactory.get().createEditor(attribute.getEditorMetaData().getEditorCode(), false);
+        if (attributeEditor == null) {
+            errorInput("创建属性组件出错" + attribute.getEditorMetaData().getEditorCode());
+            return;
+        }
+
+        Widget displayWidget = attributeEditor.getDisplayWidget();
+        box.add(displayWidget);
+
+        //让属性编辑器 自己处理数据逻辑
+        // attribute.getEditorData() 返回实例化这个属性编辑器的所有数据
+        attributeEditor.setAttribute(attribute.getRuntimeOption(), attribute);
+        //属性名称
+        lbHeader.setText(getAttributeName());
+
     }
 
     public IAttribute getAttribute() {
-        return attribute;
-    }
-
-    public EditorOption getEditorOption() {
-        return editorOption;
-    }
-
-
-    private void toUI() {
-        InputTypeEnum inputTypeEnum = InputTypeEnum.valueOfCode(attribute.getInputType());
-        switch (inputTypeEnum) {
-            case INPUT_CUSTOM_EDITOR:
-                loadEditor(attribute.getEditorModuleCode());
-                return;
-            case INPUT_COLOR:
-                loadEditor(ColorBoxAttributeEditor.EDITOR_CODE);
-                return;
-            case INPUT_DROPDOWN:
-                loadEditor(DropdownAttributeEditor.EDITOR_CODE);
-                return;
-            case INPUT_CHECKBOX:
-                loadEditor(CheckBoxAttributeEditor.EDITOR_CODE);
-                return;
-            case INPUT_TEXTAREA:
-                loadEditor("TEXTAREA_EDITOR");
-                return;
-            case INPUT_SLIDER:
-                loadEditor("SLIDER_EDITOR");
-                return;
-            case INPUT_FILE:
-            case INPUT_PATH:
-            case INPUT_PATH_ALL:
-            case INPUT_MULTI_FILE:
-                loadEditor("FILE_DIR_EDITOR");
-                return;
-            case INPUT_TEXTBOX:
-            case INPUT_OTHERS:
-                loadEditor(TextboxAttributeEditor.EDITOR_CODE);
-                return;
-            default:
-                errorInput("不支持类型 " + inputTypeEnum.getName());
+        if (attributeEditor != null) {
+            return attributeEditor.getAttribute();
+        } else {
+            return null;
         }
+    }
+
+
+    public IAttributeEditor getEditor() {
+        return attributeEditor;
     }
 
     private void errorInput(String msg) {
@@ -108,79 +127,48 @@ public class AttributeItemEditorProxy extends Composite {
         attributeEditor.updateAllEditorOption();
     }
 
-    public void updateUI(){
-        attributeEditor.updateUI();
-    }
 
-
-    private void loadEditor(String code) {
-
-        box.clear();
-        box.add(lbHeader);
-        lbHeader.setText(getAttributeName());
-        //创建统一的属性列表编辑UI
-        attributeEditor = AttributeEditorFactory.get().createEditor(code, false);
-        if (attributeEditor == null) {
-            errorInput("创建属性组件出错" + code);
-            return;
+    /**
+     * 运行编辑器是否可以编辑
+     *
+     * @param readOnly
+     */
+    public void setEditorReadOnly(boolean readOnly) {
+        if (attributeEditor != null) {
+            attributeEditor.setReadonly(readOnly);
         }
-
-        Widget displayWidget = attributeEditor.getDisplayWidget();
-        final Widget popupWidget = attributeEditor.getPopupWidget();
-        int columnCount = 1;
-        if (displayWidget != null) {
-            box.add(displayWidget);
-            columnCount++;
-        }
-
-        if (popupWidget != null) {
-            Button btn = new Button("选择");
-            box.add(btn);
-            columnCount++;
-            btn.addClickHandler(event -> {
-                showPopup(box, attributeEditor);
-            });
-        }
-        if (columnCount == 2) {
-            box.setStyleName(style.layout2());
-        } else if (columnCount == 3) {
-            box.setStyleName(style.layout3());
-        }
-        //让属性编辑器 自己处理数据逻辑
-        attributeEditor.setAttribute(editorOption, attribute);
-
     }
 
     /**
-     * 弹出对话框
+     * 获取属性的名称
      *
-     * @param popupWidget
-     * @param attributeEditor
+     * @return
      */
-    private void showPopup(Widget popupWidget, IAttributeEditor attributeEditor) {
-
-        Popup<Widget> popup = new Popup<>(attributeEditor.getPopupWidget());
-        Size size = attributeEditor.getSize();
-        popup.setPixelSize(size.getXAsInt(), size.getYAsInt());
-        popup.addCommonHandler(commonEvent -> {
-            if (commonEvent.isOk()) {
-                JsObject jsObject = commonEvent.getValue();
-                if (jsObject != null) {
-                    attributeEditor.setValue(jsObject, true);
-                }
+    private String getAttributeName() {
+        if (attributeEditor == null) {
+            return "没有编辑器定义";
+        } else {
+            IAttribute attribute = attributeEditor.getAttribute();
+            if (attribute.getAltName() != null && attribute.getAltName().length() > 0) {
+                return attribute.getAltName();
+            } else {
+                return attribute.getName();
             }
-            popup.hide(true);
-        });
-        attributeEditor.loadPopupData();
-        popup.showRelativeTo(popupWidget);
-
+        }
     }
 
-    private String getAttributeName() {
-        if (attribute.getAltName() != null && attribute.getAltName().length() > 0) {
-            return attribute.getAltName();
+    @Override
+    public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
+        return addHandler(handler, CommonEvent.TYPE);
+    }
+
+    /**
+     * 从 attribute获取数据渲染界面
+     */
+    public void updateUI() {
+        if (attributeEditor != null) {
+            attributeEditor.updateUI();
         }
-        return attribute.getName();
     }
 
     interface AttributeItemEditorProxyUiBinder extends UiBinder<HTMLPanel, AttributeItemEditorProxy> {
@@ -189,8 +177,6 @@ public class AttributeItemEditorProxy extends Composite {
     interface SStyle extends CssResource {
 
         String layout2();
-
-        String layout3();
 
         String head();
 

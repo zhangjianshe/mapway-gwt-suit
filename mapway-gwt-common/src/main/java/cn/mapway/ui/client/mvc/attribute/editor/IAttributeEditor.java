@@ -4,28 +4,26 @@ import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;
 import cn.mapway.ui.client.tools.IData;
-import com.google.gwt.user.client.ui.HasValue;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
  * 属性编辑器的约束接口
- * 1.可以设置 Value 读取 Value Value变更事件  Value 类型是一个 JsObject
  * 2.提供一个缺省的大小
+ * D is design option data type
  */
-public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
+public interface IAttributeEditor extends IProvideSize, IData {
+    String CATALOG_RUNTIME = "运行时";
+    String CATALOG_DESIGN = "设计时";
+    String CATALOG_BUSINESS = "业务编辑器";
+    String CATALOG_UNKNOWN = "无分类";
+    String CATALOG_SYSTEM = "系统编辑器";
+
     /**
      * 编辑器的唯一识别代码
      *
      * @return
      */
     String getCode();
-
-    /**
-     * 返回弹出面板
-     *
-     * @return
-     */
-    Widget getPopupWidget();
 
     /**
      * 显示显示面板
@@ -35,27 +33,70 @@ public interface IAttributeEditor<T> extends HasValue<T>, IProvideSize, IData {
     Widget getDisplayWidget();
 
 
-    void setEnabled(boolean enabled);
+    void setReadonly(boolean readonly);
+
+    /**
+     * 设置编辑器显示或者隐藏
+     *
+     * @param visible
+     */
+    void setVisible(boolean visible);
 
     /**
      * 设置属性代理对象
      *
-     * @param editOption 编辑器的选项 由编辑器自己决定里面的值
+     * @param runtimeOption 编辑器的选项 由编辑器自己决定里面的值
      * @param attribute
      */
-    void setAttribute(EditorOption editOption, IAttribute attribute);
+    void setAttribute(EditorOption runtimeOption, IAttribute attribute);
 
+    /**
+     * 获取编辑器对应的属性定义
+     *
+     * @return
+     */
+    IAttribute getAttribute();
+
+    /**
+     * 编辑器的缺省大小
+     *
+     * @return
+     */
     Size getSize();
-
-    // 加载popup window's data
-    void loadPopupData();
 
     void updateEditorOption(String key, Object value);
 
     void updateAllEditorOption();
 
     /**
-     * 根据数值 更新UI
+     * 属性变化通知事件
+     *
+     * @param handler
+     */
+    void setValueChangedHandler(IAttributeEditorValueChangedHandler handler);
+
+    /**
+     * 获取编辑器参数设计组件
+     * 缺省返回null 不需要设计
+     *
+     * @return
+     */
+    default IEditorDesigner getDesigner() {
+        return null;
+    }
+
+
+    /**
+     * 根据用户的参数信息 提示给用户
+     *
+     * @return
+     */
+    default String getEditorTip() {
+        return "";
+    }
+
+    /**
+     * 从 attribtue 中获取Value更新界面
      */
     void updateUI();
 }

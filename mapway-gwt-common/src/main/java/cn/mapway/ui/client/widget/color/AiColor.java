@@ -83,7 +83,11 @@ public class AiColor extends Label implements IData<Object>, HasValue<String>, H
         if (value == null) {
             value = "rgba(0,0,0,1)";
         }
-        rgba = Colors.fromRGBA(value);
+        if (value.startsWith("#")) {
+            rgba = Colors.fromHex(value);
+        } else {
+            rgba = Colors.fromRGBA(value);
+        }
         setBackground(rgba);
         setText(value);
         if (fireEvents) {

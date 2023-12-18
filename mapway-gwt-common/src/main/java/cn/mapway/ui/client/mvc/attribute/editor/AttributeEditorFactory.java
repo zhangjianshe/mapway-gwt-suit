@@ -1,5 +1,4 @@
 package cn.mapway.ui.client.mvc.attribute.editor;
-
 import com.google.gwt.core.client.GWT;
 
 /**

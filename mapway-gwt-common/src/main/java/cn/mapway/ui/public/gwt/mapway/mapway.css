@@ -66,7 +66,7 @@
     cursor: pointer;
     padding: 0px;
     margin: 0px;
-    height: 28px;
+    height: 32px;
     border-width: 0px;
     user-select: none;
     background: transparent;
@@ -92,11 +92,10 @@
     flex-direction: row;
     align-items: center;
     justify-content: flex-start;
-    height: 32px;
+    height: 35px;
     overflow: hidden;
     width: 100%;
     position: relative;
-    overflow: hidden;
     background-color: #fff;
     border-radius: 3px;
 }
@@ -121,7 +120,7 @@
 .iti-default-label{
     flex-grow: 1;
     white-space: nowrap;
-    font-size: 0.9em;
+    font-size: 1rem;
     color:#000;
     line-height:28px;
     cursor: default;
@@ -132,3 +131,38 @@
     font-style: italic;
     font-weight: bold;
 }
+
+.attr-table {
+    overflow: hidden;
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+.attr-table > tbody > tr {
+    border-bottom: 1px solid #f0f0f0;
+    height: 35px;
+}
+
+.attr-table > tbody > tr > td {
+    padding: 4px;
+    cursor: default;
+}
+.attr-table > tbody > tr:hover {
+    background-color: #e0e0e0;
+}
+
+.attr-table > tbody > tr:nth-child(2n+3) {
+    background-color: #f0f0f0;
+}
+
+.attr-table > tbody > tr:first-child {
+    background-color: #d0d0d0;
+}
+
+
+.attr-table > tbody > tr[select="true"] {
+    background-color: skyblue;
+}
+

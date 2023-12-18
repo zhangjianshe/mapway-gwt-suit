@@ -1,6 +1,9 @@
 package cn.mapway.ui.client.mvc.attribute;
 
 
+import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
+import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+
 /**
  * IAttribute
  * 用于描述一个属性
@@ -9,6 +12,12 @@ package cn.mapway.ui.client.mvc.attribute;
  */
 public interface IAttribute {
 
+    /**
+     * 唯一ID
+     *
+     * @return
+     */
+    String getId();
 
     String getName();
 
@@ -28,8 +37,6 @@ public interface IAttribute {
 
     int getDataType();
 
-    int getInputType();
-
     String getValidateRegx();
 
     String getGroup();
@@ -42,25 +49,44 @@ public interface IAttribute {
 
     String getIcon();
 
-    //某种参数自定义的选项 一般为json字符串 由使用者解释
-    String getOptions();
 
     IOptionProvider getOptionProvider();//选项提供者
 
+
     /**
-     * 如果输入类型为10 INPUT_CUSTOM
-     * 会根据这返回值 创建一个模块，该模块具备 HasValue 和 HasValueChangeHandler 接口
-     * 系统会根据这个模块代码 创建模块 并展示
+     * 获取运行时期 的参数
      *
      * @return
      */
-    String getEditorModuleCode();
+    default EditorOption getRuntimeOption() {
+        return new EditorOption();
+    }
 
 
     /**
-     * 属性对应编辑器的信息
+     * 是否初始化显示
+     *
      * @return
      */
-    String getEditorOptions();
+    default boolean isInitVisible() {
+        return true;
+    }
 
+
+    String getOptions();
+
+    /**
+     * 编辑这个属性需要的属性编辑器信息 将会替代 上面的getEditorCode designOption getOptions等字段
+     * 完成后 上面的字段将会被删除
+     *
+     * @return
+     */
+    IEditorMetaData getEditorMetaData();
+
+    /**
+     * 对象转换为 Json字符串
+     * this is a string ' not escape for charactor " \ ' ~~
+     * @return
+     */
+    String toJSON();
 }

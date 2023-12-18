@@ -15,6 +15,13 @@ public class EditorOption {
     public final static String KEY_IMAGE_UPLOAD_REL = "upload_action_rel";
     public final static String KEY_WIDTH = "width";
     public final static String KEY_HEIGHT = "height";
+    public final static String KEY_SELECT_FILE_TYPE = "select_file_type";
+    public final static String KEY_FILE_SUFFIX = "file_suffix";
+    public final static String KEY_OPTIONS = "options";
+    public static final String KEY_EDITOR_CODE = "editorCode";
+    public static final String KEY_EDITOR_NAME = "editorName";
+    public static final String KEY_DROPDOWN_OPTIONS = "dropdown_options";
+
     Map<String, Object> options;
 
     public EditorOption() {
@@ -28,6 +35,23 @@ public class EditorOption {
     public EditorOption(String key, Object value) {
         this();
         options.put(key, value);
+    }
+
+    public final static EditorOption parse(String json) {
+        EditorOption option = new EditorOption();
+        option.parseOptionValue(json);
+        return option;
+    }
+
+
+
+    /**
+     * 获取选项
+     *
+     * @return
+     */
+    public Map<String, Object> getOptions() {
+        return options;
     }
 
     public EditorOption set(String key, Object value) {

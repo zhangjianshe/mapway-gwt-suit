@@ -1,9 +1,9 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.*;
+import cn.mapway.ui.client.mvc.attribute.editor.design.CommonEditorParameterDesigner;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -14,7 +14,13 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 文本框编辑器
  */
-@AttributeEditor(TextboxAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value = TextboxAttributeEditor.EDITOR_CODE,
+        name = "单行文本编辑器",
+        group = IAttributeEditor.CATALOG_RUNTIME,
+        summary = "文本输入",
+        author = "ZJS",
+        icon = Fonts.RENAME
+)
 public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "TEXTBOX_EDITOR";
     private static final TextboxAttributeEditorUiBinder ourUiBinder = GWT.create(TextboxAttributeEditorUiBinder.class);
@@ -24,7 +30,9 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     public TextboxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         txtBox.addChangeHandler(event -> {
-            getAttribute().setValue(castToValue(txtBox.getValue()));
+            if (getAttribute() != null) {
+                getAttribute().setValue(castToValue(txtBox.getValue()));
+            }
         });
     }
 
@@ -39,10 +47,6 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
         return EDITOR_CODE;
     }
 
-    @Override
-    public void loadPopupData() {
-
-    }
 
     @Override
     public Widget getDisplayWidget() {
@@ -51,13 +55,16 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
 
 
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption, attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 
     public void updateUI() {
         IAttribute attribute = getAttribute();
+        if (attribute == null) {
+            return;
+        }
         if (getAttribute().isReadonly()) {
             txtBox.setReadOnly(true);
         }

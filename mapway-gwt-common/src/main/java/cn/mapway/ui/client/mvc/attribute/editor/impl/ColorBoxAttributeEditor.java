@@ -1,11 +1,12 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.color.AiColor;
-import cn.mapway.ui.client.widget.color.ColorBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -15,7 +16,13 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 颜色  属性编辑
  */
-@AttributeEditor(ColorBoxAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value = ColorBoxAttributeEditor.EDITOR_CODE,
+        name = "颜色编辑器",
+        group = IAttributeEditor.CATALOG_RUNTIME,
+        summary = "选择一个颜色#RGBA",
+        author = "ZJS",
+        icon = Fonts.COLORS
+)
 public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "COLOR_EDITOR";
     private static final ColorBoxAttributeEditorUiBinder ourUiBinder = GWT.create(ColorBoxAttributeEditorUiBinder.class);
@@ -25,7 +32,9 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
     public ColorBoxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         txtColor.addValueChangeHandler(event -> {
-            getAttribute().setValue(txtColor.getValue());
+            if (getAttribute() != null) {
+                getAttribute().setValue(txtColor.getValue());
+            }
         });
     }
 
@@ -39,10 +48,6 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
         return EDITOR_CODE;
     }
 
-    @Override
-    public void loadPopupData() {
-
-    }
 
     @Override
     public Widget getDisplayWidget() {
@@ -51,15 +56,17 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
 
 
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption,attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 
     public void updateUI() {
         IAttribute attribute = getAttribute();
-        Object obj = attribute.getValue();
-        txtColor.setValue(castToString(obj));
+        if (attribute != null) {
+            Object obj = attribute.getValue();
+            txtColor.setValue(castToString(obj));
+        }
     }
 
     interface ColorBoxAttributeEditorUiBinder extends UiBinder<HTMLPanel, ColorBoxAttributeEditor> {

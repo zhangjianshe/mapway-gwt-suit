@@ -1,0 +1,8 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:simple="urn:import:cn.mapway.ui.client.mvc.attribute.simple"
+             xmlns:design="urn:import:cn.mapway.ui.client.mvc.attribute.editor.design">
+    <g:HTMLPanel>
+        <design:SimpleObjectInspector ui:field="designer"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

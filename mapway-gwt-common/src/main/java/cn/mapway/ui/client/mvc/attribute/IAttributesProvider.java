@@ -1,5 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute;
 
+import cn.mapway.ui.client.mvc.attribute.event.HasAttributeStateChangeHandler;
+
 import java.util.List;
 
 /**
@@ -9,7 +11,7 @@ import java.util.List;
  *
  * @author zhang
  */
-public interface IAttributeProvider extends IAttributeParser{
+public interface IAttributesProvider extends IAttributeValuesUpdator, HasAttributeStateChangeHandler {
     String getAttributeTitle();
 
     /**

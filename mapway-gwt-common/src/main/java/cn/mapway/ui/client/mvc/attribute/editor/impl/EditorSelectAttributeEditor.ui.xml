@@ -1,0 +1,30 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:buttons="urn:import:cn.mapway.ui.client.widget.buttons"
+>
+    <ui:style>
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 80px;
+            align-items: center;
+            grid-gap: 4px;
+            width: 100%;
+        }
+
+        .lb {
+            background-color: #f0f0f0;
+            overflow: hidden;
+            width: 100%;
+            line-height: 34px;
+            text-overflow: ellipsis;
+            font-weight: normal;
+            text-wrap: nowrap;
+        }
+    </ui:style>
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="box" styleName="{style.grid}">
+            <g:Label ui:field="txtName" styleName="ai-input {style.lb}"/>
+            <buttons:AiButton ui:field="btnSelector">选择</buttons:AiButton>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

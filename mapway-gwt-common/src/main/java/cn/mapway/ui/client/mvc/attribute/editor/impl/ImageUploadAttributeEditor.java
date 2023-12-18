@@ -1,11 +1,13 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
 import cn.mapway.ui.client.event.MessageObject;
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.ImageUploader;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.UploadReturn;
@@ -19,7 +21,13 @@ import com.google.gwt.user.client.ui.Widget;
 /**
  * 图片上传相关属性编辑器
  */
-@AttributeEditor(ImageUploadAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value = ImageUploadAttributeEditor.EDITOR_CODE,
+        name = "图像选择",
+        group = IAttributeEditor.CATALOG_RUNTIME,
+        summary = "上传一个图像",
+        author = "ZJS",
+        icon = Fonts.ENHANCE_COLOR
+)
 public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = "IMAGE_UPLOAD_EDITOR";
     private static final ImageUploadAttributeEditorUiBinder ourUiBinder = GWT.create(ImageUploadAttributeEditorUiBinder.class);
@@ -40,10 +48,6 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         return EDITOR_CODE;
     }
 
-    @Override
-    public void loadPopupData() {
-
-    }
 
     @Override
     public Widget getDisplayWidget() {
@@ -51,8 +55,8 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
     }
 
     @Override
-    public void setAttribute(EditorOption editorOption, IAttribute attribute) {
-        super.setAttribute(editorOption, attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 
@@ -63,16 +67,26 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
     public void updateUI() {
         processEditorOption();
         IAttribute attribute = getAttribute();
+        if (attribute == null) {
+            return;
+        }
 
         Object obj = attribute.getValue();
         imageUploader.setUrl(DataCastor.castToString(obj));
+
+        //需要设定高度
+        String height = option(EditorOption.KEY_HEIGHT, "80px");
+        getDisplayWidget().setHeight(height);
+
+
     }
 
     /**
      * 处理编辑器参数
      */
     private void processEditorOption() {
-        imageUploader.setAction(getEditorOption().getImageUploadAction(), getEditorOption().getImageUploadRelPath());
+        imageUploader.setAction(option(EditorOption.KEY_IMAGE_UPLOAD_ACTION, ""),
+                option(EditorOption.KEY_IMAGE_UPLOAD_REL, "project"));
     }
 
     @Override
@@ -86,9 +100,11 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         if (event.isMessage()) {
             fireMessage(event.getValue());
         } else if (event.isOk()) {
-            UploadReturn uploadReturn = event.getValue();
-            getAttribute().setValue(uploadReturn.relPath);
-            fireMessage(MessageObject.info(0, "上传图片成功，请保存"));
+            if (getAttribute() != null) {
+                UploadReturn uploadReturn = event.getValue();
+                getAttribute().setValue(uploadReturn.relPath);
+                fireMessage(MessageObject.info(0, "上传图片成功，请保存"));
+            }
         }
     }
 

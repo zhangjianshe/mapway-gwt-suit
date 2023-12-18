@@ -1,23 +1,32 @@
 package cn.mapway.ui.client.mvc.attribute.editor.impl;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.widget.buttons.AiCheckBox;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.SimpleCheckBox;
 import com.google.gwt.user.client.ui.Widget;
 
-@AttributeEditor(CheckBoxAttributeEditor.EDITOR_CODE)
+@AttributeEditor(value = CheckBoxAttributeEditor.EDITOR_CODE,
+        name = "布尔型编辑器",
+        group = IAttributeEditor.CATALOG_RUNTIME,
+        summary = "布尔型的编辑器",
+        author = "ZJS",
+        icon = Fonts.CONTROLER
+)
 public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
     public static final String EDITOR_CODE = "CHECKBOX_EDITOR";
     private static final CheckBoxAttributeEditorUiBinder ourUiBinder = GWT.create(CheckBoxAttributeEditorUiBinder.class);
     @UiField
-    SimpleCheckBox checkBox;
+    AiCheckBox checkBox;
+
     public CheckBoxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         checkBox.addValueChangeHandler(event -> {
@@ -42,18 +51,17 @@ public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
 
 
     @Override
-    public void setAttribute(EditorOption editorOption,IAttribute attribute) {
-        super.setAttribute(editorOption,attribute);
+    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+        super.setAttribute(runtimeOption, attribute);
         updateUI();
     }
 
-    @Override
-    public void loadPopupData() {
-
-    }
 
     public void updateUI() {
         IAttribute attribute = getAttribute();
+        if (attribute == null) {
+            return;
+        }
         if (getAttribute().isReadonly()) {
             checkBox.setEnabled(false);
         }
