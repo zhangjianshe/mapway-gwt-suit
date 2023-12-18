@@ -16,7 +16,6 @@ import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
-import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
 
 import java.util.List;
@@ -46,6 +45,7 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     Label label;
     Object currentData;
     boolean enabled = true;
+    int maxHeight = 300;
 
     public Dropdown() {
         super();
@@ -71,12 +71,11 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         this.addDomHandler(this, ClickEvent.getType());
         downArrow.addClickHandler(this);
         popupPanel.setAutoHideEnabled(true);
-        //缺省最大300像素高
-        setPopupMaxHeight(300);
+
     }
 
     public void setPopupMaxHeight(int maxHeight) {
-        popupPanel.getElement().getStyle().setProperty("maxHeight", maxHeight + "px");
+        this.maxHeight = 300;
     }
 
     public void setLabel(String txt) {
@@ -208,6 +207,16 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
             if (upPanel.getOffsetWidth() < this.getOffsetWidth()) {
                 upPanel.setWidth(this.getOffsetWidth() + "px");
             }
+
+            int itemCount = upPanel.getWidgetCount();
+            int height = itemCount * 30;
+            if (height < 60) {
+                height = 60;
+            }
+            if (height > maxHeight) {
+                height = maxHeight;
+            }
+            popupPanel.setHeight(height + "px");
             popupPanel.showRelativeTo(this);
         }
     }
