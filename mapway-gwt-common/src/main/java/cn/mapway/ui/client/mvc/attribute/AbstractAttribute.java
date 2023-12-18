@@ -22,6 +22,7 @@ import jsinterop.base.JsPropertyMap;
 
 public abstract class AbstractAttribute implements IAttribute {
 
+    public static final String BASIC_GROUP = "基本属性";
     private final String id;
     protected String altName;
     protected int dataType;
@@ -207,7 +208,7 @@ public abstract class AbstractAttribute implements IAttribute {
 
     @Override
     public String getGroup() {
-        return group;
+        return (group == null || group.length() == 0) ? BASIC_GROUP : group;
     }
 
     public AbstractAttribute setGroup(String group) {
