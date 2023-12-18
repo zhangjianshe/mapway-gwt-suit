@@ -22,6 +22,15 @@ import jsinterop.base.JsArrayLike;
 
 /**
  * 下拉框的属性编辑器
+ *
+ * 1、在设计的时候可以通过组件选择器UI进行下拉选项的填写
+ * 2.通过组件PortalWidget 的@Attr 注解的属性 可以通过 设置器 options字段构造 下拉选项
+ *   options 字段的内容为一个 JSON字符串 这个JSON字符串为一个数组
+ *   参考格式如下
+ *   [
+ *    {"key":"上","value"：“up”,"init":true},
+ *    {"key":"下","value"：“down”,"init":true},
+ *   ]
  */
 @AttributeEditor(value = DropdownAttributeEditor.EDITOR_CODE,
         name = "下拉框编辑器",
