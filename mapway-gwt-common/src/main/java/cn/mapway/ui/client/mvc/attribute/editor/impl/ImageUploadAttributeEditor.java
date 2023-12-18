@@ -4,10 +4,9 @@ import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
-import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterAttribute;
+import cn.mapway.ui.client.mvc.attribute.editor.*;
+import cn.mapway.ui.client.mvc.attribute.editor.design.CommonEditorParameterDesigner;
 import cn.mapway.ui.client.widget.ImageUploader;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.UploadReturn;
@@ -17,6 +16,9 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 图片上传相关属性编辑器
@@ -106,6 +108,26 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
                 fireMessage(MessageObject.info(0, "上传图片成功，请保存"));
             }
         }
+    }
+
+    CommonEditorParameterDesigner designer;
+
+    @Override
+    public IEditorDesigner getDesigner() {
+
+        if(designer==null)
+        {
+            designer=new CommonEditorParameterDesigner();
+
+            List<IAttribute> parameters=new ArrayList<>();
+            parameters.add(new ParameterAttribute(EditorOption.KEY_HEIGHT,"高度","80px"));
+            parameters.add(new ParameterAttribute(EditorOption.KEY_IMAGE_UPLOAD_ACTION,"上传URL",""));
+            parameters.add(new ParameterAttribute(EditorOption.KEY_IMAGE_UPLOAD_REL,"相对路径","project"));
+
+            designer.setParameters("图像上传组件参数",parameters);
+        }
+
+        return designer;
     }
 
     interface ImageUploadAttributeEditorUiBinder extends UiBinder<HTMLPanel, ImageUploadAttributeEditor> {
