@@ -35,7 +35,7 @@ public class ParameterValue {
     @JsOverlay
     public final String toJson() {
         String sb = "{ \"name\":\"" + ParameterValues.escapeString(name) + "\"," +
-                " \"value\":\"" + ParameterValues.escapeString(name) + "\"," +
+                " \"value\":\"" + ParameterValues.escapeString(value) + "\"," +
                 " \"init\":" + init + "}";
         return sb;
     }
