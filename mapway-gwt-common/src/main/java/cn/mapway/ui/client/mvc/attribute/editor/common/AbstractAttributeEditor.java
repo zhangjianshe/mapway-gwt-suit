@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.attribute.editor;
+package cn.mapway.ui.client.mvc.attribute.editor.common;
 
 import cn.mapway.ui.client.db.DbFieldType;
 import cn.mapway.ui.client.mvc.Size;
@@ -6,8 +6,14 @@ import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditorValueChangedHandler;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import elemental2.core.JsObject;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * 抽象的属性编辑器基类
@@ -22,7 +28,10 @@ import elemental2.core.JsObject;
  */
 public abstract class AbstractAttributeEditor<T> extends CommonEventComposite implements IAttributeEditor {
     IAttribute attribute;
-    EditorOption runtimeOption;
+    /**
+     * 运行时的参数
+     */
+    List<ParameterValue> runtimeParameters;
     private Object data;
 
     private IAttributeEditorValueChangedHandler attributeValueChangedHandler;
@@ -47,8 +56,8 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      *
      * @return
      */
-    public EditorOption getRuntimeOption() {
-        return runtimeOption;
+    public List<ParameterValue> getRuntimeParameters() {
+        return runtimeParameters;
     }
 
     /**
@@ -63,10 +72,11 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         if (name == null || name.length() == 0) {
             return defaultValue;
         }
-        if (runtimeOption != null) {
-            Object o = runtimeOption.get(name);
-            if (o != null) {
-                return (T) o;
+        if (runtimeParameters != null) {
+            for (ParameterValue value : runtimeParameters) {
+                if (value.equals(name)) {
+                    return (T) value.value;
+                }
             }
         }
         if (getAttribute() == null) {
@@ -89,7 +99,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      */
     public void updateEditorOption(String key, Object value) {
         if (key != null) {
-            getRuntimeOption().set(key, value);
+
             onEditorOptionChanged(key);
         }
     }
@@ -116,18 +126,18 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      * 子组件必须首先调用此方法 处理一些基础数据
      * 参见下拉框编辑器的设计 DropdownAttributeEditor
      *
-     * @param runtimeOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
-     * @param attribute     属性编辑器对应的属性内容
+     * @param runtimeParameters 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
+     * @param attribute         属性编辑器对应的属性内容
      */
     @Override
-    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
+    public void editAttribute(ParameterValues runtimeParameters, IAttribute attribute) {
         assert attribute != null;
         this.attribute = attribute;
 
-        this.runtimeOption = runtimeOption;
+        this.runtimeParameters = runtimeParameters;
         //check if it is null
-        if (runtimeOption == null) {
-            this.runtimeOption = new EditorOption();
+        if (runtimeParameters == null) {
+            this.runtimeParameters = new ArrayList<>();
         }
 
     }
@@ -199,7 +209,6 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      *
      * @param attribute
      * @param defaultValue
-     * @param <D>
      * @return
      */
     public Object readAttributeValue(ParameterValue attribute, Object defaultValue) {

@@ -2,7 +2,7 @@ package cn.mapway.ui.client.mvc.attribute;
 
 
 import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 
 /**
  * IAttribute
@@ -58,8 +58,8 @@ public interface IAttribute {
      *
      * @return
      */
-    default EditorOption getRuntimeOption() {
-        return new EditorOption();
+    default ParameterValues getRuntimeParameters() {
+        return new ParameterValues();
     }
 
 

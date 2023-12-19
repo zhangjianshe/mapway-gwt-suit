@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.attribute.editor.impl;
+package cn.mapway.ui.client.mvc.attribute.editor.editorselector;
 
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
@@ -7,6 +7,7 @@ import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
+import cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.dialog.Popup;
 import cn.mapway.ui.client.widget.dialog.SaveBar;

@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.marker;
 
 import cn.mapway.ui.client.db.DbFieldType;
+import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextBoxEditorMetaData;
 
 import java.lang.annotation.*;
 

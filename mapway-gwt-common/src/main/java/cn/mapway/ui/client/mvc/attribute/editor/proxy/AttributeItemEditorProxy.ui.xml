@@ -1,6 +1,6 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <ui:style type="cn.mapway.ui.client.mvc.attribute.editor.impl.AttributeItemEditorProxy.SStyle">
+    <ui:style type="cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy.SStyle">
         .layout2 {
             display: grid;
             grid-gap: 8px;

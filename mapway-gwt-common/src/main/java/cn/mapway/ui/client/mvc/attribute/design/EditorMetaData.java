@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.design;
 
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
+import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
 import elemental2.dom.DomGlobal;
@@ -87,6 +87,9 @@ public class EditorMetaData implements IEditorMetaData {
      */
     @Override
     public boolean load(Object data, EditorMetaDataFormat format) {
+        if (format == null) {
+            format = EditorMetaDataFormat.EDF_JSON;
+        }
         if (data == null) {
             errorMessage = "load editor data is null";
             return false;
@@ -121,8 +124,8 @@ public class EditorMetaData implements IEditorMetaData {
     @Override
     public Object save(EditorMetaDataFormat format) {
         JsPropertyMap obj = JsPropertyMap.of
-                (EditorOption.KEY_EDITOR_CODE, editorCode,
-                        EditorOption.KEY_EDITOR_NAME, editorName
+                (ParameterKeys.KEY_EDITOR_CODE, editorCode,
+                        ParameterKeys.KEY_EDITOR_NAME, editorName
                 );
         JsArray params = new JsArray();
         for (ParameterValue attribute : parameters) {

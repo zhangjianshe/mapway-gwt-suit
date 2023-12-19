@@ -1,10 +1,10 @@
-package cn.mapway.ui.client.mvc.attribute.editor.impl;
+package cn.mapway.ui.client.mvc.attribute.editor.color;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
-import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
+import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.widget.color.AiColor;
 import com.google.gwt.core.client.GWT;
@@ -56,10 +56,11 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
 
 
     @Override
-    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
-        super.setAttribute(runtimeOption, attribute);
+    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
+        super.editAttribute(runtimeOption, attribute);
         updateUI();
     }
+
 
     public void updateUI() {
         IAttribute attribute = getAttribute();

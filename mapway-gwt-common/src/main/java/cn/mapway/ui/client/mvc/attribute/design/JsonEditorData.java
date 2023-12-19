@@ -1,6 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.design;
 
-import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
 import elemental2.core.JsObject;

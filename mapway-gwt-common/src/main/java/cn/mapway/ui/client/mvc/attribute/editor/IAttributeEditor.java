@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.editor;
 
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;
 import cn.mapway.ui.client.tools.IData;
 import com.google.gwt.user.client.ui.Widget;
@@ -45,10 +46,10 @@ public interface IAttributeEditor extends IProvideSize, IData {
     /**
      * 设置属性代理对象
      *
-     * @param runtimeOption 编辑器的选项 由编辑器自己决定里面的值
+     * @param runtimeParameters 编辑器的选项 由编辑器自己决定里面的值
      * @param attribute
      */
-    void setAttribute(EditorOption runtimeOption, IAttribute attribute);
+    void editAttribute(ParameterValues runtimeParameters, IAttribute attribute);
 
     /**
      * 获取编辑器对应的属性定义

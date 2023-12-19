@@ -1,9 +1,10 @@
-package cn.mapway.ui.client.mvc.attribute.editor.impl;
+package cn.mapway.ui.client.mvc.attribute.editor.textbox;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
-import cn.mapway.ui.client.mvc.attribute.editor.design.CommonEditorParameterDesigner;
+import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -55,10 +56,11 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
 
 
     @Override
-    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
-        super.setAttribute(runtimeOption, attribute);
+    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
+        super.editAttribute(runtimeOption, attribute);
         updateUI();
     }
+
 
     public void updateUI() {
         IAttribute attribute = getAttribute();

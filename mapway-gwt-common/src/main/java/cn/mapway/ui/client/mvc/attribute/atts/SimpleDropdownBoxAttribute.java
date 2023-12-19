@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.atts;
 
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
-import cn.mapway.ui.client.mvc.attribute.editor.impl.DropdownAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.dropdown.DropdownAttributeEditor;
 
 /**
  * 文本框编辑属性

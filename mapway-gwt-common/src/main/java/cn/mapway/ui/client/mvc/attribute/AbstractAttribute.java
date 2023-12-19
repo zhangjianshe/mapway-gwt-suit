@@ -1,17 +1,12 @@
 package cn.mapway.ui.client.mvc.attribute;
 
-import cn.mapway.ui.client.mvc.attribute.design.EditorMetaData;
-import cn.mapway.ui.client.mvc.attribute.design.EditorMetaDataFormat;
-import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
-import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
-import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.design.*;
+import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 import cn.mapway.ui.client.util.StringUtil;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
 import elemental2.dom.DomGlobal;
 import jsinterop.base.Js;
-import jsinterop.base.JsPropertyMap;
 
 /**
  * AbstractAttribute
@@ -43,7 +38,7 @@ public abstract class AbstractAttribute implements IAttribute {
     protected String name;
     IEditorMetaData editorData;
 
-    private EditorOption runtimeOption;
+    private final ParameterValues runtimeParameters;
 
     public AbstractAttribute(String name) {
         this(name, name);
@@ -70,7 +65,7 @@ public abstract class AbstractAttribute implements IAttribute {
         this.name = name;
         this.altName = alterName;
 
-        this.runtimeOption = new EditorOption();
+        this.runtimeParameters = new ParameterValues();
     }
 
 
@@ -83,16 +78,8 @@ public abstract class AbstractAttribute implements IAttribute {
     }
 
     @Override
-    public EditorOption getRuntimeOption() {
-        return runtimeOption;
-    }
-
-    public void setRuntimeOption(EditorOption runtimeOption) {
-        if (runtimeOption == null) {
-            this.runtimeOption = new EditorOption();
-        } else {
-            this.runtimeOption = runtimeOption;
-        }
+    public ParameterValues getRuntimeParameters() {
+        return runtimeParameters;
     }
 
 
@@ -282,37 +269,6 @@ public abstract class AbstractAttribute implements IAttribute {
         return this;
     }
 
-    @Override
-    public String getOptions() {
-        ParameterValue parameter = getEditorMetaData().findParameterValue(EditorOption.KEY_OPTIONS);
-        if (parameter != null) {
-            return (String) parameter.value;
-        }
-        return "";
-    }
-
-    public AbstractAttribute setOptions(String options) {
-        ParameterValue parameterValue = new ParameterValue();
-        parameterValue.name = EditorOption.KEY_OPTIONS;
-        parameterValue.value = options;
-        getEditorMetaData().getParameterValues().add(parameterValue);
-        return this;
-    }
-
-    /**
-     * 添加一个设计器参数值
-     *
-     * @param name
-     * @param value
-     * @return
-     */
-    public AbstractAttribute addParameterValue(String name, String value) {
-        ParameterValue parameterValue = new ParameterValue();
-        parameterValue.name = name;
-        parameterValue.value = value;
-        getEditorMetaData().getParameterValues().add(parameterValue);
-        return this;
-    }
 
     @Override
     public IEditorMetaData getEditorMetaData() {
@@ -322,33 +278,6 @@ public abstract class AbstractAttribute implements IAttribute {
     public void setEditorData(IEditorMetaData editorData) {
         assert editorData != null;
         this.editorData = editorData;
-    }
-
-    /**
-     * 这个方法 把一个属性定义信息转化为JSON对象的字符串
-     *
-     * @return
-     */
-    @Override
-    public String toJSON() {
-
-        JsPropertyMap object = JsPropertyMap.of("id", id);
-        object.set("name", name);
-        object.set("altName", altName);
-        object.set("dataType", dataType);
-        object.set("defaultValue", defaultValue);
-        object.set("description", description);
-        object.set("readOnly", readOnly);
-        object.set("required", required);
-        object.set("initVisible", initVisible);
-        object.set("validator", validator);
-        object.set("rank", rank);
-        object.set("tip", tip);
-        object.set("errorTip", errorTip);
-        object.set("icon", icon);
-        object.set("editorData", getEditorMetaData().save(EditorMetaDataFormat.EDF_JSON));
-
-        return Global.JSON.stringify(object);
     }
 
 }

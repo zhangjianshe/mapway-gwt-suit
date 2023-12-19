@@ -1,6 +1,5 @@
 package cn.mapway.ui.client.mvc.attribute.design;
 
-import elemental2.core.Global;
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
 import jsinterop.annotations.JsProperty;
@@ -34,7 +33,12 @@ public class ParameterValue {
     }
 
     @JsOverlay
-    public final String toJSON() {
-        return Global.JSON.stringify(this);
+    public final String toJson() {
+        String sb = "{ \"name\":\"" + ParameterValues.escapeString(name) + "\"," +
+                " \"value\":\"" + ParameterValues.escapeString(name) + "\"," +
+                " \"init\":" + init + "}";
+        return sb;
     }
+
+
 }

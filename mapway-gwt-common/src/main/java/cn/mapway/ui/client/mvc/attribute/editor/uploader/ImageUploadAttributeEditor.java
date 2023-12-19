@@ -1,12 +1,14 @@
-package cn.mapway.ui.client.mvc.attribute.editor.impl;
+package cn.mapway.ui.client.mvc.attribute.editor.uploader;
 
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
-import cn.mapway.ui.client.mvc.attribute.editor.design.CommonEditorParameterDesigner;
+import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.common.CommonEditorParameterDesigner;
 import cn.mapway.ui.client.widget.ImageUploader;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.UploadReturn;
@@ -57,8 +59,8 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
     }
 
     @Override
-    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
-        super.setAttribute(runtimeOption, attribute);
+    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
+        super.editAttribute(runtimeOption, attribute);
         updateUI();
     }
 
@@ -77,7 +79,7 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         imageUploader.setUrl(DataCastor.castToString(obj));
 
         //需要设定高度
-        String height = option(EditorOption.KEY_HEIGHT, "80px");
+        String height = option(ParameterKeys.KEY_HEIGHT, "80px");
         getDisplayWidget().setHeight(height);
 
 
@@ -87,8 +89,8 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
      * 处理编辑器参数
      */
     private void processEditorOption() {
-        imageUploader.setAction(option(EditorOption.KEY_IMAGE_UPLOAD_ACTION, ""),
-                option(EditorOption.KEY_IMAGE_UPLOAD_REL, "project"));
+        imageUploader.setAction(option(ParameterKeys.KEY_IMAGE_UPLOAD_ACTION, ""),
+                option(ParameterKeys.KEY_IMAGE_UPLOAD_REL, "project"));
     }
 
     @Override
@@ -120,9 +122,9 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
             designer=new CommonEditorParameterDesigner();
 
             List<IAttribute> parameters=new ArrayList<>();
-            parameters.add(new ParameterAttribute(EditorOption.KEY_HEIGHT,"高度","80px"));
-            parameters.add(new ParameterAttribute(EditorOption.KEY_IMAGE_UPLOAD_ACTION,"上传URL",""));
-            parameters.add(new ParameterAttribute(EditorOption.KEY_IMAGE_UPLOAD_REL,"相对路径","project"));
+            parameters.add(new ParameterAttribute(ParameterKeys.KEY_HEIGHT,"高度","80px"));
+            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_ACTION,"上传URL",""));
+            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_REL,"相对路径","project"));
 
             designer.setParameters("图像上传组件参数",parameters);
         }

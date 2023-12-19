@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.attribute.editor.design;
+package cn.mapway.ui.client.mvc.attribute.editor.inspector;
 
 
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
@@ -6,11 +6,10 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
 import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.impl.AttributeItemEditorProxy;
+import cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
 import cn.mapway.ui.client.tools.IData;
-import cn.mapway.ui.client.widget.CommonEventComposite;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;

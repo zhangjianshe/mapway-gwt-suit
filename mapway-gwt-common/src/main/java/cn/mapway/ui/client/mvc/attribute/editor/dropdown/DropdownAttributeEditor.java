@@ -1,13 +1,13 @@
-package cn.mapway.ui.client.mvc.attribute.editor.impl;
+package cn.mapway.ui.client.mvc.attribute.editor.dropdown;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.*;
-import cn.mapway.ui.client.mvc.attribute.editor.AbstractAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
+import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesign;
-import cn.mapway.ui.client.mvc.attribute.editor.design.DropdownListDesignData;
+import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
 import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.widget.Dropdown;
 import com.google.gwt.core.client.GWT;
@@ -22,15 +22,15 @@ import jsinterop.base.JsArrayLike;
 
 /**
  * 下拉框的属性编辑器
- *
+ * <p>
  * 1、在设计的时候可以通过组件选择器UI进行下拉选项的填写
  * 2.通过组件PortalWidget 的@Attr 注解的属性 可以通过 设置器 options字段构造 下拉选项
- *   options 字段的内容为一个 JSON字符串 这个JSON字符串为一个数组
- *   参考格式如下
- *   [
- *    {"key":"上","value"：“up”,"init":true},
- *    {"key":"下","value"：“down”,"init":true},
- *   ]
+ * options 字段的内容为一个 JSON字符串 这个JSON字符串为一个数组
+ * 参考格式如下
+ * [
+ * {"key":"上","value"：“up”,"init":true},
+ * {"key":"下","value"：“down”,"init":true},
+ * ]
  */
 @AttributeEditor(value = DropdownAttributeEditor.EDITOR_CODE,
         name = "下拉框编辑器",
@@ -84,10 +84,11 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     }
 
     @Override
-    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
-        super.setAttribute(runtimeOption, attribute);
+    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
+        super.editAttribute(runtimeOption, attribute);
         updateUI();
     }
+
 
     /**
      * 当数据发生变化后 调用这个方法更新界面的数据
@@ -101,14 +102,14 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             ddlDropdown.setEnabled(false);
         }
 
-        String dropdownParameter = option(EditorOption.KEY_OPTIONS, null);
+        String dropdownParameter = option(ParameterKeys.KEY_OPTIONS, null);
 
         IOptionProvider optionProvider = attribute.getOptionProvider();
         if (optionProvider != null) {
             setOptionProvider(optionProvider);
         } else if (dropdownParameter != null) {
             try {
-                JsArrayLike<DropdownListDesignData> arrayLike;
+                JsArrayLike<ParameterValue> arrayLike;
                 try {
                     String dataString = DataCastor.castToString(dropdownParameter);
                     arrayLike = Js.uncheckedCast(Global.JSON.parse(dataString));
@@ -119,8 +120,9 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
 
                 for (int i = 0; i < arrayLike.getLength(); i++) {
                     Object o = arrayLike.getAt(i);
-                    DropdownListDesignData data = Js.uncheckedCast(o);
-                    Option option = new Option(data.key, data.value);
+                    ParameterValue data = Js.uncheckedCast(o);
+                    //TODO 未来能不能 去掉Option 用ParameterValue代替
+                    Option option = new Option(data.name, DataCastor.castToString(data.value));
                     option.setInitSelected(data.init);
                     optionProvider1.getOptions().add(option);
                 }

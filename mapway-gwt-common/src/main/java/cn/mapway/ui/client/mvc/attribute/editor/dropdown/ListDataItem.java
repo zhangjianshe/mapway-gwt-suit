@@ -1,6 +1,8 @@
-package cn.mapway.ui.client.mvc.attribute.editor.design;
+package cn.mapway.ui.client.mvc.attribute.editor.dropdown;
 
 import cn.mapway.ui.client.fonts.Fonts;
+import cn.mapway.ui.client.mvc.attribute.DataCastor;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
@@ -17,7 +19,7 @@ import com.google.gwt.user.client.ui.TextBox;
 /**
  * 列表框的选项编辑器
  */
-public class ListDataItem extends CommonEventComposite implements IData<DropdownListDesignData> {
+public class ListDataItem extends CommonEventComposite implements IData<ParameterValue> {
     private static final ListDataItemUiBinder ourUiBinder = GWT.create(ListDataItemUiBinder.class);
     @UiField
     TextBox txtKey;
@@ -27,13 +29,13 @@ public class ListDataItem extends CommonEventComposite implements IData<Dropdown
     AiCheckBox checkInit;
     @UiField
     FontIcon btnDelete;
-    private DropdownListDesignData data;
+    private ParameterValue data;
 
     public ListDataItem() {
         initWidget(ourUiBinder.createAndBindUi(this));
         btnDelete.setIconUnicode(Fonts.REMOVE);
         txtKey.addChangeHandler(event -> {
-            data.key = txtKey.getValue();
+            data.name = txtKey.getValue();
         });
         txtValue.addChangeHandler(event -> {
             data.value = txtValue.getValue();
@@ -41,25 +43,26 @@ public class ListDataItem extends CommonEventComposite implements IData<Dropdown
     }
 
     @Override
-    public DropdownListDesignData getData() {
+    public ParameterValue getData() {
         fromUI();
         return data;
     }
 
+
     @Override
-    public void setData(DropdownListDesignData obj) {
+    public void setData(ParameterValue obj) {
         data = obj;
         toUI();
     }
 
     private void toUI() {
-        txtKey.setValue(data.key);
-        txtValue.setValue(data.value);
+        txtKey.setValue(data.name);
+        txtValue.setValue(DataCastor.castToString(data.value));
         checkInit.setValue(data.init);
     }
 
     private void fromUI() {
-        data.key = txtKey.getValue();
+        data.name = txtKey.getValue();
         data.value = txtValue.getValue();
         data.init = checkInit.getValue();
     }

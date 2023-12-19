@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.atts;
 
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
-import cn.mapway.ui.client.mvc.attribute.editor.impl.ColorBoxAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.color.ColorBoxAttributeEditor;
 
 /**
  * 文本框编辑属性

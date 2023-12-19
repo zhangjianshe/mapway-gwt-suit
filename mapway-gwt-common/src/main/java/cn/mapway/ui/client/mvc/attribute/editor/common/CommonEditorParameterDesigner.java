@@ -1,10 +1,11 @@
-package cn.mapway.ui.client.mvc.attribute.editor.design;
+package cn.mapway.ui.client.mvc.attribute.editor.common;
 
 import cn.mapway.ui.client.mvc.attribute.AbstractAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
+import cn.mapway.ui.client.mvc.attribute.editor.inspector.SimpleObjectInspector;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;

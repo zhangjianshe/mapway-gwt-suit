@@ -1,10 +1,13 @@
-package cn.mapway.ui.client.mvc.attribute.editor.impl;
+package cn.mapway.ui.client.mvc.attribute.editor.editorselector;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.EditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.EditorMetaDataFormat;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
+import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 import cn.mapway.ui.client.widget.buttons.AiButton;
 import cn.mapway.ui.client.widget.dialog.Popup;
 import com.google.gwt.core.client.GWT;
@@ -97,8 +100,8 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
      * @param attribute     属性编辑器对应的属性内容
      */
     @Override
-    public void setAttribute(EditorOption runtimeOption, IAttribute attribute) {
-        super.setAttribute(runtimeOption, attribute);
+    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
+        super.editAttribute(runtimeOption, attribute);
 
         updateUI();
     }

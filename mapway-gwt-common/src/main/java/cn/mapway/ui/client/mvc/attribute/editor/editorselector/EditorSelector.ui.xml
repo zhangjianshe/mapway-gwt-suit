@@ -1,7 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog"
-             xmlns:impl="urn:import:cn.mapway.ui.client.mvc.attribute.editor.impl">
+             xmlns:impl="urn:import:cn.mapway.ui.client.mvc.attribute.editor.editorselector"
+             xmlns:proxy="urn:import:cn.mapway.ui.client.mvc.attribute.editor.proxy">
     <ui:style>
 
 
@@ -57,7 +58,7 @@
         <g:center>
             <g:HTMLPanel ui:field="previewPlaceholder" styleName="{style.flex}">
                 <g:Label styleName="{style.text}">预览</g:Label>
-                <impl:AttributeItemEditorProxy addStyleNames="{style.preview}" ui:field="preview"/>
+                <proxy:AttributeItemEditorProxy addStyleNames="{style.preview}" ui:field="preview"/>
                 <g:Label ui:field="lbSummary" styleName="{style.summary}"/>
             </g:HTMLPanel>
         </g:center>

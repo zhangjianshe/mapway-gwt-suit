@@ -3,8 +3,8 @@ package cn.mapway.ui.client.mvc.attribute.marker;
 import cn.mapway.ui.client.mvc.attribute.design.EditorMetaDataFormat;
 import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
-import cn.mapway.ui.client.mvc.attribute.editor.EditorOption;
-import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
+import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,7 +15,7 @@ import java.util.List;
  */
 public abstract class AbstractEditorMetaData implements IEditorMetaData {
 
-    List<ParameterValue> values;
+    List<ParameterValue> parameters;
     String editorCode;
 
     public AbstractEditorMetaData() {
@@ -24,12 +24,22 @@ public abstract class AbstractEditorMetaData implements IEditorMetaData {
 
     public AbstractEditorMetaData(String editorCode) {
         this.editorCode = editorCode;
-        values = new ArrayList<>();
+        parameters = new ArrayList<>();
+        initMetaData();
     }
+
+    /**
+     * 初始化元数据对象
+     */
+    protected abstract void initMetaData();
 
     @Override
     public String getEditorCode() {
         return editorCode;
+    }
+
+    public void setEditorCode(String editorCode) {
+        this.editorCode = editorCode;
     }
 
     /**
@@ -43,7 +53,7 @@ public abstract class AbstractEditorMetaData implements IEditorMetaData {
     }
 
     public AbstractEditorMetaData setOptions(String options) {
-        values.add(ParameterValue.create(EditorOption.KEY_OPTIONS, options));
+        parameters.add(ParameterValue.create(ParameterKeys.KEY_OPTIONS, options));
         return this;
     }
 
@@ -51,13 +61,13 @@ public abstract class AbstractEditorMetaData implements IEditorMetaData {
         if (key == null || key.length() == 0 || value == null) {
             return this;
         }
-        values.add(ParameterValue.create(key, value, init));
+        parameters.add(ParameterValue.create(key, value, init));
         return this;
     }
 
     @Override
     public List<ParameterValue> getParameterValues() {
-        return values;
+        return parameters;
     }
 
     /**

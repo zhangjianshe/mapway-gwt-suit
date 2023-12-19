@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.attribute.editor.impl;
+package cn.mapway.ui.client.mvc.attribute.editor.proxy;
 
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
@@ -82,7 +82,7 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
 
         //让属性编辑器 自己处理数据逻辑
         // attribute.getEditorData() 返回实例化这个属性编辑器的所有数据
-        attributeEditor.setAttribute(attribute.getRuntimeOption(), attribute);
+        attributeEditor.editAttribute(attribute.getRuntimeParameters(), attribute);
         //属性名称
         lbHeader.setText(getAttributeName());
 
