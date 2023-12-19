@@ -100,8 +100,8 @@ public class EditorMetaData implements IEditorMetaData {
         }
 
         JsonEditorData dataJson = JsonEditorData.load(DataCastor.castToString(data));
-        this.editorCode = dataJson.editorCode;
-        this.editorName = dataJson.editorName;
+        this.editorCode = dataJson.getEditorCode();
+        this.editorName = dataJson.getEditorName();
         if (dataJson.parameters != null && dataJson.parameters.getLength() > 0) {
             for (int i = 0; i < dataJson.parameters.getLength(); i++) {
                 try {
