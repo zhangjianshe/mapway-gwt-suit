@@ -1,4 +1,6 @@
-package cn.mapway.ui.client.mvc.attribute;
+package cn.mapway.ui.client.mvc.attribute.marker;
+
+import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 
 /**
  * 属性收集器

@@ -1,7 +1,6 @@
-package cn.mapway.ui.client.mvc.attribute;
+package cn.mapway.ui.client.mvc.attribute.marker;
 
 import cn.mapway.ui.client.db.DbFieldType;
-import cn.mapway.ui.client.mvc.attribute.editor.impl.TextboxAttributeEditor;
 
 import java.lang.annotation.*;
 
@@ -21,7 +20,6 @@ public @interface Attr {
 
     DbFieldType dataType() default DbFieldType.FLD_TYPE_STRING;
 
-    String editCode() default TextboxAttributeEditor.EDITOR_CODE;
 
     /**
      * 属性的缺省值
@@ -71,27 +69,11 @@ public @interface Attr {
      */
     String icon() default "";
 
+
     /**
-     * 最小值
+     * 通过一个类提供编辑器实例化信息
      *
      * @return
      */
-    double min() default 0;
-
-    /**
-     * 最大值
-     *
-     * @return
-     */
-    double max() default 100;
-
-    //某种参数自定义的选项 一般为json字符串 由使用者解释
-    String options() default "";
-
-    /**
-     * 编辑器属性 JSON serial String
-     *
-     * @return
-     */
-    String editorOptions() default "{}";
+    Class<? extends AbstractEditorMetaData> editor() default TextBoxEditorMetaData.class;
 }

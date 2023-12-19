@@ -8,7 +8,7 @@ public class DropdownListDesignData {
     /**
      * key
      */
-    public String key;
+    public String name;
     /**
      * Value值
      */

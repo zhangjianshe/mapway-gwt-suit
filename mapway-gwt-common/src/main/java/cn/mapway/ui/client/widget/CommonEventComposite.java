@@ -7,6 +7,7 @@ import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.*;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
+import cn.mapway.ui.client.mvc.attribute.marker.IAttributeInit;
 import cn.mapway.ui.client.mvc.decorator.IEnabled;
 import cn.mapway.ui.client.mvc.decorator.IErrorMessage;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;

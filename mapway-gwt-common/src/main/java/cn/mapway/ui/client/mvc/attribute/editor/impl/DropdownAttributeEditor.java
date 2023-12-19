@@ -101,7 +101,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             ddlDropdown.setEnabled(false);
         }
 
-        String dropdownParameter = option(EditorOption.KEY_DROPDOWN_OPTIONS, null);
+        String dropdownParameter = option(EditorOption.KEY_OPTIONS, null);
 
         IOptionProvider optionProvider = attribute.getOptionProvider();
         if (optionProvider != null) {

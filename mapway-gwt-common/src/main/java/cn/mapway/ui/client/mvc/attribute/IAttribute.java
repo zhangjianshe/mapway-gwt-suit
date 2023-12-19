@@ -72,9 +72,6 @@ public interface IAttribute {
         return true;
     }
 
-
-    String getOptions();
-
     /**
      * 编辑这个属性需要的属性编辑器信息 将会替代 上面的getEditorCode designOption getOptions等字段
      * 完成后 上面的字段将会被删除
@@ -83,10 +80,4 @@ public interface IAttribute {
      */
     IEditorMetaData getEditorMetaData();
 
-    /**
-     * 对象转换为 Json字符串
-     * this is a string ' not escape for charactor " \ ' ~~
-     * @return
-     */
-    String toJSON();
 }

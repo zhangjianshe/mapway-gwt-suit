@@ -78,7 +78,7 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
                 dropdownOptions.push(data);
             }
         }
-        values.add(ParameterValue.create(EditorOption.KEY_DROPDOWN_OPTIONS, Global.JSON.stringify(dropdownOptions)));
+        values.add(ParameterValue.create(EditorOption.KEY_OPTIONS, Global.JSON.stringify(dropdownOptions)));
         return values;
     }
 
@@ -104,7 +104,7 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
         if (parameterValues == null || parameterValues.size() == 0) {
             designDataJsArray = new JsArray<>();
         } else {
-            ParameterValue attribute = findParameterValue(parameterValues, EditorOption.KEY_DROPDOWN_OPTIONS);
+            ParameterValue attribute = findParameterValue(parameterValues, EditorOption.KEY_OPTIONS);
             if (attribute == null || attribute.value == null) {
                 designDataJsArray = new JsArray<>();
             } else {

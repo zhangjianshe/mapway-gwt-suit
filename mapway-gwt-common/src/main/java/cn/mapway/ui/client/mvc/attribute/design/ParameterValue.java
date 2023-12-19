@@ -16,12 +16,20 @@ public class ParameterValue {
     public String name;
     @JsProperty
     public Object value;
+    @JsProperty
+    public boolean init;
 
     @JsOverlay
     public final static ParameterValue create(String name, Object value) {
+        return create(name, value, false);
+    }
+
+    @JsOverlay
+    public final static ParameterValue create(String name, Object value, boolean init) {
         ParameterValue pv = new ParameterValue();
         pv.value = value;
         pv.name = name;
+        pv.init = init;
         return pv;
     }
 
