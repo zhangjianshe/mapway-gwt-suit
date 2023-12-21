@@ -33,17 +33,6 @@
                 <enabled>true</enabled>
             </releases>
         </repository>
-        <repository>
-            <id>osgeo-snapshot</id>
-            <name>OSGeo Snapshot Repository</name>
-            <url>https://repo.osgeo.org/repository/snapshot/</url>
-            <snapshots>
-                <enabled>true</enabled>
-            </snapshots>
-            <releases>
-                <enabled>false</enabled>
-            </releases>
-        </repository>
     </repositories>
     <dependencies>
         <dependency>
@@ -148,6 +137,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.11</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opencv</groupId>
+            <artifactId>opencv</artifactId>
+            <version>4.2.0</version>
         </dependency>
     </dependencies>
 
