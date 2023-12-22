@@ -72,6 +72,13 @@ public class CheckBoxAttributeEditor extends AbstractAttributeEditor<Boolean> {
         checkBox.setValue(DataCastor.castToBoolean(obj));
     }
 
+    @Override
+    public void fromUI() {
+        if(getAttribute()!=null){
+            getAttribute().setValue(checkBox.getValue());
+        }
+    }
+
     interface CheckBoxAttributeEditorUiBinder extends UiBinder<HTMLPanel, CheckBoxAttributeEditor> {
     }
 }

@@ -218,5 +218,9 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         return attribute.value;
     }
 
+    /**
+     * 从UI获取数据到 对象实体中
+     */
+    public abstract void fromUI();
 
 }

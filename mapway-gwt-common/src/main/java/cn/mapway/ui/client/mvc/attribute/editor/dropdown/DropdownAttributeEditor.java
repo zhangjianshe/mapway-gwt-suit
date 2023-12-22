@@ -136,6 +136,13 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
         ddlDropdown.setValue(obj, false);
     }
 
+
+    @Override
+    public void fromUI() {
+        if(getAttribute()!=null){
+            getAttribute().setValue(ddlDropdown.getValue());
+        }
+    }
     private void setOptionProvider(IOptionProvider provider) {
         ddlDropdown.clear();
 

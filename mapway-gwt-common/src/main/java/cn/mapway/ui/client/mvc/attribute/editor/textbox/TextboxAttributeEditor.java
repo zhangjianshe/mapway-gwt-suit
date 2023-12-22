@@ -83,6 +83,13 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
         }
     }
 
+    @Override
+    public void fromUI() {
+        IAttribute attribute = getAttribute();
+        if (attribute != null && !attribute.isReadonly()) {
+            getAttribute().setValue(txtBox.getValue());
+        }
+    }
 
     interface TextboxAttributeEditorUiBinder extends UiBinder<HTMLPanel, TextboxAttributeEditor> {
     }

@@ -56,7 +56,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
     public String getCode() {
         return EDITOR_CODE;
     }
-
+    EditorMetaData newSelectedEditorMetaData=null;
     /**
      * 显示显示面板
      *
@@ -74,7 +74,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             if (event1.isOk()) {
                 if (getAttribute() != null) {
                     //这个是保存在 属性定义的 编辑器字段中的数据
-                    EditorMetaData newSelectedEditorMetaData = event1.getValue();
+                    newSelectedEditorMetaData = event1.getValue();
                     AttributeEditorInfo info = AttributeEditorFactory.get().findByCode(newSelectedEditorMetaData.getEditorCode());
                     String html = "";
                     if (info.icon != null && info.icon.length() > 0) {
@@ -135,6 +135,13 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
             showSelected(html);
             editorMetaData.setEditorCode(info.code);
             editorMetaData.setEditorName(info.name);
+        }
+    }
+
+    @Override
+    public void fromUI() {
+        if (getAttribute() !=null && newSelectedEditorMetaData!=null) {
+            getAttribute().setValue(newSelectedEditorMetaData.save(EditorMetaDataFormat.EDF_JSON));
         }
     }
 

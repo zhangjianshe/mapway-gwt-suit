@@ -37,6 +37,9 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
     private static final ImageUploadAttributeEditorUiBinder ourUiBinder = GWT.create(ImageUploadAttributeEditorUiBinder.class);
     @UiField
     ImageUploader imageUploader;
+    String newValue = "";
+    CommonEditorParameterDesigner designer;
+
 
     public ImageUploadAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -52,7 +55,6 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         return EDITOR_CODE;
     }
 
-
     @Override
     public Widget getDisplayWidget() {
         return imageUploader;
@@ -63,7 +65,6 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         super.editAttribute(runtimeOption, attribute);
         updateUI();
     }
-
 
     /**
      * 当数据发生变化后 调用这个方法更新界面的数据
@@ -81,8 +82,13 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         //需要设定高度
         String height = option(ParameterKeys.KEY_HEIGHT, "80px");
         getDisplayWidget().setHeight(height);
+    }
 
-
+    @Override
+    public void fromUI() {
+        if (getAttribute() != null && newValue != null && newValue.length() > 0) {
+            getAttribute().setValue(newValue);
+        }
     }
 
     /**
@@ -106,27 +112,25 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         } else if (event.isOk()) {
             if (getAttribute() != null) {
                 UploadReturn uploadReturn = event.getValue();
+                newValue = uploadReturn.relPath;
                 getAttribute().setValue(uploadReturn.relPath);
                 fireMessage(MessageObject.info(0, "上传图片成功，请保存"));
             }
         }
     }
 
-    CommonEditorParameterDesigner designer;
-
     @Override
     public IEditorDesigner getDesigner() {
 
-        if(designer==null)
-        {
-            designer=new CommonEditorParameterDesigner();
+        if (designer == null) {
+            designer = new CommonEditorParameterDesigner();
 
-            List<IAttribute> parameters=new ArrayList<>();
-            parameters.add(new ParameterAttribute(ParameterKeys.KEY_HEIGHT,"高度","80px"));
-            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_ACTION,"上传URL",""));
-            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_REL,"相对路径","project"));
+            List<IAttribute> parameters = new ArrayList<>();
+            parameters.add(new ParameterAttribute(ParameterKeys.KEY_HEIGHT, "高度", "80px"));
+            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_ACTION, "上传URL", ""));
+            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_REL, "相对路径", "project"));
 
-            designer.setParameters("图像上传组件参数",parameters);
+            designer.setParameters("图像上传组件参数", parameters);
         }
 
         return designer;

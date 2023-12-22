@@ -70,6 +70,13 @@ public class ColorBoxAttributeEditor extends AbstractAttributeEditor<String> {
         }
     }
 
+    @Override
+    public void fromUI() {
+        if (getAttribute() != null) {
+            getAttribute().setValue(txtColor.getValue());
+        }
+    }
+
     interface ColorBoxAttributeEditorUiBinder extends UiBinder<HTMLPanel, ColorBoxAttributeEditor> {
     }
 }
