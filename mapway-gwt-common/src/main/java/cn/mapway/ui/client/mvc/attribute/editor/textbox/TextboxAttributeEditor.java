@@ -74,7 +74,13 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
             txtBox.getElement().setAttribute("placeholder", getAttribute().getTip());
         }
         Object obj = attribute.getValue();
-        txtBox.setValue(castToString(obj));
+        if (obj == null) {
+            txtBox.setValue(castToString(attribute.getDefaultValue()));
+
+        } else {
+            txtBox.setValue(castToString(obj));
+
+        }
     }
 
 
