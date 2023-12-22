@@ -100,4 +100,10 @@ public interface IAttributeEditor extends IProvideSize, IData {
      * 从 attribtue 中获取Value更新界面
      */
     void updateUI();
+
+
+    /**
+     * 从UI将数据传输到对象中
+     */
+    void fromUI();
 }

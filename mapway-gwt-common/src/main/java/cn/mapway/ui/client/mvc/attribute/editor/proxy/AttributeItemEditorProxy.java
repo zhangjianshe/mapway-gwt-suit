@@ -171,6 +171,13 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         }
     }
 
+    public void fromUI(){
+        if (attributeEditor != null) {
+            attributeEditor.fromUI();
+        }
+    }
+
+
     interface AttributeItemEditorProxyUiBinder extends UiBinder<HTMLPanel, AttributeItemEditorProxy> {
     }
 
