@@ -138,11 +138,11 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.11</version>
         </dependency>
-        <dependency>
-            <groupId>org.opencv</groupId>
-            <artifactId>opencv</artifactId>
-            <version>4.2.0</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.opencv</groupId>-->
+<!--            <artifactId>opencv</artifactId>-->
+<!--            <version>4.2.0</version>-->
+<!--        </dependency>-->
     </dependencies>
 
 </project>
