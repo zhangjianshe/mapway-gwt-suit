@@ -19,6 +19,7 @@ public abstract class AbstractAttribute implements IAttribute {
 
     public static final String BASIC_GROUP = "基本属性";
     private final String id;
+    private final ParameterValues runtimeParameters;
     protected String altName;
     protected int dataType;
     protected String defaultValue;
@@ -31,14 +32,11 @@ public abstract class AbstractAttribute implements IAttribute {
     protected String tip = "";
     protected String errorTip = "";
     protected String icon = "";
-
     protected IOptionProvider optionProvider = null;
     protected boolean initVisible = true;
     // 属性名称
     protected String name;
     IEditorMetaData editorData;
-
-    private final ParameterValues runtimeParameters;
 
     public AbstractAttribute(String name) {
         this(name, name);
@@ -275,9 +273,10 @@ public abstract class AbstractAttribute implements IAttribute {
         return editorData;
     }
 
-    public void setEditorData(IEditorMetaData editorData) {
+    public AbstractAttribute setEditorData(IEditorMetaData editorData) {
         assert editorData != null;
         this.editorData = editorData;
+        return this;
     }
 
 }
