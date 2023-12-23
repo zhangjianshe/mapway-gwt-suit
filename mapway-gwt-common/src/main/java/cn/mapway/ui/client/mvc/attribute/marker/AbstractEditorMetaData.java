@@ -112,6 +112,14 @@ public abstract class AbstractEditorMetaData implements IEditorMetaData {
      */
     @Override
     public ParameterValue findParameterValue(String key) {
+        if (parameters == null || key == null || key.length() == 0) {
+            return null;
+        }
+        for (ParameterValue parameter : parameters) {
+            if (key.equals(parameter.name)) {
+                return parameter;
+            }
+        }
         return null;
     }
 }
