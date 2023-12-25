@@ -516,6 +516,7 @@ public class BaseTileExtractor {
             //循环处理每一个像素
             sourceData.order(ByteOrder.nativeOrder());
             for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
+
                 for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
                     int location = row * targetRect.getWidthAsInt() + col;
                     int tilePosition = (targetRect.getYAsInt() + row) * tileSize + targetRect.getXAsInt() + col;

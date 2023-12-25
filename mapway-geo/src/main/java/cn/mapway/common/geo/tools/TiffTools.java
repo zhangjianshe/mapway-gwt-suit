@@ -4,13 +4,12 @@ package cn.mapway.common.geo.tools;
 import cn.mapway.biz.core.BizResult;
 import cn.mapway.common.geo.tools.parser.GF1Parser;
 import cn.mapway.common.geo.tools.parser.ISatelliteExtractor;
-import cn.mapway.geo.client.raster.BandInfo;
-import cn.mapway.geo.client.raster.ChanelData;
-import cn.mapway.geo.client.raster.ImageInfo;
+import cn.mapway.geo.client.raster.*;
 import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.Driver;
@@ -370,8 +369,20 @@ public class TiffTools {
             BandInfo bandInfo = new BandInfo();
             bandInfo.setIndex(i);
             bandInfo.setDataType(band.GetRasterDataType());
-            calValueExtends(bandInfo, band);
+            bandInfo.metadata = new HashMap<>();
 
+            String wavelength = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH.getKey());
+            if(StringUtils.isNotEmpty(wavelength)){
+                bandInfo.metadata.put(MetadataEnum.META_KEY_WAVELENGTH.getKey(), wavelength);
+                String wavelength_units = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH_UNITS.getKey());
+                if(StringUtils.isEmpty(wavelength_units)){
+                    MetadataValue value = MetadataEnum.META_KEY_WAVELENGTH_UNITS.getValues()[0];
+                    wavelength_units = value.getKey();
+                }
+                bandInfo.metadata.put(MetadataEnum.META_KEY_WAVELENGTH_UNITS.getKey(), wavelength_units);
+            }
+
+            calValueExtends(bandInfo, band);
             Double[] noValue = new Double[10];
             band.GetNoDataValue(noValue);
             int count = 0;
@@ -563,8 +574,8 @@ public class TiffTools {
         double[] max = new double[1];
         double[] mean = new double[1];
         double[] stddev = new double[1];
-
-        band.GetStatistics(1, 1, min, max, mean, stddev);
+        // 这里修改了, 若统计过则不再次统计
+        band.GetStatistics(1, 0, min, max, mean, stddev);
         bandInfo.setMinValue(min[0]);
         bandInfo.setMaxValue(max[0]);
         bandInfo.setCalMaxValue(mean[0] + 2.0 * stddev[0]);
