@@ -22,6 +22,8 @@ public class AxisLineStyle {
     public boolean show;
     public boolean onZero;
     public int onZeroAxisIndex;
+    public int width;
+    public JsArray<Object> color;
     public JsObject symbol;
     public JsArray<Float> symbolSize;
     public JsArray<Float> symbolOffset;
