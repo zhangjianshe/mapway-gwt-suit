@@ -40,6 +40,10 @@ public class ChartSerial {
     public JsArray<String> center;
     public LineStyle lineStyle;
 
+    public boolean smooth;
+
+    public String symbol;
+
     @JsOverlay
     public final static ChartSerial create(String name, String type, List<Object> data) {
         ChartSerial serial = new ChartSerial();

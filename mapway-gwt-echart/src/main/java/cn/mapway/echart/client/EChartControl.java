@@ -13,4 +13,6 @@ public class EChartControl {
     public native final void setOption(ChartOption option);
 
     public native final void resize(ResizeOption resizeOption);
+
+    public native final void clear();
 }

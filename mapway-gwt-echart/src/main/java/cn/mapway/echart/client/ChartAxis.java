@@ -17,6 +17,8 @@ public class ChartAxis {
     public String type;
     public String name;
     public boolean scale;
+    public Double min;
+    public Double max;
     AxisLineStyle axisLine;
 
     @JsOverlay
