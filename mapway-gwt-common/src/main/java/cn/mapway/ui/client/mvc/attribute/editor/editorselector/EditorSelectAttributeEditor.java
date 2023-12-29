@@ -106,6 +106,9 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         updateUI();
     }
 
+    /**
+     * 将属性的 对象 传入到系统中 这里面包含了参数
+     */
     @Override
     public void updateUI() {
         if (getAttribute() == null) {
@@ -138,6 +141,9 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
         }
     }
 
+    /**
+     * 将用户循环中的 输入方式 够造一个 JSON格式的 EditorMetaData对象s
+     */
     @Override
     public void fromUI() {
         if (getAttribute() !=null && newSelectedEditorMetaData!=null) {

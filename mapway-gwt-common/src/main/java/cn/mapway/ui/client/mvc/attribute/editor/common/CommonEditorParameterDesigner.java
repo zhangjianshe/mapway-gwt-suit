@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.common;
 
 import cn.mapway.ui.client.mvc.attribute.AbstractAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
+import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
@@ -96,7 +97,7 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
         for (ParameterValue value : parameterValues) {
             AttributeValue attributeValue = new AttributeValue();
             attributeValue.setName(value.name);
-            attributeValue.setValue((String) value.value);
+            attributeValue.setValue(DataCastor.castToString(value.value));
             values.add(attributeValue);
         }
         //所有参数数据更新完毕
