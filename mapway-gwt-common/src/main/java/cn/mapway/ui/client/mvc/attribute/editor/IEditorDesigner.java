@@ -45,4 +45,14 @@ public interface IEditorDesigner {
      */
     void updateValue(List<ParameterValue> parameterValues);
 
+
+    /**
+     * 是指一个提示处理接口
+     * 缺省什么都不做
+     *
+     * @param handler
+     */
+    default void setTipHandler(IEditorTipHandler handler) {
+    }
+
 }

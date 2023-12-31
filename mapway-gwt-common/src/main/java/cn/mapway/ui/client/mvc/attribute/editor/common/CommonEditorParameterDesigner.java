@@ -6,6 +6,7 @@ import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
+import cn.mapway.ui.client.mvc.attribute.editor.IEditorTipHandler;
 import cn.mapway.ui.client.mvc.attribute.editor.inspector.SimpleObjectInspector;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
@@ -29,11 +30,12 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
     private static final CommonEditorParameterDesignerUiBinder ourUiBinder = GWT.create(CommonEditorParameterDesignerUiBinder.class);
     @UiField
     SimpleObjectInspector designer;
+    IEditorTipHandler tipHandler;
+
 
     public CommonEditorParameterDesigner() {
         initWidget(ourUiBinder.createAndBindUi(this));
     }
-
 
     /**
      * 参数的编辑UI
@@ -113,7 +115,9 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
     @UiHandler("designer")
     public void designerCommon(CommonEvent event) {
         if (event.isInfo()) {
-            fireEvent(event);
+            if (tipHandler != null) {
+                tipHandler.onTip(event.getValue());
+            }
         }
     }
 
@@ -122,6 +126,10 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
         return addHandler(handler, CommonEvent.TYPE);
     }
 
+    @Override
+    public void setTipHandler(IEditorTipHandler handler) {
+        this.tipHandler = handler;
+    }
 
     interface CommonEditorParameterDesignerUiBinder extends UiBinder<HTMLPanel, CommonEditorParameterDesigner> {
     }
