@@ -7,9 +7,14 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
 import cn.mapway.ui.client.mvc.attribute.editor.inspector.SimpleObjectInspector;
+import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
+import cn.mapway.ui.shared.HasCommonHandlers;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -20,7 +25,7 @@ import java.util.List;
 /**
  * 通用编辑器参数设计器
  */
-public class CommonEditorParameterDesigner extends Composite implements IEditorDesigner {
+public class CommonEditorParameterDesigner extends Composite implements IEditorDesigner, HasCommonHandlers {
     private static final CommonEditorParameterDesignerUiBinder ourUiBinder = GWT.create(CommonEditorParameterDesignerUiBinder.class);
     @UiField
     SimpleObjectInspector designer;
@@ -103,6 +108,18 @@ public class CommonEditorParameterDesigner extends Composite implements IEditorD
         //所有参数数据更新完毕
         designer.updateValue(values);
 
+    }
+
+    @UiHandler("designer")
+    public void designerCommon(CommonEvent event) {
+        if (event.isInfo()) {
+            fireEvent(event);
+        }
+    }
+
+    @Override
+    public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
+        return addHandler(handler, CommonEvent.TYPE);
     }
 
 

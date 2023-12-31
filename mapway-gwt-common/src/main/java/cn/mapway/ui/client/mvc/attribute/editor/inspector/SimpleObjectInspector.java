@@ -10,6 +10,9 @@ import cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
 import cn.mapway.ui.client.tools.IData;
+import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
+import cn.mapway.ui.shared.HasCommonHandlers;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -29,14 +32,21 @@ import java.util.Map;
  *
  * @author zhang
  */
-public class SimpleObjectInspector extends Composite implements IData<IAttributesProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler {
+public class SimpleObjectInspector extends Composite implements IData<IAttributesProvider>, IAttributeReadyCallback, AttributeStateChangeEventHandler, HasCommonHandlers {
     private static final AttributeEditorUiBinder ourUiBinder = GWT.create(AttributeEditorUiBinder.class);
+    private final CommonEventHandler groupHandler = new CommonEventHandler() {
+        @Override
+        public void onCommonEvent(CommonEvent event) {
+            if (event.isInfo()) {
+                fireEvent(event);
+            }
+        }
+    };
     Map<String, SimpleAttributeGroup> groups = new HashMap<>();
     @UiField
     HTMLPanel panel;
     @UiField
     Label lbHeader;
-
     int labelWidth = 150;
     HandlerRegistration stateChangeHandler;
     private IAttributesProvider data;
@@ -130,6 +140,7 @@ public class SimpleObjectInspector extends Composite implements IData<IAttribute
             attributeGroup = new SimpleAttributeGroup();
             attributeGroup.setLabelWidth(labelWidth);
             attributeGroup.setGroupName(attribute.getGroup());
+            attributeGroup.addCommonHandler(groupHandler);
             groups.put(attribute.getGroup(), attributeGroup);
             panel.add(attributeGroup);
         }
@@ -196,6 +207,11 @@ public class SimpleObjectInspector extends Composite implements IData<IAttribute
             }
         }
         return null;
+    }
+
+    @Override
+    public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
+        return addHandler(handler, CommonEvent.TYPE);
     }
 
     interface AttributeEditorUiBinder extends UiBinder<HTMLPanel, SimpleObjectInspector> {

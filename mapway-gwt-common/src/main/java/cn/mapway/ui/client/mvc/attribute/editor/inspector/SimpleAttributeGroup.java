@@ -6,6 +6,8 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy;
 import cn.mapway.ui.client.widget.CommonEventComposite;
+import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -25,6 +27,15 @@ import java.util.List;
  */
 public class SimpleAttributeGroup extends CommonEventComposite {
     private static final AttributeGroupUiBinder ourUiBinder = GWT.create(AttributeGroupUiBinder.class);
+    private final CommonEventHandler proxyHandler = new CommonEventHandler() {
+        @Override
+        public void onCommonEvent(CommonEvent event) {
+            if (event.isInfo()) {
+                //提示事件上报
+                fireEvent(event);
+            }
+        }
+    };
     @UiField
     VerticalPanel slot;
     @UiField
@@ -61,6 +72,7 @@ public class SimpleAttributeGroup extends CommonEventComposite {
      */
     public void appendAttribute(IAttribute attribute) {
         AttributeItemEditorProxy itemEditorProxy = new AttributeItemEditorProxy();
+        itemEditorProxy.addCommonHandler(proxyHandler);
         itemEditorProxy.createEditorInstance(attribute);
         slot.add(itemEditorProxy);
     }
