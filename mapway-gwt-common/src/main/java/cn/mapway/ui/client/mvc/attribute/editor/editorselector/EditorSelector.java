@@ -3,10 +3,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.editorselector;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.EditorMetaData;
-import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
-import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
-import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
-import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
+import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.dialog.Popup;
@@ -46,6 +43,12 @@ public class EditorSelector extends CommonEventComposite {
     EditorMetaData currentEditData;
     String initEditorCode;
     Map<String, EditorHorizontalPanel> panelCache = new HashMap<>();
+    private final IEditorTipHandler tipHandler = new IEditorTipHandler() {
+        @Override
+        public void onTip(String tip) {
+            saveBar.msg(tip);
+        }
+    };
 
     public EditorSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -136,7 +139,12 @@ public class EditorSelector extends CommonEventComposite {
         };
         preview.createEditorInstance(adaptor);
 
+        if (currentDesign != null) {
+            currentDesign.setTipHandler(null);
+        }
+
         currentDesign = preview.getEditor().getDesigner();
+        currentDesign.setTipHandler(tipHandler);
         if (currentDesign != null) {
             Widget designWidget = currentDesign.getDesignRoot();
             designPanel.add(designWidget);
