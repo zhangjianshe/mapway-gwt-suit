@@ -60,11 +60,6 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
         return imageUploader;
     }
 
-    @Override
-    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
-        super.editAttribute(runtimeOption, attribute);
-        updateUI();
-    }
 
     /**
      * 当数据发生变化后 调用这个方法更新界面的数据

@@ -139,7 +139,8 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         if (runtimeParameters == null) {
             this.runtimeParameters = new ArrayList<>();
         }
-
+        //从模型将数据更新到界面
+        updateUI();
     }
 
     @Override

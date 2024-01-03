@@ -93,18 +93,7 @@ public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String>
 
     }
 
-    /**
-     * 编辑器的数据应该是一个JSON字符串
-     *
-     * @param runtimeOption 编辑器选项 是一个 KV Ma,继承的组件自己定义所需的参数
-     * @param attribute     属性编辑器对应的属性内容
-     */
-    @Override
-    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
-        super.editAttribute(runtimeOption, attribute);
 
-        updateUI();
-    }
 
     /**
      * 将属性的 对象 传入到系统中 这里面包含了参数

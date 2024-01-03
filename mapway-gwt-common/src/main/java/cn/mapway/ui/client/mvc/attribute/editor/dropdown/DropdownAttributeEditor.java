@@ -83,11 +83,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
         return ddlDropdown;
     }
 
-    @Override
-    public void editAttribute(ParameterValues runtimeOption, IAttribute attribute) {
-        super.editAttribute(runtimeOption, attribute);
-        updateUI();
-    }
+
 
 
     /**
