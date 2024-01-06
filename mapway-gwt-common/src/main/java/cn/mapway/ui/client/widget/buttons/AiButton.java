@@ -30,6 +30,10 @@ public class AiButton extends Button implements IData, ISelectable {
 
     private String iconStyle;
 
+    private String type;
+
+    private String size;
+
     public AiButton(String te) {
         String html = getHtml(te);
         setHTML(html);
@@ -160,5 +164,27 @@ public class AiButton extends Button implements IData, ISelectable {
     public void setSpanContext(String spanContext) {
         this.spanContext = spanContext;
         setHTML(getHtml());
+    }
+
+    public void setType(String type) {
+        if(this.type != null){
+            removeStyleName("ai-button--" + type);
+        }
+        this.type = type;
+        if(type == null){
+            type = "default";
+        }
+        addStyleName("ai-button--" + type);
+    }
+
+    public void setSize(String size) {
+        if(this.size != null){
+            removeStyleName("ai-button--" + size);
+        }
+        this.size = size;
+        if(size == null){
+            size = "default";
+        }
+        addStyleName("ai-button--" + size);
     }
 }
