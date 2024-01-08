@@ -4,7 +4,10 @@ import cn.mapway.ui.client.event.IEventHandler;
 import cn.mapway.ui.client.event.ISuccess;
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.mvc.Size;
-import cn.mapway.ui.client.mvc.attribute.*;
+import cn.mapway.ui.client.mvc.attribute.AttributeValue;
+import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
+import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
 import cn.mapway.ui.client.mvc.attribute.marker.IAttributeInit;
@@ -208,7 +211,11 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public void setEnabled(boolean enabled) {
-        setReadonly(!enabled);
+        if (enabled) {
+            getWidget().getElement().setAttribute(IEnabled.ENABLED_ATTRIBUTE, "true");
+        } else {
+            getWidget().getElement().setAttribute(IEnabled.ENABLED_ATTRIBUTE, "false");
+        }
     }
 
     public void setReadonly(boolean readonly) {
@@ -217,7 +224,7 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
             element.setAttribute(IEnabled.ENABLED_ATTRIBUTE, "false");
             element.getStyle().setProperty("pointerEvents", "auto");
         } else {
-            element.removeClassName(IEnabled.ENABLED_ATTRIBUTE);
+            element.removeAttribute(IEnabled.ENABLED_ATTRIBUTE);
             element.getStyle().clearProperty("pointerEvents");
         }
     }
@@ -313,21 +320,21 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         }
     }
 
-    public void setAttribute(String name, String value) {
+    public void setAttr(String name, String value) {
         getWidget().getElement().setAttribute(name, value);
     }
 
     @Override
     public String getTitle() {
-        return getAttribute(ATTR_TIP);
+        return getAttr(ATTR_TIP);
     }
 
     @Override
     public void setTitle(String title) {
-        setAttribute(ATTR_TIP, title);
+        setAttr(ATTR_TIP, title);
     }
 
-    private String getAttribute(String attrTip) {
+    private String getAttr(String attrTip) {
         return getWidget().getElement().getAttribute(attrTip);
     }
 
