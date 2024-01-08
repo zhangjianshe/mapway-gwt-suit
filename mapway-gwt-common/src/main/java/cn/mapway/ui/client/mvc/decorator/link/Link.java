@@ -57,7 +57,7 @@ public class Link implements IData {
     public String toString() {
         StringBuilder stringBuilder = new StringBuilder();
         for (Size point : points) {
-            stringBuilder.append(point.toString()).append(" ");
+            stringBuilder.append(point.toSVGString()).append(" ");
         }
         return stringBuilder.toString();
     }
