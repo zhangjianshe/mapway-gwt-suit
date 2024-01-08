@@ -21,6 +21,16 @@ public class Size {
                 "}";
     }
 
+    /**
+     *  SVG representation
+     *  points="50,0 21,90 98,35 2,35 79,90"
+     *  x,y format
+     * @return
+     */
+    public String toSVGString() {
+         return x+","+y;
+    }
+
     public Size offset(double offsetX, double offsetY) {
         this.x += offsetX;
         this.y += offsetY;
