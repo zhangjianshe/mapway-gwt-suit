@@ -2,7 +2,6 @@ package cn.mapway.ui.client.mvc;
 
 import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
 
 import java.io.Serializable;
@@ -15,10 +14,6 @@ public class Rect implements Serializable {
     public double height;
 
     public Rect() {
-        x = 0;
-        y = 0;
-        width = 0;
-        height = 0;
     }
 
     /**
@@ -154,23 +149,23 @@ public class Rect implements Serializable {
         return this;
     }
 
-    @JsProperty
-    public double getX() {
+    @JsOverlay
+    public final double getX() {
         return x;
     }
 
-    @JsProperty
-    public void setX(double x) {
+    @JsOverlay
+    public final void setX(double x) {
         this.x = x;
     }
 
-    @JsProperty
-    public double getY() {
+    @JsOverlay
+    public final double getY() {
         return y;
     }
 
-    @JsProperty
-    public void setY(double y) {
+    @JsOverlay
+    public final void setY(double y) {
         this.y = y;
     }
 
