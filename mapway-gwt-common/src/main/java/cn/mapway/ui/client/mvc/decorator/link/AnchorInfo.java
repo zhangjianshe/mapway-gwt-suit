@@ -17,13 +17,13 @@ public class AnchorInfo {
     public int type;
     Object data;
 
-    public String toString()
-    {
-        return "AnchorInfo: anchorId=" + anchorId + ", rect=" + rect.toString() + ", type=" + type ;
-    }
     public AnchorInfo(int type) {
-        this.rect = new Rect(0, 0, 10, 10);
+        this.rect = new Rect().set(0, 0, 10, 10);
         this.type = type;
+    }
+
+    public String toString() {
+        return "AnchorInfo: anchorId=" + anchorId + ", rect=" + rect.toString() + ", type=" + type;
     }
 
     public <T> T getData() {

@@ -1,24 +1,24 @@
 package cn.mapway.ui.client.mvc;
 
+import jsinterop.annotations.JsOverlay;
+import jsinterop.annotations.JsPackage;
+import jsinterop.annotations.JsProperty;
+import jsinterop.annotations.JsType;
+
 import java.io.Serializable;
 
+@JsType(isNative = true, name = "Object", namespace = JsPackage.GLOBAL)
 public class Rect implements Serializable {
     public double x;
     public double y;
     public double width;
     public double height;
 
-    public Rect(){
-        x=0;
-        y=0;
-        width=0;
-        height=0;
-    }
-    public Rect(double x, double y, double width, double height) {
-        this.x = x;
-        this.y = y;
-        this.width = width;
-        this.height = height;
+    public Rect() {
+        x = 0;
+        y = 0;
+        width = 0;
+        height = 0;
     }
 
     /**
@@ -27,16 +27,20 @@ public class Rect implements Serializable {
      * @return
      */
     @Override
-    public String toString() {
+    @JsOverlay
+    public final String toString() {
         return "{\"x\":" + x + ",\"y\":" + y + ",\"width\":" + width + ",\"height\":" + height + "}";
     }
-    public Rect offset(double dx, double dy) {
+
+    @JsOverlay
+    public final Rect offset(double dx, double dy) {
         this.x += dx;
         this.y += dy;
         return this;
     }
 
-    public Rect expand(double top, double right, double bottom, double left) {
+    @JsOverlay
+    public final Rect expand(double top, double right, double bottom, double left) {
         this.x -= left;
         this.y -= top;
         this.width -= (left + right);
@@ -44,44 +48,45 @@ public class Rect implements Serializable {
         return this;
     }
 
-    public Size getCenter() {
+    @JsOverlay
+    public final Size getCenter() {
         return new Size(x + width / 2, y + height / 2);
     }
 
-    public Rect clone() {
-        Rect clone = new Rect(x,y,width,height);
-        return clone;
+    @JsOverlay
+    public final Rect clone() {
+        return new Rect().set(x, y, width, height);
     }
 
-    public boolean contains(Size point)
-    {
+    @JsOverlay
+    public final boolean contains(Size point) {
         return point.x >= x && point.x <= x + width && point.y >= y && point.y <= y + height;
     }
 
-    public boolean contains(double x, double y)
-    {
-        return contains(new Size(x,y));
+    @JsOverlay
+    public final boolean contains(double x, double y) {
+        return contains(new Size(x, y));
     }
-    public Rect extend(double x,double y)
-    {
-       if(this.x>x){
-           this.x = x;
-       }
-       if(this.x+this.width<x)
-       {
-           this.width=x-this.x;
-       }
-       if(this.y>y){
-           this.y=y;
-       }
-       if(this.y+this.height<y)
-       {
-           this.height=y-this.y;
-       }
-       return this;
+
+    @JsOverlay
+    public final Rect extend(double x, double y) {
+        if (this.x > x) {
+            this.x = x;
+        }
+        if (this.x + this.width < x) {
+            this.width = x - this.x;
+        }
+        if (this.y > y) {
+            this.y = y;
+        }
+        if (this.y + this.height < y) {
+            this.height = y - this.y;
+        }
+        return this;
     }
-    public Rect extend(Rect box)
-    {
+
+    @JsOverlay
+    public final Rect extend(Rect box) {
         if (this.x > box.x) {
             this.x = box.x;
         }
@@ -96,17 +101,21 @@ public class Rect implements Serializable {
         }
         return this;
     }
-    public Rect shrink(double left, double top, double right, double bottom) {
+
+    @JsOverlay
+    public final Rect shrink(double left, double top, double right, double bottom) {
         x = x + left;
         y = y + top;
         width = width - left - right;
         height = height - top - bottom;
         return this;
     }
+
     /**
      * 正交化对象
      */
-    public Rect normalize() {
+    @JsOverlay
+    public final Rect normalize() {
         if (width < 0) {
             x = x + width;
             width = -width;
@@ -118,15 +127,17 @@ public class Rect implements Serializable {
         return this;
     }
 
-    public boolean intersect(Rect box)
-    {
+    @JsOverlay
+    public final boolean intersect(Rect box) {
         if (box == null) {
             return false;
         }
         return !(x + width < box.x) && !(box.x + box.width < x) &&
                 !(y + height < box.y) && !(box.y + box.height < y);
     }
-    public Rect copyFrom(Rect src) {
+
+    @JsOverlay
+    public final Rect copyFrom(Rect src) {
         this.x = src.x;
         this.y = src.y;
         this.width = src.width;
@@ -134,7 +145,8 @@ public class Rect implements Serializable {
         return this;
     }
 
-    public Rect copyTo(Rect dest) {
+    @JsOverlay
+    public final Rect copyTo(Rect dest) {
         dest.x = this.x;
         dest.y = this.y;
         dest.width = this.width;
@@ -142,43 +154,54 @@ public class Rect implements Serializable {
         return this;
     }
 
-
+    @JsProperty
     public double getX() {
         return x;
     }
 
+    @JsProperty
     public void setX(double x) {
         this.x = x;
     }
 
+    @JsProperty
     public double getY() {
         return y;
     }
 
+    @JsProperty
     public void setY(double y) {
         this.y = y;
     }
 
-    public double getWidth() {
+    @JsOverlay
+    public final double getWidth() {
         return width;
     }
 
-    public void setWidth(double width) {
+    @JsOverlay
+    public final Rect setWidth(double width) {
         this.width = width;
+        return this;
     }
 
-    public double getHeight() {
+    @JsOverlay
+    public final double getHeight() {
         return height;
     }
 
-    public void setHeight(double height) {
+    @JsOverlay
+    public final Rect setHeight(double height) {
         this.height = height;
+        return this;
     }
 
-    public void set(double startX, double startY, double width, double height) {
+    @JsOverlay
+    public final Rect set(double startX, double startY, double width, double height) {
         this.x = startX;
         this.y = startY;
         this.width = width;
         this.height = height;
+        return this;
     }
 }
