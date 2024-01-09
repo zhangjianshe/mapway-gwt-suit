@@ -7,7 +7,7 @@ import jsinterop.annotations.JsType;
 import java.io.Serializable;
 
 @JsType(isNative = true, name = "Object", namespace = JsPackage.GLOBAL)
-public class Rect implements Serializable {
+public class Rect  {
     public double x;
     public double y;
     public double width;
