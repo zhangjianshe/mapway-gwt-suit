@@ -32,7 +32,7 @@ public class ParameterValues extends ArrayList<ParameterValue> {
         if (value == null) {
             return this;
         }
-        return addParameter(value.name, value.value, value.init);
+        return addParameter(value.name, value.value, value.init,value.unicode);
     }
 
     public ParameterValues removeParameter(String name) {
@@ -54,19 +54,20 @@ public class ParameterValues extends ArrayList<ParameterValue> {
     }
 
     public ParameterValues addParameter(String name, Object value) {
-        return addParameter(name, value, false);
+        return addParameter(name, value, false,"");
     }
 
-    public ParameterValues addParameter(String name, Object value, boolean init) {
+    public ParameterValues addParameter(String name, Object value, boolean init,String unicode) {
         if (name == null || name.length() == 0) {
             return this;
         }
         ParameterValue nByName = findNByName(name);
         if (nByName == null) {
-            add(ParameterValue.create(name, value, init));
+            add(ParameterValue.create(name, value, init).setUnicode(unicode));
         } else {
             nByName.value = value;
             nByName.init = init;
+            nByName.unicode=unicode;
         }
         return this;
     }
