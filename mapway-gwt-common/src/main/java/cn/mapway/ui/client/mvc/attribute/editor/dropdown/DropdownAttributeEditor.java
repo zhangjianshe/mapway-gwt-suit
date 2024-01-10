@@ -3,11 +3,10 @@ package cn.mapway.ui.client.mvc.attribute.editor.dropdown;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.*;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
-import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
-import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
+import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
 import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.widget.Dropdown;
 import com.google.gwt.core.client.GWT;
@@ -84,8 +83,6 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     }
 
 
-
-
     /**
      * 当数据发生变化后 调用这个方法更新界面的数据
      */
@@ -119,6 +116,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
                     ParameterValue data = Js.uncheckedCast(o);
                     //TODO 未来能不能 去掉Option 用ParameterValue代替
                     Option option = new Option(data.name, DataCastor.castToString(data.value));
+                    option.setIcon(data.unicode);
                     option.setInitSelected(data.init);
                     optionProvider1.getOptions().add(option);
                 }
@@ -135,10 +133,11 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
 
     @Override
     public void fromUI() {
-        if(getAttribute()!=null){
+        if (getAttribute() != null) {
             getAttribute().setValue(ddlDropdown.getValue());
         }
     }
+
     private void setOptionProvider(IOptionProvider provider) {
         ddlDropdown.clear();
 
