@@ -13,6 +13,13 @@ public class Rect implements Serializable, IsSerializable {
     public Rect() {
     }
 
+    public Rect(double x, double y, double width, double height) {
+        this.x = x;
+        this.y = y;
+        this.width = width;
+        this.height = height;
+    }
+
     /**
      * output json format
      *
