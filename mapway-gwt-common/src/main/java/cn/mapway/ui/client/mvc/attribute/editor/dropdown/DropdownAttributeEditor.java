@@ -45,6 +45,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     Dropdown ddlDropdown;
     @UiField
     DropdownListDesign designWidget;
+    private boolean hasInit = false;
 
     public DropdownAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -95,39 +96,43 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             ddlDropdown.setEnabled(false);
         }
 
-        String dropdownParameter = option(ParameterKeys.KEY_OPTIONS, null);
+        if (!hasInit) {
+            String dropdownParameter = option(ParameterKeys.KEY_OPTIONS, null);
 
-        IOptionProvider optionProvider = attribute.getOptionProvider();
-        if (optionProvider != null) {
-            setOptionProvider(optionProvider);
-        } else if (dropdownParameter != null) {
-            try {
-                JsArrayLike<ParameterValue> arrayLike;
+            IOptionProvider optionProvider = attribute.getOptionProvider();
+            if (optionProvider != null) {
+                setOptionProvider(optionProvider);
+            } else if (dropdownParameter != null) {
                 try {
-                    String dataString = DataCastor.castToString(dropdownParameter);
-                    arrayLike = Js.uncheckedCast(Global.JSON.parse(dataString));
+                    JsArrayLike<ParameterValue> arrayLike;
+                    try {
+                        String dataString = DataCastor.castToString(dropdownParameter);
+                        arrayLike = Js.uncheckedCast(Global.JSON.parse(dataString));
+                    } catch (Exception e) {
+                        arrayLike = new JsArray<>();
+                    }
+                    OptionProvider optionProvider1 = new OptionProvider();
+
+                    for (int i = 0; i < arrayLike.getLength(); i++) {
+                        Object o = arrayLike.getAt(i);
+                        ParameterValue data = Js.uncheckedCast(o);
+                        //TODO 未来能不能 去掉Option 用ParameterValue代替
+                        Option option = new Option(data.name, DataCastor.castToString(data.value));
+                        option.setIcon(data.unicode);
+                        option.setInitSelected(data.init);
+                        optionProvider1.getOptions().add(option);
+                    }
+                    setOptionProvider(optionProvider1);
+
                 } catch (Exception e) {
-                    arrayLike = new JsArray<>();
+                    Logs.info("extract dropdwon list data error " + e.getMessage());
                 }
-                OptionProvider optionProvider1 = new OptionProvider();
-
-                for (int i = 0; i < arrayLike.getLength(); i++) {
-                    Object o = arrayLike.getAt(i);
-                    ParameterValue data = Js.uncheckedCast(o);
-                    //TODO 未来能不能 去掉Option 用ParameterValue代替
-                    Option option = new Option(data.name, DataCastor.castToString(data.value));
-                    option.setIcon(data.unicode);
-                    option.setInitSelected(data.init);
-                    optionProvider1.getOptions().add(option);
-                }
-                setOptionProvider(optionProvider1);
-
-            } catch (Exception e) {
-                Logs.info("extract dropdwon list data error " + e.getMessage());
             }
+            hasInit = true;
         }
+
         Object obj = getAttribute().getValue();
-        ddlDropdown.setValue(obj, false);
+        ddlDropdown.setValue(DataCastor.castToString(obj), false);
     }
 
 
@@ -151,7 +156,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             }
         }
         if (selectedValue != null) {
-            ddlDropdown.setValue(selectedValue);
+            ddlDropdown.setValue(selectedValue, false);
         }
     }
 
