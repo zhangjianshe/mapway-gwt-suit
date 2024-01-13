@@ -18,7 +18,7 @@
         <gwt.version>2.10.0</gwt.version>
         <nutz.version>1.r.66</nutz.version>
         <slfj-api.version>1.7.33</slfj-api.version>
-        <elementalVersion>1.1.0</elementalVersion>
+        <elementalVersion>1.2.1</elementalVersion>
     </properties>
     <dependencies>
         <dependency>
