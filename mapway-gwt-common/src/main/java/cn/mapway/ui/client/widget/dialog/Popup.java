@@ -3,6 +3,7 @@ package cn.mapway.ui.client.widget.dialog;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.decorator.IProvideSize;
 import cn.mapway.ui.client.tools.IData;
+import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
@@ -27,8 +28,17 @@ public class Popup<T extends Widget> extends PopupPanel implements HasCommonHand
         if (content instanceof HasCommonHandlers) {
             //代理内部容器发送事件
             CommonEventHandler commonHandler = event -> {
-                //代理内部容器发送事件
-                fireEvent(event);
+                if (event.isResize()) {
+                    if (event.getValue() instanceof Size) {
+                        Size size = event.getValue();
+                        setPixelSize(size.getXAsInt(), size.getYAsInt());
+                    } else {
+                        Logs.info("resize event' data is not Size object");
+                    }
+                } else {
+                    //代理内部容器发送事件
+                    fireEvent(event);
+                }
             };
             ((HasCommonHandlers) content).addCommonHandler(commonHandler);
         }
