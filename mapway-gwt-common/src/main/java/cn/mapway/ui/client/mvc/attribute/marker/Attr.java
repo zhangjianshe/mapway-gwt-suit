@@ -70,6 +70,11 @@ public @interface Attr {
      */
     String icon() default "";
 
+    /**
+     * input output running ParameterTypeEnum
+     * @return
+     */
+    int type() default 0;
 
     /**
      * 通过一个类提供编辑器实例化信息
