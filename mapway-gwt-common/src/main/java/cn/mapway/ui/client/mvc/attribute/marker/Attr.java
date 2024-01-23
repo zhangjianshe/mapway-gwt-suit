@@ -72,9 +72,10 @@ public @interface Attr {
 
     /**
      * input output running ParameterTypeEnum
+     *
      * @return
      */
-    int type() default 0;
+    ParameterTypeEnum type() default ParameterTypeEnum.PT_INPUT;
 
     /**
      * 通过一个类提供编辑器实例化信息
