@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute;
 
+import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
 import cn.mapway.ui.shared.CommonEvent;
@@ -96,7 +97,13 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
             } else {
                 value = "";
             }
-            values.add(new AttributeValue(attribute.getName(), attribute.getAltName(), value, InputTypeEnum.INPUT_OTHERS.code));
+            String editCode;
+            if (attribute.getEditorMetaData() == null) {
+                editCode = TextboxAttributeEditor.EDITOR_CODE;
+            } else {
+                editCode = attribute.getEditorMetaData().getEditorCode();
+            }
+            values.add(new AttributeValue(attribute.getName(), attribute.getAltName(), value, InputTypeEnum.INPUT_OTHERS.code, editCode));
         }
         return values;
     }

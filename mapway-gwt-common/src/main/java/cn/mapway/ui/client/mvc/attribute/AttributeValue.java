@@ -22,4 +22,8 @@ public class AttributeValue implements Serializable, IsSerializable {
     String altName;
     String value;
     Integer inputType;
+    /**
+     * 新增 编辑器代码
+     */
+    String editCode;
 }
