@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.widget.buttons;
 
 import cn.mapway.ui.client.fonts.Fonts;
-import cn.mapway.ui.client.mvc.decorator.ISelectable;
+import cn.mapway.ui.client.mvc.window.ISelectable;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.util.StringUtil;
 import com.google.gwt.event.dom.client.MouseDownEvent;

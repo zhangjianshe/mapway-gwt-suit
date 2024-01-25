@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.decorator;
+package cn.mapway.ui.client.mvc.window;
 
 /**
  * 支持设置错误消息的接口

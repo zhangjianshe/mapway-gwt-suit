@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.widget.dialog;
 
 import cn.mapway.ui.client.mvc.Size;
-import cn.mapway.ui.client.mvc.decorator.IProvideSize;
+import cn.mapway.ui.client.mvc.window.IProvideSize;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;

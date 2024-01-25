@@ -3,7 +3,7 @@ package cn.mapway.ui.client.mvc.attribute.editor;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
-import cn.mapway.ui.client.mvc.decorator.IProvideSize;
+import cn.mapway.ui.client.mvc.window.IProvideSize;
 import cn.mapway.ui.client.tools.IData;
 import com.google.gwt.user.client.ui.Widget;
 

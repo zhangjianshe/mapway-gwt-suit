@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.decorator;
+package cn.mapway.ui.client.mvc.window;
 
 import cn.mapway.ui.client.mvc.Size;
 

@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.mvc.decorator.help;
+package cn.mapway.ui.client.mvc.help;
 
 
 import com.google.gwt.user.client.ui.Widget;

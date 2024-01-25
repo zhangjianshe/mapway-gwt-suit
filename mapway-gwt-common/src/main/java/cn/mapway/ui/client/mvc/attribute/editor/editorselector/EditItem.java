@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.editor.editorselector;
 
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
-import cn.mapway.ui.client.mvc.decorator.ISelectable;
+import cn.mapway.ui.client.mvc.window.ISelectable;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.FontIcon;
 import com.google.gwt.core.client.GWT;

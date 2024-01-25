@@ -1,7 +1,7 @@
 package cn.mapway.ui.client.widget;
 
-import cn.mapway.ui.client.mvc.decorator.IEnabled;
-import cn.mapway.ui.client.mvc.decorator.ISelectable;
+import cn.mapway.ui.client.mvc.window.IEnabled;
+import cn.mapway.ui.client.mvc.window.ISelectable;
 import cn.mapway.ui.client.tools.IData;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.user.client.DOM;

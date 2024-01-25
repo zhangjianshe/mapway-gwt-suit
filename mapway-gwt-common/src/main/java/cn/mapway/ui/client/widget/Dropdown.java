@@ -4,7 +4,7 @@ import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IOptionProvider;
 import cn.mapway.ui.client.mvc.attribute.IOptionProviderCallback;
 import cn.mapway.ui.client.mvc.attribute.Option;
-import cn.mapway.ui.client.mvc.decorator.IErrorMessage;
+import cn.mapway.ui.client.mvc.window.IErrorMessage;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.tree.ImageTextItem;
 import cn.mapway.ui.shared.CommonEventHandler;
