@@ -32,6 +32,7 @@
             align-self: center;
             font-weight: bold;
             color: #666666;
+            font-size: 0.9rem;
         }</ui:style>
     <g:HTMLPanel styleName="{style.layout2}" ui:field="box">
         <g:Label ui:field="lbHeader" styleName="{style.head}"/>
