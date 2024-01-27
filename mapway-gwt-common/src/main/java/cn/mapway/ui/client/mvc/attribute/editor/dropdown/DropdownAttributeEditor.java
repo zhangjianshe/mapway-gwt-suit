@@ -4,6 +4,7 @@ import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.*;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.EditorCodes;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
 import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
@@ -39,7 +40,7 @@ import jsinterop.base.JsArrayLike;
         icon = Fonts.DROPDOWN
 )
 public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
-    public static final String EDITOR_CODE = "DROPDOWN_EDITOR";
+    public static final String EDITOR_CODE = EditorCodes.EDITOR_DROPDOWN;
     private static final DropdownAttributeEditorUiBinder ourUiBinder = GWT.create(DropdownAttributeEditorUiBinder.class);
     @UiField
     Dropdown ddlDropdown;

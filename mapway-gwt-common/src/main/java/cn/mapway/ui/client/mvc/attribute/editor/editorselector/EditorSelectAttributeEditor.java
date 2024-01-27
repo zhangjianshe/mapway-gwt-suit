@@ -33,7 +33,7 @@ import java.util.List;
         icon = Fonts.XUANZE
 )
 public class EditorSelectAttributeEditor extends AbstractAttributeEditor<String> {
-    public static final String EDITOR_CODE = "ATTR_SELECT_EDITOR";
+    public static final String EDITOR_CODE = EditorCodes.EDITOR_ATTR_SELECT;
     private static final EditorSelectAttributeEditorUiBinder ourUiBinder = GWT.create(EditorSelectAttributeEditorUiBinder.class);
     @UiField
     Label txtName;

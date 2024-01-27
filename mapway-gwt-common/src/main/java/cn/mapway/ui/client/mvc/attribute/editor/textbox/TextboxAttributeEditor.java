@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.Widget;
         icon = Fonts.RENAME
 )
 public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
-    public static final String EDITOR_CODE = "TEXTBOX_EDITOR";
+    public static final String EDITOR_CODE = EditorCodes.EDITOR_TEXTBOX;
     private static final TextboxAttributeEditorUiBinder ourUiBinder = GWT.create(TextboxAttributeEditorUiBinder.class);
     @UiField
     TextBox txtBox;

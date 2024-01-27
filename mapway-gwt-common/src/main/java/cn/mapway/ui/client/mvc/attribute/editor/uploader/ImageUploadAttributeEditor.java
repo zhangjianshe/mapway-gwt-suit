@@ -5,7 +5,6 @@ import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterAttribute;
-import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.common.CommonEditorParameterDesigner;
@@ -33,7 +32,7 @@ import java.util.List;
         icon = Fonts.ENHANCE_COLOR
 )
 public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> {
-    public static final String EDITOR_CODE = "IMAGE_UPLOAD_EDITOR";
+    public static final String EDITOR_CODE = EditorCodes.EDITOR_IMAGE_UPLOAD;
     private static final ImageUploadAttributeEditorUiBinder ourUiBinder = GWT.create(ImageUploadAttributeEditorUiBinder.class);
     @UiField
     ImageUploader imageUploader;
