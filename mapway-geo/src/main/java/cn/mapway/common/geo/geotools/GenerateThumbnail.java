@@ -2,6 +2,10 @@ package cn.mapway.common.geo.geotools;
 
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
+import org.gdal.gdal.Band;
+import org.gdal.gdal.Dataset;
+import org.gdal.gdal.gdal;
+import org.gdal.gdalconst.gdalconst;
 import org.geotools.coverage.grid.io.AbstractGridCoverage2DReader;
 import org.geotools.coverage.grid.io.AbstractGridFormat;
 import org.geotools.coverage.grid.io.GridFormatFinder;
@@ -30,6 +34,7 @@ import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
 /**
  * @Author baoshuaiZealot@163.com  2023/7/12
@@ -46,46 +51,12 @@ public class GenerateThumbnail {
     private static Style rgbStyle = createRGBStyle(1, 2, 3);
 
     public static void generateRaster(File imageUrl, File labelUrl, File thumbnailUrl, int width, int height) throws IOException {
-        BufferedImage imageImage = Thumbnails.of(imageUrl).size(width, height).asBufferedImage();
-        // 若波段数大于3 则只取前三个波段
-        if(imageImage.getRaster().getNumBands() > 3){
-            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Raster srcData = imageImage.getData();
-            WritableRaster dest = bufferedImage.getRaster();
-            int[] pixel = new int[srcData.getNumBands()];
-            int[] destPixel = new int[3];
-            for (int y = 0; y < srcData.getHeight(); y++) {
-                for (int x = 0; x < srcData.getWidth(); x++) {
-                    srcData.getPixel(x, y, pixel);
-                    destPixel[0] = pixel[3];
-                    destPixel[1] = pixel[2];
-                    destPixel[2] = pixel[1];
-                    dest.setPixel(x, y, destPixel);
-                }
-            }
-            imageImage = bufferedImage;
-        } else if(imageImage.getRaster().getNumBands() < 3){
-            // 认为它是单波段
-            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Raster srcData = imageImage.getData();
-            WritableRaster dest = bufferedImage.getRaster();
-            // 不一定是 int 需要根据波段类型来确定
-            int[] pixel = new int[srcData.getNumBands()];
-            int[] destPixel = new int[3];
-            for (int y = 0; y < srcData.getHeight(); y++) {
-                for (int x = 0; x < srcData.getWidth(); x++) {
-                    srcData.getPixel(x, y, pixel);
-                    destPixel[0] = pixel[0];
-                    destPixel[1] = pixel[0];
-                    destPixel[2] = pixel[0];
-                    dest.setPixel(x, y, destPixel);
-                }
-            }
-            imageImage = bufferedImage;
-        }
-        BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
+        // 用 gdal读取tif 将tif转换为BufferedImage
+        BufferedImage imageImage = readImage(imageUrl.getAbsolutePath());
+        imageImage = Thumbnails.of(imageImage)
+                .size(width, height).asBufferedImage();
 
-        Color color = new Color(255, 0, 0);
+        BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
         BufferedImage cannyImg = new Canny().getCannyImg(labelImage, imageImage);
         thumbnailUrl.getParentFile().mkdirs();
         Thumbnails.of(cannyImg)
@@ -262,53 +233,15 @@ public class GenerateThumbnail {
     }
 
     public static void main(String[] args) throws IOException {
-        String imageUrl = "F:\\数据\\4波段\\image\\1299683.tif";
-        String labelUrl = "F:\\数据\\4波段\\label\\1299683.tif";
-        File thumbnailUrl = new File("F:\\数据\\4波段\\thumbnail\\1299683.webp");
+        String imageUrl = "F:\\数据\\4波段\\A\\result_0_19.tif";
+        String labelUrl = "F:\\数据\\4波段\\labels\\result_0_19.tif";
+        File thumbnailUrl = new File("F:\\数据\\4波段\\thumbnail\\result_0_19.webp");
         int width = 256;
         int height = 256;
-
-        BufferedImage imageImage = Thumbnails.of(imageUrl).size(width, height).asBufferedImage();
-        // 若波段数大于3 则只取前三个波段
-        if(imageImage.getRaster().getNumBands() > 3){
-            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Raster srcData = imageImage.getData();
-            WritableRaster dest = bufferedImage.getRaster();
-            int[] pixel = new int[srcData.getNumBands()];
-            int[] destPixel = new int[3];
-            for (int y = 0; y < srcData.getHeight(); y++) {
-                for (int x = 0; x < srcData.getWidth(); x++) {
-                    srcData.getPixel(x, y, pixel);
-                    destPixel[0] = pixel[3];
-                    destPixel[1] = pixel[2];
-                    destPixel[2] = pixel[1];
-                    dest.setPixel(x, y, destPixel);
-                }
-            }
-            imageImage = bufferedImage;
-        } else if(imageImage.getRaster().getNumBands() < 3){
-            // 认为它是单波段
-            BufferedImage bufferedImage = new BufferedImage(imageImage.getWidth(), imageImage.getHeight(), BufferedImage.TYPE_INT_RGB);
-            Raster srcData = imageImage.getData();
-
-            // TODO 后续需要更新 暴帅 现在还不支持单波段的不同格式, 以及配色表
-            int type = imageImage.getType();
-
-            WritableRaster dest = bufferedImage.getRaster();
-            // 不一定是 int 需要根据波段类型来确定
-            int[] pixel = new int[srcData.getNumBands()];
-            int[] destPixel = new int[3];
-            for (int y = 0; y < srcData.getHeight(); y++) {
-                for (int x = 0; x < srcData.getWidth(); x++) {
-                    srcData.getPixel(x, y, pixel);
-                    destPixel[0] = pixel[0];
-                    destPixel[1] = pixel[0];
-                    destPixel[2] = pixel[0];
-                    dest.setPixel(x, y, destPixel);
-                }
-            }
-            imageImage = bufferedImage;
-        }
+        gdal.AllRegister();
+        BufferedImage imageImage = readImage(imageUrl);
+        imageImage = Thumbnails.of(imageImage)
+                .size(width, height).asBufferedImage();
         BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
 
         BufferedImage cannyImg = new Canny().getCannyImg(labelImage, imageImage);
@@ -319,4 +252,124 @@ public class GenerateThumbnail {
                 .outputQuality(0.9)
                 .toFile(thumbnailUrl);
     }
+
+    public static BufferedImage readImage(String imageUrl){
+        Dataset open = gdal.Open(imageUrl, gdalconst.GA_ReadOnly);
+        int rasterCount = open.getRasterCount();
+        BufferedImage bufferedImage = new BufferedImage(open.getRasterXSize(), open.getRasterYSize(), BufferedImage.TYPE_3BYTE_BGR);
+        if(rasterCount >=3 ){
+            // 取前三个波段
+            int rasterXSize = open.getRasterXSize();
+            int rasterYSize = open.getRasterYSize();
+            byte[] bytes = readPixelValues(open.GetRasterBand(1), 0.01, 0.99);
+            byte[] bytes1 = readPixelValues(open.GetRasterBand(2), 0.01, 0.99);
+            byte[] bytes2 = readPixelValues(open.GetRasterBand(3), 0.01, 0.99);
+            for(int x = 0; x < rasterXSize; x++){
+                for(int y = 0; y < rasterYSize; y++){
+                    byte r = bytes[x + y * rasterXSize];
+                    byte g = bytes1[x + y * rasterXSize];
+                    byte b = bytes2[x + y * rasterXSize];
+                    int value = ((255 & 0xFF) << 24) |
+                            ((r & 0xFF) << 16) |
+                            ((g & 0xFF) << 8)  |
+                            ((b & 0xFF) << 0);
+                    bufferedImage.setRGB(x, y, value);
+                }
+            }
+        } else {
+            // 取单波段
+            byte[] bytes = readPixelValues(open.GetRasterBand(1), 0.01, 0.99);
+            for(int x = 0; x < open.getRasterXSize(); x++){
+                for(int y = 0; y < open.getRasterYSize(); y++){
+                    byte color = bytes[x + y * open.getRasterXSize()];
+                    int value = ((255 & 0xFF) << 24) |
+                            ((color & 0xFF) << 16) |
+                            ((color & 0xFF) << 8)  |
+                            ((color & 0xFF) << 0);
+
+                    bufferedImage.setRGB(x, y, value);
+                }
+            }
+        }
+        return bufferedImage;
+    }
+
+    public static byte[] readPixelValues(Band band) {
+        return readPixelValues(band, band.getDataType(),0.0, 0.0);
+    }
+
+    public static byte[] readPixelValues(Band band, Double min, Double max) {
+        return readPixelValues(band, band.getDataType(),min, max);
+    }
+
+    public static byte[] readPixelValues(Band band, int dataType, Double min, Double max) {
+        if(dataType == gdalconst.GDT_Byte){
+            byte[] data = new byte[band.getXSize() * band.getYSize()];
+            band.ReadRaster(0, 0, band.getXSize(), band.getYSize(), dataType, data);
+            return data;
+        } else if (dataType == gdalconst.GDT_Int16 || dataType == gdalconst.GDT_UInt16){
+            short[] data = new short[band.getXSize() * band.getYSize()];
+            band.ReadRaster(0, 0, band.getXSize(), band.getYSize(), dataType, data);
+            Double[] values = new Double[2];
+
+            // int[] 转换为 float[]
+            float[] floats = new float[data.length];
+            for (int i = 0; i < data.length; i++) {
+                floats[i] = (float) data[i];
+            }
+            return stretch(floats, min, max);
+        } else if(dataType == gdalconst.GDT_Int16 || dataType == gdalconst.GDT_UInt16){
+            int[] data = new int[band.getXSize() * band.getYSize()];
+            band.ReadRaster(0, 0, band.getXSize(), band.getYSize(), dataType, data);
+            // int[] 转换为 float[]
+            float[] floats = new float[data.length];
+            for (int i = 0; i < data.length; i++) {
+                floats[i] = (float) data[i];
+            }
+            return stretch(floats, min, max);
+        } else if(dataType == gdalconst.GDT_Float32){
+            float[] data = new float[band.getXSize() * band.getYSize()];
+            band.ReadRaster(0, 0, band.getXSize(), band.getYSize(), dataType, data);
+            return stretch(data, min, max);
+        } else if(dataType == gdalconst.GDT_Float64){
+            double[] data = new double[band.getXSize() * band.getYSize()];
+            band.ReadRaster(0, 0, band.getXSize(), band.getYSize(), dataType, data);
+            // double[] 转换为 float[]
+            float[] floats = new float[data.length];
+            for (int i = 0; i < data.length; i++) {
+                floats[i] = (float) data[i];
+            }
+            return stretch(floats, min, max);
+        }
+        return null;
+    }
+
+    public static byte[] stretch(float[] data, Double min, Double max) {
+        byte[] result = new byte[data.length];
+        float[] clone = data.clone();
+        Arrays.sort(clone);
+        int length = clone.length;
+        int minIndex = 0;
+        int maxIndex = clone.length - 1;
+        if(min != null && max != null){
+            minIndex = (int) (length * min);
+            maxIndex = (int) (length * max);
+        }
+        float minValue = clone[minIndex];
+        float maxValue = clone[maxIndex];
+        float width = maxValue - minValue;
+        for (int i = 0; i < data.length; i++) {
+            float value = data[i];
+            float offset = data[i] - minValue;
+            if(value > maxValue){
+                result[i] = (byte) 255;
+            } else if(value < minValue){
+                result[i] = (byte) 0;
+            } else {
+                result[i] = (byte) (255 * (offset / width));
+            }
+        }
+        return result;
+    }
+
 }
