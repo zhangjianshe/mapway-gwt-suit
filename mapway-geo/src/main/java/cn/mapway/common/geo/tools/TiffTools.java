@@ -21,11 +21,16 @@ import org.gdal.ogr.Geometry;
 import org.gdal.ogr.ogrConstants;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
+import org.geotools.referencing.CRS;
+import org.locationtech.jts.geom.Coordinate;
+import org.locationtech.jts.geom.GeometryFactory;
 import org.nutz.filepool.FilePool;
 import org.nutz.filepool.NutFilePool;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
 import org.nutz.lang.*;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
+import org.opengis.referencing.operation.MathTransform;
 
 import java.io.File;
 import java.io.IOException;
@@ -59,9 +64,15 @@ public class TiffTools {
     private static SpatialReference srfwgs84;
     private static SpatialReference srfwebMercator;
 
+    static CoordinateReferenceSystem decode4326 = null;
+    static CoordinateReferenceSystem decode3857 = null;
+
+    static MathTransform transform3857To4326 = null;
+
     static {
         satelliteExtractorList = new ArrayList<>();
         satelliteExtractorList.add(new GF1Parser());
+        createTransform();
     }
 
     public TiffTools() {
@@ -549,11 +560,40 @@ public class TiffTools {
             info.setResolution((int) (resolution * 10));
         } else {
             //没有坐标
-            box.setValue(-180, -90, 180, 90);
+            // 1. 设置范围 3857的坐标转换为4326的坐标
+            if(transform3857To4326 != null){
+                GeometryFactory geometryFactory = new GeometryFactory();
+                org.locationtech.jts.geom.Point pointMin = geometryFactory.createPoint(new Coordinate(0, 0));
+                org.locationtech.jts.geom.Point pointMax = geometryFactory.createPoint(new Coordinate(info.getWidth(), info.getHeight()));
+                // 找到 pointMin 和 pointMax 中的minx miny maxx maxy
+
+                double[] doubles = new double[4];
+                doubles[0] = pointMin.getX() > pointMax.getX() ? pointMax.getX() : pointMin.getX();
+                doubles[1] = pointMin.getX() > pointMax.getX() ? pointMin.getX() : pointMax.getX();
+                doubles[2] = pointMin.getY() > pointMax.getY() ? pointMax.getY() : pointMin.getY();
+                doubles[3] = pointMin.getY() > pointMax.getY() ? pointMin.getY() : pointMax.getY();
+                box.setValue(doubles[0], doubles[2], doubles[1], doubles[3]);
+            } else {
+                box.setValue(-180, -90, 180, 90);
+            }
+
+            // 2. 设置GeoTransform为像素坐标
+            // 像素坐标左上角是0,0 右下角是 width, height;
+            // 3857坐标系下的坐标 左上角是-20037508.342789244, 20037508.342789244 右下角是20037508.342789244, -20037508.342789244
+            // 计算GeoTransform
+            double[] geoTransform = new double[6];
+            geoTransform[0] = 0;
+            geoTransform[1] = 1;
+            geoTransform[2] = 0;
+            geoTransform[3] = 0;
+            geoTransform[4] = 0;
+            geoTransform[5] = -1;
+            info.geoTransform = geoTransform;
             info.setLat(0);
             info.setLng(0);
-            GlobalMercator globalMercator = new GlobalMercator(256);
-            int zoom = globalMercator.zoomForPixelSize(Math.max(info.getWidth(), info.getHeight()));
+            double lngPerPixel = box.width() / info.getWidth();
+            double resolution = lngPerPixel * (2 * Math.PI * GlobalMercator.get().EARTH_RADIUS) / 360;
+            int zoom = GlobalMercator.get().zoomForPixelSize(resolution);
             info.setMaxZoom(zoom);
             info.setMinZoom(3);
             info.setResolution(0);
@@ -774,6 +814,13 @@ public class TiffTools {
             temp.delete();
             return null;
         }
+    }
 
+    private static void createTransform() {
+        try{
+            decode4326 = CRS.decode("EPSG:4326");
+            decode3857 = CRS.decode("EPSG:3857");
+            transform3857To4326 = CRS.findMathTransform(decode3857, decode4326);
+        } catch (Exception e){}
     }
 }
