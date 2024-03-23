@@ -254,6 +254,13 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         return null;
     }
 
+    public String getSelectedText() {
+        if (selected != null) {
+            return selected.getText().trim();
+        }
+        return null;
+    }
+
     /**
      * 设置值为选中状态
      *
