@@ -37,7 +37,7 @@ public class DbTools {
      * @param clazz
      */
     public static void checkFieldSerial(Dao dao, Class clazz) {
-        Field[] fields = clazz.getFields();
+        Field[] fields = clazz.getDeclaredFields();
         List<Sql> sqlList = new ArrayList<>();
         for (Field field : fields) {
             Default fieldAnnotation = field.getAnnotation(Default.class);
