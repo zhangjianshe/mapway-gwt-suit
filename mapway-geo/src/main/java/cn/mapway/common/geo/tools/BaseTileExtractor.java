@@ -18,7 +18,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.gdal.gdalconst.gdalconstConstants.*;
 
@@ -282,10 +281,10 @@ public class BaseTileExtractor {
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         // source  postion 读取一个 64位的浮点数 怎么转换
 
-                        int anInt = (int) source.getDouble(pos);
+                        float pixelFloat = source.getFloat(pos);
                         isTransparent[0] = false;
-                        byte b = (byte) (0xFF & intValueToByteValue(isTransparent, sourceBandData, novalue, anInt, true));
-                        target.put(b);
+                        float pixelValue = checkValue(isTransparent, sourceBandData, novalue, pixelFloat, true);
+                        target.put((byte) (pixelValue * 255));
                         if (!isTransparent[0] && transparentBand != null) {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
@@ -357,6 +356,42 @@ public class BaseTileExtractor {
             isTransprentOut[0] = false;
         }
         return b & 0xFF;
+    }
+
+    /**
+     * check pixel Value <anFloat>
+     * 1.is Transparent
+     * 2. normalize? -> 0,1
+     *
+     * @param sourceBandData
+     * @param novalue
+     * @param anFloat
+     * @return
+     */
+    private float checkValue(Boolean[] isTransprentOut, BandData sourceBandData, Double[] novalue, float anFloat, boolean normalize) {
+        if (novalue != null && novalue.length > 0) {
+            for (int t = 0; t < novalue.length; t++) {
+                float et = novalue[t].floatValue();
+                if (Math.abs(et - anFloat) < 0.000001) {
+                    isTransprentOut[0] = true;
+                    break;
+                }
+            }
+        } else {
+            isTransprentOut[0] = false;
+        }
+
+        if (normalize) {
+            //处理空值的问题
+            double range = (anFloat - sourceBandData.info.getMinValue());
+            double total = (sourceBandData.info.getMaxValue() - sourceBandData.info.getMinValue());
+            if (Math.abs(total) < 0.0000001) {
+                return 0;
+            }
+            return (float) (range / total);
+        } else {
+            return anFloat;
+        }
     }
 
     /**
@@ -503,7 +538,6 @@ public class BaseTileExtractor {
                     targetRect.getXAsInt(), targetRect.getYAsInt(),
                     targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), tileSize);
 
-            log.info(sourceData.toString());
             //RGB 通道 用于替换颜色
             ByteBuffer[] sourceBuffer = new ByteBuffer[3];
             sourceBuffer[0] = ByteBuffer.allocateDirect(tileSize * tileSize);

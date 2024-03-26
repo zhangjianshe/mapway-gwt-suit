@@ -615,7 +615,8 @@ public class TiffTools {
         double[] mean = new double[1];
         double[] stddev = new double[1];
         // 这里修改了, 若统计过则不再次统计
-        band.GetStatistics(1, 0, min, max, mean, stddev);
+        //todo 统计会很耗费时间 ,修改逻辑 增加统计反馈
+        band.GetStatistics(1, 1, min, max, mean, stddev);
         bandInfo.setMinValue(min[0]);
         bandInfo.setMaxValue(max[0]);
         bandInfo.setCalMaxValue(mean[0] + 2.0 * stddev[0]);

@@ -27,6 +27,10 @@ public class ColorTable implements Serializable, IsSerializable {
      */
     Integer colorMapType;
 
+    /**
+     * 改颜色表是否为归一化颜色表
+     */
+    Boolean normalize;
 
     List<ColorMap> colorMaps;
 
@@ -35,6 +39,7 @@ public class ColorTable implements Serializable, IsSerializable {
      * 缺省构造一个  单波段为彩色 单一值的颜色表
      */
     public ColorTable() {
+        normalize = false;
         colorTableType = COLOR_TYPE_SINGLE_BAND_PSEUDO_COLOR.code;
         colorMapType = ColorMapType.COLOR_MAP_TYPE_UNIQUE.code;
         colorMaps = new ArrayList<>();
@@ -54,30 +59,31 @@ public class ColorTable implements Serializable, IsSerializable {
      * @param value
      * @return
      */
-    public int  mapColor(double value) {
+    public int mapColor(double value) {
         if (colorMaps == null) {
             return defaultColor;
         }
 
+        //单波段伪彩色
         if (colorTableType.equals(COLOR_TYPE_SINGLE_BAND_PSEUDO_COLOR.code)) {
-            //单波段伪彩色
-            if (colorMapType.equals(ColorMapType.COLOR_MAP_TYPE_RANGE.code)) {
-                //范围映射
-                for (ColorMap colorMap : colorMaps) {
-                    if (value >= colorMap.start && value < colorMap.end) {
-                        return colorMap.rgba;
+            ColorMapType mapType = ColorMapType.valueOfCode(colorMapType);
+            switch (mapType) {
+                case COLOR_MAP_TYPE_RANGE:
+                    //范围映射
+                    for (ColorMap colorMap : colorMaps) {
+                        if (value >= colorMap.start && value < colorMap.end) {
+                            return colorMap.rgba;
+                        }
                     }
-                }
-                return defaultColor;
-            } else if (colorMapType.equals(ColorMapType.COLOR_MAP_TYPE_UNIQUE.code)) {
-                for (ColorMap colorMap : colorMaps) {
-                    if (Math.abs(value - colorMap.start) < 0.01) {
-                        return colorMap.rgba;
+                    return defaultColor;
+                case COLOR_MAP_TYPE_UNIQUE:
+                    for (ColorMap colorMap : colorMaps) {
+                        if (Math.abs(value - colorMap.start) < 0.001) {
+                            return colorMap.rgba;
+                        }
                     }
-                }
-                return defaultColor;
-            } else {
-                return defaultColor;
+                default:
+                    return defaultColor;
             }
         }
         return defaultColor;
