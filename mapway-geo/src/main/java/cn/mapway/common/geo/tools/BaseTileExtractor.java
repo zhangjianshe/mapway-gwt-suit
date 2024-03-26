@@ -569,7 +569,20 @@ public class BaseTileExtractor {
                     int rgba;
                     if (replaceColor == null || replaceColor.length < 3) {
                         //没有设置替换颜色 使用颜色表
-                        rgba = translateColor(pixelValue);
+                        if (colorTable.getNormalize()) {
+                            //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
+                            // 讲数据中的颜色进行归一化处理
+                            pixelValue = normalizePixel(sourceBand, pixelValue);
+
+                            if (pixelValue < 0.0 || pixelValue > 1.0) {
+                                rgba = 0xFFFFFF00;
+                            } else {
+                                rgba = translateColor(pixelValue);
+                            }
+                        } else {
+                            //颜色表不是归一化颜色表 直接使用像素值进行查找替换
+                            rgba = translateColor(pixelValue);
+                        }
                         sourceBuffer[0].put((byte) (Colors.r(rgba) & 0xFF));
                         sourceBuffer[1].put((byte) (Colors.g(rgba) & 0xFF));
                         sourceBuffer[2].put((byte) (Colors.b(rgba) & 0xFF));
@@ -637,5 +650,22 @@ public class BaseTileExtractor {
             }
         }
         return transparentBand;
+    }
+
+    /**
+     * 像素值归一化处理   less 0 || great 1 -> is transparent  set it Value to -1
+     *
+     * @param sourceBand
+     * @param pixelValue
+     * @return
+     */
+    private double normalizePixel(BandData sourceBand, double pixelValue) {
+        double total = sourceBand.getInfo().getMaxValue() - sourceBand.getInfo().getMinValue();
+        double value = pixelValue - sourceBand.getInfo().getMinValue();
+        if (Math.abs(total) < 0.0000001) {
+            //颜色数据差别娇小 无法显示 设为-1
+            return -1.0;
+        }
+        return total / value;
     }
 }
