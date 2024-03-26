@@ -666,6 +666,6 @@ public class BaseTileExtractor {
             //颜色数据差别娇小 无法显示 设为-1
             return -1.0;
         }
-        return total / value;
+        return Math.abs(value / total);
     }
 }
