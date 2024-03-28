@@ -80,6 +80,12 @@ public class SwitchModuleData {
     }
 
 
+    public SwitchModuleData merge(ModuleParameter moduleParameter)
+    {
+        this.getParameters().merge(moduleParameter);
+        return this;
+    }
+
     public Boolean getSaveToHistory() {
         return saveToHistory;
     }

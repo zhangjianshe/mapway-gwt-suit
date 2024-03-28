@@ -137,4 +137,11 @@ public class ModuleParameter {
         return paras.keySet();
     }
 
+    public void merge(ModuleParameter source) {
+        if (source != null) {
+            for (Entry<String, Object> entry : source.paras.entrySet()) {
+                paras.put(entry.getKey(), entry.getValue());
+            }
+        }
+    }
 }
