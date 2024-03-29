@@ -218,6 +218,7 @@ public class StringUtil {
      * @return
      */
     public static String formatMillseconds(long numberOfMilliseconds) {
+
         long numberOfDays = TimeUnit.MILLISECONDS.toDays(numberOfMilliseconds);
         numberOfMilliseconds -= TimeUnit.DAYS.toMillis(numberOfDays);
 
@@ -259,33 +260,42 @@ public class StringUtil {
 
     /**
      * 格式化时间区间
+     * < 60           分钟内        刚刚
+     * < 60*60        小时内        n分钟前
+     * < 24*60*60     天内          n小时前
+     * < 7*24*60*60   周内          n天前
+     * < 4*7*24*60*60 月内          n周前
+     * < 365*24*60*60 年内          n月前
+     * <              好几年        n年m月
      *
-     * @param estTime
+     * @param estTime 时间单位为秒 second
      * @return
      */
     public static String formatTimeSpan(Long estTime) {
         if (estTime == null || estTime < 0) {
-            return "";
-        }
-        if (estTime < 0) {
-            return "0秒";
+            return "秒数据错误";
         }
         if (estTime < 60) {
-            return estTime + "秒";
+            return "刚刚";
         }
         if (estTime < 60 * 60) {
-            return (estTime.intValue() / 60) + "分" + (estTime % 60) + "秒";
+            return (int) (estTime / 60) + "分钟前";
         }
-        if (estTime < 60 * 60 * 60) {
-            int hour = (estTime.intValue() / (60 * 60));
-            int minute = (estTime.intValue() - hour * 60 * 60) / 60;
-            return hour + "小时" + minute + "分";
-        } else if (estTime < 24 * 60 * 60 * 60) {
-            int hour = (estTime.intValue() / (60 * 60));
-            int minute = (estTime.intValue() - hour * 60 * 60) / 60;
-            return hour + "小时" + minute + "分";
+        if (estTime < 24 * 60 * 60) {
+            return (int) (estTime / (60 * 60)) + "小时前";
         }
-        return "好多个小时";
+        if (estTime < 7 * 24 * 60 * 60) {
+            return (int) (estTime / (24 * 60 * 60)) + "天前";
+        }
+        if (estTime < 4 * 7 * 24 * 60 * 60) {
+            return (int) (estTime / (7 * 24 * 60 * 60)) + "周前";
+        }
+        if (estTime < 365 * 24 * 60 * 60) {
+            return (int) (estTime / (30 * 24 * 60 * 60)) + "月前";
+        }
+        int year = (int) (estTime / (365 * 24 * 60 * 60));
+        int month = (int) (estTime - year * 365) / (30 * 24 * 60 * 60);
+        return year + "年" + month + "月前";
     }
 
     public static String randomColor() {
