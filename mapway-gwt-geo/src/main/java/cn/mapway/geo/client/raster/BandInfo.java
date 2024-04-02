@@ -4,7 +4,6 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import lombok.Data;
 
 import java.io.Serializable;
-import java.util.HashMap;
 import java.util.Map;
 
 /**
@@ -23,6 +22,22 @@ public class BandInfo implements Serializable, IsSerializable {
     public Double minValue;
     public Double calMinValue;
     public Double calMaxValue;
+
+    /**
+     * 是否进行 Gamma矫正
+     * default is false
+     */
+    public boolean enableGamma = false;
+    
+    /**
+     * Gamma矫正
+     */
+    public Double gammaMin;
+    public Double gamma;
+    public Double gammaMax;
+
+
+
 
     public Double[] noValues;
 
