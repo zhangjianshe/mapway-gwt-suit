@@ -40,7 +40,7 @@ public class NoCrsTileExtractor extends BaseTileExtractor implements ITileExtrac
 
         //写完了一个tile 直接输出到 .S文件中去吧
         targetDataset.FlushCache();
-        return false;
+        return true;
     }
 
     @Override
