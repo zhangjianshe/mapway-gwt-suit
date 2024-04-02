@@ -35,13 +35,14 @@ import org.opengis.referencing.operation.MathTransform;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
 
 import static cn.mapway.geo.shared.GeoConstant.*;
-import static org.gdal.gdalconst.gdalconstConstants.CE_None;
 import static org.gdal.ogr.ogrConstants.wkbLinearRing;
 import static org.gdal.ogr.ogrConstants.wkbPolygon;
 import static org.gdal.osr.osrConstants.OAMS_TRADITIONAL_GIS_ORDER;
@@ -383,10 +384,10 @@ public class TiffTools {
             bandInfo.metadata = new HashMap<>();
 
             String wavelength = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH.getKey());
-            if(StringUtils.isNotEmpty(wavelength)){
+            if (StringUtils.isNotEmpty(wavelength)) {
                 bandInfo.metadata.put(MetadataEnum.META_KEY_WAVELENGTH.getKey(), wavelength);
                 String wavelength_units = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH_UNITS.getKey());
-                if(StringUtils.isEmpty(wavelength_units)){
+                if (StringUtils.isEmpty(wavelength_units)) {
                     MetadataValue value = MetadataEnum.META_KEY_WAVELENGTH_UNITS.getValues()[0];
                     wavelength_units = value.getKey();
                 }
@@ -561,7 +562,7 @@ public class TiffTools {
         } else {
             //没有坐标
             // 1. 设置范围 3857的坐标转换为4326的坐标
-            if(transform3857To4326 != null){
+            if (transform3857To4326 != null) {
                 GeometryFactory geometryFactory = new GeometryFactory();
                 org.locationtech.jts.geom.Point pointMin = geometryFactory.createPoint(new Coordinate(0, 0));
                 org.locationtech.jts.geom.Point pointMax = geometryFactory.createPoint(new Coordinate(info.getWidth(), info.getHeight()));
@@ -621,6 +622,11 @@ public class TiffTools {
         bandInfo.setMaxValue(max[0]);
         bandInfo.setCalMaxValue(mean[0] + 2.0 * stddev[0]);
         bandInfo.setCalMinValue(mean[0] - 2.0 * stddev[0]);
+        // default disable gamma correction
+        bandInfo.setGammaMin(min[0]);
+        bandInfo.setGammaMax(max[0]);
+        bandInfo.setGamma(0.5);
+        bandInfo.setEnableGamma(false);
     }
 
     /**
@@ -818,10 +824,11 @@ public class TiffTools {
     }
 
     private static void createTransform() {
-        try{
+        try {
             decode4326 = CRS.decode("EPSG:4326");
             decode3857 = CRS.decode("EPSG:3857");
             transform3857To4326 = CRS.findMathTransform(decode3857, decode4326);
-        } catch (Exception e){}
+        } catch (Exception e) {
+        }
     }
 }

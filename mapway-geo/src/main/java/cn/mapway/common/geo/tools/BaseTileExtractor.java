@@ -566,10 +566,16 @@ public class BaseTileExtractor {
                     } else if (dt == GDT_Float64) {
                         pixelValue = sourceData.asDoubleBuffer().get(location);
                     }
+
+
                     int rgba;
                     if (replaceColor == null || replaceColor.length < 3) {
                         //没有设置替换颜色 使用颜色表
-                        if (colorTable.getNormalize()) {
+                        if (source1.getInfo().enableGamma) {
+                            // 采用Gamma矫正算法
+                            //  pixelValue  apply to  [ gammaMin    gamma    gammaMax ]
+                            rgba = clip(pixelValue, source1.getInfo().gammaMin, source1.getInfo().gammaMax, source1.getInfo().gamma);
+                        } else if (colorTable.getNormalize()) {
                             //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
                             // 讲数据中的颜色进行归一化处理
                             pixelValue = normalizePixel(sourceBand, pixelValue);
@@ -650,6 +656,26 @@ public class BaseTileExtractor {
             }
         }
         return transparentBand;
+    }
+
+    /**
+     * Gamma correction the pixel,by the way with linenarly extraction
+     *
+     * @param pixelValue
+     * @param gammaMin
+     * @param gammaMax
+     * @param gamma      0.1-6
+     * @return
+     */
+    private int clip(double pixelValue, Double gammaMin, Double gammaMax, Double gamma) {
+        if (pixelValue <= gammaMin) {
+            pixelValue = gammaMin;
+        }
+        if (pixelValue >= gammaMax) {
+            pixelValue = gammaMax;
+        }
+        double value = 255 * Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
+        return (int) value;
     }
 
     /**

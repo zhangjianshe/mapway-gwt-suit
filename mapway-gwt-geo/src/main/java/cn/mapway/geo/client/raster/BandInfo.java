@@ -28,7 +28,7 @@ public class BandInfo implements Serializable, IsSerializable {
      * default is false
      */
     public boolean enableGamma = false;
-    
+
     /**
      * Gamma矫正
      */
