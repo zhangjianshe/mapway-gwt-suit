@@ -288,13 +288,14 @@ public class TiffTools {
      * @param bucketSize please input 256
      * @param callback   progress report
      */
-    public static void calRasterHistogram(String location, BandInfo bandInfo, int bucketSize, ProgressCallback callback) {
+    public static int[] calRasterHistogram(String location, BandInfo bandInfo, int bucketSize, ProgressCallback callback) {
         Dataset dataset = gdal.Open(location);
         Band band = dataset.GetRasterBand(bandInfo.index + 1);
         int[] buckets = new int[bucketSize];
         band.GetHistogram(bandInfo.minValue, bandInfo.maxValue, buckets, false, true, callback);
         band.delete();
         dataset.delete();
+        return buckets;
     }
 
     private void printDataType() {
