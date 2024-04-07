@@ -575,14 +575,14 @@ public class BaseTileExtractor {
                             // 采用Gamma矫正算法
                             //  pixelValue  apply to  [ gammaMin    gamma    gammaMax ]
                             double normalPixelValue = clip(pixelValue, source1.getInfo().gammaMin, source1.getInfo().gammaMax, source1.getInfo().gamma);
-                            if (colorTable != null && colorTable.getNormalize()) {
+                            if (colorTable != null && colorTable.getNormalize()!=null && colorTable.getNormalize()) {
                                 //用户设置了归一化调色板
                                 rgba = translateColor(normalPixelValue);
                             } else {
                                 //没有设置调色板
                                 rgba = (int) (normalPixelValue * 255);
                             }
-                        } else if (colorTable.getNormalize()) {
+                        } else if (colorTable.getNormalize()!=null && colorTable.getNormalize()) {
                             //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
                             // 讲数据中的颜色进行归一化处理
                             pixelValue = normalizePixel(sourceBand, pixelValue);
