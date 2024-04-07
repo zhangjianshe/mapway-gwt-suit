@@ -10,10 +10,7 @@ import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.gdal.gdal.Band;
-import org.gdal.gdal.Dataset;
-import org.gdal.gdal.Driver;
-import org.gdal.gdal.gdal;
+import org.gdal.gdal.*;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.gdalconst.gdalconstJNI;
 import org.gdal.ogr.GeomTransformer;
@@ -59,16 +56,14 @@ import static org.gdal.osr.osrConstants.OAMS_TRADITIONAL_GIS_ORDER;
 public class TiffTools {
 
     private static final List<ISatelliteExtractor> satelliteExtractorList;
+    static CoordinateReferenceSystem decode4326 = null;
+    static CoordinateReferenceSystem decode3857 = null;
+    static MathTransform transform3857To4326 = null;
     private static FilePool globalFilePool;
     private static Driver driverPng;
     private static Driver driverMemory;
     private static SpatialReference srfwgs84;
     private static SpatialReference srfwebMercator;
-
-    static CoordinateReferenceSystem decode4326 = null;
-    static CoordinateReferenceSystem decode3857 = null;
-
-    static MathTransform transform3857To4326 = null;
 
     static {
         satelliteExtractorList = new ArrayList<>();
@@ -274,6 +269,32 @@ public class TiffTools {
             log.warn("不能读取数值类型 {}", dataType);
             return 0;
         }
+    }
+
+    private static void createTransform() {
+        try {
+            decode4326 = CRS.decode("EPSG:4326");
+            decode3857 = CRS.decode("EPSG:3857");
+            transform3857To4326 = CRS.findMathTransform(decode3857, decode4326);
+        } catch (Exception e) {
+        }
+    }
+
+    /**
+     * 计算图像的直方图
+     *
+     * @param location
+     * @param bandInfo
+     * @param bucketSize please input 256
+     * @param callback   progress report
+     */
+    public static void calRasterHistogram(String location, BandInfo bandInfo, int bucketSize, ProgressCallback callback) {
+        Dataset dataset = gdal.Open(location);
+        Band band = dataset.GetRasterBand(bandInfo.index + 1);
+        int[] buckets = new int[bucketSize];
+        band.GetHistogram(bandInfo.minValue, bandInfo.maxValue, buckets, false, true, callback);
+        band.delete();
+        dataset.delete();
     }
 
     private void printDataType() {
@@ -820,15 +841,6 @@ public class TiffTools {
             //  log.error("extract Tile error {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
             temp.delete();
             return null;
-        }
-    }
-
-    private static void createTransform() {
-        try {
-            decode4326 = CRS.decode("EPSG:4326");
-            decode3857 = CRS.decode("EPSG:3857");
-            transform3857To4326 = CRS.findMathTransform(decode3857, decode4326);
-        } catch (Exception e) {
         }
     }
 }
