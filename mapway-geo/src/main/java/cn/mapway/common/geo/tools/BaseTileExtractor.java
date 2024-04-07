@@ -211,8 +211,10 @@ public class BaseTileExtractor {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
                         if (bandInfo.enableGamma) {
-                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            target.put((byte) (clipPixel * 255));
+                            double clipPixel = 255*clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            byte v=(byte)clipPixel;
+                            v= (byte) (v & 0xFF);
+                            target.put(v);
                         } else {
                             target.put(pixel);
                         }
@@ -243,10 +245,11 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = linear(pixel,
+                            double linearPixel = 255*linear(pixel,
                                     bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
                                     bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            target.put((byte) (linearPixel * 255));
+                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            target.put(v);
                         }
                     }
                 }
@@ -275,10 +278,11 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = linear(pixel,
+                            double linearPixel = 255*linear(pixel,
                                     bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
                                     bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            target.put((byte) (linearPixel * 255));
+                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            target.put(v);
                         }
                     }
                 }
@@ -307,10 +311,11 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = linear(pixel,
+                            double linearPixel = 255*linear(pixel,
                                     bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
                                     bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            target.put((byte) (linearPixel * 255));
+                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            target.put(v);
                         }
                     }
                 }
@@ -342,10 +347,11 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = linear(pixel,
+                            double linearPixel = 255*linear(pixel,
                                     bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
                                     bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            target.put((byte) (linearPixel * 255));
+                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            target.put(v);
                         }
 
                     }
@@ -378,10 +384,11 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = linear(pixel,
+                            double linearPixel = 255*linear(pixel,
                                     bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
                                     bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            target.put((byte) (linearPixel * 255));
+                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            target.put(v);
                         }
 
                     }
@@ -881,5 +888,14 @@ public class BaseTileExtractor {
         info.setGamma(gamma);
         // 需要将 sourceData 置为初始位置
         sourceData.position(0);
+    }
+
+    public static void main(String[] args) {
+        double pixelValue=243;
+        double gammaMin=4;
+        double gammaMax=243;
+        double gamma=2.2;
+        double value = Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
+        System.out.println(String.format("0x%X",(byte)(value*255)));
     }
 }
