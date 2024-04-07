@@ -391,7 +391,7 @@ public class TiffTools {
      * @param dataset
      * @return
      */
-    public ImageInfo extractImageInformation(Dataset dataset) {
+    public static ImageInfo extractImageInformation(Dataset dataset) {
         ImageInfo info = new ImageInfo();
         info.setBands(dataset.getRasterCount());
         info.setWidth(dataset.GetRasterXSize());
@@ -632,7 +632,7 @@ public class TiffTools {
      * @param bandInfo
      * @param band
      */
-    private void calValueExtends(BandInfo bandInfo, Band band) {
+    private static void calValueExtends(BandInfo bandInfo, Band band) {
         double[] min = new double[1];
         double[] max = new double[1];
         double[] mean = new double[1];
@@ -742,7 +742,7 @@ public class TiffTools {
      * @param xMi
      * @return
      */
-    private int zoomByWgs84Resolution(double xMi) {
+    private static int zoomByWgs84Resolution(double xMi) {
         GlobalMercator globalMercator = new GlobalMercator(256);
         return globalMercator.zoomForPixelSize(xMi);
     }
@@ -757,7 +757,7 @@ public class TiffTools {
      * @param pixelY
      * @return
      */
-    public Point pixelToLocation(double[] adfGeoTransform, long pixelX, long pixelY) {
+    public static Point pixelToLocation(double[] adfGeoTransform, long pixelX, long pixelY) {
         double xLocation = adfGeoTransform[0] + pixelX * adfGeoTransform[1] + pixelY * adfGeoTransform[2];
         double yLocation = adfGeoTransform[3] + pixelX * adfGeoTransform[4] + pixelY * adfGeoTransform[5];
         return new Point(xLocation, yLocation);
@@ -771,11 +771,11 @@ public class TiffTools {
      * @param adfGeoTransform
      * @return
      */
-    public Point resolution(double[] adfGeoTransform) {
+    public static Point resolution(double[] adfGeoTransform) {
         return new Point(adfGeoTransform[1], adfGeoTransform[5]);
     }
 
-    public Point wgs84Resolution(Point location, Point resolution) {
+    public static Point wgs84Resolution(Point location, Point resolution) {
         GlobalMercator globalMercator = new GlobalMercator(256);
         double temp = resolution.getX() * Math.PI * 2 * globalMercator.EARTH_RADIUS / 360.0;
         return new Point(temp, temp);

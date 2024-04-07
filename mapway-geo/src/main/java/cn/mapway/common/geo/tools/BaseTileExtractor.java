@@ -1,6 +1,7 @@
 package cn.mapway.common.geo.tools;
 
 
+import cn.mapway.geo.client.raster.BandInfo;
 import cn.mapway.geo.client.raster.ChanelData;
 import cn.mapway.geo.client.raster.ImageInfo;
 import cn.mapway.geo.shared.color.ColorTable;
@@ -549,8 +550,15 @@ public class BaseTileExtractor {
             int dt = sourceBand.getBand().GetRasterDataType();
             //循环处理每一个像素
             sourceData.order(ByteOrder.nativeOrder());
-            for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
+            if (source1.getInfo().enableGamma) {
+                if (source1.getInfo().gammaMax == null || source1.getInfo().gammaMin == null || source1.getInfo().gamma == null) {
+                    // gamma 矫正参数未设置, 根据当前小区域计算
+                    calculateGamma(source1.getInfo(), sourceData, dt, targetRect);
+                }
+            }
 
+
+            for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
                 for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
                     int location = row * targetRect.getWidthAsInt() + col;
                     int tilePosition = (targetRect.getYAsInt() + row) * tileSize + targetRect.getXAsInt() + col;
@@ -700,5 +708,87 @@ public class BaseTileExtractor {
             return -1.0;
         }
         return Math.abs(value / total);
+    }
+
+
+    private void calculateGamma(BandInfo info, ByteBuffer sourceData, int dt, Rect targetRect){
+        // 遍历 sourceData, 计算最大最小值
+        double max = Double.MIN_VALUE;
+        double min = Double.MAX_VALUE;
+
+        for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
+            for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
+                int location = row * targetRect.getWidthAsInt() + col;
+                double pixelValue = 0;
+                if (dt == GDT_Byte) {
+                    pixelValue = sourceData.get(location) & 0xFF;
+                } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
+                    pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;
+                } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
+                    pixelValue = sourceData.asIntBuffer().get(location);
+                } else if (dt == GDT_Float32) {
+                    pixelValue = sourceData.asFloatBuffer().get(location);
+                } else if (dt == GDT_Float64) {
+                    pixelValue = sourceData.asDoubleBuffer().get(location);
+                }
+                if (pixelValue > max) {
+                    max = pixelValue;
+                }
+                if (pixelValue < min) {
+                    min = pixelValue;
+                }
+            }
+        }
+        sourceData.position(0);
+        // 进行线性拉伸, 计算直方图
+        int[] histogram = new int[256];
+        for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
+            for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
+                int location = row * targetRect.getWidthAsInt() + col;
+                double pixelValue = 0;
+                if (dt == GDT_Byte) {
+                    pixelValue = sourceData.get(location) & 0xFF;
+                } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
+                    pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;
+                } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
+                    pixelValue = sourceData.asIntBuffer().get(location);
+                } else if (dt == GDT_Float32) {
+                    pixelValue = sourceData.asFloatBuffer().get(location);
+                } else if (dt == GDT_Float64) {
+                    pixelValue = sourceData.asDoubleBuffer().get(location);
+                }
+                if (max != min) {
+                    double value = (pixelValue - min) / (max - min);
+                    int key = (int) (value * 255);
+                    histogram[key]++;
+                }
+            }
+        }
+        sourceData.position(0);
+
+        // 计算平均亮度
+        int totalBrightness = 0;
+        int totalPixels = 0;
+        for (int i = 0; i < histogram.length; i++) {
+            totalBrightness += i * histogram[i];
+            totalPixels += histogram[i];
+        }
+        double averageBrightness = totalBrightness / totalPixels;
+
+        // 使用对数函数将平均亮度映射到伽马值
+        double deviation =  Math.log(averageBrightness) / Math.log(127);
+        double gamma = 1.0;
+        if(deviation < 1){
+            gamma = 1 - deviation;
+        } else if(deviation > 1){
+            gamma = 1 + deviation;
+        }
+        // 或者直接 gamma = 1 / deviation
+
+        info.setGammaMax(max);
+        info.setGammaMin(min);
+        info.setGamma(gamma);
+        // 需要将 sourceData 置为初始位置
+        sourceData.position(0);
     }
 }
