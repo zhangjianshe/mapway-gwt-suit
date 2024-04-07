@@ -15,8 +15,7 @@ import org.gdal.gdal.Dataset;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.gdalconst.gdalconstJNI;
 
-import java.nio.ByteBuffer;
-import java.nio.ByteOrder;
+import java.nio.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -191,12 +190,9 @@ public class BaseTileExtractor {
 
         target.position(0);
         source.position(0);
-        Boolean[] isTransparent = new Boolean[1];
         if (dt == GDT_Byte) {
-
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, GDT_Byte, source);
             //循环处理影像 并进行拉伸压缩
-            Double[] noValues = sourceBandData.info.getNoValues();
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
@@ -205,45 +201,52 @@ public class BaseTileExtractor {
                         //目标影像的位置
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         //读取原始影像 pos 位置的像素值
-                        int anInt = (source.get(pos) & 0xFF);
-                        isTransparent[0] = false;
-
-                        //判断是否是 无效值 如果无效值 isTransparent[0]==true
-                        byte b = (byte) (0xFF & intValueToByteValue(isTransparent, sourceBandData, noValues, anInt, false));
-                        //转换后的像素值
-                        target.put(b);
-                        if (!isTransparent[0] && transparentBand != null) {
+                        byte pixel = source.get(pos);
+                        BandInfo bandInfo = sourceBandData.info;
+                        boolean transparent = isPixelTransparent(pixel, bandInfo);
+                        if (transparent && transparentBand != null) {
                             //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
+                            transparentBand[posTarget] = (byte) 0x00;
+                        } else {
                             transparentBand[posTarget] = (byte) 0xff;
+                        }
+                        if (bandInfo.enableGamma) {
+                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            target.put((byte) (clipPixel * 255));
+                        } else {
+                            target.put(pixel);
                         }
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Int16) {
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, gdalconstConstants.GDT_Int16, source);
             //循环处理影像 并进行拉伸压缩
-            Double[] novalue = sourceBandData.info.getNoValues();
             log.info("Band DataType uint16");
+            //ShortBuffer shortBuffer = source.asShortBuffer();
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
                         int pos = (row * targetWidth + col) * 2;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
 
-                        int anInt = (source.get(pos + 1) << 8) & 0xFF00 + (source.get(pos) & 0xFF);
-                        if (anInt == 0xFF00) {
-                            anInt = 0;
-                        }
-                        isTransparent[0] = false;
-                        //16位影像 不处理 noValue值
-                        byte b = (byte) (0xFF & intValueToByteValue(isTransparent, sourceBandData, null, anInt, true));
-                        target.put(pos / 2, b);
-                        if (anInt > sourceBandData.info.getMaxValue()) {
-                            log.info("{}-{} {} {} {}", row, col, anInt, b, 0);
-                        }
-                        if (isTransparent[0] && transparentBand != null) {
+                        int pixel = (source.get(pos + 1) << 8) & 0xFF00 + (source.get(pos) & 0xFF);
+                        //读取原始影像 pos 位置的像素值
+                        BandInfo bandInfo = sourceBandData.info;
+                        boolean transparent = isPixelTransparent(pixel, bandInfo);
+                        if (transparent && transparentBand != null) {
+                            //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
                             transparentBand[posTarget] = (byte) 0x00;
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
+                        }
+                        if (bandInfo.enableGamma) {
+                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            target.put((byte) (clipPixel * 255));
+                        } else {
+                            double linearPixel = linear(pixel,
+                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
+                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
+                            target.put((byte) (linearPixel * 255));
                         }
                     }
                 }
@@ -257,12 +260,57 @@ public class BaseTileExtractor {
                     {
                         int pos = (row * targetWidth + col) * 2;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
-                        int anInt = (source.get(pos + 1) << 8) & 0xFF00 + (source.get(pos) & 0xFF);
-                        isTransparent[0] = false;
-                        byte b = (byte) (0xFF & intValueToByteValue(isTransparent, sourceBandData, novalue, anInt, true));
-                        target.put(pos / 2, b);
-                        if (!isTransparent[0] && transparentBand != null) {
+                        int pixel = (source.get(pos + 1) << 8) & 0xFF00 + (source.get(pos) & 0xFF);
+
+                        //读取原始影像 pos 位置的像素值
+                        BandInfo bandInfo = sourceBandData.info;
+                        boolean transparent = isPixelTransparent(pixel, bandInfo);
+                        if (transparent && transparentBand != null) {
+                            //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
+                            transparentBand[posTarget] = (byte) 0x00;
+                        } else {
                             transparentBand[posTarget] = (byte) 0xff;
+                        }
+                        if (bandInfo.enableGamma) {
+                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            target.put((byte) (clipPixel * 255));
+                        } else {
+                            double linearPixel = linear(pixel,
+                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
+                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
+                            target.put((byte) (linearPixel * 255));
+                        }
+                    }
+                }
+        } else if (dt == gdalconstConstants.GDT_UInt32 || dt == gdalconstConstants.GDT_Int32) {
+            sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, gdalconstConstants.GDT_UInt16, source);
+            //循环处理影像 并进行拉伸压缩
+            log.info("Band DataType uint32");
+            IntBuffer intBuffer = source.asIntBuffer();
+            for (int row = 0; row < targetHeight; row++)
+                for (int col = 0; col < targetWidth; col++) {
+                    {
+                        int pos = (row * targetWidth + col) * 2;
+                        int posTarget = (targetY + row) * tileWidth + col + targetX;
+                        int pixel = intBuffer.get(pos);
+
+                        //读取原始影像 pos 位置的像素值
+                        BandInfo bandInfo = sourceBandData.info;
+                        boolean transparent = isPixelTransparent(pixel, bandInfo);
+                        if (transparent && transparentBand != null) {
+                            //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
+                            transparentBand[posTarget] = (byte) 0x00;
+                        } else {
+                            transparentBand[posTarget] = (byte) 0xff;
+                        }
+                        if (bandInfo.enableGamma) {
+                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            target.put((byte) (clipPixel * 255));
+                        } else {
+                            double linearPixel = linear(pixel,
+                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
+                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
+                            target.put((byte) (linearPixel * 255));
                         }
                     }
                 }
@@ -271,24 +319,35 @@ public class BaseTileExtractor {
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight,
                     targetWidth, targetHeight, gdalconstConstants.GDT_Float32, source);
             source.order(ByteOrder.nativeOrder());
-
+            FloatBuffer floatBuffer = source.asFloatBuffer();
             //循环处理影像 并进行拉伸压缩
-            Double[] novalue = sourceBandData.info.getNoValues();
             target.position(0);
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
                         int pos = (row * targetWidth + col) * 4;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
-                        // source  postion 读取一个 64位的浮点数 怎么转换
 
-                        float pixelFloat = source.getFloat(pos);
-                        isTransparent[0] = false;
-                        float pixelValue = checkValue(isTransparent, sourceBandData, novalue, pixelFloat, true);
-                        target.put((byte) (pixelValue * 255));
-                        if (!isTransparent[0] && transparentBand != null) {
+                        float pixel = floatBuffer.get(pos);
+                        //读取原始影像 pos 位置的像素值
+                        BandInfo bandInfo = sourceBandData.info;
+                        boolean transparent = isPixelTransparent(pixel, bandInfo);
+                        if (transparent && transparentBand != null) {
+                            //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
+                            transparentBand[posTarget] = (byte) 0x00;
+                        } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
+                        if (bandInfo.enableGamma) {
+                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            target.put((byte) (clipPixel * 255));
+                        } else {
+                            double linearPixel = linear(pixel,
+                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
+                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
+                            target.put((byte) (linearPixel * 255));
+                        }
+
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Float64) {
@@ -296,9 +355,8 @@ public class BaseTileExtractor {
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight,
                     targetWidth, targetHeight, gdalconstConstants.GDT_Float64, source);
             source.order(ByteOrder.nativeOrder());
-
+            DoubleBuffer doubleBuffer = source.asDoubleBuffer();
             //循环处理影像 并进行拉伸压缩
-            Double[] novalue = sourceBandData.info.getNoValues();
             target.position(0);
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
@@ -306,20 +364,53 @@ public class BaseTileExtractor {
                         int pos = (row * targetWidth + col) * 8;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         // source  postion 读取一个 64位的浮点数 怎么转换
-
-                        int anInt = (int) source.getDouble(pos);
-                        isTransparent[0] = false;
-                        byte b = (byte) (0xFF & intValueToByteValue(isTransparent, sourceBandData, novalue, anInt, true));
-                        target.put(b);
-                        if (!isTransparent[0] && transparentBand != null) {
+                        double pixel = doubleBuffer.get(pos);
+                        //读取原始影像 pos 位置的像素值
+                        BandInfo bandInfo = sourceBandData.info;
+                        boolean transparent = isPixelTransparent(pixel, bandInfo);
+                        if (transparent && transparentBand != null) {
+                            //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
+                            transparentBand[posTarget] = (byte) 0x00;
+                        } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
+                        if (bandInfo.enableGamma) {
+                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            target.put((byte) (clipPixel * 255));
+                        } else {
+                            double linearPixel = linear(pixel,
+                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
+                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
+                            target.put((byte) (linearPixel * 255));
+                        }
+
                     }
                 }
         } else {
             log.error(" 数据长度 未能处理数据类型 {}", dt);
         }
         return target;
+    }
+
+    private double linear(double pixel, Double minValue, Double maxValue) {
+        if (Math.abs(maxValue - minValue) < 0.0000001) {
+            return 1;
+        } else {
+            return (pixel - minValue) / (maxValue - minValue);
+        }
+    }
+
+    private boolean isPixelTransparent(double pixel, BandInfo bandInfo) {
+        Double[] noValues = bandInfo.noValues;
+        if (noValues != null && noValues.length > 0) {
+            for (int t = 0; t < noValues.length; t++) {
+                if (Math.abs(pixel - noValues[t]) < 0.0000001) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        return false;
     }
 
     /**
@@ -583,14 +674,14 @@ public class BaseTileExtractor {
                             // 采用Gamma矫正算法
                             //  pixelValue  apply to  [ gammaMin    gamma    gammaMax ]
                             double normalPixelValue = clip(pixelValue, source1.getInfo().gammaMin, source1.getInfo().gammaMax, source1.getInfo().gamma);
-                            if (colorTable != null && colorTable.getNormalize()!=null && colorTable.getNormalize()) {
+                            if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
                                 //用户设置了归一化调色板
                                 rgba = translateColor(normalPixelValue);
                             } else {
                                 //没有设置调色板
                                 rgba = (int) (normalPixelValue * 255);
                             }
-                        } else if (colorTable.getNormalize()!=null && colorTable.getNormalize()) {
+                        } else if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
                             //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
                             // 讲数据中的颜色进行归一化处理
                             pixelValue = normalizePixel(sourceBand, pixelValue);
@@ -711,7 +802,7 @@ public class BaseTileExtractor {
     }
 
 
-    private void calculateGamma(BandInfo info, ByteBuffer sourceData, int dt, Rect targetRect){
+    private void calculateGamma(BandInfo info, ByteBuffer sourceData, int dt, Rect targetRect) {
         // 遍历 sourceData, 计算最大最小值
         double max = Double.MIN_VALUE;
         double min = Double.MAX_VALUE;
@@ -776,11 +867,11 @@ public class BaseTileExtractor {
         double averageBrightness = totalBrightness / totalPixels;
 
         // 使用对数函数将平均亮度映射到伽马值
-        double deviation =  Math.log(averageBrightness) / Math.log(127);
+        double deviation = Math.log(averageBrightness) / Math.log(127);
         double gamma = 1.0;
-        if(deviation < 1){
+        if (deviation < 1) {
             gamma = 1 - deviation;
-        } else if(deviation > 1){
+        } else if (deviation > 1) {
             gamma = 1 + deviation;
         }
         // 或者直接 gamma = 1 / deviation
