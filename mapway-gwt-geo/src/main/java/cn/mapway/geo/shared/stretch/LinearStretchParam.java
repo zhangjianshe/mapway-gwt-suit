@@ -3,14 +3,7 @@ package cn.mapway.geo.shared.stretch;
 import lombok.Data;
 
 @Data
-public class LinearStretchParam {
+public class LinearStretchParam extends StretchParam{
 
-    private Double min;
-
-    private Double max;
-
-    private Double minPct;
-
-    private Double maxPct;
 
 }
