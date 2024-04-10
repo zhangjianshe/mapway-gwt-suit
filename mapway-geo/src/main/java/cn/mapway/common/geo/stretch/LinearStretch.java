@@ -1,16 +1,24 @@
 package cn.mapway.common.geo.stretch;
 
 import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 
 public class LinearStretch {
 
-    public static double[] getMinMax(double[] data, Double noData, Double minPct, Double maxPct){
+    public static double[] getMinMax(double[] data, Double[] noValues, Double minPct, Double maxPct){
+        Set<Double> noValueSet = new HashSet<>();
+        if(noValues != null){
+            for(Double noValue: noValues){
+                noValueSet.add(noValue);
+            }
+        }
         double[] minMax = new double[2];
         if(minPct == null && maxPct == null){
             minMax[0] = Double.MAX_VALUE;
             minMax[1] = Double.MIN_VALUE;
             for(double d: data){
-                if(d != noData){
+                if(!noValueSet.contains(d)){
                     if(d < minMax[0]){
                         minMax[0] = d;
                     }
@@ -25,8 +33,9 @@ public class LinearStretch {
         } else if(maxPct == null || maxPct < 0.0 || maxPct > 1.0){
             maxPct = 1.0;
         }
-        if(noData != null){
-            data = Arrays.stream(data).filter(d -> d != noData).toArray();
+        data = Arrays.copyOf(data, data.length);
+        if(noValues != null && noValues.length != 0){
+            data = Arrays.stream(data).filter(d -> !noValueSet.contains(d)).toArray();
         }
         Arrays.sort(data);
         int minIndex = (int) (data.length * minPct);
@@ -36,13 +45,20 @@ public class LinearStretch {
         return minMax;
     }
 
-    public static int[] getMinMax(int[] data, Integer noData, Double minPct, Double maxPct){
+    public static int[] getMinMax(int[] data, Double[] noValues, Double minPct, Double maxPct){
+        Set<Integer> noValueSet = new HashSet<>();
+        if(noValues != null){
+            for(Double noValue: noValues){
+                noValueSet.add(noValue.intValue());
+            }
+        }
+
         int[] minMax = new int[2];
         if(minPct == null && maxPct == null){
             minMax[0] = Integer.MAX_VALUE;
             minMax[1] = Integer.MIN_VALUE;
             for(int d: data){
-                if(d != noData){
+                if(!noValueSet.contains(d)){
                     if(d < minMax[0]){
                         minMax[0] = d;
                     }
@@ -57,8 +73,9 @@ public class LinearStretch {
         } else if(maxPct == null || maxPct < 0.0 || maxPct > 1.0){
             maxPct = 1.0;
         }
-        if(noData != null){
-            data = Arrays.stream(data).filter(d -> d != noData).toArray();
+        data = Arrays.copyOf(data, data.length);
+        if(noValues != null && noValues.length != 0){
+            data = Arrays.stream(data).filter(d -> !noValueSet.contains(d)).toArray();
         }
         Arrays.sort(data);
         int minIndex = (int) (data.length * minPct);
@@ -71,25 +88,32 @@ public class LinearStretch {
     /**
      * linear stretch byte [ ].
      * @param data      数据
-     * @param noData    无效值
+     * @param noValues    无效值
      * @param min       最小值
      * @param max       最大值
      * @param minPct    最小百分比
      * @param maxPct    最大百分比
      * @return
      */
-    public static byte[] linearStretch(double[] data, Double noData, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(double[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct){
         if(data == null || data.length == 0){
             return new byte[0];
         }
+        Set<Double> noValueSet = new HashSet<>();
+        if(noValues != null){
+            for(Double noValue: noValues){
+                noValueSet.add(noValue);
+            }
+        }
         if(minPct == null || maxPct == null){
-            double[] minMax = getMinMax(data, noData, minPct, maxPct);
+            double[] minMax = getMinMax(data, noValues, minPct, maxPct);
             min = minMax[0];
             max = minMax[1];
         }
         byte[] result = new byte[data.length];
         for(int i = 0; i < data.length; i++){
-            if(data[i] == noData){
+            double d = data[i];
+            if(noValueSet.contains(d)){
                 result[i] = 0;
             } else {
                 double linearPixel = linear(data[i], min, max);
@@ -100,7 +124,7 @@ public class LinearStretch {
         return result;
     }
 
-    public static byte[] linearStretch(float[] data, Double noData, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(float[] data, Double[] noData, Double min, Double max, Double minPct, Double maxPct){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -112,22 +136,33 @@ public class LinearStretch {
         return linearStretch(doubleData, noData, min, max, minPct, maxPct);
     }
 
-    public static byte[] linearStretch(int[] data, Integer noData, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(int[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct){
         if(data == null || data.length == 0){
             return new byte[0];
         }
+        Set<Integer> noValueSet = new HashSet<>();
+        if(noValues != null){
+            for(Double noValue: noValues){
+                noValueSet.add(noValue.intValue());
+            }
+        }
+
         // 将float数组转换为double数组
         if(minPct == null || maxPct == null){
-            int[] minMax = getMinMax(data, noData, minPct, maxPct);
+            int[] minMax = getMinMax(data, noValues, minPct, maxPct);
             min = (double) minMax[0];
             max = (double) minMax[1];
         }
+
+
+
         byte[] result = new byte[data.length];
         for(int i = 0; i < data.length; i++){
-            if(data[i] == noData){
+            int d = data[i];
+            if(noValueSet.contains(d)){
                 result[i] = 0;
             } else {
-                double linearPixel = linear(data[i], min, max);
+                double linearPixel = linear(d, min, max);
                 byte v=(byte)((byte)linearPixel & 0xFF);
                 result[i] = v;
             }
@@ -136,7 +171,7 @@ public class LinearStretch {
     }
 
 
-    public static byte[] linearStretch(short[] data, Integer noData, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(short[] data, Double[] noData, Double min, Double max, Double minPct, Double maxPct){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -148,7 +183,7 @@ public class LinearStretch {
         return linearStretch(doubleData, noData, min, max, minPct, maxPct);
     }
 
-    public static byte[] linearStretch(byte[] data, Integer noData, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(byte[] data, Double[] noData, Double min, Double max, Double minPct, Double maxPct){
         if(data == null || data.length == 0){
             return new byte[0];
         }

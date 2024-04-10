@@ -1,12 +1,15 @@
 package cn.mapway.common.geo.stretch;
 
+import java.util.HashSet;
+import java.util.Set;
+
 public class GammaStretch {
 
 
     /**
      * Gamma stretch byte [ ].
      * @param data      数据
-     * @param noData    无效值
+     * @param noValues  无效值
      * @param min       最小值
      * @param max       最大值
      * @param minPct    最小百分比
@@ -14,7 +17,7 @@ public class GammaStretch {
      * @param gamma     伽马值
      * @return
      */
-    public static byte[] gammaStretch(double[] data, Double noData, Double min, Double max, Double minPct, Double maxPct, Double gamma){
+    public static byte[] gammaStretch(double[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, Double gamma){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -22,16 +25,23 @@ public class GammaStretch {
             gamma = 0.7;
         }
         if(minPct == null || maxPct == null){
-            double[] minMax = LinearStretch.getMinMax(data, noData, minPct, maxPct);
+            double[] minMax = LinearStretch.getMinMax(data, noValues, minPct, maxPct);
             min = minMax[0];
             max = minMax[1];
         }
+        Set<Double> noValueSet = new HashSet<>();
+        if(noValues != null){
+            for(Double noValue: noValues){
+                noValueSet.add(noValue);
+            }
+        }
         byte[] result = new byte[data.length];
         for(int i = 0; i < data.length; i++){
-            if(data[i] == noData){
+            double d = data[i];
+            if(noValueSet.contains(d)){
                 result[i] = 0;
             } else {
-                double linearPixel = clip(data[i], gamma, min, max);
+                double linearPixel = clip(d, gamma, min, max);
                 byte v=(byte)((byte)linearPixel & 0xFF);
                 result[i] = v;
             }
@@ -39,7 +49,7 @@ public class GammaStretch {
         return result;
     }
 
-    public static byte[] gammaStretch(float[] data, Double noData, Double min, Double max, Double minPct, Double maxPct, Double gamma){
+    public static byte[] gammaStretch(float[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, Double gamma){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -48,28 +58,37 @@ public class GammaStretch {
         for(int i = 0; i < data.length; i++){
             doubleData[i] = data[i];
         }
-        return gammaStretch(doubleData, noData, min, max, minPct, maxPct, gamma);
+        return gammaStretch(doubleData, noValues, min, max, minPct, maxPct, gamma);
     }
 
-    public static byte[] gammaStretch(int[] data, Integer noData, Double min, Double max, Double minPct, Double maxPct, Double gamma){
+    public static byte[] gammaStretch(int[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, Double gamma){
         if(data == null || data.length == 0){
             return new byte[0];
         }
         if(gamma == null){
             gamma = 0.7;
         }
+        Set<Integer> noValueSet = new HashSet<>();
+        if(noValues != null){
+            for(Double noValue: noValues){
+                noValueSet.add(noValue.intValue());
+            }
+        }
+
+
         // 将float数组转换为double数组
         if(minPct == null || maxPct == null){
-            int[] minMax = LinearStretch.getMinMax(data, noData, minPct, maxPct);
+            int[] minMax = LinearStretch.getMinMax(data, noValues, minPct, maxPct);
             min = (double) minMax[0];
             max = (double) minMax[1];
         }
         byte[] result = new byte[data.length];
         for(int i = 0; i < data.length; i++){
-            if(data[i] == noData){
+            int d = data[i];
+            if(noValueSet.contains(d)){
                 result[i] = 0;
             } else {
-                double linearPixel = clip(data[i], min, max, gamma);
+                double linearPixel = clip(d, min, max, gamma);
                 byte v=(byte)((byte)linearPixel & 0xFF);
                 result[i] = v;
             }
@@ -78,7 +97,7 @@ public class GammaStretch {
     }
 
 
-    public static byte[] gammaStretch(short[] data, Integer noData, Double min, Double max, Double minPct, Double maxPct, Double gamma){
+    public static byte[] gammaStretch(short[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, Double gamma){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -87,10 +106,10 @@ public class GammaStretch {
         for(int i = 0; i < data.length; i++){
             doubleData[i] = data[i];
         }
-        return gammaStretch(doubleData, noData, min, max, minPct, maxPct, gamma);
+        return gammaStretch(doubleData, noValues, min, max, minPct, maxPct, gamma);
     }
 
-    public static byte[] gammaStretch(byte[] data, Integer noData, Double min, Double max, Double minPct, Double maxPct, Double gamma){
+    public static byte[] gammaStretch(byte[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, Double gamma){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -99,7 +118,7 @@ public class GammaStretch {
         for(int i = 0; i < data.length; i++){
             doubleData[i] = data[i];
         }
-        return gammaStretch(doubleData, noData, min, max, minPct, maxPct, gamma);
+        return gammaStretch(doubleData, noValues, min, max, minPct, maxPct, gamma);
     }
 
     /**
