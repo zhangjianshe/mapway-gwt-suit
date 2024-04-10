@@ -12,6 +12,7 @@ import cn.mapway.ui.client.util.Colors;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
+import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.gdalconst.gdalconstJNI;
 
@@ -74,6 +75,16 @@ public class BaseTileExtractor {
         double Xgeo0 = adfGeoTransform[0] + pt.x * adfGeoTransform[1] + pt.y * adfGeoTransform[2];
         double Ygeo0 = adfGeoTransform[3] + pt.x * adfGeoTransform[4] + pt.y * adfGeoTransform[5];
         return new Point(Xgeo0, Ygeo0);
+    }
+
+    public static void main(String[] args) {
+        double pixelValue = 183;
+        double gammaMin = 4;
+        double gammaMax = 243;
+        double gamma = 0.7;
+        double value = gammaMin + (gammaMax - gammaMin) * Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
+        System.out.println((int) (value));
+        System.out.printf("%d", ((int) (value)) & 0xFF);
     }
 
     /**
@@ -159,7 +170,6 @@ public class BaseTileExtractor {
         return source;
     }
 
-
     /**
      * 读取元数据 转换为 RGB byte 格式
      *
@@ -211,9 +221,9 @@ public class BaseTileExtractor {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
                         if (bandInfo.enableGamma) {
-                            double clipPixel = 255*clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            byte v=(byte)clipPixel;
-                            v= (byte) (v & 0xFF);
+                            //double clipPixel = bandInfo.gammaMin + (bandInfo.gammaMax - bandInfo.gammaMin) * clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            double clipPixel = 255 * clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
+                            byte v = (byte) clipPixel;
                             target.put(v);
                         } else {
                             target.put(pixel);
@@ -245,10 +255,10 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = 255*linear(pixel,
-                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
-                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            double linearPixel = 255 * linear(pixel,
+                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
+                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
+                            byte v = (byte) ((byte) linearPixel & 0xFF);
                             target.put(v);
                         }
                     }
@@ -278,10 +288,10 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = 255*linear(pixel,
-                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
-                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            double linearPixel = 255 * linear(pixel,
+                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
+                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
+                            byte v = (byte) ((byte) linearPixel & 0xFF);
                             target.put(v);
                         }
                     }
@@ -311,10 +321,10 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = 255*linear(pixel,
-                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
-                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            double linearPixel = 255 * linear(pixel,
+                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
+                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
+                            byte v = (byte) ((byte) linearPixel & 0xFF);
                             target.put(v);
                         }
                     }
@@ -347,10 +357,10 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = 255*linear(pixel,
-                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
-                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            double linearPixel = 255 * linear(pixel,
+                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
+                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
+                            byte v = (byte) ((byte) linearPixel & 0xFF);
                             target.put(v);
                         }
 
@@ -384,10 +394,10 @@ public class BaseTileExtractor {
                             double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
                             target.put((byte) (clipPixel * 255));
                         } else {
-                            double linearPixel = 255*linear(pixel,
-                                    bandInfo.gammaMin==null?bandInfo.minValue: bandInfo.gammaMin,
-                                    bandInfo.gammaMax==null?bandInfo.maxValue:bandInfo.gammaMax);
-                            byte v=(byte)((byte)linearPixel & 0xFF);
+                            double linearPixel = 255 * linear(pixel,
+                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
+                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
+                            byte v = (byte) ((byte) linearPixel & 0xFF);
                             target.put(v);
                         }
 
@@ -772,6 +782,53 @@ public class BaseTileExtractor {
     }
 
     /**
+     * 直接读取目标影像中的数据 不进行采样
+     *
+     * @param left
+     * @param top
+     * @param width
+     * @param height
+     * @param bands  [1,2,3] start with 1
+     * @return byteBuffer save the float value
+     */
+    public ByteBuffer[] readImageBandSourceData(String location, int left, int top, int width, int height, int[] bands, int[] outBandsType) {
+        Dataset dataset;
+        try {
+            dataset = gdal.Open(location);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+        int outputWidth = width;
+        int outputHeight = height;
+        ByteBuffer[] buffers = new ByteBuffer[bands.length];
+
+        // sure [left,top,width,height] is in the raster's extend
+        left = Math.min(dataset.GetRasterXSize() - width, left);
+        left = Math.max(0, left);
+
+        top = Math.min(top, dataset.GetRasterYSize() - height);
+        top = Math.max(top, 0);
+
+        width = Math.min(width, dataset.GetRasterXSize());
+        height = Math.min(height, dataset.GetRasterYSize());
+
+        for (int i = 0; i < bands.length; i++) {
+            ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 8);
+            buffers[i] = buffer;
+            int bandIndex = bands[i];
+            if (bandIndex < 1 || bandIndex > dataset.GetRasterCount()) {
+                bandIndex = 1;
+            }
+            Band band = dataset.GetRasterBand(bandIndex);
+            outBandsType[i] = band.getDataType();
+            band.ReadRaster_Direct(left, top, width, height, outputWidth, outputHeight, band.getDataType(), buffer);
+        }
+        dataset.delete();
+        return buffers;
+    }
+
+    /**
      * Gamma correction the pixel,by the way with linenarly extraction
      *
      * @param pixelValue
@@ -807,7 +864,6 @@ public class BaseTileExtractor {
         }
         return Math.abs(value / total);
     }
-
 
     private void calculateGamma(BandInfo info, ByteBuffer sourceData, int dt, Rect targetRect) {
         // 遍历 sourceData, 计算最大最小值
@@ -888,14 +944,5 @@ public class BaseTileExtractor {
         info.setGamma(gamma);
         // 需要将 sourceData 置为初始位置
         sourceData.position(0);
-    }
-
-    public static void main(String[] args) {
-        double pixelValue=243;
-        double gammaMin=4;
-        double gammaMax=243;
-        double gamma=2.2;
-        double value = Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
-        System.out.println(String.format("0x%X",(byte)(value*255)));
     }
 }

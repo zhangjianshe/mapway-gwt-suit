@@ -36,7 +36,14 @@ public class BandInfo implements Serializable, IsSerializable {
     public Double gamma;
     public Double gammaMax;
 
-
+    /**
+     * 输出 最小值 拉伸的目标 [0-255]
+     */
+    public int outputMin = 0;
+    /**
+     * 输出 最大值 拉伸的目标 [0-255]
+     */
+    public int outputMax = 255;
 
 
     public Double[] noValues;
