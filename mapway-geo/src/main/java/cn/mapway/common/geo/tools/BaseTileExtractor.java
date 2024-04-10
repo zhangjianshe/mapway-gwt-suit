@@ -254,7 +254,6 @@ public class BaseTileExtractor {
         } else if (dt == gdalconstConstants.GDT_UInt16) {
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, gdalconstConstants.GDT_UInt16, source);
             //循环处理影像 并进行拉伸压缩
-            Double[] novalue = sourceBandData.info.getNoValues();
             log.info("Band DataType uint16");
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
