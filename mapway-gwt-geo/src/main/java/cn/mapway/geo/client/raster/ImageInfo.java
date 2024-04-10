@@ -111,7 +111,19 @@ public class ImageInfo implements Serializable, IsSerializable {
     }
 
 
+    /**
+     *
+     * @param chanelIndex  1,2,3
+     * @return
+     */
     public BandInfo findBand(int chanelIndex) {
-        return bandInfos.get(chanelIndex - 1);
+        for(BandInfo bandInfo:bandInfos)
+        {
+            if(bandInfo.index==chanelIndex-1)
+            {
+                return bandInfo;
+            }
+        }
+        return null;
     }
 }

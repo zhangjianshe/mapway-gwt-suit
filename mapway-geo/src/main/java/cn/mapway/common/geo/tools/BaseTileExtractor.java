@@ -142,7 +142,7 @@ public class BaseTileExtractor {
 
     /**
      * 读取元数据 不进行格式转换
-     *
+     * 原始影像的一个举行区域 读取数据到 目标区域
      * @param transparentBand
      * @param sourceX
      * @param sourceY
@@ -203,6 +203,7 @@ public class BaseTileExtractor {
         if (dt == GDT_Byte) {
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, GDT_Byte, source);
             //循环处理影像 并进行拉伸压缩
+            BandInfo bandInfo = sourceBandData.info;
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
@@ -211,8 +212,7 @@ public class BaseTileExtractor {
                         //目标影像的位置
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         //读取原始影像 pos 位置的像素值
-                        byte pixel = source.get(pos);
-                        BandInfo bandInfo = sourceBandData.info;
+                        double pixel =  (( int)source.get(pos) &0xFF);
                         boolean transparent = isPixelTransparent(pixel, bandInfo);
                         if (transparent && transparentBand != null) {
                             //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
@@ -220,14 +220,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        if (bandInfo.enableGamma) {
-                            //double clipPixel = bandInfo.gammaMin + (bandInfo.gammaMax - bandInfo.gammaMin) * clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            double clipPixel = 255 * clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            byte v = (byte) clipPixel;
-                            target.put(v);
-                        } else {
-                            target.put(pixel);
-                        }
+                        double clipPixel =bandInfo.calValue(pixel);
+                        target.put((byte) (((int)clipPixel)&0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Int16) {
@@ -251,16 +245,10 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        if (bandInfo.enableGamma) {
-                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            target.put((byte) (clipPixel * 255));
-                        } else {
-                            double linearPixel = 255 * linear(pixel,
-                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
-                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
-                            byte v = (byte) ((byte) linearPixel & 0xFF);
-                            target.put(v);
-                        }
+
+                        double clipPixel =bandInfo.calValue(pixel);
+                        target.put((byte) (((int)clipPixel)&0xFF));
+
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_UInt16) {
@@ -284,20 +272,12 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        if (bandInfo.enableGamma) {
-                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            target.put((byte) (clipPixel * 255));
-                        } else {
-                            double linearPixel = 255 * linear(pixel,
-                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
-                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
-                            byte v = (byte) ((byte) linearPixel & 0xFF);
-                            target.put(v);
-                        }
+                        double clipPixel =bandInfo.calValue(pixel);
+                        target.put((byte) (((int)clipPixel)&0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_UInt32 || dt == gdalconstConstants.GDT_Int32) {
-            sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, gdalconstConstants.GDT_UInt16, source);
+            sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, gdalconstConstants.GDT_Int32, source);
             //循环处理影像 并进行拉伸压缩
             log.info("Band DataType uint32");
             IntBuffer intBuffer = source.asIntBuffer();
@@ -317,16 +297,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        if (bandInfo.enableGamma) {
-                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            target.put((byte) (clipPixel * 255));
-                        } else {
-                            double linearPixel = 255 * linear(pixel,
-                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
-                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
-                            byte v = (byte) ((byte) linearPixel & 0xFF);
-                            target.put(v);
-                        }
+                        double clipPixel =bandInfo.calValue(pixel);
+                        target.put((byte) (((int)clipPixel)&0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Float32) {
@@ -353,17 +325,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        if (bandInfo.enableGamma) {
-                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            target.put((byte) (clipPixel * 255));
-                        } else {
-                            double linearPixel = 255 * linear(pixel,
-                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
-                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
-                            byte v = (byte) ((byte) linearPixel & 0xFF);
-                            target.put(v);
-                        }
-
+                        double clipPixel =bandInfo.calValue(pixel);
+                        target.put((byte) (((int)clipPixel)&0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Float64) {
@@ -390,16 +353,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        if (bandInfo.enableGamma) {
-                            double clipPixel = clip(pixel, bandInfo.gammaMin, bandInfo.gammaMax, bandInfo.gamma);
-                            target.put((byte) (clipPixel * 255));
-                        } else {
-                            double linearPixel = 255 * linear(pixel,
-                                    bandInfo.gammaMin == null ? bandInfo.minValue : bandInfo.gammaMin,
-                                    bandInfo.gammaMax == null ? bandInfo.maxValue : bandInfo.gammaMax);
-                            byte v = (byte) ((byte) linearPixel & 0xFF);
-                            target.put(v);
-                        }
+                        double clipPixel =bandInfo.calValue(pixel);
+                        target.put((byte) (((int)clipPixel)&0xFF));
 
                     }
                 }
@@ -409,13 +364,6 @@ public class BaseTileExtractor {
         return target;
     }
 
-    private double linear(double pixel, Double minValue, Double maxValue) {
-        if (Math.abs(maxValue - minValue) < 0.0000001) {
-            return 1;
-        } else {
-            return (pixel - minValue) / (maxValue - minValue);
-        }
-    }
 
     private boolean isPixelTransparent(double pixel, BandInfo bandInfo) {
         Double[] noValues = bandInfo.noValues;
@@ -657,7 +605,8 @@ public class BaseTileExtractor {
             // sourceData.position(0); //原始影像
             int dt = sourceBand.getBand().GetRasterDataType();
             //循环处理每一个像素
-            sourceData.order(ByteOrder.nativeOrder());
+            //sourceData.order(ByteOrder.nativeOrder());
+
             if (source1.getInfo().enableGamma) {
                 if (source1.getInfo().gammaMax == null || source1.getInfo().gammaMin == null || source1.getInfo().gamma == null) {
                     // gamma 矫正参数未设置, 根据当前小区域计算
@@ -665,22 +614,36 @@ public class BaseTileExtractor {
                 }
             }
 
+            source1.getInfo().check();
+            FloatBuffer floatBuffer = sourceData.asFloatBuffer();
+            DoubleBuffer doubleBuffer =sourceData.asDoubleBuffer();
 
+            //循环目标区域 [0-78][0-32]
             for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
                 for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
+                    //目标像素位置 用于读取经过GDAL采样后的影像数组
                     int location = row * targetRect.getWidthAsInt() + col;
+
                     int tilePosition = (targetRect.getYAsInt() + row) * tileSize + targetRect.getXAsInt() + col;
                     double pixelValue = 0;
                     if (dt == GDT_Byte) {
-                        pixelValue = sourceData.get(location) & 0xFF;
+                        pixelValue = ((int)sourceData.get(location)) & 0xFF;
                     } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
-                        pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;
+                        int pos=location * 2;
+                        int v =   (((int)(sourceData.get(pos + 1))) & 0xFF) << 8
+                                | (((int)sourceData.get(pos + 0)) & 0xFF);
+                        pixelValue = v;
                     } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
-                        pixelValue = sourceData.asIntBuffer().get(location);
+                        int pos=location * 4;
+                        int v =   (((int)sourceData.get(pos + 3)) & 0xFF) << 24
+                                | (((int)sourceData.get(pos + 2)) & 0xFF) << 16
+                                | (((int)sourceData.get(pos + 1)) & 0xFF) << 8
+                                | (((int)sourceData.get(pos + 0)) & 0xFF);
+                        pixelValue=v;
                     } else if (dt == GDT_Float32) {
-                        pixelValue = sourceData.asFloatBuffer().get(location);
+                        pixelValue = floatBuffer.get(location);
                     } else if (dt == GDT_Float64) {
-                        pixelValue = sourceData.asDoubleBuffer().get(location);
+                        pixelValue = doubleBuffer.get(location);
                     }
 
 
@@ -689,14 +652,15 @@ public class BaseTileExtractor {
                         //没有设置替换颜色 使用颜色表
                         if (source1.getInfo().enableGamma) {
                             // 采用Gamma矫正算法
-                            //  pixelValue  apply to  [ gammaMin    gamma    gammaMax ]
-                            double normalPixelValue = clip(pixelValue, source1.getInfo().gammaMin, source1.getInfo().gammaMax, source1.getInfo().gamma);
+                            //  value  [outputMin,outputMax]
+                            double value = source1.getInfo().calValue(pixelValue);
+
                             if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
                                 //用户设置了归一化调色板
-                                rgba = translateColor(normalPixelValue);
+                                rgba = translateColor(value/(source1.getInfo().outputMax-source1.getInfo().outputMin));
                             } else {
                                 //没有设置调色板
-                                rgba = (int) (normalPixelValue * 255);
+                                rgba = (int) value;
                             }
                         } else if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
                             //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
@@ -765,7 +729,6 @@ public class BaseTileExtractor {
                     targetBand.WriteRaster(0, 0, tileSize, tileSize, GlobalMercator.get().getWhiteBand());
                 }
 
-                //这里的操作会拉伸影像
                 //这里的操作会拉伸影像
                 ByteBuffer byteBuffer = readAndTranslateToBytes256(
                         transparentBand, sourceBand,

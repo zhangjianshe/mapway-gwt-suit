@@ -5,6 +5,7 @@ import lombok.Data;
 
 import java.io.Serializable;
 import java.util.Map;
+import java.util.Objects;
 
 /**
  * BandInfo
@@ -16,6 +17,9 @@ import java.util.Map;
 @Data
 public class BandInfo implements Serializable, IsSerializable {
 
+    /**
+     * special start from 0,1,2...
+     */
     public int index;
     public int dataType;
     public Double maxValue;
@@ -49,6 +53,31 @@ public class BandInfo implements Serializable, IsSerializable {
     public Double[] noValues;
 
     public Map<String, String> metadata;
+
+    public double calValue(double v) {
+        if (Objects.equals(gammaMax, gammaMin)) {
+            return v;
+        }
+        if (v < gammaMin) {
+            v = gammaMin;
+        }
+        if (v > gammaMax) {
+            v = gammaMax;
+        }
+        return outputMin + (outputMax - outputMin) * Math.pow((v - gammaMin) / (gammaMax - gammaMin), gamma);
+    }
+
+    public void check() {
+        if (gammaMax == null) {
+            gammaMax = maxValue;
+        }
+        if (gammaMin == null) {
+            gammaMin = minValue;
+        }
+        if (gamma == null) {
+            gamma = 1.0;
+        }
+    }
 
     public double getValueExtend() {
         return maxValue - minValue;
