@@ -894,12 +894,13 @@ public class BaseTileExtractor {
         // 使用对数函数将平均亮度映射到伽马值
         double deviation = Math.log(averageBrightness) / Math.log(127);
         double gamma = 1.0;
-        if (deviation < 1) {
-            gamma = 1 - deviation;
-        } else if (deviation > 1) {
-            gamma = 1 + deviation;
-        }
+//        if (deviation < 1) {
+//            gamma = 1 - deviation;
+//        } else if (deviation > 1) {
+//            gamma = 1 + deviation;
+//        }
         // 或者直接 gamma = 1 / deviation
+        gamma = 1 / deviation;
 
         info.setGammaMax(max);
         info.setGammaMin(min);

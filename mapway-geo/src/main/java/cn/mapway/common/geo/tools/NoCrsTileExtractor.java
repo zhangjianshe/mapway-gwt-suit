@@ -1,18 +1,27 @@
 package cn.mapway.common.geo.tools;
 
-import cn.mapway.geo.client.raster.ImageInfo;
+import cn.mapway.common.geo.gdal.GdalUtil;
+import cn.mapway.geo.client.raster.*;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
+import org.gdal.gdal.gdal;
+import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.ogr.Geometry;
 import org.gdal.osr.SpatialReference;
+import org.nutz.lang.Files;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
+import static cn.mapway.common.geo.tools.TiffTools.getMemoryDriver;
+import static cn.mapway.common.geo.tools.TiffTools.getPngDriver;
 import static cn.mapway.geo.shared.GeoConstant.SRID_WEB_MERCATO;
 
 @Slf4j
@@ -192,4 +201,127 @@ public class NoCrsTileExtractor extends BaseTileExtractor implements ITileExtrac
         Point rightTop = globalMercator.meterToTile(crossBox.xmax, crossBox.ymax, tileX, tileY, zoom);
         return new Rect((int) Math.floor(leftBottom.x), (int) Math.floor(rightTop.y), (int) Math.ceil(rightTop.x - leftBottom.x), (int) Math.ceil(leftBottom.y - rightTop.y));
     }
+
+    public static void main(String[] args) {
+        GdalUtil.init();
+        String url = "F:\\data\\personal\\1\\959\\舰船\\美国空军基地-基地1\\image\\label2.tif";
+        Integer tileX = 7927;
+        Integer tileY = 7927;
+        Integer tileXEnd = 8183;
+        Integer tileYEnd = 8183;
+        TiffTools tiffTools = new TiffTools();
+        Dataset dataset = gdal.Open(url, gdalconstConstants.GA_ReadOnly);
+        ImageInfo info = TiffTools.extractImageInformation(dataset);
+
+        Dataset memoryDataset = getMemoryDriver().Create("", 256, 256, 4, gdalconstConstants.GDT_Byte);
+        ImageInfo imageInfo = createImageInfo(dataset);
+        NoCrsTileExtractor extractor = new NoCrsTileExtractor();
+        boolean b = extractor.extractTileToTarget(imageInfo, tileX, tileY, tileXEnd-tileX, tileYEnd-tileY, dataset, memoryDataset);
+        if (b) {
+            memoryDataset.FlushCache();
+
+            File temp = tiffTools.tempFile();
+            String targetPngFileName = temp.getAbsolutePath();
+            Dataset targetDataset = getPngDriver().CreateCopy(targetPngFileName, memoryDataset);
+            targetDataset.FlushCache();
+            targetDataset.delete();
+
+            //  log.info("extract Tile {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
+            byte[] data = Files.readBytes(targetPngFileName);
+            temp.delete();
+            Files.write("F:\\data\\temp\\test.png", data);
+//            return data;
+        } else {
+            //  log.error("extract Tile error {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
+//            temp.delete();
+//            return null;
+        }
+    }
+
+    private static ImageInfo createImageInfo(Dataset dataset){
+        ImageInfo imageInfo = new ImageInfo();
+        imageInfo.width = dataset.getRasterXSize();
+        imageInfo.height = dataset.getRasterYSize();
+        imageInfo.setBands(dataset.getRasterCount());
+
+        for (int i = 0; i < dataset.GetRasterCount(); i++) {
+            Band band = dataset.GetRasterBand(i + 1);
+            BandInfo bandInfo = new BandInfo();
+            bandInfo.setIndex(i);
+            bandInfo.setDataType(band.GetRasterDataType());
+            bandInfo.metadata = new HashMap<>();
+
+            String wavelength = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH.getKey());
+            if (StringUtils.isNotEmpty(wavelength)) {
+                bandInfo.metadata.put(MetadataEnum.META_KEY_WAVELENGTH.getKey(), wavelength);
+                String wavelength_units = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH_UNITS.getKey());
+                if (StringUtils.isEmpty(wavelength_units)) {
+                    MetadataValue value = MetadataEnum.META_KEY_WAVELENGTH_UNITS.getValues()[0];
+                    wavelength_units = value.getKey();
+                }
+                bandInfo.metadata.put(MetadataEnum.META_KEY_WAVELENGTH_UNITS.getKey(), wavelength_units);
+            }
+
+            Double[] noValue = new Double[10];
+            band.GetNoDataValue(noValue);
+            int count = 0;
+            for (int j = 0; j < 10; j++) {
+                if (noValue[j] == null) {
+                    count = j;
+                    break;
+                }
+            }
+            if (count == 0) {
+                //用户没有设定 noValue 值 我们缺省将 0 设为 空值
+                Double[] noValue1 = new Double[1];
+                noValue1[0] = 0.0;
+                bandInfo.setNoValues(noValue1);
+            } else {
+                Double[] noValue1 = new Double[count];
+                System.arraycopy(noValue, 0, noValue1, 0, count);
+                bandInfo.setNoValues(noValue1);
+            }
+            imageInfo.getBandInfos().add(bandInfo);
+        }
+
+        //处理band对应的RGB颜色
+        if (imageInfo.getBandInfos().size() == 1) {
+            imageInfo.setChanelData(new ChanelData(1, 1, 1));
+            //单波段影像 处理 空值问题 如果 保证 0作为空值处理
+            Double[] noValue = imageInfo.getBandInfos().get(0).getNoValues();
+            boolean found = false;
+            for (int i = 0; i < noValue.length; i++) {
+                if (Math.abs(noValue[i]) < 0.001) {
+                    found = true;
+                    break;
+                }
+            }
+            if (!found) {
+                Double[] noValue1 = new Double[noValue.length + 1];
+                noValue1[0] = 0.0;
+                System.arraycopy(noValue, 0, noValue1, 1, noValue1.length - 1);
+                imageInfo.getBandInfos().get(0).setNoValues(noValue1);
+            }
+        } else if (imageInfo.getBandInfos().size() == 2) {
+            imageInfo.setChanelData(new ChanelData(1, 2, 1));
+        }
+        if (imageInfo.getBandInfos().size() == 3) {
+            imageInfo.setChanelData(new ChanelData());
+        } else if (imageInfo.getBandInfos().size() == 4) {
+            imageInfo.setChanelData(new ChanelData(3, 2, 1));
+        }
+        if (imageInfo.getBandInfos().size() > 4) {
+            imageInfo.setChanelData(new ChanelData(4, 3, 2));
+        }
+
+
+        List<BandInfo> bandInfos = imageInfo.getBandInfos();
+        boolean enableGamma = bandInfos.size() < 3;
+        for (BandInfo bandInfo: bandInfos){
+            bandInfo.enableGamma = enableGamma;
+        }
+
+        return imageInfo;
+    }
+
 }

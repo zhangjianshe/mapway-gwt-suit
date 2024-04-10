@@ -20,7 +20,10 @@ public enum StretchTypeEnum {
         this.desc = desc;
     }
 
-    public static StretchTypeEnum getStretchType(int value) {
+    public static StretchTypeEnum getStretchType(Integer value) {
+        if(value == null){
+            return null;
+        }
         for (StretchTypeEnum stretchTypeEnum : StretchTypeEnum.values()) {
             if (stretchTypeEnum.value == value) {
                 return stretchTypeEnum;
