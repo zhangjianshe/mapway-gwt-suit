@@ -604,7 +604,7 @@ public class BaseTileExtractor {
             // sourceData.position(0); //原始影像
             int dt = sourceBand.getBand().GetRasterDataType();
             //循环处理每一个像素
-            //sourceData.order(ByteOrder.nativeOrder());
+            sourceData.order(ByteOrder.nativeOrder());
 
             if (source1.getInfo().enableGamma) {
                 if (source1.getInfo().gammaMax == null || source1.getInfo().gammaMin == null || source1.getInfo().gamma == null) {
