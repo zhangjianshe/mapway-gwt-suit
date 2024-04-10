@@ -2,11 +2,14 @@ package cn.mapway.common.geo.stretch;
 
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import static cn.mapway.common.geo.stretch.Histogram.DEFAULT_BINS;
 
 public class LinearStretch {
 
-    public static double[] getMinMax(double[] data, Double[] noValues, Double minPct, Double maxPct){
+    public static double[] getMinMax(double[] data, Double[] noValues, Double minPct, Double maxPct, List<Histogram> out){
         Set<Double> noValueSet = new HashSet<>();
         if(noValues != null){
             for(Double noValue: noValues){
@@ -28,24 +31,22 @@ public class LinearStretch {
                 }
 
             }
+            return minMax;
         } else if(minPct == null || minPct < 0.0 || minPct > 1.0){
             minPct = 0.0;
         } else if(maxPct == null || maxPct < 0.0 || maxPct > 1.0){
             maxPct = 1.0;
         }
-        data = Arrays.copyOf(data, data.length);
-        if(noValues != null && noValues.length != 0){
-            data = Arrays.stream(data).filter(d -> !noValueSet.contains(d)).toArray();
+        Histogram histogram = HistogramStretch.getHistogram(data, noValues, minMax[0], minMax[1], minPct, maxPct, DEFAULT_BINS);
+        minMax[0] = histogram.getHistogramNodeByMinPct(minPct);
+        minMax[1] = histogram.getHistogramNodeByMaxPct(maxPct);
+        if(out != null){
+            out.add(histogram);
         }
-        Arrays.sort(data);
-        int minIndex = (int) (data.length * minPct);
-        int maxIndex = (int) (data.length * maxPct);
-        minMax[0] = data[minIndex];
-        minMax[1] = data[maxIndex];
         return minMax;
     }
 
-    public static int[] getMinMax(int[] data, Double[] noValues, Double minPct, Double maxPct){
+    public static int[] getMinMax(int[] data, Double[] noValues, Double minPct, Double maxPct, List<Histogram> out){
         Set<Integer> noValueSet = new HashSet<>();
         if(noValues != null){
             for(Double noValue: noValues){
@@ -68,20 +69,18 @@ public class LinearStretch {
                 }
 
             }
+            return minMax;
         } else if(minPct == null || minPct < 0.0 || minPct > 1.0){
             minPct = 0.0;
         } else if(maxPct == null || maxPct < 0.0 || maxPct > 1.0){
             maxPct = 1.0;
         }
-        data = Arrays.copyOf(data, data.length);
-        if(noValues != null && noValues.length != 0){
-            data = Arrays.stream(data).filter(d -> !noValueSet.contains(d)).toArray();
+        Histogram histogram = HistogramStretch.getHistogram(data, noValues, (double)minMax[0], (double)minMax[1], minPct, maxPct, DEFAULT_BINS);
+        minMax[0] = (int)histogram.getHistogramNodeByMinPct(minPct);
+        minMax[1] = (int)histogram.getHistogramNodeByMaxPct(maxPct);
+        if(out != null){
+            out.add(histogram);
         }
-        Arrays.sort(data);
-        int minIndex = (int) (data.length * minPct);
-        int maxIndex = (int) (data.length * maxPct);
-        minMax[0] = data[minIndex];
-        minMax[1] = data[maxIndex];
         return minMax;
     }
 
@@ -95,7 +94,7 @@ public class LinearStretch {
      * @param maxPct    最大百分比
      * @return
      */
-    public static byte[] linearStretch(double[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(double[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, List<Histogram> out){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -106,7 +105,7 @@ public class LinearStretch {
             }
         }
         if(minPct == null || maxPct == null){
-            double[] minMax = getMinMax(data, noValues, minPct, maxPct);
+            double[] minMax = getMinMax(data, noValues, minPct, maxPct, out);
             min = minMax[0];
             max = minMax[1];
         }
@@ -124,7 +123,8 @@ public class LinearStretch {
         return result;
     }
 
-    public static byte[] linearStretch(float[] data, Double[] noData, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(float[] data, Double[] noData, Double min, Double max, Double minPct,
+                                       Double maxPct, List<Histogram> out){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -133,10 +133,11 @@ public class LinearStretch {
         for(int i = 0; i < data.length; i++){
             doubleData[i] = data[i];
         }
-        return linearStretch(doubleData, noData, min, max, minPct, maxPct);
+        return linearStretch(doubleData, noData, min, max, minPct, maxPct, out);
     }
 
-    public static byte[] linearStretch(int[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct){
+    public static byte[] linearStretch(int[] data, Double[] noValues, Double min, Double max, Double minPct,
+                                       Double maxPct, List<Histogram> out){
         if(data == null || data.length == 0){
             return new byte[0];
         }
@@ -149,7 +150,7 @@ public class LinearStretch {
 
         // 将float数组转换为double数组
         if(minPct == null || maxPct == null){
-            int[] minMax = getMinMax(data, noValues, minPct, maxPct);
+            int[] minMax = getMinMax(data, noValues, minPct, maxPct, out);
             min = (double) minMax[0];
             max = (double) minMax[1];
         }
@@ -180,7 +181,7 @@ public class LinearStretch {
         for(int i = 0; i < data.length; i++){
             doubleData[i] = data[i];
         }
-        return linearStretch(doubleData, noData, min, max, minPct, maxPct);
+        return linearStretch(doubleData, noData, min, max, minPct, maxPct, null);
     }
 
     public static byte[] linearStretch(byte[] data, Double[] noData, Double min, Double max, Double minPct, Double maxPct){
@@ -192,7 +193,7 @@ public class LinearStretch {
         for(int i = 0; i < data.length; i++){
             doubleData[i] = data[i];
         }
-        return linearStretch(doubleData, noData, min, max, minPct, maxPct);
+        return linearStretch(doubleData, noData, min, max, minPct, maxPct, null);
     }
 
     private static double linear(double pixel, Double minValue, Double maxValue) {

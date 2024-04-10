@@ -1,7 +1,11 @@
 package cn.mapway.common.geo.stretch;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import static cn.mapway.common.geo.stretch.Histogram.DEFAULT_BINS;
 
 public class GammaStretch {
 
@@ -21,13 +25,16 @@ public class GammaStretch {
         if(data == null || data.length == 0){
             return new byte[0];
         }
+        List<Histogram> histograms = new ArrayList<>();
+        double[] minMax = LinearStretch.getMinMax(data, noValues, minPct, maxPct, histograms);
+        min = minMax[0];
+        max = minMax[1];
         if(gamma == null){
-            gamma = 0.7;
-        }
-        if(minPct == null || maxPct == null){
-            double[] minMax = LinearStretch.getMinMax(data, noValues, minPct, maxPct);
-            min = minMax[0];
-            max = minMax[1];
+            if(histograms.isEmpty()){
+                Histogram histogram = HistogramStretch.getHistogram(data, noValues, minMax[0], minMax[1], minPct, maxPct, DEFAULT_BINS);
+                histograms.add(histogram);
+            }
+            gamma = calculateGamma(histograms.get(0));
         }
         Set<Double> noValueSet = new HashSet<>();
         if(noValues != null){
@@ -65,9 +72,6 @@ public class GammaStretch {
         if(data == null || data.length == 0){
             return new byte[0];
         }
-        if(gamma == null){
-            gamma = 0.7;
-        }
         Set<Integer> noValueSet = new HashSet<>();
         if(noValues != null){
             for(Double noValue: noValues){
@@ -75,13 +79,20 @@ public class GammaStretch {
             }
         }
 
-
+        List<Histogram> histograms = new ArrayList<>();
         // 将float数组转换为double数组
-        if(minPct == null || maxPct == null){
-            int[] minMax = LinearStretch.getMinMax(data, noValues, minPct, maxPct);
-            min = (double) minMax[0];
-            max = (double) minMax[1];
+
+        int[] minMax = LinearStretch.getMinMax(data, noValues, minPct, maxPct, histograms);
+        min = (double) minMax[0];
+        max = (double) minMax[1];
+        if(gamma == null){
+            if(histograms.isEmpty()){
+                Histogram histogram = HistogramStretch.getHistogram(data, noValues, (double) minMax[0], (double) minMax[1], minPct, maxPct, DEFAULT_BINS);
+                histograms.add(histogram);
+            }
+            gamma = calculateGamma(histograms.get(0));
         }
+
         byte[] result = new byte[data.length];
         for(int i = 0; i < data.length; i++){
             int d = data[i];
@@ -139,5 +150,25 @@ public class GammaStretch {
         }
         double value = Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
         return value;
+    }
+
+    private static double calculateGamma(Histogram histogram){
+        // 计算平均亮度
+        long totalBrightness = 0;
+        long totalPixels = 0;
+        int i = 0;
+        for (HistogramNode node : histogram.nodes) {
+            totalBrightness += i * node.count;
+            totalPixels += node.count;
+            i++;
+        }
+        double averageBrightness = totalBrightness / totalPixels;
+
+        // 使用对数函数将平均亮度映射到伽马值
+        double deviation = Math.log(averageBrightness) / Math.log((double) histogram.nodes.size() / 2);
+        if(deviation == 0){
+            deviation = 0.01;
+        }
+        return 1.0 / deviation;
     }
 }
