@@ -1,9 +1,6 @@
 package cn.mapway.common.geo.stretch;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static cn.mapway.common.geo.stretch.Histogram.DEFAULT_BINS;
 
@@ -49,7 +46,7 @@ public class GammaStretch {
                 result[i] = 0;
             } else {
                 double linearPixel = clip(d, gamma, min, max);
-                byte v=(byte)((byte)linearPixel & 0xFF);
+                byte v=(byte)((int)linearPixel & 0xFF);
                 result[i] = v;
             }
         }
@@ -100,7 +97,7 @@ public class GammaStretch {
                 result[i] = 0;
             } else {
                 double linearPixel = clip(d, min, max, gamma);
-                byte v=(byte)((byte)linearPixel & 0xFF);
+                byte v=(byte)((int)linearPixel & 0xFF);
                 result[i] = v;
             }
         }
@@ -149,7 +146,7 @@ public class GammaStretch {
             pixelValue = gammaMax;
         }
         double value = Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
-        return value;
+        return value * 255;
     }
 
     private static double calculateGamma(Histogram histogram){

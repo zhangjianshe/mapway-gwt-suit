@@ -49,6 +49,7 @@ public class Histogram {
 
     public double getHistogramNodeByMinPct(double minPct){
         double sum = 0;
+        // 正向遍历
         for(HistogramNode node: nodes){
             sum += node.pct;
             if(sum >= minPct){
@@ -60,7 +61,11 @@ public class Histogram {
 
     public double getHistogramNodeByMaxPct(double maxPct){
         double sum = 0;
-        for(HistogramNode node: nodes){
+        // 逆向遍历
+        maxPct = 1.0 - maxPct;
+        int size = nodes.size();
+        for(int i = size - 1; i >= 0; i--){
+            HistogramNode node = nodes.get(i);
             sum += node.pct;
             if(sum >= maxPct){
                 return node.max;

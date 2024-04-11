@@ -1,10 +1,15 @@
 package cn.mapway.geo.shared.stretch;
 
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+import jsinterop.annotations.JsType;
 import lombok.Data;
 
+import java.io.Serializable;
+
 @Data
-public class StretchParam {
+@JsType
+public class StretchParam implements Serializable, IsSerializable {
 
     protected Double min;
 

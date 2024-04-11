@@ -1,7 +1,9 @@
 package cn.mapway.common.geo.geotools;
 
+import cn.mapway.common.geo.gdal.GdalUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
+import org.apache.commons.io.FileUtils;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
@@ -17,6 +19,7 @@ import org.geotools.geometry.jts.ReferencedEnvelope;
 import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.MapContent;
+import org.geotools.referencing.CRS;
 import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.*;
@@ -26,6 +29,7 @@ import org.locationtech.jts.geom.Geometry;
 import org.nutz.img.Images;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory2;
+import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
 
 import java.awt.*;
@@ -121,7 +125,8 @@ public class GenerateThumbnail {
                 // 初始化输出图像
                 bi = new BufferedImage(splitSize, splitSize, BufferedImage.TYPE_INT_ARGB);
             } else {
-                bi = Images.read(rasterFile);
+                bi = readImage(rasterFile.getAbsolutePath());
+//                bi = Images.read(rasterFile);
                 int height = bi.getHeight();
                 // 行列号坐标的使用
                 // 处理y轴倒转
@@ -143,8 +148,8 @@ public class GenerateThumbnail {
                         }
                     }
                 }
-
-                mapArea = new ReferencedEnvelope(0,height,0,height, DefaultGeographicCRS.WGS84);
+                CoordinateReferenceSystem decode = CRS.decode("EPSG:3857");
+                mapArea = new ReferencedEnvelope(0,height,0,height, decode);
                 bi = Thumbnails.of(bi).width(splitSize).height(splitSize).asBufferedImage();
             }
 
@@ -232,26 +237,6 @@ public class GenerateThumbnail {
         return SLD.wrapSymbolizers(sf.createPolygonSymbolizer(stroke, fill, null));
     }
 
-    public static void main(String[] args) throws IOException {
-        String imageUrl = "F:\\数据\\4波段\\A\\result_0_19.tif";
-        String labelUrl = "F:\\数据\\4波段\\labels\\result_0_19.tif";
-        File thumbnailUrl = new File("F:\\数据\\4波段\\thumbnail\\result_0_19.webp");
-        int width = 256;
-        int height = 256;
-        gdal.AllRegister();
-        BufferedImage imageImage = readImage(imageUrl);
-        imageImage = Thumbnails.of(imageImage)
-                .size(width, height).asBufferedImage();
-        BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
-
-        BufferedImage cannyImg = new Canny().getCannyImg(labelImage, imageImage);
-        thumbnailUrl.getParentFile().mkdirs();
-        Thumbnails.of(cannyImg)
-                .scale(1.0)
-                .outputFormat("webp")
-                .outputQuality(0.9)
-                .toFile(thumbnailUrl);
-    }
 
     public static BufferedImage readImage(String imageUrl){
         Dataset open = gdal.Open(imageUrl, gdalconst.GA_ReadOnly);
@@ -372,4 +357,35 @@ public class GenerateThumbnail {
         return result;
     }
 
+
+    public static void main(String[] args) throws IOException {
+        GdalUtil.init();
+//        String imageUrl = "F:\\数据\\4波段\\A\\result_0_19.tif";
+//        String labelUrl = "F:\\数据\\4波段\\labels\\result_0_19.tif";
+//        File thumbnailUrl = new File("F:\\数据\\4波段\\thumbnail\\result_0_19.webp");
+//        int width = 256;
+//        int height = 256;
+//        gdal.AllRegister();
+//        BufferedImage imageImage = readImage(imageUrl);
+//        imageImage = Thumbnails.of(imageImage)
+//                .size(width, height).asBufferedImage();
+//        BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
+//
+//        BufferedImage cannyImg = new Canny().getCannyImg(labelImage, imageImage);
+//        thumbnailUrl.getParentFile().mkdirs();
+//        Thumbnails.of(cannyImg)
+//                .scale(1.0)
+//                .outputFormat("webp")
+//                .outputQuality(0.9)
+//                .toFile(thumbnailUrl);
+
+        String imageUrl = "F:\\data\\cis\\labels\\sample_94\\image\\f324006559c765262e3aab7d6566723d80d8bba275f7687af4cc1ceebc17ec52.tif";
+        String labelUrl = "F:\\data\\cis\\labels\\sample_94\\label\\f324006559c765262e3aab7d6566723d80d8bba275f7687af4cc1ceebc17ec52.geojson";
+        String outUrl = "F:\\data\\cis\\labels\\sample_94\\t.webp";
+
+        File image1File = new File(imageUrl);
+        String json = FileUtils.readFileToString(new File(labelUrl), "utf-8");
+        File thumbnailFile = new File(outUrl);
+        GenerateThumbnail.generateVector(image1File, json, 256, thumbnailFile, false);
+    }
 }
