@@ -298,93 +298,6 @@ public class TiffTools {
         return buckets;
     }
 
-    private void printDataType() {
-        log.info(" GDT_Unknown {}", gdalconstJNI.GDT_Unknown_get());
-        log.info(" GDT_Byte {}", gdalconstJNI.GDT_Byte_get());
-        log.info(" GDT_UInt16 {}", gdalconstJNI.GDT_UInt16_get());
-        log.info(" GDT_Int16 {}", gdalconstJNI.GDT_Int16_get());
-        log.info(" GDT_UInt32 {}", gdalconstJNI.GDT_UInt32_get());
-        log.info(" GDT_Int32 {}", gdalconstJNI.GDT_Int32_get());
-        log.info(" GDT_Float32 {}", gdalconstJNI.GDT_Float32_get());
-        log.info(" GDT_Float64 {}", gdalconstJNI.GDT_Float64_get());
-        log.info(" GDT_CInt16 {}", gdalconstJNI.GDT_CInt16_get());
-        log.info(" GDT_CInt32 {}", gdalconstJNI.GDT_CInt32_get());
-        log.info(" GDT_CFloat32 {}", gdalconstJNI.GDT_CFloat32_get());
-        log.info(" GDT_CFloat64 {}", gdalconstJNI.GDT_CFloat64_get());
-        log.info(" GDT_TypeCount {}", gdalconstJNI.GDT_TypeCount_get());
-    }
-
-    private FilePool getGlobalFilePool() {
-        if (globalFilePool == null) {
-            globalFilePool = NutFilePool.getOrCreatePool("~/temp/ai", 10000);
-        }
-        return globalFilePool;
-    }
-
-    /**
-     * 临时的png文件
-     *
-     * @return
-     */
-    public synchronized File tempFile() {
-        FilePool pool = getGlobalFilePool();
-        return pool.createFile(".png");
-    }
-
-    public String imageSha256(File file, Long userId, IProgressNotify notify) {
-        if (file == null || !file.exists()) {
-            return Lang.sha256("");
-        }
-        //这一版简化对影像的操作了
-        //直接取file的绝对路径 进行哈希计算
-        if (notify != null) {
-            notify.notify(userId, MQTT_TOPIC_TYPE_DIR_INDEX, 0, 0, "解析完成", 100);
-        }
-        try (InputStream ins = Streams.fileIn(file)) {
-            MessageDigest md = MessageDigest.getInstance("SHA-256");
-            long total = file.length();
-            long processed = 0;
-            byte[] bs = new byte[32 * 1024];
-            int len = 0;
-            while ((len = ins.read(bs)) != -1) {
-                md.update(bs, 0, len);
-                processed += len;
-                if (notify != null) {
-                    if (total > 0) {
-                        String message =
-                                Strings.formatSizeForReadBy1024(processed) + "/" + Strings.formatSizeForReadBy1024(total);
-                        notify.notify(userId, MQTT_TOPIC_TYPE_DIR_INDEX, 0, 0, message, (int) (100.0 * processed / total));
-                    }
-                }
-            }
-
-
-            byte[] hashBytes = md.digest();
-            if (notify != null) {
-                if (total > 0) {
-                    String message = Strings.formatSizeForReadBy1024(total) + "/" + Strings.formatSizeForReadBy1024(total);
-                    notify.notify(userId, MQTT_TOPIC_TYPE_DIR_INDEX, 0, 0, message, 100);
-                }
-            }
-            return Lang.fixedHexString(hashBytes);
-        } catch (NoSuchAlgorithmException | IOException e) {
-            throw Lang.wrapThrow(e);
-        }
-    }
-
-    /**
-     * 计算影像的 SHA256
-     *
-     * @param imageAbsoluteFilename
-     * @return
-     */
-    public String imageSha256(String imageAbsoluteFilename) {
-        if (Strings.isBlank(imageAbsoluteFilename)) {
-            return Lang.sha256("");
-        }
-        return Lang.sha256(imageAbsoluteFilename);
-    }
-
     /**
      * 解析一个影像的坐标和影像信息
      *
@@ -403,6 +316,19 @@ public class TiffTools {
             BandInfo bandInfo = new BandInfo();
             bandInfo.setIndex(i);
             bandInfo.setDataType(band.GetRasterDataType());
+
+
+            // overviews
+            int overviewCount = band.GetOverviewCount();
+            bandInfo.overviews = new String[overviewCount];
+            for (int overviewIndex = 0; overviewIndex < overviewCount; overviewIndex++) {
+                // GetOverview start with 0,1,2
+                Band overviewBand = band.GetOverview(overviewIndex);
+                String overview = overviewBand.GetXSize() + "x" + overviewBand.GetYSize();
+                bandInfo.overviews[overviewIndex] = overview;
+            }
+
+
             bandInfo.metadata = new HashMap<>();
 
             String wavelength = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH.getKey());
@@ -652,6 +578,138 @@ public class TiffTools {
     }
 
     /**
+     * 根据影像的分辨率 m 找到最合适的输出级别
+     *
+     * @param xMi
+     * @return
+     */
+    private static int zoomByWgs84Resolution(double xMi) {
+        GlobalMercator globalMercator = new GlobalMercator(256);
+        return globalMercator.zoomForPixelSize(xMi);
+    }
+
+    /**
+     * 像素坐标 转化为 坐标参考系下的坐标  进行仿射变换
+     * * Xp = padfTransform[0] + P*padfTransform[1] + L*padfTransform[2];
+     * * Yp = padfTransform[3] + P*padfTransform[4] + L*padfTransform[5];
+     *
+     * @param adfGeoTransform
+     * @param pixelX
+     * @param pixelY
+     * @return
+     */
+    public static Point pixelToLocation(double[] adfGeoTransform, long pixelX, long pixelY) {
+        double xLocation = adfGeoTransform[0] + pixelX * adfGeoTransform[1] + pixelY * adfGeoTransform[2];
+        double yLocation = adfGeoTransform[3] + pixelX * adfGeoTransform[4] + pixelY * adfGeoTransform[5];
+        return new Point(xLocation, yLocation);
+    }
+
+    /**
+     * 目标单位 像素分辨率
+     * WGS84 度
+     * WEB MOCATOR mi
+     *
+     * @param adfGeoTransform
+     * @return
+     */
+    public static Point resolution(double[] adfGeoTransform) {
+        return new Point(adfGeoTransform[1], adfGeoTransform[5]);
+    }
+
+    public static Point wgs84Resolution(Point location, Point resolution) {
+        GlobalMercator globalMercator = new GlobalMercator(256);
+        double temp = resolution.getX() * Math.PI * 2 * globalMercator.EARTH_RADIUS / 360.0;
+        return new Point(temp, temp);
+    }
+
+    private void printDataType() {
+        log.info(" GDT_Unknown {}", gdalconstJNI.GDT_Unknown_get());
+        log.info(" GDT_Byte {}", gdalconstJNI.GDT_Byte_get());
+        log.info(" GDT_UInt16 {}", gdalconstJNI.GDT_UInt16_get());
+        log.info(" GDT_Int16 {}", gdalconstJNI.GDT_Int16_get());
+        log.info(" GDT_UInt32 {}", gdalconstJNI.GDT_UInt32_get());
+        log.info(" GDT_Int32 {}", gdalconstJNI.GDT_Int32_get());
+        log.info(" GDT_Float32 {}", gdalconstJNI.GDT_Float32_get());
+        log.info(" GDT_Float64 {}", gdalconstJNI.GDT_Float64_get());
+        log.info(" GDT_CInt16 {}", gdalconstJNI.GDT_CInt16_get());
+        log.info(" GDT_CInt32 {}", gdalconstJNI.GDT_CInt32_get());
+        log.info(" GDT_CFloat32 {}", gdalconstJNI.GDT_CFloat32_get());
+        log.info(" GDT_CFloat64 {}", gdalconstJNI.GDT_CFloat64_get());
+        log.info(" GDT_TypeCount {}", gdalconstJNI.GDT_TypeCount_get());
+    }
+
+    private FilePool getGlobalFilePool() {
+        if (globalFilePool == null) {
+            globalFilePool = NutFilePool.getOrCreatePool("~/temp/ai", 10000);
+        }
+        return globalFilePool;
+    }
+
+    /**
+     * 临时的png文件
+     *
+     * @return
+     */
+    public synchronized File tempFile() {
+        FilePool pool = getGlobalFilePool();
+        return pool.createFile(".png");
+    }
+
+    public String imageSha256(File file, Long userId, IProgressNotify notify) {
+        if (file == null || !file.exists()) {
+            return Lang.sha256("");
+        }
+        //这一版简化对影像的操作了
+        //直接取file的绝对路径 进行哈希计算
+        if (notify != null) {
+            notify.notify(userId, MQTT_TOPIC_TYPE_DIR_INDEX, 0, 0, "解析完成", 100);
+        }
+        try (InputStream ins = Streams.fileIn(file)) {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            long total = file.length();
+            long processed = 0;
+            byte[] bs = new byte[32 * 1024];
+            int len = 0;
+            while ((len = ins.read(bs)) != -1) {
+                md.update(bs, 0, len);
+                processed += len;
+                if (notify != null) {
+                    if (total > 0) {
+                        String message =
+                                Strings.formatSizeForReadBy1024(processed) + "/" + Strings.formatSizeForReadBy1024(total);
+                        notify.notify(userId, MQTT_TOPIC_TYPE_DIR_INDEX, 0, 0, message, (int) (100.0 * processed / total));
+                    }
+                }
+            }
+
+
+            byte[] hashBytes = md.digest();
+            if (notify != null) {
+                if (total > 0) {
+                    String message = Strings.formatSizeForReadBy1024(total) + "/" + Strings.formatSizeForReadBy1024(total);
+                    notify.notify(userId, MQTT_TOPIC_TYPE_DIR_INDEX, 0, 0, message, 100);
+                }
+            }
+            return Lang.fixedHexString(hashBytes);
+        } catch (NoSuchAlgorithmException | IOException e) {
+            throw Lang.wrapThrow(e);
+        }
+    }
+
+    /**
+     * 计算影像的 SHA256
+     *
+     * @param imageAbsoluteFilename
+     * @return
+     */
+    public String imageSha256(String imageAbsoluteFilename) {
+        if (Strings.isBlank(imageAbsoluteFilename)) {
+            return Lang.sha256("");
+        }
+        return Lang.sha256(imageAbsoluteFilename);
+    }
+
+    /**
      * 读取影像的信息
      * 有sha256值 就去数据库中查找 没找到 计算 找到 返回
      * 无Msha256值 计算
@@ -734,51 +792,6 @@ public class TiffTools {
         //删除临时文件
         temp.delete();
         return data;
-    }
-
-    /**
-     * 根据影像的分辨率 m 找到最合适的输出级别
-     *
-     * @param xMi
-     * @return
-     */
-    private static int zoomByWgs84Resolution(double xMi) {
-        GlobalMercator globalMercator = new GlobalMercator(256);
-        return globalMercator.zoomForPixelSize(xMi);
-    }
-
-    /**
-     * 像素坐标 转化为 坐标参考系下的坐标  进行仿射变换
-     * * Xp = padfTransform[0] + P*padfTransform[1] + L*padfTransform[2];
-     * * Yp = padfTransform[3] + P*padfTransform[4] + L*padfTransform[5];
-     *
-     * @param adfGeoTransform
-     * @param pixelX
-     * @param pixelY
-     * @return
-     */
-    public static Point pixelToLocation(double[] adfGeoTransform, long pixelX, long pixelY) {
-        double xLocation = adfGeoTransform[0] + pixelX * adfGeoTransform[1] + pixelY * adfGeoTransform[2];
-        double yLocation = adfGeoTransform[3] + pixelX * adfGeoTransform[4] + pixelY * adfGeoTransform[5];
-        return new Point(xLocation, yLocation);
-    }
-
-    /**
-     * 目标单位 像素分辨率
-     * WGS84 度
-     * WEB MOCATOR mi
-     *
-     * @param adfGeoTransform
-     * @return
-     */
-    public static Point resolution(double[] adfGeoTransform) {
-        return new Point(adfGeoTransform[1], adfGeoTransform[5]);
-    }
-
-    public static Point wgs84Resolution(Point location, Point resolution) {
-        GlobalMercator globalMercator = new GlobalMercator(256);
-        double temp = resolution.getX() * Math.PI * 2 * globalMercator.EARTH_RADIUS / 360.0;
-        return new Point(temp, temp);
     }
 
     /**
