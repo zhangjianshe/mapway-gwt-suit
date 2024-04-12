@@ -318,7 +318,19 @@ public class TiffTools {
         }
         return "";
     }
-
+    public  static String[] extractBandOverview(Band band)
+    {
+        // overviews
+        int overviewCount = band.GetOverviewCount();
+        String[] overviews = new String[overviewCount];
+        for (int overviewIndex = 0; overviewIndex < overviewCount; overviewIndex++) {
+            // GetOverview start with 0,1,2
+            Band overviewBand = band.GetOverview(overviewIndex);
+            String overview = overviewBand.GetXSize() + "x" + overviewBand.GetYSize();
+            overviews[overviewIndex] = overview;
+        }
+        return overviews;
+    }
     /**
      * 解析一个影像的坐标和影像信息
      *
@@ -339,15 +351,7 @@ public class TiffTools {
             bandInfo.setDataType(band.GetRasterDataType());
 
 
-            // overviews
-            int overviewCount = band.GetOverviewCount();
-            bandInfo.overviews = new String[overviewCount];
-            for (int overviewIndex = 0; overviewIndex < overviewCount; overviewIndex++) {
-                // GetOverview start with 0,1,2
-                Band overviewBand = band.GetOverview(overviewIndex);
-                String overview = overviewBand.GetXSize() + "x" + overviewBand.GetYSize();
-                bandInfo.overviews[overviewIndex] = overview;
-            }
+           bandInfo.overviews=extractBandOverview(band);
 
 
             bandInfo.metadata = new HashMap<>();
