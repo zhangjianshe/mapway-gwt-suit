@@ -299,6 +299,27 @@ public class TiffTools {
     }
 
     /**
+     * 计算图像的金字塔
+     *
+     * @param location
+     * @param callback progress report
+     */
+    public static String calRasterOverview(String location, ProgressCallback callback) {
+        Dataset dataset = null;
+        try {
+            dataset = gdal.Open(location);
+            dataset.BuildOverviews(new int[]{2, 4, 8, 16, 32, 64, 128, 256, 512}, callback);
+        } catch (Exception e) {
+            return e.getMessage();
+        } finally {
+            if (dataset != null) {
+                dataset.delete();
+            }
+        }
+        return "";
+    }
+
+    /**
      * 解析一个影像的坐标和影像信息
      *
      * @param dataset
