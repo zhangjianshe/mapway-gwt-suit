@@ -53,6 +53,10 @@ public class BandInfo implements Serializable, IsSerializable {
     public Double[] noValues;
 
     public Map<String, String> metadata;
+    /**
+     * 金字塔信息
+     */
+    public String[] overviews;
 
     public double calValue(double v) {
         if (Objects.equals(gammaMax, gammaMin)) {
