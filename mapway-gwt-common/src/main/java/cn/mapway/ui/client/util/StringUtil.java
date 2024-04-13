@@ -291,7 +291,7 @@ public class StringUtil {
             return (int) (estTime / (7 * 24 * 60 * 60)) + "周前";
         }
         if (estTime < 365 * 24 * 60 * 60) {
-            return (int) (estTime / (30 * 24 * 60 * 60)) + "月前";
+            return (int) ((estTime / (30 * 24 * 60 * 60))+1) + "月前";
         }
         int year = (int) (estTime / (365 * 24 * 60 * 60));
         int month = (int) (estTime - year * 365) / (30 * 24 * 60 * 60);
