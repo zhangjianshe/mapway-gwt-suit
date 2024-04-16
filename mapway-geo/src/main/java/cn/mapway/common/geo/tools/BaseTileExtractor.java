@@ -143,6 +143,7 @@ public class BaseTileExtractor {
     /**
      * 读取元数据 不进行格式转换
      * 原始影像的一个举行区域 读取数据到 目标区域
+     *
      * @param transparentBand
      * @param sourceX
      * @param sourceY
@@ -212,7 +213,7 @@ public class BaseTileExtractor {
                         //目标影像的位置
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         //读取原始影像 pos 位置的像素值
-                        double pixel =  (( int)source.get(pos) &0xFF);
+                        double pixel = ((int) source.get(pos) & 0xFF);
                         boolean transparent = isPixelTransparent(pixel, bandInfo);
                         if (transparent && transparentBand != null) {
                             //如果不是透明颜色 且传入了alpha通道 设为不透明 0xFF  0x00是透明颜色
@@ -220,8 +221,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        double clipPixel =bandInfo.calValue(pixel);
-                        target.put((byte) (((int)clipPixel)&0xFF));
+                        double clipPixel = bandInfo.calValue(pixel);
+                        target.put((byte) (((int) clipPixel) & 0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Int16) {
@@ -246,8 +247,8 @@ public class BaseTileExtractor {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
 
-                        double clipPixel =bandInfo.calValue(pixel);
-                        target.put((byte) (((int)clipPixel)&0xFF));
+                        double clipPixel = bandInfo.calValue(pixel);
+                        target.put((byte) (((int) clipPixel) & 0xFF));
 
                     }
                 }
@@ -271,8 +272,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        double clipPixel =bandInfo.calValue(pixel);
-                        target.put((byte) (((int)clipPixel)&0xFF));
+                        double clipPixel = bandInfo.calValue(pixel);
+                        target.put((byte) (((int) clipPixel) & 0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_UInt32 || dt == gdalconstConstants.GDT_Int32) {
@@ -296,8 +297,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        double clipPixel =bandInfo.calValue(pixel);
-                        target.put((byte) (((int)clipPixel)&0xFF));
+                        double clipPixel = bandInfo.calValue(pixel);
+                        target.put((byte) (((int) clipPixel) & 0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Float32) {
@@ -324,8 +325,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        double clipPixel =bandInfo.calValue(pixel);
-                        target.put((byte) (((int)clipPixel)&0xFF));
+                        double clipPixel = bandInfo.calValue(pixel);
+                        target.put((byte) (((int) clipPixel) & 0xFF));
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Float64) {
@@ -352,8 +353,8 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        double clipPixel =bandInfo.calValue(pixel);
-                        target.put((byte) (((int)clipPixel)&0xFF));
+                        double clipPixel = bandInfo.calValue(pixel);
+                        target.put((byte) (((int) clipPixel) & 0xFF));
 
                     }
                 }
@@ -615,7 +616,7 @@ public class BaseTileExtractor {
 
             source1.getInfo().check();
             FloatBuffer floatBuffer = sourceData.asFloatBuffer();
-            DoubleBuffer doubleBuffer =sourceData.asDoubleBuffer();
+            DoubleBuffer doubleBuffer = sourceData.asDoubleBuffer();
 
             //循环目标区域 [0-78][0-32]
             for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
@@ -626,19 +627,19 @@ public class BaseTileExtractor {
                     int tilePosition = (targetRect.getYAsInt() + row) * tileSize + targetRect.getXAsInt() + col;
                     double pixelValue = 0;
                     if (dt == GDT_Byte) {
-                        pixelValue = ((int)sourceData.get(location)) & 0xFF;
+                        pixelValue = ((int) sourceData.get(location)) & 0xFF;
                     } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
-                        int pos=location * 2;
-                        int v =   (((int)(sourceData.get(pos + 1))) & 0xFF) << 8
-                                | (((int)sourceData.get(pos + 0)) & 0xFF);
+                        int pos = location * 2;
+                        int v = (((int) (sourceData.get(pos + 1))) & 0xFF) << 8
+                                | (((int) sourceData.get(pos)) & 0xFF);
                         pixelValue = v;
                     } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
-                        int pos=location * 4;
-                        int v =   (((int)sourceData.get(pos + 3)) & 0xFF) << 24
-                                | (((int)sourceData.get(pos + 2)) & 0xFF) << 16
-                                | (((int)sourceData.get(pos + 1)) & 0xFF) << 8
-                                | (((int)sourceData.get(pos + 0)) & 0xFF);
-                        pixelValue=v;
+                        int pos = location * 4;
+                        int v = (((int) sourceData.get(pos + 3)) & 0xFF) << 24
+                                | (((int) sourceData.get(pos + 2)) & 0xFF) << 16
+                                | (((int) sourceData.get(pos + 1)) & 0xFF) << 8
+                                | (((int) sourceData.get(pos)) & 0xFF);
+                        pixelValue = v;
                     } else if (dt == GDT_Float32) {
                         pixelValue = floatBuffer.get(location);
                     } else if (dt == GDT_Float64) {
@@ -656,7 +657,7 @@ public class BaseTileExtractor {
 
                             if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
                                 //用户设置了归一化调色板
-                                rgba = translateColor(value/(source1.getInfo().outputMax-source1.getInfo().outputMin));
+                                rgba = translateColor(value / (source1.getInfo().outputMax - source1.getInfo().outputMin));
                             } else {
                                 //没有设置调色板
                                 rgba = (int) value;
@@ -766,17 +767,32 @@ public class BaseTileExtractor {
         ByteBuffer[] buffers = new ByteBuffer[bands.length];
 
         // sure [left,top,width,height] is in the raster's extend
-        left = Math.min(dataset.GetRasterXSize() - width, left);
-        left = Math.max(0, left);
+        if (left < 0) {
+            left = 0;
+        }
+        if (left > dataset.getRasterXSize()) {
+            left = dataset.getRasterXSize();
+        }
+        //  left =0 width= 1 RasterXSize=1
+        //  left =1 width= 1 RasterXSize=1
+        if (left + width > dataset.getRasterXSize()) {
+            width = dataset.getRasterXSize() - left;
+        }
 
-        top = Math.min(top, dataset.GetRasterYSize() - height);
-        top = Math.max(top, 0);
-
-        width = Math.min(width, dataset.GetRasterXSize());
-        height = Math.min(height, dataset.GetRasterYSize());
+        if (top < 0) {
+            top = 0;
+        }
+        if (top > dataset.getRasterYSize()) {
+            top = dataset.getRasterYSize();
+        }
+        //  left =0 width= 1 RasterXSize=1
+        //  left =1 width= 1 RasterXSize=1
+        if (top + height > dataset.getRasterYSize()) {
+            height = dataset.getRasterYSize() - top;
+        }
 
         for (int i = 0; i < bands.length; i++) {
-            ByteBuffer buffer = ByteBuffer.allocateDirect(width * height * 8);
+            ByteBuffer buffer = ByteBuffer.allocateDirect(outputWidth * outputHeight * 8);
             buffers[i] = buffer;
             int bandIndex = bands[i];
             if (bandIndex < 1 || bandIndex > dataset.GetRasterCount()) {
@@ -784,7 +800,7 @@ public class BaseTileExtractor {
             }
             Band band = dataset.GetRasterBand(bandIndex);
             outBandsType[i] = band.getDataType();
-            band.ReadRaster_Direct(left, top, width, height, outputWidth, outputHeight, band.getDataType(), buffer);
+            band.ReadRaster_Direct(left, top, width, height, width, height, band.getDataType(), buffer);
         }
         dataset.delete();
         return buffers;
