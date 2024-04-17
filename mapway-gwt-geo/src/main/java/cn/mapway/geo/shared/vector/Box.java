@@ -209,4 +209,11 @@ public class Box implements Serializable, IsSerializable {
         if (ymin > extend.ymin) ymin = extend.ymin;
         if (ymax < extend.ymax) ymax = extend.ymax;
     }
+
+    public static void main(String[] args) {
+        Box box1=new Box(49,49,49,49);
+        Box box2=new Box(50,50,100,100);
+
+        System.out.println(box1.isCross(box2));
+    }
 }

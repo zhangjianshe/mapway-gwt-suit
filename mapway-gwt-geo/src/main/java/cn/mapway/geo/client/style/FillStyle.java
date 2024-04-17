@@ -32,5 +32,5 @@ public class FillStyle implements Serializable, IsSerializable {
     /**
      * 填充的透明度
      */
-    double opacity = 0d;
+    double opacity = 1.0d;
 }

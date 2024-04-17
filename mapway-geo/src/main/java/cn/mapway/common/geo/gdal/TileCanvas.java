@@ -7,6 +7,7 @@ import cn.mapway.geo.client.style.FillStyle;
 import cn.mapway.geo.client.style.MapStyle;
 import cn.mapway.geo.client.style.StyleLayer;
 import cn.mapway.geo.shared.vector.*;
+import cn.mapway.geo.shared.vector.Point;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.img.Colors;
 import org.nutz.img.Images;
@@ -175,10 +176,11 @@ public class TileCanvas {
         }else if(geometry instanceof cn.mapway.geo.shared.vector.Point)
         {
             cn.mapway.geo.shared.vector.Point pt = (cn.mapway.geo.shared.vector.Point) geometry;
-            transform(pt);
-            if (pt.getX() > 0) {
+            Point pt0=pt.clone();
+            transform(pt0);
+            if (pt0.getX() > 0) {
                 graphics.setColor(fillColor);
-                graphics.fillArc((int) (pt.x-5), (int) (pt.y-5),10,10,0,360);
+                graphics.fillArc((int) (pt0.x-5), (int) (pt0.y-5),10,10,0,360);
             }
         }
 
