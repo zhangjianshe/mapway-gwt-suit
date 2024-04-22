@@ -82,6 +82,7 @@ public class ModuleFactoryGenerator extends Generator {
         composer.addImport(MapwayResource.class.getCanonicalName());
         composer.addImport("com.google.gwt.resources.client.ImageResource");
         composer.addImport("com.google.gwt.core.client.GWT");
+        composer.addImport("cn.mapway.ui.client.mvc.event.*");
         composer.addImport(List.class.getCanonicalName());
         composer.addImport(Map.class.getCanonicalName());
         composer.addImport(HashMap.class.getCanonicalName());
