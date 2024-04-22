@@ -315,10 +315,10 @@ public class ModuleFactoryGenerator extends Generator {
             for (EventInfo eventInfo : item.getEvents()) {
                 intiCodes.append(String.format("moduleInfo.getEvents().add(" +
                         "new EventInfo(" +
-                        "\"" + Strings.evalEscape(eventInfo.getName()) + "\"" +
-                        "\"" + Strings.evalEscape(eventInfo.getCode()) + "\"" +
-                        "\"" + Strings.evalEscape(eventInfo.getSummary()) + "\"" +
-                        "\"" + Strings.evalEscape(eventInfo.getSignature()) + "\"" +
+                        "\"" + Strings.evalEscape(eventInfo.getName()) + "\"," +
+                        "\"" + Strings.evalEscape(eventInfo.getCode()) + "\"," +
+                        "\"" + Strings.evalEscape(eventInfo.getSummary()) + "\"," +
+                        "\"" + Strings.evalEscape(eventInfo.getSignature()) + "\"," +
                         "\"" + Strings.evalEscape(eventInfo.getGroup()) + "\"" +
                         ")" +
                         ");\r\n"));
