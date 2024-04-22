@@ -12,7 +12,7 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import lombok.extern.slf4j.Slf4j;
-import org.checkerframework.checker.units.qual.A;
+import org.apache.commons.lang3.StringEscapeUtils;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
@@ -39,6 +39,12 @@ public class ModuleFactoryGenerator extends Generator {
      */
     private static final boolean hasGenerator = false;
     Map<String, String> items = new HashMap<>();
+
+    public static void main(String[] args) {
+        String test = "onData(topic,data){\r\n\t}\r\n";
+        String out = StringEscapeUtils.escapeJava(test);
+        System.out.println(out);
+    }
 
     @Override
     public String generate(TreeLogger logger, GeneratorContext context, String typeName)
@@ -316,11 +322,11 @@ public class ModuleFactoryGenerator extends Generator {
             for (EventInfo eventInfo : item.getEvents()) {
                 intiCodes.append(String.format("moduleInfo.getEvents().add(" +
                         "new EventInfo(" +
-                        "\"" + Strings.evalEscape(eventInfo.getName()) + "\"," +
-                        "\"" + Strings.evalEscape(eventInfo.getCode()) + "\"," +
-                        "\"" + Strings.evalEscape(eventInfo.getSummary()) + "\"," +
-                        "\"" + Strings.evalEscape(eventInfo.getSignature()) + "\"," +
-                        "\"" + Strings.evalEscape(eventInfo.getGroup()) + "\"" +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getName()) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getCode()) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getSummary()) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getSignature()) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getGroup()) + "\"" +
                         ")" +
                         ");\r\n"));
             }
