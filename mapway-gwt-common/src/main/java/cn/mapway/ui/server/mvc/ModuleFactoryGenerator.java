@@ -1,8 +1,7 @@
 package cn.mapway.ui.server.mvc;
 
-import cn.mapway.ui.client.mvc.IModule;
-import cn.mapway.ui.client.mvc.ModuleFactory;
-import cn.mapway.ui.client.mvc.ModuleMarker;
+import cn.mapway.ui.client.mvc.*;
+import cn.mapway.ui.client.mvc.event.EventInfo;
 import cn.mapway.ui.client.resource.MapwayResource;
 import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
@@ -13,6 +12,7 @@ import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import lombok.extern.slf4j.Slf4j;
+import org.checkerframework.checker.units.qual.A;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
@@ -21,6 +21,7 @@ import org.nutz.lang.Strings;
 import java.io.File;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.lang.annotation.Annotation;
 import java.util.*;
 
 
@@ -120,7 +121,6 @@ public class ModuleFactoryGenerator extends Generator {
 
     /**
      * 读取模板文件
-     *
      */
     private String readTemplate() {
         String fileName = "ModuleFactoryTemplate.txt";
@@ -181,7 +181,7 @@ public class ModuleFactoryGenerator extends Generator {
             File f1 = new File(filePath);
             if (f1.exists()) {
                 String path = f1.getAbsolutePath().replaceAll("\\\\", "/");
-                log.warn("*** find module {} icon {} at {} ", classType.getName(), iconName,path);
+                log.warn("*** find module {} icon {} at {} ", classType.getName(), iconName, path);
                 return extractClassName(path);
             } else {
                 log.warn("*** module {} 's configuration icon {} can not found", classType.getName(), iconName);
@@ -191,15 +191,15 @@ public class ModuleFactoryGenerator extends Generator {
     }
 
     private String extractClassName(String abstractPath) {
-        log.warn("extract class name {}" ,abstractPath);
+        log.warn("extract class name {}", abstractPath);
         String match = "src/main/java/";
         int index = abstractPath.indexOf(match);
-        if(index>=0){
-        return abstractPath.substring(index + match.length());
+        if (index >= 0) {
+            return abstractPath.substring(index + match.length());
         }
         match = "target/classes/";
         index = abstractPath.indexOf(match);
-        if(index>=0){
+        if (index >= 0) {
             return abstractPath.substring(index + match.length());
         }
 
@@ -310,6 +310,20 @@ public class ModuleFactoryGenerator extends Generator {
                     intiCodes.append(String.format("moduleInfo.themes.add(\"%s\");\r\n", theme));
                 }
             }
+
+            //处理事件声明
+            for (EventInfo eventInfo : item.getEvents()) {
+                intiCodes.append(String.format("moduleInfo.getEvents().add(" +
+                        "new EventInfo(" +
+                        "\"" + Strings.evalEscape(eventInfo.getName()) + "\"" +
+                        "\"" + Strings.evalEscape(eventInfo.getCode()) + "\"" +
+                        "\"" + Strings.evalEscape(eventInfo.getSummary()) + "\"" +
+                        "\"" + Strings.evalEscape(eventInfo.getSignature()) + "\"" +
+                        "\"" + Strings.evalEscape(eventInfo.getGroup()) + "\"" +
+                        ")" +
+                        ");\r\n"));
+            }
+
             intiCodes.append("modulesFlat.add(moduleInfo);\r\n");
             createCodes.append(String.format(" if(moduleCode.equals(\"%s\")){ return new %s();}\r\n", item.code, classType.getQualifiedSourceName()));
 
@@ -364,7 +378,36 @@ public class ModuleFactoryGenerator extends Generator {
         item.parent = marker.parent();
         item.setTags(marker.tags());
         item.setThemes(marker.themes());
-        log.info("{}\t{}\t{}",item.code,item.name,item.group);
+        log.info("{}\t{}\t{}", item.code, item.name, item.group);
+        //添加模块的事件描述信息
+        List<EventMarker> eventMarkers = new ArrayList<>();
+
+        Set<? extends JClassType> hierarchy = classType.getFlattenedSupertypeHierarchy();
+        for (JClassType clazz : hierarchy) {
+            //循环父类 直到 Objects
+            Events events = clazz.getAnnotation(Events.class);
+            if (events == null) {
+                Annotation[] declaredAnnotations = clazz.getDeclaredAnnotations();
+                for (Annotation annotation : declaredAnnotations) {
+                    if (annotation.annotationType().equals(EventMarker.class)) {
+                        eventMarkers.add((EventMarker) annotation);
+                    }
+                }
+            } else {
+                Collections.addAll(eventMarkers, events.value());
+            }
+        }
+
+        for (EventMarker eventMarker : eventMarkers) {
+            EventInfo eventInfo = new EventInfo();
+            eventInfo.setCode(eventMarker.code());
+            eventInfo.setSignature(eventMarker.signature());
+            eventInfo.setSummary(eventMarker.summary());
+            eventInfo.setGroup(eventMarker.group());
+            eventInfo.setName(eventMarker.name());
+            item.getEvents().add(eventInfo);
+        }
+
         return item;
     }
 

@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc;
 
 
+import cn.mapway.ui.client.mvc.event.EventInfo;
 import com.google.gwt.resources.client.ImageResource;
 
 import java.util.ArrayList;
@@ -81,6 +82,8 @@ public class ModuleInfo {
 
     public List<ModuleInfo> children;
 
+    public List<EventInfo> events;
+
     /**
      * Instantiates a new module item.
      *
@@ -104,6 +107,7 @@ public class ModuleInfo {
         this.tags = new ArrayList<>();
         this.themes = new ArrayList<>();
         children = new ArrayList<>();
+        events = new ArrayList<>();
     }
 
     /**
@@ -214,5 +218,9 @@ public class ModuleInfo {
             }
         }
         return false;
+    }
+
+    public List<EventInfo> getEvents() {
+        return events;
     }
 }
