@@ -74,7 +74,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
         }
         if (runtimeParameters != null) {
             for (ParameterValue value : runtimeParameters) {
-                if (value.equals(name)) {
+                if (name.equals(value.name)) {
                     return (T) value.value;
                 }
             }
