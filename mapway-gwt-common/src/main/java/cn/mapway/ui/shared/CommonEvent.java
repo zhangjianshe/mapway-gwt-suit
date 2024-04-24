@@ -115,6 +115,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int COPY = 102;
     public final static int EXPAND = 103;
     public final static int SHRINK = 104;
+    public final static int RESULT = 105;
+    public final static int OBJECT = 106;
 
 
     public final static int OK = 200;
@@ -136,9 +138,19 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
     }
+
+    public static CommonEvent resultEvent(Object data) {
+        return new CommonEvent(RESULT, data);
+    }
+
+    public static CommonEvent objectEvent(Object data) {
+        return new CommonEvent(OBJECT, data);
+    }
+
     public static CommonEvent expandEvent(Object data) {
         return new CommonEvent(EXPAND, data);
     }
+
     public static CommonEvent shrinkEvent(Object data) {
         return new CommonEvent(SHRINK, data);
     }
@@ -154,6 +166,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent layerRemoveEvent(Object data) {
         return new CommonEvent(LAYER_REMOVE, data);
     }
+
     public static CommonEvent copyEvent(Object data) {
         return new CommonEvent(COPY, data);
     }
@@ -165,7 +178,6 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent sysLayerRemoveEvent(Object data) {
         return new CommonEvent(SYS_LAYER_REMOVE, data);
     }
-
 
     public static CommonEvent leftEvent(Object data) {
         return new CommonEvent(LEFT, data);
@@ -539,6 +551,14 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(CONVERT, data);
     }
 
+    public boolean isObject() {
+        return type == OBJECT;
+    }
+
+    public boolean isResult() {
+        return type == RESULT;
+    }
+
     public boolean isMultiSelect() {
         return MULTI_SELECT == this.type;
     }
@@ -582,9 +602,11 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isEdit() {
         return EDIT == this.type;
     }
+
     public boolean isCopy() {
         return COPY == this.type;
     }
+
     public boolean isAttribute() {
         return ATTRIBUTE == this.type;
     }
@@ -928,9 +950,11 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isConvert() {
         return CONVERT == this.type;
     }
+
     public boolean isExpand() {
         return EXPAND == this.type;
     }
+
     public boolean isShrink() {
         return SHRINK == this.type;
     }
