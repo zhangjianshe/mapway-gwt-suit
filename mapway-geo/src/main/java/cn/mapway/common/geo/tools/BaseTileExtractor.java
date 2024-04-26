@@ -233,7 +233,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col) * 2;
+                        int pos = (row * targetWidth + col) *2;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
 
                         int pixel = (source.get(pos + 1) << 8) & 0xFF00 + (source.get(pos) & 0xFF);
@@ -259,7 +259,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col) * 2;
+                        int pos = (row * targetWidth + col);
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         int pixel = (source.get(pos + 1) << 8) & 0xFF00 + (source.get(pos) & 0xFF);
 
@@ -284,7 +284,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col) * 2;
+                        int pos = (row * targetWidth + col) ;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         int pixel = intBuffer.get(pos);
 
@@ -312,7 +312,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col) * 4;
+                        int pos = (row * targetWidth + col);
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
 
                         float pixel = floatBuffer.get(pos);
@@ -340,7 +340,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col) * 8;
+                        int pos = (row * targetWidth + col);
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         // source  postion 读取一个 64位的浮点数 怎么转换
                         double pixel = doubleBuffer.get(pos);
@@ -503,17 +503,6 @@ public class BaseTileExtractor {
         Rect targetRect = new Rect(0, 0, targetWidth, targetHeight);
         Rect imageRect = new Rect(0, 0, (int) imageInfo.width, (int) imageInfo.height);
 
-//        if (imageRect.getWidth() > imageRect.getHeight()) {
-//            // 长条状
-//            int height = (int) ((1.0 * imageRect.getHeight() * targetWidth) / imageRect.getWidth());
-//            targetRect.getYAsInt() = (targetHeight - height) / 2;
-//            targetRect.getHeightAsInt() = (targetHeight - 2 * targetRect.getYAsInt());
-//        } else {
-//            //竖条装
-//            int width = (int) ((1.0 * imageInfo.getWidth() * targetHeight) / imageRect.getHeight());
-//            targetRect.getXAsInt() = (targetWidth - width) / 2;
-//            targetRect.getWidthAsInt() = (targetWidth - 2 * targetRect.getXAsInt());
-//        }
 
         //准备波段数据
         //如果原始波段数 大于3  只取前三个波段进行输出
@@ -523,7 +512,7 @@ public class BaseTileExtractor {
         List<Band> targetBandList = new ArrayList<>(3);
 
         processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
-        byte[] transparentBand = getBlackBuffer(targetWidth, targetHeight);
+        byte[] transparentBand = getBlackBuffer(targetRect.getWidthAsInt(), targetRect.getHeightAsInt());
         for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
 
             BandData sourceBand = sourceBandList.get(bandIndex);
@@ -537,9 +526,11 @@ public class BaseTileExtractor {
                         imageRect.getXAsInt(), imageRect.getYAsInt(),
                         imageRect.getWidthAsInt(), imageRect.getHeightAsInt(),
                         targetRect.getXAsInt(), targetRect.getYAsInt(),
-                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), targetWidth);
+                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(),
+                        targetRect.getWidthAsInt());
+
                 targetBand.WriteRaster_Direct(targetRect.getXAsInt(), targetRect.getYAsInt(),
-                        targetRect.getHeightAsInt(), targetRect.getHeightAsInt(), byteBuffer);
+                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), byteBuffer);
             } catch (Exception e) {
                 e.printStackTrace();
             }
