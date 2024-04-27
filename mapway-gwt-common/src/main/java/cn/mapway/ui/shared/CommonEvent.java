@@ -117,6 +117,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int SHRINK = 104;
     public final static int RESULT = 105;
     public final static int OBJECT = 106;
+    public final static int PATH = 107;
 
 
     public final static int OK = 200;
@@ -137,6 +138,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+
+    public static CommonEvent pathEvent(Object data) {
+        return new CommonEvent(PATH, data);
     }
 
     public static CommonEvent resultEvent(Object data) {
@@ -957,6 +962,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isShrink() {
         return SHRINK == this.type;
+    }
+
+    public boolean isPath() {
+        return PATH == this.type;
     }
 
     @Override
