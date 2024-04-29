@@ -101,7 +101,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static final int LEFT_CLICK = 88;//数据改变
     public static final int MENU = 89;//数据改变
     public static final int UPLOAD = 90;//上传数据
-    public static final int UNSELECTED = 91;//清空选择
+    public static final int UNSELECT = 91;//清空选择
     public static final int TITLE = 92;//标题消息
     public static final int MODE = 93;//MODE消息
     public static final int LEFT = 94;//MODE消息
@@ -118,6 +118,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int RESULT = 105;
     public final static int OBJECT = 106;
     public final static int PATH = 107;
+    public final static int STA = 108;
 
 
     public final static int OK = 200;
@@ -138,6 +139,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+
+    public static CommonEvent staEvent(Object data) {
+        return new CommonEvent(STA, data);
     }
 
     public static CommonEvent pathEvent(Object data) {
@@ -224,8 +229,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(UNCHECKED, data);
     }
 
-    public static CommonEvent unSelectedEvent(Object data) {
-        return new CommonEvent(UNSELECTED, data);
+    public static CommonEvent unSelectEvent(Object data) {
+        return new CommonEvent(UNSELECT, data);
     }
 
     public static CommonEvent valueChangedEvent(Object data) {
@@ -685,7 +690,11 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
 
     public boolean isUnSelect() {
-        return UNSELECTED == this.type;
+        return UNSELECT == this.type;
+    }
+
+    public boolean isSta() {
+        return STA == this.type;
     }
 
     public boolean isSave() {
