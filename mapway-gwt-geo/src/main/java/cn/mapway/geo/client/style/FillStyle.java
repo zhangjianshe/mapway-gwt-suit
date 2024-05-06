@@ -1,7 +1,7 @@
 package cn.mapway.geo.client.style;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
-import lombok.Data;
+import jsinterop.annotations.JsType;
 
 import java.io.Serializable;
 
@@ -11,26 +11,26 @@ import java.io.Serializable;
  *
  * @author zhang
  */
-@Data
+@JsType
 public class FillStyle implements Serializable, IsSerializable {
-    public final static Integer FILL_TYPE_COLOR = 0;
-    public final static Integer FILL_TYPE_PATTERN = 1;
+    public final static int FILL_TYPE_COLOR = 0;
+    public final static int FILL_TYPE_PATTERN = 1;
     /**
      * 填充类型
      */
-    Integer type = FILL_TYPE_COLOR;
+    public int type =0;
     /**
      * 填充颜色
      */
-    String color = "#00FF00";
+    public String color;
 
     /**
      * 填充模板
      */
-    String pattern = "";
+    public String pattern;
 
     /**
      * 填充的透明度
      */
-    double opacity = 1.0d;
+    public double opacity;
 }

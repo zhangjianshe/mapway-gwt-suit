@@ -6,8 +6,8 @@ import cn.mapway.geo.client.style.BorderStyle;
 import cn.mapway.geo.client.style.FillStyle;
 import cn.mapway.geo.client.style.MapStyle;
 import cn.mapway.geo.client.style.StyleLayer;
-import cn.mapway.geo.shared.vector.*;
 import cn.mapway.geo.shared.vector.Point;
+import cn.mapway.geo.shared.vector.*;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.img.Colors;
 import org.nutz.img.Images;
@@ -25,6 +25,7 @@ import java.io.OutputStream;
  */
 @Slf4j
 public class TileCanvas {
+    static BorderStyle BORDER_STYLE;
     TileNo tileNo;
     BufferedImage buffer;
     Graphics2D graphics;
@@ -59,8 +60,6 @@ public class TileCanvas {
         Images.write(buffer, "png", out);
     }
 
-
-
     private Polygon toPolygon(Line line) {
         Polygon p = new Polygon();
         for (int nc = 0; nc < line.getCount(); nc++) {
@@ -90,7 +89,7 @@ public class TileCanvas {
      */
     private void transform(cn.mapway.geo.shared.vector.Point pt) {
         pt.x = (pt.x - mercatorBox.getXmin()) / res;
-        pt.y = 256-(pt.y- mercatorBox.getYmin()) / res;
+        pt.y = 256 - (pt.y - mercatorBox.getYmin()) / res;
 
 //        double res = WebMercator.resolution(tileNo.getZoom());
 //        pt.x = (pt.x + WebMercator.originShift) / res - tileNo.getTileX() * 256;
@@ -98,14 +97,26 @@ public class TileCanvas {
     }
 
     public void drawFeature(Feature featureDraw, MapStyle mapStyle) {
-        StyleLayer styleLayer = mapStyle.getStyles().get(0);
-        BorderStyle borderStyle = styleLayer.getBorderStyle();
-        FillStyle fillStyle = styleLayer.getFillStyle();
-        Color fillColor = colorFromString(fillStyle.getOpacity(), fillStyle.getColor());
-        Color borderColor = colorFromString(borderStyle.getOpacity(), borderStyle.getColor());
+        StyleLayer styleLayer;
+        if (mapStyle == null || mapStyle.styles == null || mapStyle.styles.length == 0) {
+            styleLayer = new StyleLayer();
+        } else {
+            styleLayer = mapStyle.styles[0];
+        }
+        if (styleLayer.borderStyle == null) {
+            styleLayer.borderStyle = getDefaultBorderStyle();
+        }
+        if (styleLayer.fillStyle == null) {
+            styleLayer.fillStyle = getDefaultFillStyle();
+        }
+
+        FillStyle fillStyle = styleLayer.fillStyle;
+        BorderStyle borderStyle = styleLayer.borderStyle;
+        Color fillColor = colorFromString(fillStyle.opacity, fillStyle.color);
+        Color borderColor = colorFromString(borderStyle.opacity, borderStyle.color);
         Stroke stroke = null;
-        if (borderStyle.getWidth() > 0) {
-            stroke = new BasicStroke(borderStyle.getWidth());
+        if (borderStyle.width > 0) {
+            stroke = new BasicStroke(borderStyle.width);
         }
 
         GeoObject geometry = featureDraw.getGeometry();
@@ -119,12 +130,12 @@ public class TileCanvas {
             if (lines.getCount() == 1) {
                 Polygon polygon = toPolygon(lines.getLine(0));
                 //先填充
-                if (fillStyle.getOpacity() > 0) {
+                if (fillStyle.opacity > 0) {
                     graphics.setColor(fillColor);
                     graphics.fillPolygon(polygon);
                 }
                 //再画边框
-                if (borderStyle.getWidth() > 0) {
+                if (borderStyle.width > 0) {
                     graphics.setColor(borderColor);
                     graphics.setStroke(stroke);
                     graphics.drawPolygon(polygon);
@@ -144,45 +155,63 @@ public class TileCanvas {
                         }
                     }
                     //先填充
-                    if (fillStyle.getOpacity() > 0) {
+                    if (fillStyle.opacity > 0) {
                         graphics.setColor(fillColor);
                         graphics.fill(geoobj);
                     }
                     //再画边框
-                    if (borderStyle.getWidth() > 0) {
+                    if (borderStyle.width > 0) {
                         graphics.setColor(borderColor);
                         graphics.setStroke(stroke);
                         graphics.draw(geoobj);
                     }
                 }
             }
-        }
-        else if(geometry instanceof Line){
+        } else if (geometry instanceof Line) {
             Line line = (Line) geometry;
-            if(line.getCount()>2)
-            {
+            if (line.getCount() > 2) {
                 graphics.setColor(borderColor);
                 graphics.setStroke(stroke);
                 cn.mapway.geo.shared.vector.Point point = line.getPoint(0).clone();
                 transform(point);
-                for(int index=1;index<line.getCount();index++)
-                {
-                    cn.mapway.geo.shared.vector.Point end=line.getPoint(index).clone();
+                for (int index = 1; index < line.getCount(); index++) {
+                    cn.mapway.geo.shared.vector.Point end = line.getPoint(index).clone();
                     transform(end);
                     graphics.drawLine((int) point.x, (int) point.y, (int) end.x, (int) end.y);
                     point.copyFrom(end);
                 }
             }
-        }else if(geometry instanceof cn.mapway.geo.shared.vector.Point)
-        {
+        } else if (geometry instanceof cn.mapway.geo.shared.vector.Point) {
             cn.mapway.geo.shared.vector.Point pt = (cn.mapway.geo.shared.vector.Point) geometry;
-            Point pt0=pt.clone();
+            Point pt0 = pt.clone();
             transform(pt0);
             if (pt0.getX() > 0) {
                 graphics.setColor(fillColor);
-                graphics.fillArc((int) (pt0.x-5), (int) (pt0.y-5),10,10,0,360);
+                graphics.fillArc((int) (pt0.x - 5), (int) (pt0.y - 5), 10, 10, 0, 360);
             }
         }
+    }
+    static FillStyle FILL_STYLE;
+    private synchronized FillStyle getDefaultFillStyle() {
+        if (FILL_STYLE == null) {
+            FILL_STYLE = new FillStyle();
+            FILL_STYLE.opacity=0.5;
+            FILL_STYLE.color = "green";
+            FILL_STYLE.type = 0;
+            FILL_STYLE.pattern = "";
+        }
+        return FILL_STYLE;
+    }
 
+    private synchronized BorderStyle getDefaultBorderStyle() {
+        if (BORDER_STYLE == null) {
+            BORDER_STYLE = new BorderStyle();
+            BORDER_STYLE.width = 1;
+            BORDER_STYLE.opacity = 1;
+            BORDER_STYLE.color = "black";
+            BORDER_STYLE.type = 0;
+            BORDER_STYLE.pattern = "";
+        }
+        return BORDER_STYLE;
     }
 }

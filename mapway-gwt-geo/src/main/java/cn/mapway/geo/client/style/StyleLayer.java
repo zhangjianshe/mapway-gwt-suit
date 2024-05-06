@@ -1,6 +1,7 @@
 package cn.mapway.geo.client.style;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
+import jsinterop.annotations.JsType;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,7 +12,7 @@ import java.io.Serializable;
  *
  * @author zhang
  */
-@Data
+@JsType
 public class StyleLayer implements Serializable, IsSerializable {
 
     /**
@@ -22,15 +23,15 @@ public class StyleLayer implements Serializable, IsSerializable {
     /**
      * 样式类型
      */
-    int type = STYLE_TYPE_SIMPLE;
+   public int type = STYLE_TYPE_SIMPLE;
     /**
      * 边框的样式
      */
-    BorderStyle borderStyle;
+    public BorderStyle borderStyle;
     /**
      * 填充样式
      */
-    FillStyle fillStyle;
+    public FillStyle fillStyle;
 
     public StyleLayer() {
         borderStyle = new BorderStyle();
