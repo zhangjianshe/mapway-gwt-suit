@@ -297,9 +297,17 @@ public class StringUtil {
         long time = System.currentTimeMillis() - estTime * 1000;
         Date then = new Date(time);
         Date now = new Date();
-        int year = now.getYear() - then.getYear();
-        int month = (int) ((now.getTime() / 1000 - year * 365 * 24 * 60 * 60) / (60 * 60 * 24 * 30));
-        return year + "年" + month + "月前";
+        int year = now.getYear() - then.getYear() -1;
+        int month = now.getMonth() + (11 - then.getMonth());
+        if (month == 11) {
+            year = year + 1;
+            month = 0;
+        }
+        if (month == 0) {
+            return year + "年前";
+        } else {
+            return year + "年" + month + "月前";
+        }
     }
 
 //    public static void main(String[] args) {
