@@ -273,7 +273,7 @@ public class StringUtil {
      */
     public static String formatTimeSpan(Long estTime) {
         if (estTime == null || estTime < 0) {
-            return "秒数据错误";
+            return "";
         }
         if (estTime < 60) {
             return "刚刚";
@@ -291,12 +291,26 @@ public class StringUtil {
             return (int) (estTime / (7 * 24 * 60 * 60)) + "周前";
         }
         if (estTime < 365 * 24 * 60 * 60) {
-            return (int) ((estTime / (30 * 24 * 60 * 60))+1) + "月前";
+            return (int) ((estTime / (30 * 24 * 60 * 60)) + 1) + "月前";
         }
-        int year = (int) (estTime / (365 * 24 * 60 * 60));
-        int month = (int) (estTime - year * 365) / (30 * 24 * 60 * 60);
+        //estTime分鐘之前對應的時間點
+        long time = System.currentTimeMillis() - estTime * 1000;
+        Date then = new Date(time);
+        Date now = new Date();
+        int year = now.getYear() - then.getYear();
+        int month = (int) ((now.getTime() / 1000 - year * 365 * 24 * 60 * 60) / (60 * 60 * 24 * 30));
         return year + "年" + month + "月前";
     }
+
+//    public static void main(String[] args) {
+//        Date then= null;
+//        try {
+//            then = Times.parse("yyyy-MM-dd HH:mm:ss","2020-06-07 12:00:00");
+//        } catch (ParseException e) {
+//            throw new RuntimeException(e);
+//        }
+//        StringUtil.formatTimeSpan((Times.now().getTime()-then.getTime())/1000);
+//    }
 
     public static String randomColor() {
         return Colors.randomColor();
