@@ -299,9 +299,9 @@ public class StringUtil {
         Date now = new Date();
         int year = now.getYear() - then.getYear() -1;
         int month = now.getMonth() + (11 - then.getMonth());
-        if (month == 11) {
+        if (month >= 11) {
             year = year + 1;
-            month = 0;
+            month -=11;
         }
         if (month == 0) {
             return year + "年前";
