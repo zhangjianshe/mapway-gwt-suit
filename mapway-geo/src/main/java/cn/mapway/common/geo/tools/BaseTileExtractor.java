@@ -4,6 +4,7 @@ package cn.mapway.common.geo.tools;
 import cn.mapway.geo.client.raster.BandInfo;
 import cn.mapway.geo.client.raster.ChanelData;
 import cn.mapway.geo.client.raster.ImageInfo;
+import cn.mapway.geo.shared.color.ColorMap;
 import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
@@ -233,7 +234,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col) *2;
+                        int pos = (row * targetWidth + col) * 2;
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
 
                         int pixel = (source.get(pos + 1) << 8) & 0xFF00 + (source.get(pos) & 0xFF);
@@ -284,7 +285,7 @@ public class BaseTileExtractor {
             for (int row = 0; row < targetHeight; row++)
                 for (int col = 0; col < targetWidth; col++) {
                     {
-                        int pos = (row * targetWidth + col) ;
+                        int pos = (row * targetWidth + col);
                         int posTarget = (targetY + row) * tileWidth + col + targetX;
                         int pixel = intBuffer.get(pos);
 
@@ -653,6 +654,8 @@ public class BaseTileExtractor {
                                 //没有设置调色板
                                 rgba = (int) value;
                             }
+                        } else if (sourceBand.getInfo().colorMaps != null) {
+                            rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
                         } else if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
                             //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
                             // 讲数据中的颜色进行归一化处理
@@ -734,6 +737,20 @@ public class BaseTileExtractor {
         }
         return transparentBand;
     }
+
+    private int translateImageColorTable(List<ColorMap> colorMaps, double pixelValue) {
+        if (colorMaps == null) {
+            return defaultColor;
+        }
+        for (ColorMap colorMap : colorMaps) {
+            if (colorMap.getStart() == pixelValue) {
+                return colorMap.getRgba();
+            }
+        }
+        //透明颜色
+        return 0;
+    }
+
 
     /**
      * 直接读取目标影像中的数据 不进行采样

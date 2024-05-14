@@ -5,6 +5,7 @@ import cn.mapway.biz.core.BizResult;
 import cn.mapway.common.geo.tools.parser.GF1Parser;
 import cn.mapway.common.geo.tools.parser.ISatelliteExtractor;
 import cn.mapway.geo.client.raster.*;
+import cn.mapway.geo.shared.color.ColorMap;
 import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
@@ -29,6 +30,7 @@ import org.nutz.lang.*;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -107,6 +109,8 @@ public class TiffTools {
         // filePath = "E:\\developer\\data\\imagebot\\personal\\1\\0853_GF701_013568_E112.3_N40.3_20220409114151_BWD_01_SC0_0001_2204094535_Reg.tif";
         //  (53346 27486 16)
         filePath = "E:\\mnt\\imagebot-docker-prod\\imagebot\\personal\\503\\5\\sdg\\Q_210_97_840_391.tif";
+        filePath = "/data/personal/1/O_53_27_214_109.tif";
+        //filePath = "/data/personal/1/Q_183_100_735_402.tif";
         long tilex = 1680;
         long tiley = 783;
         int zoom = 11;
@@ -129,10 +133,17 @@ public class TiffTools {
                 return true;
             }
         });
-        Files.write(infoFile, Json.toJson(md5File));
 
-        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
-        Files.write("d:\\out\\test.png", bytes);
+        for(BandInfo bandInfo: md5File.getBandInfos())
+        {
+            if(bandInfo.colorMaps!=null)
+            {
+                System.out.println(bandInfo.colorMaps);
+            }
+        }
+
+        // byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
+        // Files.write("d:\\out\\test.png", bytes);
     }
 
     public static synchronized SpatialReference getWgs84Reference() {
@@ -318,8 +329,8 @@ public class TiffTools {
         }
         return "";
     }
-    public  static String[] extractBandOverview(Band band)
-    {
+
+    public static String[] extractBandOverview(Band band) {
         // overviews
         int overviewCount = band.GetOverviewCount();
         String[] overviews = new String[overviewCount];
@@ -331,6 +342,15 @@ public class TiffTools {
         }
         return overviews;
     }
+
+    private static int colorFrom(int r, int g, int b, int a) {
+        int color = (0xFF & r) << 3 * 8;
+        color |= (0xFF & g) << 2 * 8;
+        color |= (0xFF & b) << 8;
+        color |= (0xFF & a);
+        return color;
+    }
+
     /**
      * 解析一个影像的坐标和影像信息
      *
@@ -350,10 +370,28 @@ public class TiffTools {
             bandInfo.setIndex(i);
             bandInfo.setDataType(band.GetRasterDataType());
 
+            org.gdal.gdal.ColorTable colorTable = band.GetColorTable();
+            if (colorTable != null) {
+                List<ColorMap> colorMaps = new ArrayList<>();
 
-           bandInfo.overviews=extractBandOverview(band);
+                for (int index = 0; index < colorTable.GetCount(); index++) {
+                    Color color = colorTable.GetColorEntry(index);
+                    if (color.getRed() == 0 && color.getGreen() == 0 && color.getBlue() == 0) {
+                        continue;
+                    }
+                    ColorMap colorMap = new ColorMap();
+                    colorMap.setName(String.valueOf(index));
+                    colorMap.setStart(index);
+                    colorMap.setEnd(index);
+                    colorMap.setRgba(colorFrom(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+                    colorMaps.add(colorMap);
+                }
 
-
+                bandInfo.colorMaps = colorMaps;
+            } else {
+                bandInfo.colorMaps = null;
+            }
+            bandInfo.overviews = extractBandOverview(band);
             bandInfo.metadata = new HashMap<>();
 
             String wavelength = band.GetMetadataItem(MetadataEnum.META_KEY_WAVELENGTH.getKey());

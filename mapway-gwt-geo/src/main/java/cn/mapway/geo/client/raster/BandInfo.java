@@ -1,9 +1,12 @@
 package cn.mapway.geo.client.raster;
 
+import cn.mapway.geo.shared.color.ColorMap;
+import cn.mapway.geo.shared.color.ColorTable;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
@@ -53,6 +56,11 @@ public class BandInfo implements Serializable, IsSerializable {
     public Double[] noValues;
 
     public Map<String, String> metadata;
+
+    /**
+     * 影像中的颜色表 IndexRGB
+     */
+    public List<ColorMap> colorMaps;
     /**
      * 金字塔信息
      */
