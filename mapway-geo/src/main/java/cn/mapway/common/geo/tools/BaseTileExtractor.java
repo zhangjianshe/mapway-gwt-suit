@@ -222,8 +222,13 @@ public class BaseTileExtractor {
                         } else {
                             transparentBand[posTarget] = (byte) 0xff;
                         }
-                        double clipPixel = bandInfo.calValue(pixel);
-                        target.put((byte) (((int) clipPixel) & 0xFF));
+                        if(bandInfo.enableGamma) {
+                            double clipPixel = bandInfo.calValue(pixel);
+                            target.put((byte) (((int) clipPixel) & 0xFF));
+                        }
+                        else {
+                            target.put((byte) (((int) pixel) & 0xFF));
+                        }
                     }
                 }
         } else if (dt == gdalconstConstants.GDT_Int16) {

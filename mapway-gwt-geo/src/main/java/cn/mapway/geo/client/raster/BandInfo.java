@@ -1,7 +1,6 @@
 package cn.mapway.geo.client.raster;
 
 import cn.mapway.geo.shared.color.ColorMap;
-import cn.mapway.geo.shared.color.ColorTable;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import lombok.Data;
 
@@ -67,16 +66,16 @@ public class BandInfo implements Serializable, IsSerializable {
     public String[] overviews;
 
     public double calValue(double v) {
-        if (Objects.equals(gammaMax, gammaMin)) {
-            return v;
-        }
-        if (v < gammaMin) {
-            v = gammaMin;
-        }
-        if (v > gammaMax) {
-            v = gammaMax;
-        }
-        return outputMin + (outputMax - outputMin) * Math.pow((v - gammaMin) / (gammaMax - gammaMin), gamma);
+            if (Objects.equals(gammaMax, gammaMin)) {
+                return v;
+            }
+            if (v < gammaMin) {
+                v = gammaMin;
+            }
+            if (v > gammaMax) {
+                v = gammaMax;
+            }
+            return outputMin + (outputMax - outputMin) * Math.pow((v - gammaMin) / (gammaMax - gammaMin), gamma);
     }
 
     public void check() {
