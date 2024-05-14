@@ -417,8 +417,7 @@ public class TiffTools {
             }
             if (count == 0) {
                 //用户没有设定 noValue 值 我们缺省将 0 设为 空值
-                Double[] noValue1 = new Double[1];
-                noValue1[0] = 0.0;
+                Double[] noValue1 = new Double[0];
                 bandInfo.setNoValues(noValue1);
             } else {
                 Double[] noValue1 = new Double[count];
