@@ -207,7 +207,7 @@ public class TiffTools {
     }
 
     public static BizResult<List<Double>> readPixelValues(String filePath, double lat, double lng) {
-        Dataset dataset = gdal.Open(filePath);
+        Dataset dataset = gdal.Open(filePath,gdalconstConstants.GA_ReadOnly);
         int rasterCount = dataset.getRasterCount();
         int rasterXSize = dataset.getRasterXSize();
         int rasterYSize = dataset.getRasterYSize();
@@ -300,7 +300,7 @@ public class TiffTools {
      * @param callback   progress report
      */
     public static int[] calRasterHistogram(String location, BandInfo bandInfo, int bucketSize, ProgressCallback callback) {
-        Dataset dataset = gdal.Open(location);
+        Dataset dataset = gdal.Open(location,gdalconstConstants.GA_ReadOnly);
         Band band = dataset.GetRasterBand(bandInfo.index + 1);
         int[] buckets = new int[bucketSize];
         band.GetHistogram(bandInfo.minValue, bandInfo.maxValue, buckets, false, true, callback);
@@ -318,7 +318,7 @@ public class TiffTools {
     public static String calRasterOverview(String location, ProgressCallback callback) {
         Dataset dataset = null;
         try {
-            dataset = gdal.Open(location);
+            dataset = gdal.Open(location,gdalconstConstants.GA_ReadOnly);
             dataset.BuildOverviews(new int[]{2, 4, 8, 16, 32, 64, 128, 256, 512}, callback);
         } catch (Exception e) {
             return e.getMessage();
@@ -782,7 +782,7 @@ public class TiffTools {
     public ImageInfo extractImageInformation(String sha256, String imageAbsoluteFilename, IImagePreviewProvider previewProvider) {
         // sha256  必须传入 我们就是不计算了
         //需要重新计算
-        Dataset dataset = gdal.Open(imageAbsoluteFilename);
+        Dataset dataset = gdal.Open(imageAbsoluteFilename,gdalconstConstants.GA_ReadOnly);
         ImageInfo info = extractImageInformation(dataset);
 
 
@@ -893,7 +893,7 @@ public class TiffTools {
 
     private byte[] extract(ITileExtractor extractor, ImageInfo imageInfo, long tileX, long tileY, int zoom) {
         Stopwatch stopwatch = Stopwatch.begin();
-        Dataset sourceDataset = gdal.Open(imageInfo.location);
+        Dataset sourceDataset = gdal.Open(imageInfo.location,gdalconstConstants.GA_ReadOnly);
         File temp = tempFile();
         String targetPngFileName = temp.getAbsolutePath();
 
