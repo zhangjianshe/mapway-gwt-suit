@@ -4,6 +4,7 @@ import cn.mapway.geo.shared.vector.Point;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.gdal;
 import org.gdal.gdal.gdalJNI;
+import org.nutz.lang.Files;
 
 import java.util.List;
 
@@ -43,6 +44,7 @@ public class GdalUtil {
         }
 
         if (pamDirectory != null && pamDirectory.length() > 0) {
+            Files.createDirIfNoExists(pamDirectory);//检查目录
             System.setProperty("GDAL_PAM_PROXY_DIR", pamDirectory);
         }
     }
