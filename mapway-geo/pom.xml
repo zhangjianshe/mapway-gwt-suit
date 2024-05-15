@@ -14,7 +14,7 @@
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <gdal.version>3.3.0</gdal.version>
+        <gdal.version>3.9.0</gdal.version>
         <lombok.version>1.18.22</lombok.version>
         <mapway.gwt.suit.version>1.0.0</mapway.gwt.suit.version>
         <postgis-version>42.2.23</postgis-version>
