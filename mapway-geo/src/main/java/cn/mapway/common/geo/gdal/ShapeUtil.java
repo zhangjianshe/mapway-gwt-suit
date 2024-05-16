@@ -144,14 +144,15 @@ public class ShapeUtil {
 
     public static void main(String[] args) {
         GdalUtil.init();
-        String path = "D:\\天翼云盘下载\\merged\\merged.shp";
+        String path = "/data/personal/1/jianli/jianli_wgs1984.shp";
         ShapeUtil shapeUtil = new ShapeUtil(path);
         shapeUtil.each(new Each<Feature>() {
             @Override
             public void invoke(int index, Feature ele, int length) throws ExitLoop, ContinueLoop, LoopException {
-                log.info("{}", ShapeUtil.readAsString(ele, "PRE", shapeUtil.getEncoding()));
+                log.info("{}", ShapeUtil.readAsString(ele, 0, shapeUtil.getEncoding()));
             }
         });
+        shapeUtil.close();
     }
 
     public static String readAsString(Feature feature, Integer fieldIndex, String encoding) {
