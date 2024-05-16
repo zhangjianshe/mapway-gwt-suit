@@ -482,11 +482,7 @@ public class ShapeUtil {
     }
 
     public void close() {
-        if (source != null) {
-            source.SyncToDisk();
-            source.Close();
-            source = null;
-        }
+        // do nothing
     }
 
     public Attrs createAttrs() {
