@@ -224,7 +224,7 @@ public class NoCrsTileExtractor extends BaseTileExtractor implements ITileExtrac
             String targetPngFileName = temp.getAbsolutePath();
             Dataset targetDataset = getPngDriver().CreateCopy(targetPngFileName, memoryDataset);
             targetDataset.FlushCache();
-            targetDataset.delete();
+            targetDataset.Close();
 
             //  log.info("extract Tile {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
             byte[] data = Files.readBytes(targetPngFileName);

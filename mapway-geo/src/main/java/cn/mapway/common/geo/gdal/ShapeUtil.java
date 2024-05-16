@@ -483,7 +483,7 @@ public class ShapeUtil {
     public void close() {
         if (source != null) {
             source.SyncToDisk();
-            source.delete();
+            source.Close();
             source = null;
         }
     }

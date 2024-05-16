@@ -815,7 +815,7 @@ public class BaseTileExtractor {
             outBandsType[i] = band.getDataType();
             band.ReadRaster_Direct(left, top, width, height, width, height, band.getDataType(), buffer);
         }
-        dataset.delete();
+        dataset.Close();
         return buffers;
     }
 

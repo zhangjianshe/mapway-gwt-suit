@@ -304,8 +304,7 @@ public class TiffTools {
         Band band = dataset.GetRasterBand(bandInfo.index + 1);
         int[] buckets = new int[bucketSize];
         band.GetHistogram(bandInfo.minValue, bandInfo.maxValue, buckets, false, true, callback);
-        band.delete();
-        dataset.delete();
+        dataset.Close();
         return buckets;
     }
 
@@ -324,7 +323,7 @@ public class TiffTools {
             return e.getMessage();
         } finally {
             if (dataset != null) {
-                dataset.delete();
+                dataset.Close();
             }
         }
         return "";
@@ -799,7 +798,7 @@ public class TiffTools {
 
         previewImage(dataset, info, previewProvider);
 
-        dataset.delete();
+        dataset.Close();
         return info;
     }
 
@@ -842,7 +841,7 @@ public class TiffTools {
             memoryDataset.FlushCache();
             Dataset targetDataset = getPngDriver().CreateCopy(targetPngFileName, memoryDataset);
             targetDataset.FlushCache();
-            targetDataset.delete();
+            targetDataset.Close();
             stopwatch.stop();
             log.info("extract Tile {}   用时{}毫秒", imageInfo.location, stopwatch.getDuration());
             data = Files.readBytes(targetPngFileName);
@@ -904,8 +903,8 @@ public class TiffTools {
             Dataset targetDataset = getPngDriver().CreateCopy(targetPngFileName, memoryDataset);
             targetDataset.FlushCache();
             stopwatch.stop();
-            sourceDataset.delete();
-            targetDataset.delete();
+            sourceDataset.Close();
+            targetDataset.Close();
 
             //  log.info("extract Tile {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
             byte[] data = Files.readBytes(targetPngFileName);
@@ -913,7 +912,7 @@ public class TiffTools {
             return data;
         } else {
             stopwatch.stop();
-            sourceDataset.delete();
+            sourceDataset.Close();
             //  log.error("extract Tile error {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
             temp.delete();
             return null;
