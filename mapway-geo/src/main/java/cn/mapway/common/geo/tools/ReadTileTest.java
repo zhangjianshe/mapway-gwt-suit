@@ -156,7 +156,7 @@ public class ReadTileTest {
         memoryDataset.FlushCache();
         Dataset targetDataset = getPngDriver().CreateCopy(outPath, memoryDataset);
         targetDataset.FlushCache();
-        targetDataset.Close();
+       // targetDataset.Close();
 
         //  log.info("extract Tile {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
         byte[] data = Files.readBytes(outPath);

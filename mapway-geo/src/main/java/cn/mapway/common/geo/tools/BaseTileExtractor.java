@@ -578,9 +578,8 @@ public class BaseTileExtractor {
             //灰度影像 使用颜色表进行替换操作
             BandData sourceBand = source1;
 
-            if (sourceBand.getInfo().getNoValues() == null || sourceBand.getInfo().getNoValues().length == 0) {
-                Double[] noValue = new Double[1];
-                noValue[0] = 0.0;
+            if (sourceBand.getInfo().getNoValues() == null) {
+                Double[] noValue = new Double[0];
                 sourceBand.getInfo().setNoValues(noValue);
             }
 
@@ -815,7 +814,7 @@ public class BaseTileExtractor {
             outBandsType[i] = band.getDataType();
             band.ReadRaster_Direct(left, top, width, height, width, height, band.getDataType(), buffer);
         }
-        dataset.Close();
+       // dataset.Close();
         return buffers;
     }
 
