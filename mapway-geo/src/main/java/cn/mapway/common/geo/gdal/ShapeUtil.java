@@ -12,6 +12,7 @@ import org.nutz.json.Json;
 import org.nutz.lang.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 import static org.gdal.ogr.ogrConstants.*;
@@ -142,17 +143,19 @@ public class ShapeUtil {
         }
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         GdalUtil.init();
-        String path = "/data/personal/1/jianli/jianli_wgs1984.shp";
+        String path = "/app/jianli_wgs1984.shp";
         ShapeUtil shapeUtil = new ShapeUtil(path);
+        System.out.println(Lang.execOutput("gdalinfo --version"));
+        System.out.println(shapeUtil.count());
         shapeUtil.each(new Each<Feature>() {
             @Override
             public void invoke(int index, Feature ele, int length) throws ExitLoop, ContinueLoop, LoopException {
-                log.info("{}", ShapeUtil.readAsString(ele, 0, shapeUtil.getEncoding()));
+                System.out.println(ShapeUtil.readAsString(ele, 0, shapeUtil.getEncoding()));
             }
         });
-        shapeUtil.close();
+      //  shapeUtil.source.Close();
     }
 
     public static String readAsString(Feature feature, Integer fieldIndex, String encoding) {

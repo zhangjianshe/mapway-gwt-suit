@@ -31,6 +31,7 @@
         <nutz.version>1.r.66</nutz.version>
         <slfj-api.version>1.7.33</slfj-api.version>
         <elementalVersion>1.2.1</elementalVersion>
+        <gdal.version>3.9.0</gdal.version>
     </properties>
 
     <distributionManagement>
