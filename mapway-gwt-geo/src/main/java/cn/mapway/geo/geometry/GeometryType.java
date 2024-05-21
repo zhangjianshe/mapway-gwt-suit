@@ -59,7 +59,7 @@ public enum GeometryType {
         return code;
     }
 
-    GeometryType(int code, String name, String unicode, String postGisType) {
+    GeometryType(int code, String name, String unicode, String postGisType,Integer gdalType) {
         this.code = code;
         this.name = name;
         this.unicode = unicode;
