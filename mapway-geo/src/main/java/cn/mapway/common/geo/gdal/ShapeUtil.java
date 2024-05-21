@@ -42,6 +42,27 @@ public class ShapeUtil {
         //TODO  添加其他的类型
     }
 
+    public static int gdalTypeFromGeometryType(GeometryType geometryType)
+    {
+        switch (geometryType)
+        {
+            case GT_LINE:
+                return wkbLineString;
+            case GT_POINT:
+                return wkbPoint;
+            case GT_MULTI_LINE:
+                return wkbMultiLineString;
+            case GT_MULTI_POINT:
+                return wkbMultiPoint;
+            case GT_MULTI_POLYGON:
+                return wkbMultiPolygon;
+            case GT_GEOMETRY_COLLECTION:
+            case GT_POLYGON:
+            case GT_UNKNOWN:
+            default:
+                return wkbPolygon;
+        }
+    }
     String fileName;
     DataSource source;
     Layer layer;
