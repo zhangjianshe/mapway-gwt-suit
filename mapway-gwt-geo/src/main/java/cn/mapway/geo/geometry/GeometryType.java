@@ -42,6 +42,7 @@ public enum GeometryType {
         return postGisType;
     }
 
+
     public static GeometryType valueOfCode(Integer code) {
         if (code == null) {
             return GT_UNKNOWN;
