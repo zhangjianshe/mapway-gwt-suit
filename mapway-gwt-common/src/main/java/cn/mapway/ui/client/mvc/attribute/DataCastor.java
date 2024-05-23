@@ -2,7 +2,6 @@ package cn.mapway.ui.client.mvc.attribute;
 
 import cn.mapway.ui.client.tools.JSON;
 import cn.mapway.ui.client.util.Logs;
-import com.ibm.icu.impl.coll.BOCSU;
 import elemental2.core.JsArray;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
