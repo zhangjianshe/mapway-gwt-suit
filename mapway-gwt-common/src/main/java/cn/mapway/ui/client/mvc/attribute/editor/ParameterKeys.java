@@ -19,4 +19,6 @@ public class ParameterKeys {
     public static final String KEY_MIN = "min";
 
     public static final String KEY_MAX = "max";
+
+    public static final String KEY_DATETIME_FORMAT = "datetime_format";
 }

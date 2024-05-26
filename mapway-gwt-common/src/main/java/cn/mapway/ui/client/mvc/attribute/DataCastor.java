@@ -2,11 +2,13 @@ package cn.mapway.ui.client.mvc.attribute;
 
 import cn.mapway.ui.client.tools.JSON;
 import cn.mapway.ui.client.util.Logs;
+import cn.mapway.ui.client.util.StringUtil;
 import elemental2.core.JsArray;
 import jsinterop.base.Js;
 import jsinterop.base.JsPropertyMap;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DataCastor {
@@ -33,9 +35,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.longValue();
-        }  else if (obj instanceof Boolean) {
+        } else if (obj instanceof Boolean) {
             Boolean v = (Boolean) obj;
-            return v?1L:0L;
+            return v ? 1L : 0L;
         } else {
             Logs.info("转换数据类型错误");
             return 0L;
@@ -65,9 +67,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.intValue();
-        }  else if (obj instanceof Boolean) {
+        } else if (obj instanceof Boolean) {
             Boolean v = (Boolean) obj;
-            return v?1:0;
+            return v ? 1 : 0;
         } else {
             Logs.info("转换数据类型错误");
             return 0;
@@ -97,8 +99,8 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.intValue() != 0;
-        }  else if (obj instanceof Boolean) {
-           return (Boolean) obj;
+        } else if (obj instanceof Boolean) {
+            return (Boolean) obj;
         } else {
             Logs.info("转换数据类型错误");
             return false;
@@ -122,9 +124,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.toString();
-        }  else if (obj instanceof Boolean) {
+        } else if (obj instanceof Boolean) {
             Boolean v = (Boolean) obj;
-            return v?"true":"false";
+            return v ? "true" : "false";
         } else {
             Logs.info("转换数据类型错误");
             return "";
@@ -154,12 +156,28 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.doubleValue();
-        }  else if (obj instanceof Boolean) {
+        } else if (obj instanceof Boolean) {
             Boolean v = (Boolean) obj;
-            return v?1.0:0.0;
+            return v ? 1.0 : 0.0;
         } else {
             Logs.info("转换数据类型错误");
             return 0.;
+        }
+    }
+
+    public static Date castToDate(Object obj, String format) {
+        if (obj instanceof Date) {
+            return (Date) obj;
+        } else if (obj instanceof String) {
+            return StringUtil.parseDate(format, (String) obj);
+        } else if (obj instanceof Long) {
+            Long lv = (Long) obj;
+            return new Date(lv);
+        } else if (obj instanceof Double) {
+            Double d = (Double) obj;
+            return new Date(d.longValue());
+        } else {
+            return new Date();
         }
     }
 
@@ -183,9 +201,9 @@ public class DataCastor {
         } else if (obj instanceof Number) {
             Number v = (Number) obj;
             return v.floatValue();
-        }  else if (obj instanceof Boolean) {
+        } else if (obj instanceof Boolean) {
             Boolean v = (Boolean) obj;
-            return v?1.0f:0.0f;
+            return v ? 1.0f : 0.0f;
         } else {
             Logs.info("转换数据类型错误");
             return 0f;
