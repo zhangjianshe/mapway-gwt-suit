@@ -104,16 +104,11 @@ public class TiffTools {
     public static void main(String[] args) {
 
         String filePath;
-        //filePath = "E:\\mnt\\imagebot-docker-prod\\imagebot\\personal\\500\\0\\beijing1.tif";
-        filePath = "E:\\out\\2010.tif";
-        // filePath = "E:\\developer\\data\\imagebot\\personal\\1\\0853_GF701_013568_E112.3_N40.3_20220409114151_BWD_01_SC0_0001_2204094535_Reg.tif";
-        //  (53346 27486 16)
-        filePath = "E:\\mnt\\imagebot-docker-prod\\imagebot\\personal\\503\\5\\sdg\\Q_210_97_840_391.tif";
-        filePath = "/data/personal/1/O_53_27_214_109.tif";
-        //filePath = "/data/personal/1/Q_183_100_735_402.tif";
-        long tilex = 1680;
-        long tiley = 783;
-        int zoom = 11;
+
+        filePath = "/data/personal/1/16比特3波段/GF1D_PMS_E95.4_N36.3_20181001_L5A_1256470283.cog.tiff";
+        long tilex = 25109;
+        long tiley = 12806;
+        int zoom = 15;
         gdal.AllRegister();
         TiffTools tiffTools = new TiffTools();
 
@@ -129,21 +124,13 @@ public class TiffTools {
 
             @Override
             public boolean write(String sha256, byte[] image) {
-                Files.write("d:\\soft\\test2.png", image);
                 return true;
             }
         });
 
-        for(BandInfo bandInfo: md5File.getBandInfos())
-        {
-            if(bandInfo.colorMaps!=null)
-            {
-                System.out.println(bandInfo.colorMaps);
-            }
-        }
 
-        // byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
-        // Files.write("d:\\out\\test.png", bytes);
+         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
+         Files.write("/data/tmp/123.png", bytes);
     }
 
     public static synchronized SpatialReference getWgs84Reference() {
@@ -796,9 +783,8 @@ public class TiffTools {
         info.setFileSize(f.length());
         info.setSha256(sha256);
 
-        previewImage(dataset, info, previewProvider);
+      //  previewImage(dataset, info, previewProvider);
 
-       // dataset.Close();
         return info;
     }
 

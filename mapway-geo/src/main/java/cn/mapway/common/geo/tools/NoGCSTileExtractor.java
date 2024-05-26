@@ -52,7 +52,7 @@ public class NoGCSTileExtractor extends BaseTileExtractor implements ITileExtrac
         int sourceWidth = (int) tileImagePixelExtent.width();
         int sourceY = (int) tileImagePixelExtent.getYmin();
         int sourceHeight = (int) tileImagePixelExtent.height();
-        if (sourceX <= -512 || sourceX >= imageInfo.getWidth() || sourceY <= -512 || sourceY >= imageInfo.getHeight()) {
+        if (sourceX <= -256 || sourceX >= imageInfo.getWidth() || sourceY <= -256 || sourceY >= imageInfo.getHeight()) {
             log.error("超出影像范围");
             return false;
         }
