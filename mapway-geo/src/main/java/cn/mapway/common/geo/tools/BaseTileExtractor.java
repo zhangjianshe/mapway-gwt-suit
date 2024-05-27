@@ -246,7 +246,7 @@ public class BaseTileExtractor {
                         target.put(posTarget, (byte) pixel);
                     }
                 }
-        } else if (dt == gdalconstConstants.GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
+        } else if (dt == GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, dt, source);
             //循环处理影像 并进行拉伸压缩
             log.info("Band DataType int16");
@@ -656,6 +656,8 @@ public class BaseTileExtractor {
             source1.getInfo().check();
             FloatBuffer floatBuffer = sourceData.asFloatBuffer();
             DoubleBuffer doubleBuffer = sourceData.asDoubleBuffer();
+            IntBuffer intBuffer = sourceData.asIntBuffer();
+            ShortBuffer shortBuffer = sourceData.asShortBuffer();
 
             //循环目标区域 [0-78][0-32]
             for (int row = 0; row < targetRect.getHeightAsInt(); row++) {
@@ -667,21 +669,20 @@ public class BaseTileExtractor {
                     double pixelValue = 0;
                     if (dt == GDT_Byte) {
                         pixelValue = ((int) sourceData.get(location)) & 0xFF;
-                    } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
-                        int pos = location * 2;
-                        int v = (((int) (sourceData.get(pos + 1))) & 0xFF) << 8
-                                | (((int) sourceData.get(pos)) & 0xFF);
+
+                    } else if (dt == GDT_Int16) {
+                        pixelValue = shortBuffer.get(location);
+                    } else if (dt == gdalconstConstants.GDT_UInt16) {
+                        int v = shortBuffer.get(location) & 0xFFFF;
                         pixelValue = v;
-                    } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
-                        int pos = location * 4;
-                        int v = (((int) sourceData.get(pos + 3)) & 0xFF) << 24
-                                | (((int) sourceData.get(pos + 2)) & 0xFF) << 16
-                                | (((int) sourceData.get(pos + 1)) & 0xFF) << 8
-                                | (((int) sourceData.get(pos)) & 0xFF);
+                    } else if (dt == gdalconstConstants.GDT_Int32) {
+                        pixelValue=intBuffer.get(location);
+                    } else if(dt== GDT_UInt32){
+                        long v=intBuffer.get(location) & 0xFFFFFFFF;
                         pixelValue = v;
-                    } else if (dt == GDT_Float32) {
+                    }else if (dt == gdalconstConstants.GDT_Float32) {
                         pixelValue = floatBuffer.get(location);
-                    } else if (dt == GDT_Float64) {
+                    } else if (dt == gdalconstConstants.GDT_Float64) {
                         pixelValue = doubleBuffer.get(location);
                     }
 
@@ -777,7 +778,7 @@ public class BaseTileExtractor {
                         sourceRect.getWidthAsInt(), sourceRect.getHeightAsInt(),
                         targetRect.getXAsInt(), targetRect.getYAsInt(),
                         targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), tileSize);
-                targetBand.WriteRaster_Direct(0,0,256,256, byteBuffer);
+                targetBand.WriteRaster_Direct(0, 0, 256, 256, byteBuffer);
             }
         }
         return transparentBand;
@@ -808,6 +809,8 @@ public class BaseTileExtractor {
      * @return byteBuffer save the float value
      */
     public ByteBuffer[] readImageBandSourceData(String location, int left, int top, int width, int height, int[] bands, int[] outBandsType) {
+        Rect source = new Rect();
+        Rect target = new Rect();
         Dataset dataset;
         try {
             dataset = gdal.Open(location);
@@ -815,45 +818,111 @@ public class BaseTileExtractor {
             e.printStackTrace();
             return null;
         }
-        int outputWidth = width;
-        int outputHeight = height;
+        int rasterWidth = dataset.getRasterXSize();
+        int rasterHeight = dataset.getRasterYSize();
+        if (width <= 0 || height <= 0) {
+            log.error("read image width or height <=0");
+            return null;
+        }
+
+        if (left <= -width || left >= rasterWidth) {
+            log.error("read image left or right is out of range");
+            return null;
+        }
+        if (top <= -height || top >= rasterHeight) {
+            log.error("read image top or bottom is out of range");
+            return null;
+        }
+
+        if (left <= 0) {
+            source.x = 0;
+            target.x = -left;
+            int imageWidth = Math.min(width + left, rasterWidth);
+            source.width = imageWidth;
+            target.width = imageWidth;
+        } else {
+            source.x = left;
+            target.x = 0;
+            int imageWidth = Math.min(rasterWidth - left, width);
+            source.width = imageWidth;
+            target.width = imageWidth;
+        }
+
+        if (top <= 0) {
+            source.y = 0;
+            target.y = -top;
+            int imageHeight = Math.min(height + top, rasterHeight);
+            source.height = imageHeight;
+            target.height = imageHeight;
+        } else {
+            source.y = top;
+            target.y = 0;
+            int imageHeight = Math.min(rasterHeight - top, height);
+            source.height = imageHeight;
+            target.height = imageHeight;
+        }
+
         ByteBuffer[] buffers = new ByteBuffer[bands.length];
 
-        // sure [left,top,width,height] is in the raster's extend
-        if (left < 0) {
-            left = 0;
-        }
-        if (left > dataset.getRasterXSize()) {
-            left = dataset.getRasterXSize();
-        }
-        //  left =0 width= 1 RasterXSize=1
-        //  left =1 width= 1 RasterXSize=1
-        if (left + width > dataset.getRasterXSize()) {
-            width = dataset.getRasterXSize() - left;
-        }
 
-        if (top < 0) {
-            top = 0;
-        }
-        if (top > dataset.getRasterYSize()) {
-            top = dataset.getRasterYSize();
-        }
-        //  left =0 width= 1 RasterXSize=1
-        //  left =1 width= 1 RasterXSize=1
-        if (top + height > dataset.getRasterYSize()) {
-            height = dataset.getRasterYSize() - top;
-        }
+        //临时缓存
+        ByteBuffer buffer = ByteBuffer.allocateDirect(source.getWidthAsInt() * source.getHeightAsInt() * 8);
 
         for (int i = 0; i < bands.length; i++) {
-            ByteBuffer buffer = ByteBuffer.allocateDirect(outputWidth * outputHeight * 8);
-            buffers[i] = buffer;
+
+            buffer.clear();
             int bandIndex = bands[i];
             if (bandIndex < 1 || bandIndex > dataset.GetRasterCount()) {
                 bandIndex = 1;
             }
             Band band = dataset.GetRasterBand(bandIndex);
-            outBandsType[i] = band.getDataType();
-            band.ReadRaster_Direct(left, top, width, height, width, height, band.getDataType(), buffer);
+            int dataType = band.getDataType();
+
+            outBandsType[i] = dataType;
+            band.ReadRaster_Direct(source.getXAsInt(), source.getYAsInt(),
+                    source.getWidthAsInt(), source.getHeightAsInt(),
+                    target.getWidthAsInt(), target.getHeightAsInt(),
+                    dataType, buffer);
+
+            ByteBuffer outputBuffer = ByteBuffer.allocateDirect(width * height * 8);
+            FloatBuffer outputFloatBuffer = outputBuffer.asFloatBuffer();
+
+            ShortBuffer sourceShort = buffer.asShortBuffer();
+            FloatBuffer sourceFloat = buffer.asFloatBuffer();
+            DoubleBuffer sourceDouble = buffer.asDoubleBuffer();
+            IntBuffer sourceInt = buffer.asIntBuffer();
+
+            //读出之后 讲图像移动到目标位置
+            for (int y = 0; y < target.getHeightAsInt(); y++) {
+                for (int x = 0; x < target.getWidthAsInt(); x++) {
+                    int targePos = (target.getYAsInt() + y) * width + (target.getXAsInt() + x);
+                    int sourcePos = (x + y * source.getWidthAsInt());
+                    if (dataType == GDT_Byte) {
+                        byte b = buffer.get(sourcePos);
+                        float v = (int) b & 0xFF;
+                        outputFloatBuffer.put(targePos, v);
+                    } else if (dataType == GDT_UInt16) {
+                        short s = sourceShort.get();
+                        float v = s & 0xFFFF;
+                        outputFloatBuffer.put(targePos, v);
+                    } else if (dataType == GDT_Int16) {
+                        short s = sourceShort.get();
+                        float v = s;
+                        outputFloatBuffer.put(targePos, v);
+                    } else if (dataType == GDT_Int32) {
+                        outputFloatBuffer.put(targePos, sourceInt.get(sourcePos));
+                    } else if (dataType == GDT_UInt32) {
+                        Long l = sourceInt.get(sourcePos) & 0xFFFFFFFFL;
+                        outputFloatBuffer.put(targePos, l);
+                    } else if (dataType == GDT_Float32) {
+                        outputFloatBuffer.put(targePos, sourceFloat.get(sourcePos));
+                    } else if (dataType == GDT_Float64) {
+                        outputFloatBuffer.put(targePos, (float) sourceDouble.get(sourcePos));
+                    }
+                }
+            }
+
+            buffers[i] = outputBuffer;
         }
         // dataset.Close();
         return buffers;
@@ -907,13 +976,13 @@ public class BaseTileExtractor {
                 double pixelValue = 0;
                 if (dt == GDT_Byte) {
                     pixelValue = sourceData.get(location) & 0xFF;
-                } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
+                } else if (dt == GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
                     pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;
-                } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
+                } else if (dt == gdalconstConstants.GDT_Int32 || dt == gdalconstConstants.GDT_UInt32) {
                     pixelValue = sourceData.asIntBuffer().get(location);
-                } else if (dt == GDT_Float32) {
+                } else if (dt == gdalconstConstants.GDT_Float32) {
                     pixelValue = sourceData.asFloatBuffer().get(location);
-                } else if (dt == GDT_Float64) {
+                } else if (dt == gdalconstConstants.GDT_Float64) {
                     pixelValue = sourceData.asDoubleBuffer().get(location);
                 }
                 if (pixelValue > max) {
@@ -933,13 +1002,13 @@ public class BaseTileExtractor {
                 double pixelValue = 0;
                 if (dt == GDT_Byte) {
                     pixelValue = sourceData.get(location) & 0xFF;
-                } else if (dt == GDT_Int16 || dt == GDT_UInt16) {
+                } else if (dt == GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
                     pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;
-                } else if (dt == GDT_Int32 || dt == GDT_UInt32) {
+                } else if (dt == gdalconstConstants.GDT_Int32 || dt == gdalconstConstants.GDT_UInt32) {
                     pixelValue = sourceData.asIntBuffer().get(location);
-                } else if (dt == GDT_Float32) {
+                } else if (dt == gdalconstConstants.GDT_Float32) {
                     pixelValue = sourceData.asFloatBuffer().get(location);
-                } else if (dt == GDT_Float64) {
+                } else if (dt == gdalconstConstants.GDT_Float64) {
                     pixelValue = sourceData.asDoubleBuffer().get(location);
                 }
                 if (max != min) {
