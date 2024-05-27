@@ -676,11 +676,11 @@ public class BaseTileExtractor {
                         int v = shortBuffer.get(location) & 0xFFFF;
                         pixelValue = v;
                     } else if (dt == gdalconstConstants.GDT_Int32) {
-                        pixelValue=intBuffer.get(location);
-                    } else if(dt== GDT_UInt32){
-                        long v=intBuffer.get(location) & 0xFFFFFFFF;
+                        pixelValue = intBuffer.get(location);
+                    } else if (dt == GDT_UInt32) {
+                        long v = intBuffer.get(location) & 0xFFFFFFFF;
                         pixelValue = v;
-                    }else if (dt == gdalconstConstants.GDT_Float32) {
+                    } else if (dt == gdalconstConstants.GDT_Float32) {
                         pixelValue = floatBuffer.get(location);
                     } else if (dt == gdalconstConstants.GDT_Float64) {
                         pixelValue = doubleBuffer.get(location);
@@ -867,6 +867,7 @@ public class BaseTileExtractor {
 
         //临时缓存
         ByteBuffer buffer = ByteBuffer.allocateDirect(source.getWidthAsInt() * source.getHeightAsInt() * 8);
+        buffer.order(ByteOrder.nativeOrder());
 
         for (int i = 0; i < bands.length; i++) {
 
@@ -891,7 +892,6 @@ public class BaseTileExtractor {
             FloatBuffer sourceFloat = buffer.asFloatBuffer();
             DoubleBuffer sourceDouble = buffer.asDoubleBuffer();
             IntBuffer sourceInt = buffer.asIntBuffer();
-
             //读出之后 讲图像移动到目标位置
             for (int y = 0; y < target.getHeightAsInt(); y++) {
                 for (int x = 0; x < target.getWidthAsInt(); x++) {
@@ -903,16 +903,16 @@ public class BaseTileExtractor {
                         outputFloatBuffer.put(targePos, v);
                     } else if (dataType == GDT_UInt16) {
                         short s = sourceShort.get();
-                        float v = s & 0xFFFF;
+                        int v = s & 0xFFFF;
                         outputFloatBuffer.put(targePos, v);
                     } else if (dataType == GDT_Int16) {
                         short s = sourceShort.get();
-                        float v = s;
+                        int v = s;
                         outputFloatBuffer.put(targePos, v);
                     } else if (dataType == GDT_Int32) {
                         outputFloatBuffer.put(targePos, sourceInt.get(sourcePos));
                     } else if (dataType == GDT_UInt32) {
-                        Long l = sourceInt.get(sourcePos) & 0xFFFFFFFFL;
+                        long l = sourceInt.get(sourcePos) & 0xFFFFFFFFL;
                         outputFloatBuffer.put(targePos, l);
                     } else if (dataType == GDT_Float32) {
                         outputFloatBuffer.put(targePos, sourceFloat.get(sourcePos));
