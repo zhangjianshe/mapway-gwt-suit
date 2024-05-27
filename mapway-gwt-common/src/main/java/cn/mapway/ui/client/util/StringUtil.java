@@ -90,6 +90,9 @@ public class StringUtil {
         }
         return true;
     }
+    public static boolean isNotBlank(String cs) {
+        return !isBlank(cs);
+    }
 
     public static List<String> splitIgnoreBlank(String s, String regex) {
         if (s == null || regex == null) {
