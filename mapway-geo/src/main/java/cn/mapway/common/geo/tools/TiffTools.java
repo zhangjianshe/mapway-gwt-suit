@@ -108,10 +108,10 @@ public class TiffTools {
 
         String filePath;
 
-        filePath = "/data/personal/1/Q_183_100_735_402.tif";
-        long tilex = 11776;
-        long tiley = 6432;
-        int zoom = 14;
+        filePath = "/data/personal/1/O_53_27_214_109.tif";
+        long tilex = 1720;
+        long tiley = 873;
+        int zoom = 11;
         gdal.AllRegister();
         TiffTools tiffTools = new TiffTools();
 

@@ -722,9 +722,9 @@ public class BaseTileExtractor {
                         //颜色表不是归一化颜色表 直接使用像素值进行查找替换
                         rgba = translateColor(pixelValue);
                     }
-                    sourceBuffer[0].put((byte) (Colors.r(rgba) & 0xFF));
-                    sourceBuffer[1].put((byte) (Colors.g(rgba) & 0xFF));
-                    sourceBuffer[2].put((byte) (Colors.b(rgba) & 0xFF));
+                    sourceBuffer[0].put(tilePosition,(byte) (Colors.r(rgba) & 0xFF));
+                    sourceBuffer[1].put(tilePosition,(byte) (Colors.g(rgba) & 0xFF));
+                    sourceBuffer[2].put(tilePosition,(byte) (Colors.b(rgba) & 0xFF));
                     //使用颜色表中的透明色
                     transparentBand[tilePosition] = (byte) (Colors.a(rgba) & 0xFF);
 
