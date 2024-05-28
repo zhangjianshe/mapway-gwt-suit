@@ -10,6 +10,7 @@ import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
+import cn.mapway.ui.client.mvc.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.gdal.gdal.*;
@@ -329,7 +330,7 @@ public class TiffTools {
      * @param callback
      */
 
-    public static void calRasterPreview(String sourceFileName, String targetFileName, int targetWidth, List<BandInfo> bandInfos, ChanelData chanelData, ProgressCallback callback) {
+    public static void calRasterPreview(String sourceFileName, String targetFileName, int targetWidth, List<BandInfo> bandInfos, ChanelData chanelData, ColorTable colorTable, ProgressCallback callback) {
         Dataset dataset = null;
         try {
             dataset = gdal.Open(sourceFileName, gdalconstConstants.GA_ReadOnly);
@@ -352,29 +353,10 @@ public class TiffTools {
             processBandInfo(sourceBandList, bandInfos, chanelData, dataset);
 
             BaseTileExtractor extractor = new BaseTileExtractor();
+            extractor.setColorTable(colorTable);
 
-            byte[] transparentBand = new byte[targetHeight * targetHeight];
-
-            for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
-
-                BandData sourceBand = sourceBandList.get(bandIndex);
-                Band targetBand = targetBandList.get(bandIndex);
-
-                try {
-                    ByteBuffer byteBuffer = extractor.readAndTranslateToBytes256(
-                            transparentBand, sourceBand,
-                            source.getXAsInt(), source.getYAsInt(),
-                            source.getWidthAsInt(), source.getHeightAsInt(),
-                            target.getXAsInt(), target.getYAsInt(),
-                            target.getWidthAsInt(), target.getHeightAsInt(),
-                            target.getWidthAsInt());
-
-                    targetBand.WriteRaster_Direct(target.getXAsInt(), target.getYAsInt(),
-                            target.getWidthAsInt(), target.getHeightAsInt(), byteBuffer);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            byte[] transparentBand= extractor.getBand(dataset.GetRasterCount()==1, new Size(targetWidth, targetHeight),
+                    source, target,sourceBandList, targetBandList);
             previewDataset.GetRasterBand(4).WriteRaster(0, 0, targetWidth, targetHeight, transparentBand);
             previewDataset.FlushCache();
             //输出到指定的路径

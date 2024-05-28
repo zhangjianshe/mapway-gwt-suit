@@ -5,6 +5,7 @@ import cn.mapway.geo.client.raster.ImageInfo;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
+import cn.mapway.ui.client.mvc.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
@@ -226,7 +227,7 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
         List<Band> targetBandList = new ArrayList<>(3);
 
         processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
-        byte[] transparentBand = getBand(imageInfo.bandInfos.size() == 1, tileSize, targetRect, sourceRect, sourceBandList, targetBandList, imageInfo.getSingleColor());
+        byte[] transparentBand = getBand(imageInfo.bandInfos.size() == 1, new Size(256,256), targetRect, sourceRect, sourceBandList, targetBandList);
         if (targetDataset.getRasterCount() == 4) {
             targetDataset.GetRasterBand(4).WriteRaster(0, 0, 256, 256, transparentBand);
         }

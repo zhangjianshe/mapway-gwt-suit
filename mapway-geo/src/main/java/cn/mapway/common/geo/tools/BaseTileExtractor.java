@@ -9,6 +9,7 @@ import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
+import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.util.Colors;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.Band;
@@ -104,11 +105,11 @@ public class BaseTileExtractor {
      *
      * @return
      */
-    public synchronized byte[] getBlackBuffer(int w, int h) {
+    public synchronized byte[] getBlackBuffer(int size) {
         if (blackBuffer == null) {
-            blackBuffer = new byte[w * h];
+            blackBuffer = new byte[size];
         }
-        for (int i = 0; i < w * h; i++) {
+        for (int i = 0; i < size; i++) {
             blackBuffer[i] = (byte) 0x00;
         }
         return blackBuffer;
@@ -561,7 +562,7 @@ public class BaseTileExtractor {
         List<Band> targetBandList = new ArrayList<>(3);
 
         processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
-        byte[] transparentBand = getBlackBuffer(targetRect.getWidthAsInt(), targetRect.getHeightAsInt());
+        byte[] transparentBand = getBlackBuffer(targetWidth * targetHeight);
         for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
 
             BandData sourceBand = sourceBandList.get(bandIndex);
@@ -613,8 +614,9 @@ public class BaseTileExtractor {
      * @param targetBandList
      * @return
      */
-    public byte[] getBand(boolean singleBand, int tileSize, Rect targetRect, Rect sourceRect, List<BandData> sourceBandList, List<Band> targetBandList, byte[] replaceColor) {
-        byte[] transparentBand = getBlackBuffer(tileSize, tileSize);
+    public byte[] getBand(boolean singleBand, Size canvasSize, Rect targetRect, Rect sourceRect, List<BandData> sourceBandList, List<Band> targetBandList) {
+        int canvasLength = canvasSize.getYAsInt() * canvasSize.getXAsInt();
+        byte[] transparentBand = getBlackBuffer(canvasLength);
 
         BandData source1 = sourceBandList.get(0);
         if (singleBand) {
@@ -632,13 +634,14 @@ public class BaseTileExtractor {
                     sourceRect.getXAsInt(), sourceRect.getYAsInt(),
                     sourceRect.getWidthAsInt(), sourceRect.getHeightAsInt(),
                     targetRect.getXAsInt(), targetRect.getYAsInt(),
-                    targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), tileSize);
+                    targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), canvasSize.getXAsInt());
 
             //RGB 通道 用于替换颜色
             ByteBuffer[] sourceBuffer = new ByteBuffer[3];
-            sourceBuffer[0] = ByteBuffer.allocateDirect(tileSize * tileSize);
-            sourceBuffer[1] = ByteBuffer.allocateDirect(tileSize * tileSize);
-            sourceBuffer[2] = ByteBuffer.allocateDirect(tileSize * tileSize);
+
+            sourceBuffer[0] = ByteBuffer.allocateDirect(canvasLength);
+            sourceBuffer[1] = ByteBuffer.allocateDirect(canvasLength);
+            sourceBuffer[2] = ByteBuffer.allocateDirect(canvasLength);
 
             //根据读出的值 用颜色表替换
             // sourceData.position(0); //原始影像
@@ -665,7 +668,7 @@ public class BaseTileExtractor {
                     //目标像素位置 用于读取经过GDAL采样后的影像数组
                     int location = row * targetRect.getWidthAsInt() + col;
 
-                    int tilePosition = (targetRect.getYAsInt() + row) * tileSize + targetRect.getXAsInt() + col;
+                    int tilePosition = (targetRect.getYAsInt() + row) * canvasSize.getXAsInt() + targetRect.getXAsInt() + col;
                     double pixelValue = 0;
                     if (dt == GDT_Byte) {
                         pixelValue = ((int) sourceData.get(location)) & 0xFF;
@@ -688,71 +691,47 @@ public class BaseTileExtractor {
 
 
                     int rgba;
-                    if (replaceColor == null || replaceColor.length < 3) {
-                        //没有设置替换颜色 使用颜色表
-                        if (source1.getInfo().enableGamma) {
-                            // 采用Gamma矫正算法
-                            //  value  [outputMin,outputMax]
-                            double value = source1.getInfo().calValue(pixelValue);
 
-                            if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
-                                //用户设置了归一化调色板
-                                rgba = translateColor(value / (source1.getInfo().outputMax - source1.getInfo().outputMin));
-                            } else {
-                                //没有设置调色板
-                                rgba = (int) value;
-                            }
-                        } else if (sourceBand.getInfo().colorMaps != null) {
-                            rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
-                        } else if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
-                            //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
-                            // 讲数据中的颜色进行归一化处理
-                            pixelValue = normalizePixel(sourceBand, pixelValue);
+                    //没有设置替换颜色 使用颜色表
+                    if (source1.getInfo().enableGamma) {
+                        // 采用Gamma矫正算法
+                        //  value  [outputMin,outputMax]
+                        double value = source1.getInfo().calValue(pixelValue);
 
-                            if (pixelValue < 0.0 || pixelValue > 1.0) {
-                                rgba = 0xFFFFFF00;
-                            } else {
-                                rgba = translateColor(pixelValue);
-                            }
+                        if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
+                            //用户设置了归一化调色板
+                            rgba = translateColor(value / (source1.getInfo().outputMax - source1.getInfo().outputMin));
                         } else {
-                            //颜色表不是归一化颜色表 直接使用像素值进行查找替换
+                            //没有设置调色板
+                            rgba = (int) value;
+                        }
+                    } else if (sourceBand.getInfo().colorMaps != null) {
+                        rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
+                    } else if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
+                        //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
+                        // 讲数据中的颜色进行归一化处理
+                        pixelValue = normalizePixel(sourceBand, pixelValue);
+
+                        if (pixelValue < 0.0 || pixelValue > 1.0) {
+                            rgba = 0xFFFFFF00;
+                        } else {
                             rgba = translateColor(pixelValue);
                         }
-                        sourceBuffer[0].put((byte) (Colors.r(rgba) & 0xFF));
-                        sourceBuffer[1].put((byte) (Colors.g(rgba) & 0xFF));
-                        sourceBuffer[2].put((byte) (Colors.b(rgba) & 0xFF));
-                        //使用颜色表中的透明色
-                        transparentBand[tilePosition] = (byte) (Colors.a(rgba) & 0xFF);
-
                     } else {
-                        sourceBuffer[0].put(replaceColor[0]);
-                        sourceBuffer[1].put(replaceColor[1]);
-                        sourceBuffer[2].put(replaceColor[2]);
-                        if ((transparentBand[tilePosition] & 0xFF) == 0x00) {
-                            // 对于文件中设置的无效值 仍然采用透明色处理
-                        } else {
-                            //使用颜色表中的透明色
-                            if (replaceColor.length >= 4) {
-                                transparentBand[tilePosition] = replaceColor[3];
-                            } else {
-                                transparentBand[tilePosition] = (byte) 0xFF;
-                            }
-                        }
+                        //颜色表不是归一化颜色表 直接使用像素值进行查找替换
+                        rgba = translateColor(pixelValue);
                     }
+                    sourceBuffer[0].put((byte) (Colors.r(rgba) & 0xFF));
+                    sourceBuffer[1].put((byte) (Colors.g(rgba) & 0xFF));
+                    sourceBuffer[2].put((byte) (Colors.b(rgba) & 0xFF));
+                    //使用颜色表中的透明色
+                    transparentBand[tilePosition] = (byte) (Colors.a(rgba) & 0xFF);
+
                 }
             }
 
             for (int i = 0; i < 3; i++) {
                 Band targetBand = targetBandList.get(i);
-                //读出原数据
-                //写出目标文件
-               /* if (targetRect.getXAsInt() != 0
-                        || targetRect.getYAsInt() != 0
-                        || targetRect.getWidthAsInt() != tileSize
-                        || targetRect.getHeightAsInt() != tileSize) {
-                    //用白色清空目标区域
-                    targetBand.WriteRaster(0, 0, tileSize, tileSize, GlobalMercator.get().getWhiteBand());
-                }*/
                 targetBand.WriteRaster_Direct(targetRect.getXAsInt(), targetRect.getYAsInt(),
                         targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), sourceBuffer[i]);
             }
@@ -761,15 +740,7 @@ public class BaseTileExtractor {
 
                 BandData sourceBand = sourceBandList.get(bandIndex);
                 Band targetBand = targetBandList.get(bandIndex);
-                //读出原数据
-                //写出目标文件
-                /*if (targetRect.getXAsInt() != 0
-                        || targetRect.getYAsInt() != 0
-                        || targetRect.getWidthAsInt() != tileSize
-                        || targetRect.getHeightAsInt() != tileSize) {
-                    //用白色清空目标区域
-                    targetBand.WriteRaster(0, 0, tileSize, tileSize, GlobalMercator.get().getWhiteBand());
-                }*/
+
 
                 //这里的操作会拉伸影像
                 ByteBuffer byteBuffer = readAndTranslateToBytes256(
@@ -777,8 +748,8 @@ public class BaseTileExtractor {
                         sourceRect.getXAsInt(), sourceRect.getYAsInt(),
                         sourceRect.getWidthAsInt(), sourceRect.getHeightAsInt(),
                         targetRect.getXAsInt(), targetRect.getYAsInt(),
-                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), tileSize);
-                targetBand.WriteRaster_Direct(0, 0, 256, 256, byteBuffer);
+                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), canvasSize.getXAsInt());
+                targetBand.WriteRaster_Direct(0, 0, targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), byteBuffer);
             }
         }
         return transparentBand;
