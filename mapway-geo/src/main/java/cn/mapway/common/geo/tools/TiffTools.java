@@ -29,6 +29,7 @@ import org.nutz.filepool.NutFilePool;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
 import org.nutz.lang.*;
+import org.nutz.lang.random.R;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
@@ -36,7 +37,6 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -355,8 +355,8 @@ public class TiffTools {
             BaseTileExtractor extractor = new BaseTileExtractor();
             extractor.setColorTable(colorTable);
 
-            byte[] transparentBand= extractor.getBand(dataset.GetRasterCount()==1, new Size(targetWidth, targetHeight),
-                    source, target,sourceBandList, targetBandList);
+            byte[] transparentBand = extractor.getBand(dataset.GetRasterCount() == 1, new Size(targetWidth, targetHeight),
+                    source, target, sourceBandList, targetBandList);
             previewDataset.GetRasterBand(4).WriteRaster(0, 0, targetWidth, targetHeight, transparentBand);
             previewDataset.FlushCache();
             //输出到指定的路径
@@ -783,8 +783,8 @@ public class TiffTools {
      * @return
      */
     public synchronized File tempFile() {
-        FilePool pool = getGlobalFilePool();
-        return pool.createFile(".png");
+        String fileName = "/dev/shm/" + R.UU16() + ".png";
+        return new File(fileName);
     }
 
     public String imageSha256(File file, Long userId, IProgressNotify notify) {
