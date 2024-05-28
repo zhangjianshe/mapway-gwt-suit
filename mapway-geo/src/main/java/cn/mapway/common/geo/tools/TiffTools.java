@@ -9,6 +9,7 @@ import cn.mapway.geo.shared.color.ColorMap;
 import cn.mapway.geo.shared.color.ColorTable;
 import cn.mapway.geo.shared.vector.Box;
 import cn.mapway.geo.shared.vector.Point;
+import cn.mapway.geo.shared.vector.Rect;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.gdal.gdal.*;
@@ -34,6 +35,7 @@ import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.ByteBuffer;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
@@ -129,8 +131,8 @@ public class TiffTools {
         });
 
 
-         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
-         Files.write("/data/tmp/123.png", bytes);
+        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
+        Files.write("/data/tmp/123.png", bytes);
     }
 
     public static synchronized SpatialReference getWgs84Reference() {
@@ -194,7 +196,7 @@ public class TiffTools {
     }
 
     public static BizResult<List<Double>> readPixelValues(String filePath, double lat, double lng) {
-        Dataset dataset = gdal.Open(filePath,gdalconstConstants.GA_ReadOnly);
+        Dataset dataset = gdal.Open(filePath, gdalconstConstants.GA_ReadOnly);
         int rasterCount = dataset.getRasterCount();
         int rasterXSize = dataset.getRasterXSize();
         int rasterYSize = dataset.getRasterYSize();
@@ -287,11 +289,11 @@ public class TiffTools {
      * @param callback   progress report
      */
     public static int[] calRasterHistogram(String location, BandInfo bandInfo, int bucketSize, ProgressCallback callback) {
-        Dataset dataset = gdal.Open(location,gdalconstConstants.GA_ReadOnly);
+        Dataset dataset = gdal.Open(location, gdalconstConstants.GA_ReadOnly);
         Band band = dataset.GetRasterBand(bandInfo.index + 1);
         int[] buckets = new int[bucketSize];
         band.GetHistogram(bandInfo.minValue, bandInfo.maxValue, buckets, false, true, callback);
-       // dataset.Close();
+        // dataset.Close();
         return buckets;
     }
 
@@ -304,16 +306,88 @@ public class TiffTools {
     public static String calRasterOverview(String location, ProgressCallback callback) {
         Dataset dataset = null;
         try {
-            dataset = gdal.Open(location,gdalconstConstants.GA_ReadOnly);
+            dataset = gdal.Open(location, gdalconstConstants.GA_ReadOnly);
             dataset.BuildOverviews(new int[]{2, 4, 8, 16, 32, 64, 128, 256, 512}, callback);
         } catch (Exception e) {
             return e.getMessage();
         } finally {
             if (dataset != null) {
-             //   dataset.Close();
+                //   dataset.Close();
             }
         }
         return "";
+    }
+
+    /**
+     * 计算影像的预览图
+     *
+     * @param sourceFileName 输入tiff
+     * @param targetFileName 输出 png
+     * @param targetWidth    目标宽度
+     * @param bandInfos      波段信息
+     * @param chanelData     显示波段
+     * @param callback
+     */
+
+    public static void calRasterPreview(String sourceFileName, String targetFileName, int targetWidth, List<BandInfo> bandInfos, ChanelData chanelData, ProgressCallback callback) {
+        Dataset dataset = null;
+        try {
+            dataset = gdal.Open(sourceFileName, gdalconstConstants.GA_ReadOnly);
+            //读取数据 生成预览图
+            int rasterWidth = dataset.getRasterXSize();
+            int rasterHeight = dataset.getRasterYSize();
+            // 目标大小
+            int targetHeight = (int) Math.ceil(rasterHeight * targetWidth / (double) rasterWidth);
+            Rect source = new Rect(0, 0, rasterWidth, rasterHeight);
+            Rect target = new Rect(0, 0, targetWidth, targetHeight);
+            Dataset previewDataset = getMemoryDriver().Create("", targetWidth, targetHeight, 4, gdalconstConstants.GDT_Byte);
+
+            List<BandData> sourceBandList = new ArrayList<>();
+            List<Band> targetBandList = new ArrayList<>();
+
+            targetBandList.add(previewDataset.GetRasterBand(1));
+            targetBandList.add(previewDataset.GetRasterBand(2));
+            targetBandList.add(previewDataset.GetRasterBand(3));
+
+            processBandInfo(sourceBandList, bandInfos, chanelData, dataset);
+
+            BaseTileExtractor extractor = new BaseTileExtractor();
+
+            byte[] transparentBand = new byte[targetHeight * targetHeight];
+
+            for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
+
+                BandData sourceBand = sourceBandList.get(bandIndex);
+                Band targetBand = targetBandList.get(bandIndex);
+
+                try {
+                    ByteBuffer byteBuffer = extractor.readAndTranslateToBytes256(
+                            transparentBand, sourceBand,
+                            source.getXAsInt(), source.getYAsInt(),
+                            source.getWidthAsInt(), source.getHeightAsInt(),
+                            target.getXAsInt(), target.getYAsInt(),
+                            target.getWidthAsInt(), target.getHeightAsInt(),
+                            target.getWidthAsInt());
+
+                    targetBand.WriteRaster_Direct(target.getXAsInt(), target.getYAsInt(),
+                            target.getWidthAsInt(), target.getHeightAsInt(), byteBuffer);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            previewDataset.GetRasterBand(4).WriteRaster(0, 0, targetWidth, targetHeight, transparentBand);
+            previewDataset.FlushCache();
+            //输出到指定的路径
+            Dataset targetDataset = getPngDriver().CreateCopy(targetFileName, previewDataset);
+            targetDataset.FlushCache();
+            targetDataset = null;
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            if (dataset != null) {
+                dataset = null;
+            }
+        }
     }
 
     public static String[] extractBandOverview(Band band) {
@@ -670,6 +744,34 @@ public class TiffTools {
         return new Point(temp, temp);
     }
 
+    /**
+     * 提取出 REG通道信息
+     *
+     * @param sourceBandList
+     * @param bandInfos
+     * @param chanelData
+     * @param dataset
+     */
+    private static void processBandInfo(List<BandData> sourceBandList,
+                                        List<BandInfo> bandInfos, ChanelData chanelData, Dataset dataset) {
+        int bandCount = dataset.GetRasterCount();
+        if (chanelData.redChanel > bandCount || chanelData.redChanel < 1) {
+            chanelData.redChanel = 1;
+        }
+        BandInfo redBandInfo = null;
+        for (int i = 0; i < bandInfos.size(); i++) {
+            BandInfo bandInfo = bandInfos.get(i);
+            if (bandInfo.index + 1 == chanelData.redChanel) {
+                redBandInfo = bandInfo;
+                break;
+            }
+        }
+        if (redBandInfo != null) {
+            BandData bandData = new BandData(dataset.GetRasterBand(chanelData.redChanel), redBandInfo);
+            sourceBandList.add(bandData);
+        }
+    }
+
     private void printDataType() {
         log.info(" GDT_Unknown {}", gdalconstJNI.GDT_Unknown_get());
         log.info(" GDT_Byte {}", gdalconstJNI.GDT_Byte_get());
@@ -768,7 +870,7 @@ public class TiffTools {
     public ImageInfo extractImageInformation(String sha256, String imageAbsoluteFilename, IImagePreviewProvider previewProvider) {
         // sha256  必须传入 我们就是不计算了
         //需要重新计算
-        Dataset dataset = gdal.Open(imageAbsoluteFilename,gdalconstConstants.GA_ReadOnly);
+        Dataset dataset = gdal.Open(imageAbsoluteFilename, gdalconstConstants.GA_ReadOnly);
         ImageInfo info = extractImageInformation(dataset);
 
 
@@ -783,7 +885,7 @@ public class TiffTools {
         info.setFileSize(f.length());
         info.setSha256(sha256);
 
-      //  previewImage(dataset, info, previewProvider);
+        //  previewImage(dataset, info, previewProvider);
 
         return info;
     }
@@ -827,7 +929,7 @@ public class TiffTools {
             memoryDataset.FlushCache();
             Dataset targetDataset = getPngDriver().CreateCopy(targetPngFileName, memoryDataset);
             targetDataset.FlushCache();
-           // targetDataset.Close();
+            // targetDataset.Close();
             stopwatch.stop();
             log.info("extract Tile {}   用时{}毫秒", imageInfo.location, stopwatch.getDuration());
             data = Files.readBytes(targetPngFileName);
@@ -878,7 +980,7 @@ public class TiffTools {
 
     private byte[] extract(ITileExtractor extractor, ImageInfo imageInfo, long tileX, long tileY, int zoom) {
         Stopwatch stopwatch = Stopwatch.begin();
-        Dataset sourceDataset = gdal.Open(imageInfo.location,gdalconstConstants.GA_ReadOnly);
+        Dataset sourceDataset = gdal.Open(imageInfo.location, gdalconstConstants.GA_ReadOnly);
         File temp = tempFile();
         String targetPngFileName = temp.getAbsolutePath();
 
@@ -889,8 +991,8 @@ public class TiffTools {
             Dataset targetDataset = getPngDriver().CreateCopy(targetPngFileName, memoryDataset);
             targetDataset.FlushCache();
             stopwatch.stop();
-           // sourceDataset.Close();
-           // targetDataset.Close();
+            // sourceDataset.Close();
+            // targetDataset.Close();
 
             //  log.info("extract Tile {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
             byte[] data = Files.readBytes(targetPngFileName);
