@@ -108,10 +108,10 @@ public class TiffTools {
 
         String filePath;
 
-        filePath = "/data/personal/1/16比特3波段/GF1D_PMS_E95.4_N36.3_20181001_L5A_1256470283.cog.tiff";
-        long tilex = 25109;
-        long tiley = 12806;
-        int zoom = 15;
+        filePath = "/data/personal/1/Q_183_100_735_402.tif";
+        long tilex = 11776;
+        long tiley = 6432;
+        int zoom = 14;
         gdal.AllRegister();
         TiffTools tiffTools = new TiffTools();
 

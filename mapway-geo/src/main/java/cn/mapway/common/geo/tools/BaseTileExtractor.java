@@ -185,7 +185,8 @@ public class BaseTileExtractor {
      * @param targetY
      * @param targetWidth
      * @param targetHeight
-     * @param tileWidth
+     * @param canvasWidth
+     * @param canvasHeight
      * @return
      */
     public ByteBuffer readAndTranslateToBytes256(byte[] transparentBand, BandData sourceBandData,
@@ -193,12 +194,12 @@ public class BaseTileExtractor {
                                                  int sourceWidth, int sourceHeight,
                                                  int targetX, int targetY,
                                                  int targetWidth, int targetHeight,
-                                                 int tileWidth
+                                                 int canvasWidth, int canvasHeight
     ) {
         Band sourceBand = sourceBandData.getBand();
         int dt = sourceBand.GetRasterDataType();
 
-        ByteBuffer target = getTargetBuffer(tileWidth, tileWidth);
+        ByteBuffer target = getTargetBuffer(canvasWidth, canvasHeight);
         ByteBuffer source = getSourceBuffer(targetWidth, targetHeight);
 
         target.position(0);
@@ -227,7 +228,7 @@ public class BaseTileExtractor {
                         //原始影像的位置
                         int pos = (row * targetWidth + col);
                         //目标影像的位置
-                        int posTarget = (targetY + row) * tileWidth + col + targetX;
+                        int posTarget = (targetY + row) * canvasWidth + col + targetX;
                         //读取原始影像 pos 位置的像素值
                         double pixel = ((int) source.get(pos) & 0xFF);
                         if (transparentBand != null) {
@@ -270,7 +271,7 @@ public class BaseTileExtractor {
                     //原始影像的位置
                     int pos = (row * targetWidth + col);
                     //目标影像的位置
-                    int posTarget = (targetY + row) * tileWidth + col + targetX;
+                    int posTarget = (targetY + row) * canvasWidth + col + targetX;
                     //读取原始影像 pos 位置的像素值
                     double pixel = shortBuffer.get(pos);
                     if (transparentBand != null) {
@@ -311,7 +312,7 @@ public class BaseTileExtractor {
                         //原始影像的位置
                         int pos = (row * targetWidth + col);
                         //目标影像的位置
-                        int posTarget = (targetY + row) * tileWidth + col + targetX;
+                        int posTarget = (targetY + row) * canvasWidth + col + targetX;
                         //读取原始影像 pos 位置的像素值
                         double pixel = intBuffer.get(pos);
                         if (transparentBand != null) {
@@ -351,7 +352,7 @@ public class BaseTileExtractor {
                         //原始影像的位置
                         int pos = (row * targetWidth + col);
                         //目标影像的位置
-                        int posTarget = (targetY + row) * tileWidth + col + targetX;
+                        int posTarget = (targetY + row) * canvasWidth + col + targetX;
                         //读取原始影像 pos 位置的像素值
                         double pixel = floatBuffer.get(pos);
                         if (transparentBand != null) {
@@ -392,7 +393,7 @@ public class BaseTileExtractor {
                         //原始影像的位置
                         int pos = (row * targetWidth + col);
                         //目标影像的位置
-                        int posTarget = (targetY + row) * tileWidth + col + targetX;
+                        int posTarget = (targetY + row) * canvasWidth + col + targetX;
                         //读取原始影像 pos 位置的像素值
                         double pixel = doubleBuffer.get(pos);
                         if (transparentBand != null) {
@@ -577,7 +578,7 @@ public class BaseTileExtractor {
                         imageRect.getWidthAsInt(), imageRect.getHeightAsInt(),
                         targetRect.getXAsInt(), targetRect.getYAsInt(),
                         targetRect.getWidthAsInt(), targetRect.getHeightAsInt(),
-                        targetRect.getWidthAsInt());
+                        targetWidth, targetHeight);
 
                 targetBand.WriteRaster_Direct(targetRect.getXAsInt(), targetRect.getYAsInt(),
                         targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), byteBuffer);
@@ -607,7 +608,7 @@ public class BaseTileExtractor {
     /**
      * 读取 三波段影像数据 并返回 Alpha波段数据
      *
-     * @param tileSize
+     * @param canvasSize
      * @param targetRect
      * @param sourceRect
      * @param sourceBandList
@@ -732,8 +733,8 @@ public class BaseTileExtractor {
 
             for (int i = 0; i < 3; i++) {
                 Band targetBand = targetBandList.get(i);
-                targetBand.WriteRaster_Direct(targetRect.getXAsInt(), targetRect.getYAsInt(),
-                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), sourceBuffer[i]);
+                targetBand.WriteRaster_Direct(0, 0,
+                        canvasSize.getXAsInt(), canvasSize.getYAsInt(), sourceBuffer[i]);
             }
         } else {
             for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
@@ -748,8 +749,9 @@ public class BaseTileExtractor {
                         sourceRect.getXAsInt(), sourceRect.getYAsInt(),
                         sourceRect.getWidthAsInt(), sourceRect.getHeightAsInt(),
                         targetRect.getXAsInt(), targetRect.getYAsInt(),
-                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), canvasSize.getXAsInt());
-                targetBand.WriteRaster_Direct(0, 0, targetRect.getWidthAsInt(), targetRect.getHeightAsInt(), byteBuffer);
+                        targetRect.getWidthAsInt(), targetRect.getHeightAsInt(),
+                        canvasSize.getXAsInt(), canvasSize.getYAsInt());
+                targetBand.WriteRaster_Direct(0, 0, canvasSize.getXAsInt(), canvasSize.getYAsInt(), byteBuffer);
             }
         }
         return transparentBand;
