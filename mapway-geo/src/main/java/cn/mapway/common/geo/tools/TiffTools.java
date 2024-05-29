@@ -2,6 +2,7 @@ package cn.mapway.common.geo.tools;
 
 
 import cn.mapway.biz.core.BizResult;
+import cn.mapway.common.geo.gdal.GdalUtil;
 import cn.mapway.common.geo.tools.parser.GF1Parser;
 import cn.mapway.common.geo.tools.parser.ISatelliteExtractor;
 import cn.mapway.geo.client.raster.*;
@@ -112,12 +113,25 @@ public class TiffTools {
         long tilex = 1720;
         long tiley = 873;
         int zoom = 11;
-        gdal.AllRegister();
+        GdalUtil.init();
+        GdalUtil.setPAM(true,"/data/pam");
         TiffTools tiffTools = new TiffTools();
-
-
         File infoFile = new File(filePath + ".info");
-        ImageInfo md5File;
+
+        tiffTools.extractImageInformation("dasdsad", filePath, null);
+
+        Dataset ds=gdal.Open(filePath,gdalconstConstants.GA_ReadOnly);
+        int[] bucket=new int[255];
+        for(int i=0;i<bucket.length;i++){
+            bucket[i]=i;
+        }
+        ds.GetRasterBand(1).GetHistogram(bucket);
+        for(int i=0;i<bucket.length;i++){
+            System.out.println(i+"\t"+bucket[i]);
+        }
+        //ds.BuildOverviews(new int[]{2, 4, 8, 16, 32, 64, 128, 256, 512}, new TermProgressCallback());
+
+      /*  ImageInfo md5File;
         String sha256 = tiffTools.imageSha256(filePath);
         md5File = tiffTools.extractImageInformation(sha256, filePath, new IImagePreviewProvider() {
             @Override
@@ -133,7 +147,7 @@ public class TiffTools {
 
 
         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
-        Files.write("/data/tmp/123.png", bytes);
+        Files.write("/data/tmp/123.png", bytes);*/
     }
 
     public static synchronized SpatialReference getWgs84Reference() {
