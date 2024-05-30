@@ -10,7 +10,9 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String EMPTY = "e727";
+    	public final static String LAB = "e729";
+	public final static String LAKE2 = "e728";
+	public final static String EMPTY = "e727";
 	public final static String PYRAMID = "e726";
 	public final static String UNLOCK = "e724";
 	public final static String LOCK = "e725";
@@ -336,7 +338,9 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("EMPTY", Fonts.EMPTY);
+			unicodes.put("LAB", Fonts.LAB);
+	unicodes.put("LAKE2", Fonts.LAKE2);
+	unicodes.put("EMPTY", Fonts.EMPTY);
 	unicodes.put("PYRAMID", Fonts.PYRAMID);
 	unicodes.put("UNLOCK", Fonts.UNLOCK);
 	unicodes.put("LOCK", Fonts.LOCK);
