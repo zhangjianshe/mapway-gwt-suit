@@ -119,6 +119,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int OBJECT = 106;
     public final static int PATH = 107;
     public final static int STA = 108;
+    public final static int RELOAD = 109;
 
 
     public final static int OK = 200;
@@ -139,6 +140,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+
+    public static CommonEvent reloadEvent(Object data) {
+        return new CommonEvent(RELOAD, data);
     }
 
     public static CommonEvent staEvent(Object data) {
@@ -975,6 +980,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isPath() {
         return PATH == this.type;
+    }
+
+    public boolean isReload() {
+        return RELOAD == this.type;
     }
 
     @Override
