@@ -51,7 +51,7 @@ public class ImageUploader extends CommonEventComposite {
      * The ui binder.
      */
     private static final ImageUploaderUiBinder uiBinder = GWT.create(ImageUploaderUiBinder.class);
-    private static final String[] picTypes = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".tif"};
+    private static final String[] picTypes = {".png", ".jpg", ".jpeg", ".gif", ".bmp", ".tiff", ".tif",".webp"};
     /**
      * The extra.
      */
