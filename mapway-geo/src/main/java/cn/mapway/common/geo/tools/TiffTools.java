@@ -113,6 +113,7 @@ public class TiffTools {
         System.out.println(tileNo);
 
         filePath = "/data/personal/1/成果展示/基于无人机图像的分类/BULIANGOU_DOM_0.5.tif";
+        filePath = "/data/personal/1/成果展示/基于无人机图像的分类/ndvi.tif";
         long tilex = 106058;
         long tiley = 49630;
         int zoom = 17;
@@ -141,7 +142,8 @@ public class TiffTools {
                 return true;
             }
         });
-
+        System.out.println("INFO image extend " + md5File.getBox().toString());
+        System.out.println("INFO image size " + md5File.width + " " + md5File.height);
 
         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
         if (bytes == null) {
@@ -525,29 +527,27 @@ public class TiffTools {
         System.out.println("[INFO AFFINE TRANSFORM] " + Arrays.toString(adfGeoTransform));
         Point leftBottom = BaseTileExtractor.rasterSpaceToImageSpace(adfGeoTransform, new Point(0, dataset.GetRasterYSize()));
         Point rightTop = BaseTileExtractor.rasterSpaceToImageSpace(adfGeoTransform, new Point(dataset.getRasterXSize(), 0));
-
-
+        System.out.println("[INFO IMAGE RANGE] " + leftBottom + " " + rightTop);
 
         info.box = new Box();
         info.setSourceBox(new Box());
         Box box = info.box;
-        String projectionWkt=dataset.GetProjection();
+        String projectionWkt = dataset.GetProjection();
+
         if (Strings.isNotBlank(projectionWkt)) {
-            SpatialReference spatialReference = new SpatialReference(projectionWkt);
+            SpatialReference spatialReference = new SpatialReference();
+            spatialReference.ImportFromWkt(projectionWkt);
+            spatialReference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
             SpatialReference wgs84Reference = new SpatialReference();
             wgs84Reference.ImportFromEPSG(4326);
-            System.out.println("[INFO] IMAGE left bottom in source [" + leftBottom.getX() + " " + leftBottom.getY() + "]");
-            System.out.println("[INFO] IMAGE top point   in source [" + rightTop.getX() + " " + rightTop.getY() + "]");
-           // System.out.println("[INFO] SPATIAL REFERENCE ");
-            //System.out.println(spatialReference.ExportToPrettyWkt());
+            wgs84Reference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+
             CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(spatialReference, wgs84Reference);
-            double[] doubles1 = coordinateTransformation.TransformPoint(leftBottom.getY(), leftBottom.getX());
-            double[] doubles2 = coordinateTransformation.TransformPoint(rightTop.getY(), rightTop.getX());
-            System.out.println("[INFO] IMAGE left bottom point in wgs84 [" + doubles1[1] + " " + doubles1[0] + "]");
-            System.out.println("[INFO] IMAGE right top point   in wgs84 [" + doubles2[1] + " " + doubles2[0] + "]");
+            double[] doubles1 = coordinateTransformation.TransformPoint(leftBottom.getX(), leftBottom.getY());
+            double[] doubles2 = coordinateTransformation.TransformPoint(rightTop.getX(), rightTop.getY());
 
-
-            box.setValue(doubles1[1], doubles1[0], doubles2[1], doubles2[0]);
+            box.setValue(doubles1[0], doubles1[1], doubles2[0], doubles2[1]);
+            System.out.println("[INFO PROJECTION] " + box);
 
             //不是投影坐标系
             String geogcs = spatialReference.GetAttrValue("GEOGCS");
@@ -582,6 +582,7 @@ public class TiffTools {
             info.setLng(box.center().getX());
             Point resolution = resolution(adfGeoTransform);
             Point resolutionMi = wgs84Resolution(box.center(), resolution);
+
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
             info.setMaxZoom(zoom);
             info.setMinZoom(3);
@@ -591,7 +592,10 @@ public class TiffTools {
             info.setLat(box.center().getY());
             info.setLng(box.center().getX());
             Point resolution = resolution(adfGeoTransform);
+            //计算分辨率 需要转换为米 如果原单位是米 那么分辨率也是米 单位
+            // TODO 需要根据参考系的单位进行换算
             Point resolutionMi = wgs84Resolution(box.center(), resolution);
+
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
             info.setMaxZoom(zoom);
             info.setMinZoom(3);
@@ -715,7 +719,7 @@ public class TiffTools {
      * @return
      */
     public static Point resolution(double[] adfGeoTransform) {
-        return new Point(adfGeoTransform[1], adfGeoTransform[5]);
+        return new Point(adfGeoTransform[1], Math.abs(adfGeoTransform[5]));
     }
 
     public static Point wgs84Resolution(Point location, Point resolution) {

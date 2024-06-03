@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static org.gdal.gdalconst.gdalconstConstants.*;
+import static org.gdal.osr.osrConstants.OAMS_TRADITIONAL_GIS_ORDER;
 
 /**
  * BaseTileExtractor
@@ -99,28 +100,32 @@ public class BaseTileExtractor {
      * @return
      */
     public Box locationBoxPixelExtentFromWgs84(Dataset sourceDataset, Box tileLngLatExtent) {
-        SpatialReference reference = new SpatialReference (sourceDataset.GetProjection());
+        SpatialReference reference = new SpatialReference();
+        reference.ImportFromWkt(sourceDataset.GetProjection());
+        reference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
         SpatialReference wgs84 = new SpatialReference();
         wgs84.ImportFromEPSG(4326);
+        wgs84.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+
         CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(wgs84, reference);
         System.out.println("[INFO] tile extend in WGS84 left bottom [" + tileLngLatExtent.xmin + " " + tileLngLatExtent.ymin + "]");
         System.out.println("[INFO] tile extend in WGS84 right top   [" + tileLngLatExtent.xmax + " " + tileLngLatExtent.ymax + "]");
 
         // becarefull  the order of input parameter , (lat,lng)[GDAL>3.0] instead of (lng,lat)
         // return value order id  (lat lng)
-        double[] bottomLeft = coordinateTransformation.TransformPoint(tileLngLatExtent.ymin, tileLngLatExtent.xmin);
-        double[] topRight = coordinateTransformation.TransformPoint(tileLngLatExtent.ymax, tileLngLatExtent.xmax);
+        double[] bottomLeft = coordinateTransformation.TransformPoint(tileLngLatExtent.xmin, tileLngLatExtent.ymin);
+        double[] topRight = coordinateTransformation.TransformPoint(tileLngLatExtent.xmax, tileLngLatExtent.ymax);
 
-        System.out.println("[INFO] tile extend in source left bottom [" + bottomLeft[1] + " " + bottomLeft[0] + "]");
-        System.out.println("[INFO] tile extend in source right top   [" + topRight[1] + " " + topRight[0] + "]");
+        System.out.println("[INFO] tile extend in source left bottom [" + bottomLeft[0] + " " + bottomLeft[1] + "]");
+        System.out.println("[INFO] tile extend in source right top   [" + topRight[0] + " " + topRight[1] + "]");
 
         // 影像参考系下的坐标范围
-        Box source = new Box(bottomLeft[1], bottomLeft[0], topRight[1], topRight[0]);
+        Box source = new Box( bottomLeft[0], bottomLeft[1], topRight[0],topRight[1]);
 
 
-        Point point = imageSpaceToSourceSpace(sourceDataset.GetGeoTransform(), new Point(bottomLeft[1], bottomLeft[0]));
+        Point point = imageSpaceToSourceSpace(sourceDataset.GetGeoTransform(), new Point(bottomLeft[0], bottomLeft[1]));
         System.out.println(point);
-        Point point1 = imageSpaceToSourceSpace(sourceDataset.GetGeoTransform(), new Point(topRight[1], topRight[0]));
+        Point point1 = imageSpaceToSourceSpace(sourceDataset.GetGeoTransform(), new Point(topRight[0], topRight[1]));
         System.out.println(point1);
 
         Box box = locationBoxPixelExtent(sourceDataset.GetGeoTransform(), source);
