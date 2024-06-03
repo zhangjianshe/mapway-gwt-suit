@@ -17,6 +17,8 @@ import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
 import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.gdalconst.gdalconstJNI;
+import org.gdal.osr.CoordinateTransformation;
+import org.gdal.osr.SpatialReference;
 
 import java.nio.*;
 import java.util.ArrayList;
@@ -87,6 +89,43 @@ public class BaseTileExtractor {
         double value = gammaMin + (gammaMax - gammaMin) * Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
         System.out.println((int) (value));
         System.out.printf("%d", ((int) (value)) & 0xFF);
+    }
+
+    /**
+     * 根据 wgs84坐标范围 转化为 影像 像素空间坐标
+     *
+     * @param sourceDataset    影像
+     * @param tileLngLatExtent 经纬度范围 wgs84
+     * @return
+     */
+    public Box locationBoxPixelExtentFromWgs84(Dataset sourceDataset, Box tileLngLatExtent) {
+        SpatialReference reference = new SpatialReference (sourceDataset.GetProjection());
+        SpatialReference wgs84 = new SpatialReference();
+        wgs84.ImportFromEPSG(4326);
+        CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(wgs84, reference);
+        System.out.println("[INFO] tile extend in WGS84 left bottom [" + tileLngLatExtent.xmin + " " + tileLngLatExtent.ymin + "]");
+        System.out.println("[INFO] tile extend in WGS84 right top   [" + tileLngLatExtent.xmax + " " + tileLngLatExtent.ymax + "]");
+
+        // becarefull  the order of input parameter , (lat,lng)[GDAL>3.0] instead of (lng,lat)
+        // return value order id  (lat lng)
+        double[] bottomLeft = coordinateTransformation.TransformPoint(tileLngLatExtent.ymin, tileLngLatExtent.xmin);
+        double[] topRight = coordinateTransformation.TransformPoint(tileLngLatExtent.ymax, tileLngLatExtent.xmax);
+
+        System.out.println("[INFO] tile extend in source left bottom [" + bottomLeft[1] + " " + bottomLeft[0] + "]");
+        System.out.println("[INFO] tile extend in source right top   [" + topRight[1] + " " + topRight[0] + "]");
+
+        // 影像参考系下的坐标范围
+        Box source = new Box(bottomLeft[1], bottomLeft[0], topRight[1], topRight[0]);
+
+
+        Point point = imageSpaceToSourceSpace(sourceDataset.GetGeoTransform(), new Point(bottomLeft[1], bottomLeft[0]));
+        System.out.println(point);
+        Point point1 = imageSpaceToSourceSpace(sourceDataset.GetGeoTransform(), new Point(topRight[1], topRight[0]));
+        System.out.println(point1);
+
+        Box box = locationBoxPixelExtent(sourceDataset.GetGeoTransform(), source);
+        System.out.println(box.toString());
+        return box;
     }
 
     /**
@@ -620,6 +659,8 @@ public class BaseTileExtractor {
         byte[] transparentBand = getBlackBuffer(canvasLength);
 
         BandData source1 = sourceBandList.get(0);
+        //这里的 sourceData 就是一个原始数据类型的值数组
+        //单波段影像
         if (singleBand) {
             //灰度影像 使用颜色表进行替换操作
             BandData sourceBand = source1;
@@ -722,9 +763,9 @@ public class BaseTileExtractor {
                         //颜色表不是归一化颜色表 直接使用像素值进行查找替换
                         rgba = translateColor(pixelValue);
                     }
-                    sourceBuffer[0].put(tilePosition,(byte) (Colors.r(rgba) & 0xFF));
-                    sourceBuffer[1].put(tilePosition,(byte) (Colors.g(rgba) & 0xFF));
-                    sourceBuffer[2].put(tilePosition,(byte) (Colors.b(rgba) & 0xFF));
+                    sourceBuffer[0].put(tilePosition, (byte) (Colors.r(rgba) & 0xFF));
+                    sourceBuffer[1].put(tilePosition, (byte) (Colors.g(rgba) & 0xFF));
+                    sourceBuffer[2].put(tilePosition, (byte) (Colors.b(rgba) & 0xFF));
                     //使用颜色表中的透明色
                     transparentBand[tilePosition] = (byte) (Colors.a(rgba) & 0xFF);
 

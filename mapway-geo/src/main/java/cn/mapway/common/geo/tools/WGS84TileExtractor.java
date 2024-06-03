@@ -9,6 +9,8 @@ import cn.mapway.ui.client.mvc.Size;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
+import org.gdal.osr.CoordinateTransformation;
+import org.gdal.osr.SpatialReference;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -38,17 +40,15 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
 
         //目标tile的像素空间 初始化设置 下面会根据不同的情况进行调整
         Rect targetRect = new Rect(0, 0, tileSize, tileSize);
-
+        System.out.println("[INFO] Tile "+tileX+" "+tileY+" "+zoom);
         // 获取瓦片对应的地理坐标范围（GPS）
         Box tileLngLatExtent = globalMercator.tileBoundWgs84(tileX, tileY, zoom);
-        // log.info("image size 0,0 {},{}", imageInfo.getWidth(), imageInfo.getHeight());
-        //log.info("image wgs84 {}", imageInfo.getBox().toString());
-        //log.info("tile wgs84 space {}", tileLngLatExtent.toString());
-        // 获取瓦片对应的原始影像的像素空间坐标 坐标原点在左上角，向右和向下递增
-        // 图像本身时WGS84 此函数 根据图像的仿射变换参数 将 经纬度坐标 转换为 以影像左上角为原点的坐标系中 向右 向下生长
-        // tileImagePixelExtent  中 (xmin ymin xmax ymax) 分别对应 右下角 和左上角坐标
-        Box tileImagePixelExtent = locationBoxPixelExtent(imageInfo.getGeoTransform(), tileLngLatExtent);
-        //  log.info("tile image space {}", tileImagePixelExtent.toString());
+        System.out.println("[INFO] Tile WGS84  "+tileLngLatExtent.toString());
+        System.out.println("----->");
+        Box tileImagePixelExtent=locationBoxPixelExtentFromWgs84(sourceDataset,tileLngLatExtent);
+        System.out.println("<-----");
+        System.out.println("[INFO] Tile IMAGE  "+tileImagePixelExtent.toString());
+
 
         Rect imageRect = new Rect(0, 0, (int) imageInfo.width, (int) imageInfo.height);
         // tile 对应的像素空间 初始化设置 下面会根据不同的情况进行调整
@@ -235,5 +235,6 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
         targetDataset.FlushCache();
         return true;
     }
+
 
 }

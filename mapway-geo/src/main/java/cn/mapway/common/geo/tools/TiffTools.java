@@ -3,6 +3,8 @@ package cn.mapway.common.geo.tools;
 
 import cn.mapway.biz.core.BizResult;
 import cn.mapway.common.geo.gdal.GdalUtil;
+import cn.mapway.common.geo.gdal.WebMercator;
+import cn.mapway.common.geo.sfile.TileNo;
 import cn.mapway.common.geo.tools.parser.GF1Parser;
 import cn.mapway.common.geo.tools.parser.ISatelliteExtractor;
 import cn.mapway.geo.client.raster.*;
@@ -40,10 +42,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.*;
 
 import static cn.mapway.geo.shared.GeoConstant.*;
 import static org.gdal.ogr.ogrConstants.wkbLinearRing;
@@ -109,29 +109,26 @@ public class TiffTools {
 
         String filePath;
 
-        filePath = "/data/personal/1/O_53_27_214_109.tif";
-        long tilex = 1720;
-        long tiley = 873;
-        int zoom = 11;
+        TileNo tileNo = WebMercator.tileNoFromWgs84(39.975, 111.29, 18);
+        System.out.println(tileNo);
+
+        filePath = "/data/personal/1/成果展示/基于无人机图像的分类/BULIANGOU_DOM_0.5.tif";
+        long tilex = tileNo.getTileX();
+        long tiley = tileNo.getTileY();
+        int zoom = tileNo.getZoom();
         GdalUtil.init();
-        GdalUtil.setPAM(true,"/data/pam");
+        GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
-        File infoFile = new File(filePath + ".info");
+        //File infoFile = new File(filePath + ".info");
 
-        tiffTools.extractImageInformation("dasdsad", filePath, null);
+        // ImageInfo dasdsad = tiffTools.extractImageInformation("dasdsad", filePath, null);
+        //System.out.println("image extend "+dasdsad.getBox().toString());
 
-        Dataset ds=gdal.Open(filePath,gdalconstConstants.GA_ReadOnly);
-        int[] bucket=new int[255];
-        for(int i=0;i<bucket.length;i++){
-            bucket[i]=i;
-        }
-        ds.GetRasterBand(1).GetHistogram(bucket);
-        for(int i=0;i<bucket.length;i++){
-            System.out.println(i+"\t"+bucket[i]);
-        }
+        //Dataset ds = gdal.Open(filePath, gdalconstConstants.GA_ReadOnly);
+
         //ds.BuildOverviews(new int[]{2, 4, 8, 16, 32, 64, 128, 256, 512}, new TermProgressCallback());
 
-      /*  ImageInfo md5File;
+        ImageInfo md5File;
         String sha256 = tiffTools.imageSha256(filePath);
         md5File = tiffTools.extractImageInformation(sha256, filePath, new IImagePreviewProvider() {
             @Override
@@ -147,7 +144,12 @@ public class TiffTools {
 
 
         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
-        Files.write("/data/tmp/123.png", bytes);*/
+        if (bytes == null) {
+            System.out.println("gen error");
+        } else {
+            Files.write("/data/tmp/123.png", bytes);
+            System.out.println("gen success");
+        }
     }
 
     public static synchronized SpatialReference getWgs84Reference() {
@@ -520,59 +522,62 @@ public class TiffTools {
         double[] adfGeoTransform = new double[6];
         dataset.GetGeoTransform(adfGeoTransform);
         info.geoTransform = adfGeoTransform;
-        double originX = adfGeoTransform[0];
-        double originY = adfGeoTransform[3];
-        double pixelSizeX = adfGeoTransform[1];
-        double pixelSizeY = (adfGeoTransform[5] > 0) ? adfGeoTransform[5] : -adfGeoTransform[5];
-        //上面的变换 解决了像素空间 到 定义的坐标系之间的变换
-        // 我们获取信息 需要将坐标系转换为地理空间坐标
-        // 这一步比较复杂 我们要确定 影像的坐标系统，并计算影像的坐标范围
-        // 我们支支持 三种坐标系统  WGS84>EPSG:4326 WEB Mercato>EPSG:3875 (3857) 0没有坐标系统设定
-        SpatialReference spatialReference = dataset.GetSpatialRef();
-        if (spatialReference != null) {
-            if (spatialReference.IsProjected() > 0) {
-                //投影的都认为是 WEB墨卡托 有点过分？再改吧
-                info.setSrid(SRID_WEB_MERCATO);
-                info.setProjection(spatialReference.ExportToPrettyWkt());
-            } else if (spatialReference.IsGeographic() > 0) {
-                //不是投影坐标系
-                String geogcs = spatialReference.GetAttrValue("GEOGCS");
-                String srname = spatialReference.GetName().toLowerCase();
-                geogcs = geogcs.toLowerCase();
-                if (
-                        srname.startsWith("gcs_cgcs_2000") || srname.startsWith("cgcs")
-                                || (geogcs.contains("2000") && geogcs.contains("china"))
-                ) {
-                    //中国的坐标系
-                    info.setSrid(SRID_CGCS2000);
-                    info.setProjection(spatialReference.ExportToPrettyWkt());
-                } else if (geogcs.contains("wgs")) {
-                    info.setSrid(SRID_WGS84);
-                    info.setProjection(spatialReference.ExportToPrettyWkt());
-                } else if (geogcs.contains("3875")) {
-                    // 3875 ESRI
-                    info.setSrid(SRID_WEB_MERCATO);
-                    info.setProjection(spatialReference.ExportToPrettyWkt());
-                } else {
-                    log.info("不能处理的坐标系统{}", spatialReference.GetName());
-                    info.setSrid(SRID_NULL);
-                    info.setProjection(spatialReference.ExportToPrettyWkt());
-                }
-            }
-        } else {
-            if (originX >= -180 && originX <= 180 && originY >= -90 && originY <= 90) {
-                log.info("图像上没有坐标参考系,但是我们猜测这是一个 WGS84坐标系");
-                info.setSrid(SRID_WGS84);
-            } else {
-                log.info("图像上没有坐标参考系,但是我们猜测这是一个 WEB_MERCATO坐标系");
-                info.setSrid(SRID_WEB_MERCATO);
-            }
-        }
+        System.out.println("[INFO AFFINE TRANSFORM] " + Arrays.toString(adfGeoTransform));
+        Point leftBottom = BaseTileExtractor.rasterSpaceToImageSpace(adfGeoTransform, new Point(0, dataset.GetRasterYSize()));
+        Point rightTop = BaseTileExtractor.rasterSpaceToImageSpace(adfGeoTransform, new Point(dataset.getRasterXSize(), 0));
+
+
+
         info.box = new Box();
         info.setSourceBox(new Box());
         Box box = info.box;
+        String projectionWkt=dataset.GetProjection();
+        if (Strings.isNotBlank(projectionWkt)) {
+            SpatialReference spatialReference = new SpatialReference(projectionWkt);
+            SpatialReference wgs84Reference = new SpatialReference();
+            wgs84Reference.ImportFromEPSG(4326);
+            System.out.println("[INFO] IMAGE left bottom in source [" + leftBottom.getX() + " " + leftBottom.getY() + "]");
+            System.out.println("[INFO] IMAGE top point   in source [" + rightTop.getX() + " " + rightTop.getY() + "]");
+           // System.out.println("[INFO] SPATIAL REFERENCE ");
+            //System.out.println(spatialReference.ExportToPrettyWkt());
+            CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(spatialReference, wgs84Reference);
+            double[] doubles1 = coordinateTransformation.TransformPoint(leftBottom.getY(), leftBottom.getX());
+            double[] doubles2 = coordinateTransformation.TransformPoint(rightTop.getY(), rightTop.getX());
+            System.out.println("[INFO] IMAGE left bottom point in wgs84 [" + doubles1[1] + " " + doubles1[0] + "]");
+            System.out.println("[INFO] IMAGE right top point   in wgs84 [" + doubles2[1] + " " + doubles2[0] + "]");
+
+
+            box.setValue(doubles1[1], doubles1[0], doubles2[1], doubles2[0]);
+
+            //不是投影坐标系
+            String geogcs = spatialReference.GetAttrValue("GEOGCS");
+            String srname = spatialReference.GetName().toLowerCase();
+            geogcs = geogcs.toLowerCase();
+            if (
+                    srname.startsWith("gcs_cgcs_2000") || srname.startsWith("cgcs")
+                            || (geogcs.contains("2000") && geogcs.contains("china"))
+            ) {
+                //中国的坐标系
+                info.setSrid(SRID_CGCS2000);
+                info.setProjection(spatialReference.ExportToPrettyWkt());
+            } else if (geogcs.contains("wgs")) {
+                info.setSrid(SRID_WGS84);
+                info.setProjection(spatialReference.ExportToPrettyWkt());
+            } else if (geogcs.contains("3875")) {
+                // 3875 ESRI
+                info.setSrid(SRID_WEB_MERCATO);
+                info.setProjection(spatialReference.ExportToPrettyWkt());
+            } else {
+                log.info("不能处理的坐标系统{}", spatialReference.GetName());
+                info.setSrid(SRID_NULL);
+                info.setProjection(spatialReference.ExportToPrettyWkt());
+            }
+        } else {
+            info.setSrid(SRID_NULL);
+            info.setProjection("");
+        }
+
         if (info.getSrid() == SRID_WGS84) {
-            box.setValue(originX, originY - pixelSizeY * dataset.GetRasterYSize(), originX + dataset.GetRasterXSize() * pixelSizeX, originY);
             info.setLat(box.center().getY());
             info.setLng(box.center().getX());
             Point resolution = resolution(adfGeoTransform);
@@ -583,8 +588,6 @@ public class TiffTools {
             info.setResolution((int) resolutionMi.getX() * 10);
             info.getSourceBox().copyFrom(box);
         } else if (info.getSrid() == SRID_CGCS2000) {
-            box.setValue(originX, originY - pixelSizeY * dataset.GetRasterYSize(), originX + dataset.GetRasterXSize() * pixelSizeX, originY);
-            info.setLat(box.center().getY());
             info.setLat(box.center().getY());
             info.setLng(box.center().getX());
             Point resolution = resolution(adfGeoTransform);
@@ -596,25 +599,6 @@ public class TiffTools {
             info.getSourceBox().copyFrom(box);
         } else if (info.getSrid() == SRID_WEB_MERCATO) {
 
-            // 图像四个角 分别对应坐标参考系下的四个坐标
-
-            Point pt0 = pixelToLocation(adfGeoTransform, 0, 0);
-            Point pt1 = pixelToLocation(adfGeoTransform, info.getWidth(), info.getHeight());
-
-            Box extendBox = new Box(pt0.getX(), pt1.getY(), pt1.getX(), pt0.getY());
-            info.getSourceBox().copyFrom(extendBox);
-            if (spatialReference == null) {
-                spatialReference = getWebMercatorReference();
-            }
-            Geometry extend = toGeometry(extendBox, spatialReference);
-            Geometry wgs84Extend = toWgs84(extend);
-            double[] doubles = new double[4];
-            wgs84Extend.GetEnvelope(doubles);
-            log.info("extend:{}", Json.toJson(doubles));
-            //print "minX: %d, minY: %d, maxX: %d, maxY: %d" %(env[0],env[2],env[1],env[3])
-            // ymin ymax xmin xmax
-            //  0    1   2    3
-            box.setValue(doubles[0], doubles[2], doubles[1], doubles[3]);
             info.setLat(box.center().getY());
             info.setLng(box.center().getX());
 
