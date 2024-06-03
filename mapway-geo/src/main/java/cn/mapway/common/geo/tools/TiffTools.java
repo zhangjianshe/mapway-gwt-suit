@@ -113,9 +113,9 @@ public class TiffTools {
         System.out.println(tileNo);
 
         filePath = "/data/personal/1/成果展示/基于无人机图像的分类/BULIANGOU_DOM_0.5.tif";
-        long tilex = tileNo.getTileX();
-        long tiley = tileNo.getTileY();
-        int zoom = tileNo.getZoom();
+        long tilex = 106058;
+        long tiley = 49630;
+        int zoom = 17;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
