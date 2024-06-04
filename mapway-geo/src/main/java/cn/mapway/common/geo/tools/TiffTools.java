@@ -533,7 +533,10 @@ public class TiffTools {
         info.setSourceBox(new Box());
         Box box = info.box;
         String projectionWkt = dataset.GetProjection();
-
+        String linerUnit="";
+        String angleUnit="";
+        double linerScale=1.0;
+        double angleScale=1.0;
         if (Strings.isNotBlank(projectionWkt)) {
             SpatialReference spatialReference = new SpatialReference();
             spatialReference.ImportFromWkt(projectionWkt);
@@ -541,6 +544,12 @@ public class TiffTools {
             SpatialReference wgs84Reference = new SpatialReference();
             wgs84Reference.ImportFromEPSG(4326);
             wgs84Reference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+
+            linerUnit=spatialReference.GetLinearUnitsName();
+            linerScale=spatialReference.GetLinearUnits();
+            angleUnit=spatialReference.GetAngularUnitsName();
+            angleScale=spatialReference.GetAngularUnits();
+            System.out.println("[INFO] units "+linerUnit+" "+linerScale+" "+angleUnit+" "+angleScale);
 
             CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(spatialReference, wgs84Reference);
             double[] doubles1 = coordinateTransformation.TransformPoint(leftBottom.getX(), leftBottom.getY());
@@ -581,10 +590,14 @@ public class TiffTools {
             info.setLat(box.center().getY());
             info.setLng(box.center().getX());
             Point resolution = resolution(adfGeoTransform);
-            Point resolutionMi = wgs84Resolution(box.center(), resolution);
+
+            Point resolutionMi =new Point(
+                    resolution.getX()*linerScale,
+                    resolution.getY()*linerScale
+            );
 
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
-            info.setMaxZoom(zoom);
+            info.setMaxZoom(18);
             info.setMinZoom(3);
             info.setResolution((int) resolutionMi.getX() * 10);
             info.getSourceBox().copyFrom(box);
@@ -594,10 +607,14 @@ public class TiffTools {
             Point resolution = resolution(adfGeoTransform);
             //计算分辨率 需要转换为米 如果原单位是米 那么分辨率也是米 单位
             // TODO 需要根据参考系的单位进行换算
-            Point resolutionMi = wgs84Resolution(box.center(), resolution);
+           // Point resolutionMi = wgs84Resolution(box.center(), resolution);
+            Point resolutionMi =new Point(
+                    resolution.getX()*linerScale,
+                    resolution.getY()*linerScale
+            );
 
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
-            info.setMaxZoom(zoom);
+            info.setMaxZoom(18);
             info.setMinZoom(3);
             info.setResolution((int) (resolutionMi.getX() * 10));
             info.getSourceBox().copyFrom(box);
@@ -610,7 +627,8 @@ public class TiffTools {
             double lngPerPixel = box.width() / info.getWidth();
             double resolution = lngPerPixel * (2 * Math.PI * GlobalMercator.get().EARTH_RADIUS) / 360;
             int zoom = GlobalMercator.get().zoomForPixelSize(resolution);
-            info.setMaxZoom(zoom);
+
+            info.setMaxZoom(18);
             info.setMinZoom(3);
             info.setResolution((int) (resolution * 10));
         } else {
