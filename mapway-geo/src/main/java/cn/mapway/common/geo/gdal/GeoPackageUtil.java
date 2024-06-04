@@ -34,7 +34,7 @@ public class GeoPackageUtil extends VectorUtil {
                 //猜测
                 sourceRef = srcWgs84;
             }
-            if (sourceRef.IsSame(srcWebMercator) == 0) {
+            if (sourceRef.IsSame(srcWebMercator) != 0) {
                 coordinateTransformation = new CoordinateTransformation(sourceRef, srcWebMercator);
                 geomTransformer = new GeomTransformer(coordinateTransformation);
             } else {
