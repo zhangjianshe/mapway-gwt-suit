@@ -8,6 +8,7 @@ import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.i18n.client.TimeZone;
 import com.google.gwt.i18n.client.constants.TimeZoneConstants;
+import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import elemental2.core.JsObject;
 
@@ -345,6 +346,18 @@ public class StringUtil {
             sb.append(character.charAt(random.nextInt(bound)));
         }
         return sb.toString();
+    }
+
+    public static float parseCssValue(String s) {
+        if (s == null || s.length() == 0) {
+            return 0;
+        }
+        String exp = "([-]?[0-9]+\\.?[0-9]+)";
+        MatchResult exec = RegExp.compile(exp).exec(s);
+        if (exec == null || exec.getGroupCount() == 0) {
+            return 0;
+        }
+        return Float.parseFloat(exec.getGroup(1));
     }
 
     public static boolean checkReg(String value, String pattern, String message, IShowMessage showMessage) {

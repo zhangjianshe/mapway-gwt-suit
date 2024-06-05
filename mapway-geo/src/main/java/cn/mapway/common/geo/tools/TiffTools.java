@@ -21,7 +21,6 @@ import org.gdal.gdalconst.gdalconstConstants;
 import org.gdal.gdalconst.gdalconstJNI;
 import org.gdal.ogr.GeomTransformer;
 import org.gdal.ogr.Geometry;
-import org.gdal.ogr.ogrConstants;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
 import org.geotools.referencing.CRS;
@@ -30,7 +29,6 @@ import org.locationtech.jts.geom.GeometryFactory;
 import org.nutz.filepool.FilePool;
 import org.nutz.filepool.NutFilePool;
 import org.nutz.json.Json;
-import org.nutz.json.JsonFormat;
 import org.nutz.lang.*;
 import org.nutz.lang.random.R;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
@@ -214,37 +212,40 @@ public class TiffTools {
         return geomTransformer.Transform(geometry);
     }
 
+    /**
+     * 根据经纬度坐标 查询映像中的数值
+     *
+     * @param filePath
+     * @param lat
+     * @param lng
+     * @return
+     */
     public static BizResult<List<Double>> readPixelValues(String filePath, double lat, double lng) {
         Dataset dataset = gdal.Open(filePath, gdalconstConstants.GA_ReadOnly);
         int rasterCount = dataset.getRasterCount();
         int rasterXSize = dataset.getRasterXSize();
         int rasterYSize = dataset.getRasterYSize();
 
-        SpatialReference imageSpatialRef = dataset.GetSpatialRef();
-        if (imageSpatialRef == null) {
+
+        if (Strings.isBlank(dataset.GetProjection())) {
             return BizResult.error(500, "目标文件没有设置坐标参考");
         }
 
-        double[] affineCoff = dataset.GetGeoTransform();
-        if (affineCoff == null) {
-            return BizResult.error(500, "目标文件没有放射变换参数");
-        }
-        Geometry geoLocation = new Geometry(ogrConstants.wkbPoint);
-        geoLocation.SetPoint(0, lng, lat);
-        geoLocation.AssignSpatialReference(getWgs84Reference());
-        geoLocation.TransformTo(imageSpatialRef);
+        SpatialReference imageReference = new SpatialReference();
+        imageReference.ImportFromWkt(dataset.GetProjection());
+        imageReference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+        SpatialReference wgs84 = getWgs84Reference();
 
-        Point pt = new Point(geoLocation.GetX(), geoLocation.GetY());
-        Point pixelLocation = BaseTileExtractor.imageSpaceToSourceSpace(affineCoff, pt);
-        // now location is in image spatialReference
-        log.info("read pixel {} {} -> {} {} -> {} {}", lng, lat, pt.x, pt.y, pixelLocation.x, pixelLocation.y);
+        CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(wgs84, imageReference);
+        double[] coord = coordinateTransformation.TransformPoint(lng, lat);
+        Point pixelCoord = BaseTileExtractor.imageSpaceToSourceSpace(dataset.GetGeoTransform(), new Point(coord[0], coord[1]));
 
         List<Double> data = new ArrayList<>(rasterCount);
         if (
-                pixelLocation.x < 0 || pixelLocation.x >= rasterXSize
-                        || pixelLocation.y < 0 || pixelLocation.y >= rasterYSize
+                pixelCoord.x < 0 || pixelCoord.x >= rasterXSize
+                        || pixelCoord.y < 0 || pixelCoord.y >= rasterYSize
         ) {
-            log.warn("location is out of image extends");
+            log.warn("location is out of image extends {} {}",lat,lng);
             for (int i = 0; i < rasterCount; i++) {
                 data.add(0.0);
             }
@@ -254,40 +255,16 @@ public class TiffTools {
             for (int i = 1; i <= rasterCount; i++) {
                 Band band = dataset.GetRasterBand(i);
                 int dataType = band.getDataType();
-                data.add(readPixelValue(band, dataType, pixelLocation.getXAsInt(), pixelLocation.getYAsInt()));
+                data.add(readPixelValue(band, dataType, pixelCoord.getXAsInt(), pixelCoord.getYAsInt()));
             }
-            log.info("data is {}", Json.toJson(data, JsonFormat.compact()));
         }
         return BizResult.success(data);
     }
 
     private static double readPixelValue(Band band, int dataType, int x, int y) {
-        int[] intValue = {0};
-        short[] shortValue = {0};
-        byte[] byteValue = {0};
         double[] doubleValue = {0};
-        float[] floatValue = {0};
-
-        if (dataType == gdalconstConstants.GDT_Byte) {
-            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, byteValue);
-            return byteValue[0];
-        } else if (dataType == gdalconstConstants.GDT_Int16 || dataType == gdalconstConstants.GDT_UInt16) {
-            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, shortValue);
-            return shortValue[0];
-
-        } else if (dataType == gdalconstConstants.GDT_Int32 || dataType == gdalconstConstants.GDT_UInt32) {
-            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, intValue);
-            return intValue[0];
-        } else if (dataType == gdalconstConstants.GDT_Float32) {
-            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, floatValue);
-            return floatValue[0];
-        } else if (dataType == gdalconstConstants.GDT_Float64) {
-            band.ReadRaster(x, y, 1, 1, 1, 1, dataType, doubleValue);
-            return doubleValue[0];
-        } else {
-            log.warn("不能读取数值类型 {}", dataType);
-            return 0;
-        }
+        band.ReadRaster(x, y, 1, 1, 1, 1, gdalconstConstants.GDT_Float64, doubleValue);
+        return doubleValue[0];
     }
 
     private static void createTransform() {
@@ -533,10 +510,10 @@ public class TiffTools {
         info.setSourceBox(new Box());
         Box box = info.box;
         String projectionWkt = dataset.GetProjection();
-        String linerUnit="";
-        String angleUnit="";
-        double linerScale=1.0;
-        double angleScale=1.0;
+        String linerUnit = "";
+        String angleUnit = "";
+        double linerScale = 1.0;
+        double angleScale = 1.0;
         if (Strings.isNotBlank(projectionWkt)) {
             SpatialReference spatialReference = new SpatialReference();
             spatialReference.ImportFromWkt(projectionWkt);
@@ -545,11 +522,11 @@ public class TiffTools {
             wgs84Reference.ImportFromEPSG(4326);
             wgs84Reference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 
-            linerUnit=spatialReference.GetLinearUnitsName();
-            linerScale=spatialReference.GetLinearUnits();
-            angleUnit=spatialReference.GetAngularUnitsName();
-            angleScale=spatialReference.GetAngularUnits();
-            System.out.println("[INFO] units "+linerUnit+" "+linerScale+" "+angleUnit+" "+angleScale);
+            linerUnit = spatialReference.GetLinearUnitsName();
+            linerScale = spatialReference.GetLinearUnits();
+            angleUnit = spatialReference.GetAngularUnitsName();
+            angleScale = spatialReference.GetAngularUnits();
+            System.out.println("[INFO] units " + linerUnit + " " + linerScale + " " + angleUnit + " " + angleScale);
 
             CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(spatialReference, wgs84Reference);
             double[] doubles1 = coordinateTransformation.TransformPoint(leftBottom.getX(), leftBottom.getY());
@@ -591,9 +568,9 @@ public class TiffTools {
             info.setLng(box.center().getX());
             Point resolution = resolution(adfGeoTransform);
 
-            Point resolutionMi =new Point(
-                    resolution.getX()*linerScale,
-                    resolution.getY()*linerScale
+            Point resolutionMi = new Point(
+                    resolution.getX() * linerScale,
+                    resolution.getY() * linerScale
             );
 
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
@@ -607,10 +584,10 @@ public class TiffTools {
             Point resolution = resolution(adfGeoTransform);
             //计算分辨率 需要转换为米 如果原单位是米 那么分辨率也是米 单位
             // TODO 需要根据参考系的单位进行换算
-           // Point resolutionMi = wgs84Resolution(box.center(), resolution);
-            Point resolutionMi =new Point(
-                    resolution.getX()*linerScale,
-                    resolution.getY()*linerScale
+            // Point resolutionMi = wgs84Resolution(box.center(), resolution);
+            Point resolutionMi = new Point(
+                    resolution.getX() * linerScale,
+                    resolution.getY() * linerScale
             );
 
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
