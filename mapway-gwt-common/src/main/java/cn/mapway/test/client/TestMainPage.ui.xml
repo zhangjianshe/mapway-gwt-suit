@@ -1,0 +1,20 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:color="urn:import:cn.mapway.ui.client.widget.color">
+    <ui:style>
+        .box {
+            padding: 20px;
+        }
+
+        .input {
+            border: solid 1px green;
+            height: 30px;
+        }</ui:style>
+    <g:DockLayoutPanel>
+        <g:center>
+            <g:HTMLPanel styleName="{style.box}">
+                <color:AiColor addStyleNames="{style.input}" ui:field="color"/>
+            </g:HTMLPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>
