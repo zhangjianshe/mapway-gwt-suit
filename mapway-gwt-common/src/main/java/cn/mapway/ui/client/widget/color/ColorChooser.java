@@ -43,7 +43,7 @@ public class ColorChooser extends CommonEventComposite implements IData<ColorDat
     ColorCanvas colorCanvas;
     private final ValueChangeHandler<Double> sliderHandler = (event) -> {
         double v = event.getValue();
-        colorCanvas.draw(v / 360);
+        colorCanvas.draw(v / 360, true);
     };
     @UiField
     HueChooser hueSelector;

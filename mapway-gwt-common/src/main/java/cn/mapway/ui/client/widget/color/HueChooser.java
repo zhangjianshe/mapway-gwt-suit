@@ -25,7 +25,7 @@ import com.google.gwt.user.client.Element;
  * @author zhang
  */
 public class HueChooser extends CanvasWidget implements HasValueChangeHandlers<Double>, IData<Double> {
-    boolean move = false;
+    boolean mouseDown = false;
     double currentX = 0;
     ImageData bar;
     double radius;
@@ -63,18 +63,21 @@ public class HueChooser extends CanvasWidget implements HasValueChangeHandlers<D
         }, ClickEvent.getType());
 
         addDomHandler(event -> {
-            move = true;
+            mouseDown = true;
             DOM.setCapture(getElement());
         }, MouseDownEvent.getType());
         addDomHandler(event -> {
-            if (move) {
+            if (mouseDown) {
                 currentX = event.getRelativeX(getElement());
                 double hue = updateHue();
                 ValueChangeEvent.fire(HueChooser.this, hue);
+                event.stopPropagation();
+                event.preventDefault();
+                draw();
             }
         }, MouseMoveEvent.getType());
         addDomHandler(event -> {
-            move = false;
+            mouseDown = false;
             DOM.releaseCapture(getElement());
         }, MouseUpEvent.getType());
     }

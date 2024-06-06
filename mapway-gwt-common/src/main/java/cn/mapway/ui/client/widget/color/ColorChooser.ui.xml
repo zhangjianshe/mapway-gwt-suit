@@ -27,6 +27,15 @@
         .round {
             border-radius: 7px;
             border: solid 1px rgba(0, 0, 0, 0.5);
+        }
+
+        .box1 {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 10px;
         }</ui:style>
     <g:DockLayoutPanel ui:field="root">
         <g:north size="300">
@@ -34,15 +43,10 @@
         </g:north>
         <g:north size="100">
             <g:HTMLPanel>
-                <g:HorizontalPanel width="100%" spacing="5" horizontalAlignment="center" verticalAlignment="middle">
-                    <g:cell size="50">
-                        <g:Label></g:Label>
-                    </g:cell>
-                    <g:VerticalPanel spacing="5">
-                        <color:HueChooser ui:field="hueSelector" addStyleNames="{style.round}"/>
-                        <color:TransparentChooser ui:field="transparentSelector"/>
-                    </g:VerticalPanel>
-                </g:HorizontalPanel>
+                <g:HTMLPanel styleName="{style.box1}">
+                    <color:HueChooser ui:field="hueSelector" addStyleNames="{style.round}"/>
+                    <color:TransparentChooser ui:field="transparentSelector"/>
+                </g:HTMLPanel>
                 <g:HorizontalPanel width="100%" spacing="3" horizontalAlignment="center" verticalAlignment="middle">
                     <g:cell size="35">
                         <c:Dropdown width="35px" popupMaxHeight="120" ui:field="ddlType"/>
