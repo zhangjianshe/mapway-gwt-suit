@@ -70,10 +70,10 @@ public class HueChooser extends CanvasWidget implements HasValueChangeHandlers<D
             if (mouseDown) {
                 currentX = event.getRelativeX(getElement());
                 double hue = updateHue();
+                draw();
                 ValueChangeEvent.fire(HueChooser.this, hue);
                 event.stopPropagation();
                 event.preventDefault();
-                draw();
             }
         }, MouseMoveEvent.getType());
         addDomHandler(event -> {

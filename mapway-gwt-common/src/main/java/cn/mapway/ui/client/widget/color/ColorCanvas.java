@@ -7,7 +7,6 @@ import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
 import com.google.gwt.canvas.dom.client.Context2d;
-import com.google.gwt.canvas.dom.client.ImageData;
 import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -18,6 +17,8 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.RequiresResize;
+import elemental2.dom.CanvasRenderingContext2D;
+import jsinterop.base.Js;
 
 /**
  * ColorCanvas
@@ -28,7 +29,7 @@ public class ColorCanvas extends CanvasWidget implements RequiresResize, HasComm
     double hue;
     ColorData colorData = new ColorData();
     Size colorPosition = new Size();
-    ImageData imageData;
+    elemental2.dom.ImageData imageData;
     boolean mouseDown = false;
 
     public ColorCanvas() {
@@ -129,20 +130,24 @@ public class ColorCanvas extends CanvasWidget implements RequiresResize, HasComm
         if (width == 0 || height == 0) {
             return;
         }
-        Context2d context2d = getContext2d();
+
+        CanvasRenderingContext2D canvasRenderingContext2D = Js.uncheckedCast(getContext2d());
         if (imageData == null) {
-            imageData = context2d.getImageData(0, 0, width, height);
+            imageData = canvasRenderingContext2D.getImageData(0, 0, width, height);
         }
+        double[] values = new double[4];
         for (int row = 0; row < height; row++) {
             for (int col = 0; col < width; col++) {
+                int index = (row * width + col) * 4;
                 int[] rgb = Colors.hsv2rgb(hue, col * 1. / width, 1 - row * 1. / height);
-                imageData.setRedAt(rgb[0], col, row);
-                imageData.setGreenAt(rgb[1], col, row);
-                imageData.setBlueAt(rgb[2], col, row);
-                imageData.setAlphaAt(255, col, row);
+                values[0] = rgb[0];
+                values[1] = rgb[1];
+                values[2] = rgb[2];
+                values[3] = 255;
+                imageData.data.set(values, index);
             }
         }
-        context2d.putImageData(imageData, 0, 0);
+        canvasRenderingContext2D.putImageData(imageData, 0, 0);
         drawCross();
 
         if (fireEvent) {
