@@ -348,6 +348,20 @@ public class StringUtil {
         return sb.toString();
     }
 
+    /**
+     * 计算 total 除以 mod 后的 有效行数
+     *
+     * @param total
+     * @param mod
+     * @return
+     */
+    public static int calMod(int total, int mod) {
+        if (mod <= 0) {
+            return total;
+        }
+        return total / mod + (total % mod == 0 ? 0 : 1);
+    }
+
     public static float parseCssValue(String s) {
         if (s == null || s.length() == 0) {
             return 0;
