@@ -36,4 +36,8 @@ public class Option implements Serializable, IsSerializable {
         initSelected = selected;
         return this;
     }
+    public Option setInitSelected(boolean selected) {
+        initSelected = selected;
+        return this;
+    }
 }
