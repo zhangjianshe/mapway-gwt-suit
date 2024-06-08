@@ -44,7 +44,7 @@ public class TimeTest {
         long time = System.currentTimeMillis() - estTime * 1000;
         Date then = new Date(time);
         Date now = new Date();
-        int year = now.getYear() - then.getYear() -1;
+        int year = now.getYear() - then.getYear() - 1;
         int month = now.getMonth() + (11 - then.getMonth());
         if (month == 11) {
             year = year + 1;
@@ -67,4 +67,6 @@ public class TimeTest {
         String s = formatTimeSpan((Times.now().getTime() - then.getTime()) / 1000);
         System.out.println(s);
     }
+
+
 }

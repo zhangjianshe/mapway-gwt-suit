@@ -1,0 +1,52 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        .box {
+            display: flex;
+            flex-flow: column;
+            align-items: center;
+            justify-content: space-between;
+            gap: 4px;
+            padding: 4px;
+        }
+
+        .input {
+            width: 60px;
+            text-align: center;
+            height: 30px;
+            border: solid 1px #d0d0d0;
+            outline: none;
+        }
+
+        .input:focus {
+            border: solid 1px #a0a0a0;
+        }
+
+        .box1 {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .btn {
+
+        }
+
+        .btn:HOVER {
+            background-color: #f0f0f0;
+        }
+    </ui:style>
+    <g:LayoutPanel>
+        <g:layer>
+            <g:HTMLPanel styleName="{style.box}">
+                <g:TextBox ui:field="txtTop" styleName="{style.input}"/>
+                <g:HTMLPanel styleName="{style.box1}">
+                    <g:TextBox ui:field="txtLeft" styleName="{style.input}"/>
+                    <g:TextBox ui:field="txtRight" styleName="{style.input}"/>
+                </g:HTMLPanel>
+                <g:TextBox ui:field="txtBottom" addStyleNames="{style.btn}" styleName="{style.input}"/>
+            </g:HTMLPanel>
+        </g:layer>
+    </g:LayoutPanel>
+</ui:UiBinder>

@@ -41,7 +41,6 @@ public class StringUtil {
         timeZoneShanghai = TimeZone.createTimeZone(timeZoneConstants.asiaShanghai());
         df = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT);
         dfS = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT + ".SSS");
-
     }
 
     public static Date parseDate(String format, String value) {
@@ -325,16 +324,6 @@ public class StringUtil {
         }
     }
 
-//    public static void main(String[] args) {
-//        Date then= null;
-//        try {
-//            then = Times.parse("yyyy-MM-dd HH:mm:ss","2020-06-07 12:00:00");
-//        } catch (ParseException e) {
-//            throw new RuntimeException(e);
-//        }
-//        StringUtil.formatTimeSpan((Times.now().getTime()-then.getTime())/1000);
-//    }
-
     public static String randomColor() {
         return Colors.randomColor();
     }
@@ -360,6 +349,18 @@ public class StringUtil {
             return total;
         }
         return total / mod + (total % mod == 0 ? 0 : 1);
+    }
+
+    public static String[] departCssValue(String s) {
+        if (StringUtil.isBlank(s)) {
+            return new String[]{"", ""};
+        }
+        String exp = "([+-]?\\d*\\.?\\d+)(.*)";
+        MatchResult exec = RegExp.compile(exp).exec(s);
+        if (exec == null || exec.getGroupCount() == 0) {
+            return new String[]{"", ""};
+        }
+        return new String[]{exec.getGroup(1), exec.getGroup(2)};
     }
 
     public static float parseCssValue(String s) {
