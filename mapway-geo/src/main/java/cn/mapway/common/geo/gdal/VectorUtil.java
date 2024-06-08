@@ -492,7 +492,18 @@ public abstract class VectorUtil {
         return geomTransformer;
     }
 
+    public GeomTransformer getGeomTransformerToWebMercator() {
 
+        if (getSpatialRef() == null) {
+            return null;
+        }
+        CoordinateTransformation coordinateTransformation = new CoordinateTransformation(getSpatialRef(), srcWebMercator);
+        GeomTransformer geomTransformer = new GeomTransformer(coordinateTransformation);
+        return geomTransformer;
+    }
+
+
+    @Deprecated
     public Geometry toWebMercator(Geometry geometry) {
         if (geometry == null) {
             return geometry;

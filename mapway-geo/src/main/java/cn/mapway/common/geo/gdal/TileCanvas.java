@@ -25,7 +25,6 @@ import java.io.OutputStream;
  */
 @Slf4j
 public class TileCanvas {
-    static BorderStyle BORDER_STYLE;
     TileNo tileNo;
     BufferedImage buffer;
     Graphics2D graphics;
@@ -90,10 +89,6 @@ public class TileCanvas {
     private void transform(cn.mapway.geo.shared.vector.Point pt) {
         pt.x = (pt.x - mercatorBox.getXmin()) / res;
         pt.y = 256 - (pt.y - mercatorBox.getYmin()) / res;
-
-//        double res = WebMercator.resolution(tileNo.getZoom());
-//        pt.x = (pt.x + WebMercator.originShift) / res - tileNo.getTileX() * 256;
-//        pt.y = (WebMercator.originShift - pt.y) / res - tileNo.getTileY() * 256;
     }
 
     public void drawFeature(Feature featureDraw, MapStyle mapStyle) {
@@ -103,12 +98,7 @@ public class TileCanvas {
         } else {
             styleLayer = mapStyle.styles[0];
         }
-        if (styleLayer.borderStyle == null) {
-            styleLayer.borderStyle = getDefaultBorderStyle();
-        }
-        if (styleLayer.fillStyle == null) {
-            styleLayer.fillStyle = getDefaultFillStyle();
-        }
+
 
         FillStyle fillStyle = styleLayer.fillStyle;
         BorderStyle borderStyle = styleLayer.borderStyle;
@@ -191,27 +181,5 @@ public class TileCanvas {
             }
         }
     }
-    static FillStyle FILL_STYLE;
-    private synchronized FillStyle getDefaultFillStyle() {
-        if (FILL_STYLE == null) {
-            FILL_STYLE = new FillStyle();
-            FILL_STYLE.opacity=0.5;
-            FILL_STYLE.color = "green";
-            FILL_STYLE.type = 0;
-            FILL_STYLE.pattern = "";
-        }
-        return FILL_STYLE;
-    }
 
-    private synchronized BorderStyle getDefaultBorderStyle() {
-        if (BORDER_STYLE == null) {
-            BORDER_STYLE = new BorderStyle();
-            BORDER_STYLE.width = 1;
-            BORDER_STYLE.opacity = 1;
-            BORDER_STYLE.color = "black";
-            BORDER_STYLE.type = 0;
-            BORDER_STYLE.pattern = "";
-        }
-        return BORDER_STYLE;
-    }
 }
