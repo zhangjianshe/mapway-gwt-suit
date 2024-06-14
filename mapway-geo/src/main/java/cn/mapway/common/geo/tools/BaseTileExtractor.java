@@ -745,9 +745,15 @@ public class BaseTileExtractor {
                         //  value  [outputMin,outputMax]
                         double value = source1.getInfo().calValue(pixelValue);
 
-                        if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
-                            //用户设置了归一化调色板
-                            rgba = translateColor(value / (source1.getInfo().outputMax - source1.getInfo().outputMin));
+                        if (colorTable != null) {
+                            if( colorTable.getNormalize() != null && colorTable.getNormalize()){
+                                //用户设置了归一化调色板
+                                pixelValue= normalizePixel(sourceBand, value);
+                                rgba = translateColor(pixelValue);
+                            }
+                            else {
+                                rgba=translateColor(value);
+                            }
                         } else {
                             //没有设置调色板
                             rgba = (int) value;
