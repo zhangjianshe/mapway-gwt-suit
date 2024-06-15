@@ -80,4 +80,17 @@ public interface IAttribute {
      */
     IEditorMetaData getEditorMetaData();
 
+    /**
+     * 获取编辑器显示或者隐藏
+     *
+     * @return
+     */
+    boolean getAttrVisible();
+
+    /**
+     * 设置编辑器显示或者隐藏
+     *
+     * @param visible
+     */
+    IAttribute setAttrVisible(boolean visible);
 }

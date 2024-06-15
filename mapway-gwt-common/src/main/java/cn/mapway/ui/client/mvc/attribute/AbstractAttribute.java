@@ -36,6 +36,7 @@ public abstract class AbstractAttribute implements IAttribute {
     protected boolean initVisible = true;
     // 属性名称
     protected String name;
+    protected boolean visible = true;
     IEditorMetaData editorData;
 
     public AbstractAttribute(String name) {
@@ -276,6 +277,16 @@ public abstract class AbstractAttribute implements IAttribute {
     public AbstractAttribute setEditorData(IEditorMetaData editorData) {
         assert editorData != null;
         this.editorData = editorData;
+        return this;
+    }
+
+    @Override
+    public boolean getAttrVisible() {
+        return visible;
+    }
+
+    public AbstractAttribute setAttrVisible(boolean visible) {
+        this.visible = visible;
         return this;
     }
 

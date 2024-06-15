@@ -61,6 +61,14 @@ public interface IAttributesProvider extends IAttributeValuesUpdator, HasAttribu
     void notifyAttributeReady();
 
     /**
+     * 根据名称查找属性
+     *
+     * @param name
+     * @return
+     */
+    IAttribute findAttributeByName(String name);
+
+    /**
      * 验证用户的输入数据
      * 返回错误的描述信息
      *

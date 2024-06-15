@@ -187,6 +187,19 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
     }
 
     @Override
+    public IAttribute findAttributeByName(String name) {
+        if (attributes == null || name == null || name.length() == 0) {
+            return null;
+        }
+        for (IAttribute attribute : attributes) {
+            if (attribute.getName().equals(name)) {
+                return attribute;
+            }
+        }
+        return null;
+    }
+
+    @Override
     public HandlerRegistration addAttributeStateChangeHandler(AttributeStateChangeEventHandler handler) {
         return eventBus.addHandler(AttributeStateChangeEvent.TYPE, handler);
     }

@@ -11,13 +11,13 @@ import cn.mapway.ui.client.mvc.attribute.IAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEvent;
 import cn.mapway.ui.client.mvc.attribute.event.AttributeStateChangeEventHandler;
 import cn.mapway.ui.client.mvc.attribute.marker.IAttributeInit;
+import cn.mapway.ui.client.mvc.tip.IPageTip;
+import cn.mapway.ui.client.mvc.tip.TipData;
+import cn.mapway.ui.client.mvc.tip.TipPanel;
 import cn.mapway.ui.client.mvc.window.IEnabled;
 import cn.mapway.ui.client.mvc.window.IErrorMessage;
 import cn.mapway.ui.client.mvc.window.IProvideSize;
 import cn.mapway.ui.client.mvc.window.ISelectable;
-import cn.mapway.ui.client.mvc.tip.IPageTip;
-import cn.mapway.ui.client.mvc.tip.TipData;
-import cn.mapway.ui.client.mvc.tip.TipPanel;
 import cn.mapway.ui.client.tools.DataBus;
 import cn.mapway.ui.client.tools.Id;
 import cn.mapway.ui.client.util.Logs;
@@ -320,6 +320,15 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         }
     }
 
+    @Override
+    public IAttribute findAttributeByName(String name) {
+        if (attributeProvider != null) {
+            return null;
+        } else {
+            return attributeProvider.findAttributeByName(name);
+        }
+    }
+
     public void setAttr(String name, String value) {
         getWidget().getElement().setAttribute(name, value);
     }
@@ -451,4 +460,6 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
     public HandlerRegistration addAttributeStateChangeHandler(AttributeStateChangeEventHandler handler) {
         return addHandler(handler, AttributeStateChangeEvent.TYPE);
     }
+
+
 }
