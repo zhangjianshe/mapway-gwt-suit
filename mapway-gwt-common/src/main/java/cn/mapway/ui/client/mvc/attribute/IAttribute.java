@@ -62,16 +62,6 @@ public interface IAttribute {
         return new ParameterValues();
     }
 
-
-    /**
-     * 是否初始化显示
-     *
-     * @return
-     */
-    default boolean isInitVisible() {
-        return true;
-    }
-
     /**
      * 编辑这个属性需要的属性编辑器信息 将会替代 上面的getEditorCode designOption getOptions等字段
      * 完成后 上面的字段将会被删除
@@ -93,4 +83,12 @@ public interface IAttribute {
      * @param visible
      */
     IAttribute setAttrVisible(boolean visible);
+
+    /**
+     * 设置属性改变的回调
+     *
+     * @param callback
+     * @return
+     */
+    IAttribute setChangeCallback(IAttributePropertyChangeCallback callback);
 }

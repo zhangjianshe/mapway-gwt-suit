@@ -33,11 +33,11 @@ public abstract class AbstractAttribute implements IAttribute {
     protected String errorTip = "";
     protected String icon = "";
     protected IOptionProvider optionProvider = null;
-    protected boolean initVisible = true;
     // 属性名称
     protected String name;
     protected boolean visible = true;
     IEditorMetaData editorData;
+    IAttributePropertyChangeCallback callback;
 
     public AbstractAttribute(String name) {
         this(name, name);
@@ -46,6 +46,7 @@ public abstract class AbstractAttribute implements IAttribute {
     public AbstractAttribute(String name, String alterName) {
         this(name, alterName, TextboxAttributeEditor.EDITOR_CODE);
     }
+
 
     /**
      * 构建一个自定义模块的属性
@@ -67,7 +68,6 @@ public abstract class AbstractAttribute implements IAttribute {
         this.runtimeParameters = new ParameterValues();
     }
 
-
     public AbstractAttribute() {
         this("未命名", "未命名");
     }
@@ -80,7 +80,6 @@ public abstract class AbstractAttribute implements IAttribute {
     public ParameterValues getRuntimeParameters() {
         return runtimeParameters;
     }
-
 
     /**
      * 解析设计器的组件参数
@@ -120,7 +119,6 @@ public abstract class AbstractAttribute implements IAttribute {
         this.name = name;
         return this;
     }
-
 
     @Override
     public String getAltName() {
@@ -242,21 +240,6 @@ public abstract class AbstractAttribute implements IAttribute {
         return this;
     }
 
-    @Override
-    public boolean isInitVisible() {
-        return initVisible;
-    }
-
-    /**
-     * 设置初始显示
-     *
-     * @param visible
-     * @return
-     */
-    public AbstractAttribute setInitVisible(Boolean visible) {
-        this.initVisible = visible;
-        return this;
-    }
 
     @Override
     public IOptionProvider getOptionProvider() {
@@ -267,7 +250,6 @@ public abstract class AbstractAttribute implements IAttribute {
         this.optionProvider = optionProvider;
         return this;
     }
-
 
     @Override
     public IEditorMetaData getEditorMetaData() {
@@ -285,9 +267,30 @@ public abstract class AbstractAttribute implements IAttribute {
         return visible;
     }
 
-    public AbstractAttribute setAttrVisible(boolean visible) {
-        this.visible = visible;
+    /**
+     * 设置编辑器显示或者隐藏
+     *
+     * @param visible
+     * @return
+     */
+    @Override
+    public IAttribute setAttrVisible(boolean visible) {
+        if (this.visible != visible) {
+            this.visible = visible;
+            notifyPropertyChange();
+        }
         return this;
     }
 
+    private void notifyPropertyChange() {
+        if (callback != null) {
+            callback.onAttributePropertyChange(this);
+        }
+    }
+
+    @Override
+    public IAttribute setChangeCallback(IAttributePropertyChangeCallback callback) {
+        this.callback = callback;
+        return this;
+    }
 }
