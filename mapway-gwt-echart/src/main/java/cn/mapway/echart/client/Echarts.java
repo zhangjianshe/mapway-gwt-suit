@@ -11,5 +11,14 @@ import jsinterop.annotations.JsType;
  */
 @JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "echarts")
 public class Echarts {
+    /**
+     * 初始化
+     *
+     * @param element
+     * @param theme   主题
+     * @return
+     */
+    public native static EChartControl init(Element element, String theme);
+
     public native static EChartControl init(Element element);
 }
