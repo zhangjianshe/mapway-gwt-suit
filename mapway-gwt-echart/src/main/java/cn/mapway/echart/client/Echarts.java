@@ -21,4 +21,5 @@ public class Echarts {
     public native static EChartControl init(Element element, String theme);
 
     public native static EChartControl init(Element element);
+
 }

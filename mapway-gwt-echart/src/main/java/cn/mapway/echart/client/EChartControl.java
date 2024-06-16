@@ -15,4 +15,6 @@ public class EChartControl {
     public native final void resize(ResizeOption resizeOption);
 
     public native final void clear();
+
+    public native final void dispose();
 }
