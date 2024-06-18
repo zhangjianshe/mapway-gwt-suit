@@ -70,8 +70,12 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         }
     }
 
+    public static boolean isElementSelect(com.google.gwt.dom.client.Element element) {
+        return TRUE.equals(element.getAttribute(ISelectable.SELECT_ATTRIBUTE));
+    }
+
     public boolean isSelected() {
-        return TRUE.equals(getElement().getAttribute(ISelectable.SELECT_ATTRIBUTE));
+        return isElementSelect(getWidget().getElement());
     }
 
     @Override
