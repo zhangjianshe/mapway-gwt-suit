@@ -65,4 +65,9 @@ public enum GeometryType {
         this.unicode = unicode;
         this.postGisType = postGisType;
     }
+
+    public String toString()
+    {
+        return name+"("+code+")";
+    }
 }
