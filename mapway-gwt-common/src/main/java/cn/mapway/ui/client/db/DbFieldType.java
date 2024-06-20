@@ -43,6 +43,10 @@ public enum DbFieldType {
         return FLD_TYPE_STRING;
     }
 
+    public String toString()
+    {
+        return name+"("+code+")";
+    }
     public int getCode() {
         return code;
     }
