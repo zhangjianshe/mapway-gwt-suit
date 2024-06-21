@@ -967,19 +967,18 @@ public class TiffTools {
         boolean b = extractor.extractTileToTarget(imageInfo, tileX, tileY, zoom, sourceDataset, memoryDataset);
         if (b) {
             memoryDataset.FlushCache();
-            Dataset targetDataset = getPngDriver().CreateCopy(targetPngFileName, memoryDataset);
-            targetDataset.FlushCache();
+            Dataset translated = gdal.Translate(targetPngFileName, memoryDataset, null);
             stopwatch.stop();
-            // sourceDataset.Close();
-            // targetDataset.Close();
-
+            if(translated!=null) {
+                translated.delete();
+            }
             //  log.info("extract Tile {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
             byte[] data = Files.readBytes(targetPngFileName);
             temp.delete();
             return data;
         } else {
             stopwatch.stop();
-            //sourceDataset.Close();
+            sourceDataset.delete();
             //  log.error("extract Tile error {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
             temp.delete();
             return null;
