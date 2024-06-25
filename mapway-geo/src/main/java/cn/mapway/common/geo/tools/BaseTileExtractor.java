@@ -756,7 +756,8 @@ public class BaseTileExtractor {
                             }
                         } else {
                             //没有设置调色板
-                            rgba = (int) value;
+                            int v= (int) value;
+                            rgba =Colors.fromColorInt(v,v,v,0xFF);
                         }
                     } else if (sourceBand.getInfo().colorMaps != null) {
                         rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);

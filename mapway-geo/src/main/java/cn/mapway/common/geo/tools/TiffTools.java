@@ -110,22 +110,14 @@ public class TiffTools {
         TileNo tileNo = WebMercator.tileNoFromWgs84(39.975, 111.29, 18);
         System.out.println(tileNo);
 
-        filePath = "/data/personal/1/成果展示/基于无人机图像的分类/BULIANGOU_DOM_0.5.tif";
         filePath = "/data/personal/1/成果展示/基于无人机图像的分类/ndvi.tif";
-        long tilex = 106058;
-        long tiley = 49630;
-        int zoom = 17;
+        filePath = "/data/personal/1/成果展示/S_842_387_3371_1549.tif";
+        long tilex = 53941;
+        long tiley = 24785;
+        int zoom = 16;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
-        //File infoFile = new File(filePath + ".info");
-
-        // ImageInfo dasdsad = tiffTools.extractImageInformation("dasdsad", filePath, null);
-        //System.out.println("image extend "+dasdsad.getBox().toString());
-
-        //Dataset ds = gdal.Open(filePath, gdalconstConstants.GA_ReadOnly);
-
-        //ds.BuildOverviews(new int[]{2, 4, 8, 16, 32, 64, 128, 256, 512}, new TermProgressCallback());
 
         ImageInfo md5File;
         String sha256 = tiffTools.imageSha256(filePath);
@@ -142,8 +134,8 @@ public class TiffTools {
         });
         System.out.println("INFO image extend " + md5File.getBox().toString());
         System.out.println("INFO image size " + md5File.width + " " + md5File.height);
-
-        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, new ColorTable());
+        md5File.getBandInfos().get(0).enableGamma=true;
+        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, null);
         if (bytes == null) {
             System.out.println("gen error");
         } else {
