@@ -12,4 +12,5 @@ public enum DesignEventType {
     Cancel,
     Menu,
     Mode,
+    Update
 }
