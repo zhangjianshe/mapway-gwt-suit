@@ -124,6 +124,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
 
     public final static int OK = 200;
+    public final static int DESIGN = 300;
     public final static int FAIL = 500;
 
 
@@ -142,6 +143,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
     }
+
     public static CommonEvent stateEvent(Object data) {
         return new CommonEvent(STATE, data);
     }
@@ -369,6 +371,11 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent playEvent(Object data) {
         return new CommonEvent(PLAY, data);
     }
+
+    public static CommonEvent designEvent(DesignEvent data) {
+        return new CommonEvent(DESIGN, data);
+    }
+
 
     public static CommonEvent messageEvent(MessageObject message) {
         return new CommonEvent(MESSAGE, message);
@@ -989,8 +996,13 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isReload() {
         return RELOAD == this.type;
     }
+
     public boolean isState() {
         return STATE == this.type;
+    }
+
+    public boolean isDesign() {
+        return DESIGN == this.type;
     }
 
     @Override
