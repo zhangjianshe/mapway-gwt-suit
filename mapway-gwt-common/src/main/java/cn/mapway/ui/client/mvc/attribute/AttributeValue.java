@@ -26,4 +26,9 @@ public class AttributeValue implements Serializable, IsSerializable {
      * 新增 编辑器代码
      */
     String editCode;
+
+    public AttributeValue(String name, String value) {
+        this.name = name;
+        this.value = value;
+    }
 }
