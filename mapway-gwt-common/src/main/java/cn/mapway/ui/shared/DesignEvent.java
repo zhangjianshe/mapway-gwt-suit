@@ -60,6 +60,18 @@ public class DesignEvent {
         return new DesignEvent(DesignEventType.Mode, data);
     }
 
+    public final static DesignEvent createDraw(Object data) {
+        return new DesignEvent(DesignEventType.Draw, data);
+    }
+
+    public final static DesignEvent createResize(Object data) {
+        return new DesignEvent(DesignEventType.Resize, data);
+    }
+
+    public final static DesignEvent createRefresh(Object data) {
+        return new DesignEvent(DesignEventType.Refresh, data);
+    }
+
     public Object getData() {
         return data;
     }
