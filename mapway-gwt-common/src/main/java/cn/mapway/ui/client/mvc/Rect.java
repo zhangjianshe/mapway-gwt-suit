@@ -13,6 +13,25 @@ public class Rect implements Serializable, IsSerializable {
     public Rect() {
     }
 
+    public int getXAsInt()
+    {
+        return (int)x;
+    }
+
+    public int getYAsInt()
+    {
+        return (int)y;
+    }
+    public int getWidthAsInt()
+    {
+        return (int)width;
+    }
+
+    public int getHeightAsInt()
+    {
+        return (int)height;
+    }
+
     public Rect(double x, double y, double width, double height) {
         this.x = x;
         this.y = y;
