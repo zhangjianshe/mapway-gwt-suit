@@ -45,7 +45,11 @@ public class DataCastor {
     }
 
 
-    public static Integer castToInteger(Object obj) {
+    public static Integer castToInteger(Object object) {
+        Object obj = object;
+        if (object instanceof IObjectSerialize) {
+            obj = ((IObjectSerialize) object).toStr();
+        }
         if (obj instanceof String) {
             String str = (String) obj;
             str = str.trim();
@@ -76,7 +80,11 @@ public class DataCastor {
         }
     }
 
-    public static Boolean castToBoolean(Object obj) {
+    public static Boolean castToBoolean(Object object) {
+        Object obj = object;
+        if (object instanceof IObjectSerialize) {
+            obj = ((IObjectSerialize) object).toStr();
+        }
         if (obj instanceof String) {
             String str = (String) obj;
             str = str.trim();
@@ -108,6 +116,9 @@ public class DataCastor {
     }
 
     public static String castToString(Object obj) {
+        if (obj instanceof IObjectSerialize) {
+            return ((IObjectSerialize) obj).toStr();
+        }
         if (obj instanceof String) {
             return (String) obj;
         } else if (obj instanceof Integer) {
@@ -134,14 +145,8 @@ public class DataCastor {
     }
 
     public static Double castToDouble(Object obj) {
-        if (obj instanceof String) {
-            String str = (String) obj;
-            str = str.trim();
-            if (str.length() == 0) {
-                return 0.;
-            }
-            return Double.parseDouble(str);
-        } else if (obj instanceof Integer) {
+
+        if (obj instanceof Integer) {
             Integer v = (Integer) obj;
             return v.doubleValue();
         } else if (obj instanceof Double) {
@@ -159,6 +164,20 @@ public class DataCastor {
         } else if (obj instanceof Boolean) {
             Boolean v = (Boolean) obj;
             return v ? 1.0 : 0.0;
+        } else if (obj instanceof IObjectSerialize) {
+            String str = ((IObjectSerialize) obj).toStr();
+            str = str.trim();
+            if (str.length() == 0) {
+                return 0.;
+            }
+            return Double.parseDouble(str);
+        } else if (obj instanceof String) {
+            String str = (String) obj;
+            str = str.trim();
+            if (str.length() == 0) {
+                return 0.;
+            }
+            return Double.parseDouble(str);
         } else {
             Logs.info("转换数据类型错误");
             return 0.;
@@ -182,6 +201,15 @@ public class DataCastor {
     }
 
     public static Float castToFloat(Object obj) {
+        if(obj instanceof IObjectSerialize)
+        {
+            String str = ((IObjectSerialize) obj).toStr();
+            str = str.trim();
+            if (str.length() == 0) {
+                return 0.f;
+            }
+            return Float.parseFloat(str);
+        }
         if (obj instanceof String) {
             String str = (String) obj;
             str = str.trim();
