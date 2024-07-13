@@ -71,6 +71,10 @@ public class DesignEvent {
     public final static DesignEvent createRefresh(Object data) {
         return new DesignEvent(DesignEventType.Refresh, data);
     }
+    public final static DesignEvent createCreate(Object data) {
+        return new DesignEvent(DesignEventType.Create, data);
+    }
+
 
     public Object getData() {
         return data;

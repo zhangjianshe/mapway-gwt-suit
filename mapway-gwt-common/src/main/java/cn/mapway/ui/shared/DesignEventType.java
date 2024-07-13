@@ -15,5 +15,6 @@ public enum DesignEventType {
     Update,
     Draw,
     Resize,
-    Refresh
+    Refresh,
+    Create
 }
