@@ -222,4 +222,16 @@ public class Rect implements Serializable, IsSerializable {
         this.height = height;
         return this;
     }
+
+    public Rect snapToGrid(int gridSize)
+    {
+        if (gridSize<=0) {
+            return this;
+        }
+        x = (int) Math.round(x / gridSize) * gridSize;
+        this.y = (int) Math.round(this.y / gridSize) * gridSize;
+        this.width = (int) Math.round(this.width / gridSize) * gridSize;
+        this.height = (int) Math.round(this.height / gridSize) * gridSize;
+        return this;
+    }
 }
