@@ -78,7 +78,7 @@ public abstract class AbstractEditorMetaData implements IEditorMetaData {
             return this;
         }
         ParameterValue parameterValue = findParameterValue(key);
-        if (parameterValue != null) {
+        if (parameterValue == null) {
             parameterValue = ParameterValue.create(key, value, init);
             parameters.add(parameterValue);
         } else {
