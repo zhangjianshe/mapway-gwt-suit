@@ -40,14 +40,14 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
 
         //目标tile的像素空间 初始化设置 下面会根据不同的情况进行调整
         Rect targetRect = new Rect(0, 0, tileSize, tileSize);
-        System.out.println("[INFO] Tile "+tileX+" "+tileY+" "+zoom);
+        System.out.println("[INFO] Tile " + tileX + " " + tileY + " " + zoom);
         // 获取瓦片对应的地理坐标范围（GPS）
         Box tileLngLatExtent = globalMercator.tileBoundWgs84(tileX, tileY, zoom);
-        System.out.println("[INFO] Tile WGS84  "+tileLngLatExtent.toString());
+        System.out.println("[INFO] Tile WGS84  " + tileLngLatExtent.toString());
         System.out.println("----->");
-        Box tileImagePixelExtent=locationBoxPixelExtentFromWgs84(sourceDataset,tileLngLatExtent);
+        Box tileImagePixelExtent = locationBoxPixelExtentFromWgs84(sourceDataset, tileLngLatExtent);
         System.out.println("<-----");
-        System.out.println("[INFO] Tile IMAGE  "+tileImagePixelExtent.toString());
+        System.out.println("[INFO] Tile IMAGE  " + tileImagePixelExtent.toString());
 
 
         Rect imageRect = new Rect(0, 0, (int) imageInfo.width, (int) imageInfo.height);
@@ -227,7 +227,7 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
         List<Band> targetBandList = new ArrayList<>(3);
 
         processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
-        byte[] transparentBand = getBand(imageInfo.bandInfos.size() == 1, new Size(256,256), targetRect, sourceRect, sourceBandList, targetBandList);
+        byte[] transparentBand = getBand(imageInfo.bandInfos.size() == 1, new Size(256, 256), targetRect, sourceRect, sourceBandList, targetBandList);
         if (targetDataset.getRasterCount() == 4) {
             targetDataset.GetRasterBand(4).WriteRaster(0, 0, 256, 256, transparentBand);
         }
@@ -235,6 +235,4 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
         targetDataset.FlushCache();
         return true;
     }
-
-
 }

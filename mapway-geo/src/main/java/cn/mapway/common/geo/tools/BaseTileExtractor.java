@@ -1,6 +1,7 @@
 package cn.mapway.common.geo.tools;
 
 
+import cn.mapway.common.geo.gdal.GdalUtil;
 import cn.mapway.geo.client.raster.BandInfo;
 import cn.mapway.geo.client.raster.ChanelData;
 import cn.mapway.geo.client.raster.ImageInfo;
@@ -83,13 +84,12 @@ public class BaseTileExtractor {
     }
 
     public static void main(String[] args) {
-        double pixelValue = 183;
-        double gammaMin = 4;
-        double gammaMax = 243;
-        double gamma = 0.7;
-        double value = gammaMin + (gammaMax - gammaMin) * Math.pow((pixelValue - gammaMin) / (gammaMax - gammaMin), gamma);
-        System.out.println((int) (value));
-        System.out.printf("%d", ((int) (value)) & 0xFF);
+        BaseTileExtractor extractor = new BaseTileExtractor();
+        GdalUtil.init();
+        Dataset dataset = gdal.Open("F:\\data\\personal\\1\\hsi_data\\Ortho_P1C_20230416083433516_0002_VNIR.bsq", GA_ReadOnly);
+        Box tileLngLatExtent = new Box(116.77505493164064, 35.88126165890353,116.77642822265626, 35.88237433729238);
+        Box box = extractor.locationBoxPixelExtentFromWgs84(dataset, tileLngLatExtent);
+        System.out.println(box.toString());
     }
 
     /**
