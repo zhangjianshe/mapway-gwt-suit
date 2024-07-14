@@ -48,9 +48,7 @@ public class CanvasWidget extends FocusWidget implements AnimationScheduler.Anim
     @Override
     protected void onLoad() {
         super.onLoad();
-        if (continueDraw) {
-            animationHandle = AnimationScheduler.get().requestAnimationFrame(this, this.getCanvasElement());
-        }
+        setContinueDraw(true);
     }
 
     public double getDpr() {
@@ -181,11 +179,7 @@ public class CanvasWidget extends FocusWidget implements AnimationScheduler.Anim
     @Override
     protected void onUnload() {
         super.onUnload();
-        continueDraw = false;
-        if (animationHandle != null) {
-            animationHandle.cancel();
-            animationHandle = null;
-        }
+       setContinueDraw(false);
 
     }
 
@@ -199,6 +193,17 @@ public class CanvasWidget extends FocusWidget implements AnimationScheduler.Anim
 
     public void setContinueDraw(boolean continueDraw) {
         this.continueDraw = continueDraw;
+        if (continueDraw) {
+            if(animationHandle == null) {
+                animationHandle = AnimationScheduler.get().requestAnimationFrame(this, this.getCanvasElement());
+            }
+        }
+        else {
+            if (animationHandle != null) {
+                animationHandle.cancel();
+                animationHandle = null;
+            }
+        }
     }
 
     public void redraw() {
