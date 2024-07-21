@@ -121,6 +121,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int STA = 108;
     public final static int RELOAD = 109;
     public final static int STATE = 110;
+    public final static int UPDATE_UI = 111;
 
 
     public final static int OK = 200;
@@ -142,6 +143,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+
+    public static CommonEvent updateUiEvent(Object data) {
+        return new CommonEvent(UPDATE_UI, data);
     }
 
     public static CommonEvent stateEvent(Object data) {
@@ -655,6 +660,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isDownload() {
         return DOWNLOAD == this.type;
+    }
+
+    public boolean isUpdateUI() {
+        return UPDATE_UI == this.type;
     }
 
     public boolean isUpdate() {
