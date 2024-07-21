@@ -31,8 +31,9 @@ public class SaveDialog<T extends Widget> extends AiDialog {
             } else if (event.isSaveDisable()) {
                 saveBar.setData(event.getValue());
                 saveBar.enableSave(false);
+            } else {
+                this.fireEvent(event);
             }
-            this.fireEvent(event);
         }
     };
     T content;
