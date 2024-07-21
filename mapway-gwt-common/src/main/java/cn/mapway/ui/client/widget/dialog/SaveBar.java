@@ -141,6 +141,7 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
         }
     }
 
+
     /**
      * 保存成功的消息 如果为 null 或者空字符串 使用系统缺省的消息 BizConstant.MESSAGE_END_SAVE
      *
@@ -167,6 +168,19 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
             btnSave.setLoading(false);
         }
         return topic;
+    }
+
+    public void processSaveStateMessage(CommonEvent event) {
+        if (event == null) {
+            return;
+        }
+        if (event.isSaveEnable()) {
+            setData(event.getValue());
+            enableSave(true);
+        } else if (event.isSaveDisable()) {
+            setData(event.getValue());
+            enableSave(false);
+        }
     }
 
     @Override

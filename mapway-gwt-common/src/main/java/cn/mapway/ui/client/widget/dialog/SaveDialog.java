@@ -11,7 +11,8 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.Widget;
 
 /**
- * 保存对话框　
+ * 保存对话框
+ *
  * @param <T>
  */
 public class SaveDialog<T extends Widget> extends AiDialog {
@@ -24,6 +25,13 @@ public class SaveDialog<T extends Widget> extends AiDialog {
         } else if (event.isMessage()) {
             saveBar.msg(event.getValue());
         } else {
+            if (event.isSaveEnable()) {
+                saveBar.setData(event.getValue());
+                saveBar.enableSave(true);
+            } else if (event.isSaveDisable()) {
+                saveBar.setData(event.getValue());
+                saveBar.enableSave(false);
+            }
             this.fireEvent(event);
         }
     };
@@ -57,7 +65,7 @@ public class SaveDialog<T extends Widget> extends AiDialog {
         }
         saveBar.setEnableSave(content instanceof ISaveble);
         if (content instanceof IProvideSize) {
-            IProvideSize w2 = (IProvideSize)content;
+            IProvideSize w2 = (IProvideSize) content;
             Size size = w2.requireDefaultSize();
             if (size != null) {
                 this.setPixelSize(size.getXAsInt(), size.getYAsInt());
@@ -67,6 +75,15 @@ public class SaveDialog<T extends Widget> extends AiDialog {
         } else {
             this.setPixelSize(900, 500);
         }
+    }
+
+    /**
+     * 处理保存状态消息　更改SaveBar save 按钮状态
+     *
+     * @param event
+     */
+    public void processSaveStateMessage(CommonEvent event) {
+        saveBar.processSaveStateMessage(event);
     }
 
     public SaveDialog<T> setSaveText(String text) {
