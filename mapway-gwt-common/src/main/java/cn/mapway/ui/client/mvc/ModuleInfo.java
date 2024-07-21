@@ -189,17 +189,21 @@ public class ModuleInfo {
         order = order;
     }
 
+    /**
+     * 判断模块是否属于　某个主题
+     * @param themeName
+     * @return
+     */
     public boolean forTheme(String themeName) {
-        if (themes == null || themeName == null || themeName.length() == 0) {
+        if (themes == null || themes.size()==0 || themeName == null || themeName.length() == 0) {
             return true;
         }
-
         for (String theme : themes) {
             if (themeName.equals(theme)) {
                 return true;
             }
         }
-        return themes.size() == 0;
+        return false;
     }
 
     /**
