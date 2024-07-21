@@ -122,6 +122,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int RELOAD = 109;
     public final static int STATE = 110;
     public final static int UPDATE_UI = 111;
+    public final static int SAVE_ENABLE = 112;
+    public final static int SAVE_DISABLE = 113;
 
 
     public final static int OK = 200;
@@ -147,6 +149,14 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent updateUiEvent(Object data) {
         return new CommonEvent(UPDATE_UI, data);
+    }
+
+    public static CommonEvent saveEnableEvent(Object data) {
+        return new CommonEvent(SAVE_ENABLE, data);
+    }
+
+    public static CommonEvent saveDisableEvent(Object data) {
+        return new CommonEvent(SAVE_DISABLE, data);
     }
 
     public static CommonEvent stateEvent(Object data) {
@@ -816,6 +826,14 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isDetail() {
         return DETAIL == this.type;
+    }
+
+    public boolean isSaveEnable() {
+        return SAVE_ENABLE == this.type;
+    }
+
+    public boolean isSaveDisable() {
+        return SAVE_DISABLE == this.type;
     }
 
     public boolean isList() {
