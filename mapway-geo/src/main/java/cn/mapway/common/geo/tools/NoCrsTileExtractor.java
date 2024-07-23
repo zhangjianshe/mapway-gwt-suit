@@ -42,8 +42,8 @@ public class NoCrsTileExtractor extends BaseTileExtractor implements ITileExtrac
         List<BandData> sourceBandList = new ArrayList<>(3);
         List<Band> targetBandList = new ArrayList<>(3);
 
-        processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
-        byte[] transparentBand = getBand(imageInfo.bandInfos.size() == 1, new Size(256,256), targetRect, sourceRect, sourceBandList, targetBandList);
+        boolean singleBand=processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
+        byte[] transparentBand = getBand(singleBand, new Size(256,256), targetRect, sourceRect, sourceBandList, targetBandList);
         if (targetDataset.getRasterCount() == 4) {
             targetDataset.GetRasterBand(4).WriteRaster(0, 0, 256, 256, transparentBand);
         }
@@ -137,8 +137,8 @@ public class NoCrsTileExtractor extends BaseTileExtractor implements ITileExtrac
         List<BandData> sourceBandList = new ArrayList<>(3);
         List<Band> targetBandList = new ArrayList<>(3);
 
-        processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
-        byte[] transparentBand = getBand(imageInfo.bandInfos.size() == 1, new Size(256,256), targetRect, sourceRect, sourceBandList, targetBandList);
+        boolean singleBand=processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
+        byte[] transparentBand = getBand(singleBand, new Size(256,256), targetRect, sourceRect, sourceBandList, targetBandList);
         if (targetDataset.getRasterCount() == 4) {
             targetDataset.GetRasterBand(4).WriteRaster(0, 0, 256, 256, transparentBand);
         }

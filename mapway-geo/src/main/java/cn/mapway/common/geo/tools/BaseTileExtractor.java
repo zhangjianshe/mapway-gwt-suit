@@ -168,7 +168,16 @@ public class BaseTileExtractor {
         return ByteBuffer.allocateDirect(w * h * 8);
     }
 
-    public void processBands(ImageInfo imageInfo, Dataset sourceDataset, Dataset targetDataset, List<BandData> sourceBandList, List<Band> targetBandList) {
+    /**
+     * 处理波段数据
+     * @param imageInfo
+     * @param sourceDataset
+     * @param targetDataset
+     * @param sourceBandList
+     * @param targetBandList
+     * @return　如果用户要求的是单波段　就返回　true
+     */
+    public boolean processBands(ImageInfo imageInfo, Dataset sourceDataset, Dataset targetDataset, List<BandData> sourceBandList, List<Band> targetBandList) {
         //如果波段数 >= 4 RGB取 4 3 2 波段
         ChanelData chanelData = imageInfo.getChanelData();
         if (chanelData == null) {
@@ -185,6 +194,7 @@ public class BaseTileExtractor {
         for (int i = 1; i <= 3; i++) {
             targetBandList.add(targetDataset.GetRasterBand(i));
         }
+        return chanelData.getRedChanel() == chanelData.getBlueChanel() && chanelData.getRedChanel() == chanelData.getGreenChanel();
     }
 
     /**
@@ -607,7 +617,7 @@ public class BaseTileExtractor {
         List<BandData> sourceBandList = new ArrayList<>(3);
         List<Band> targetBandList = new ArrayList<>(3);
 
-        processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
+        boolean singleBand=processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
         byte[] transparentBand = getBlackBuffer(targetWidth * targetHeight);
         for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
 
