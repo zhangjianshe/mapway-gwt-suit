@@ -566,7 +566,7 @@ public class TiffTools {
             );
 
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
-            info.setMaxZoom(18);
+            info.setMaxZoom(22);
             info.setMinZoom(3);
             info.setResolution((int) resolutionMi.getX() * 10);
             info.getSourceBox().copyFrom(box);
@@ -583,7 +583,7 @@ public class TiffTools {
             );
 
             int zoom = zoomByWgs84Resolution(resolutionMi.getX());
-            info.setMaxZoom(18);
+            info.setMaxZoom(22);
             info.setMinZoom(3);
             info.setResolution((int) (resolutionMi.getX() * 10));
             info.getSourceBox().copyFrom(box);
@@ -597,7 +597,7 @@ public class TiffTools {
             double resolution = lngPerPixel * (2 * Math.PI * GlobalMercator.get().EARTH_RADIUS) / 360;
             int zoom = GlobalMercator.get().zoomForPixelSize(resolution);
 
-            info.setMaxZoom(18);
+            info.setMaxZoom(22);
             info.setMinZoom(3);
             info.setResolution((int) (resolution * 10));
         } else {
