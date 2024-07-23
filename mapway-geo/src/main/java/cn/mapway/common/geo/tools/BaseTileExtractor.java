@@ -141,6 +141,8 @@ public class BaseTileExtractor {
     public void setColorTable(ColorTable table) {
         if (table != null) {
             this.colorTable = table;
+        } else {
+            this.colorTable = null;
         }
     }
 
@@ -744,7 +746,6 @@ public class BaseTileExtractor {
                         // 采用Gamma矫正算法
                         //  value  [outputMin,outputMax]
                         double value = source1.getInfo().calValue(pixelValue);
-
                         if (colorTable != null) {
                             if( colorTable.getNormalize() != null && colorTable.getNormalize()){
                                 //用户设置了归一化调色板
@@ -752,7 +753,8 @@ public class BaseTileExtractor {
                                 rgba = translateColor(pixelValue);
                             }
                             else {
-                                rgba=translateColor(value);
+                                long valueLong = Math.round(value);
+                                rgba=translateColor(valueLong);
                             }
                         } else {
                             //没有设置调色板
@@ -761,7 +763,7 @@ public class BaseTileExtractor {
                         }
                     } else if (sourceBand.getInfo().colorMaps != null) {
                         rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
-                    } else if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
+                    } else if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
                         //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
                         // 讲数据中的颜色进行归一化处理
                         pixelValue = normalizePixel(sourceBand, pixelValue);
