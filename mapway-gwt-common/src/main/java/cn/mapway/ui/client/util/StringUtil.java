@@ -480,6 +480,21 @@ public class StringUtil {
     }
 
     /**
+     * 解析名字 将 名字前面的前缀 都去掉 比如 /ABC/DEF.git  返回 DEF
+     *
+     * @param location
+     * @return
+     */
+    public static String extractBaseName(String location) {
+        String temp=extractName(location);
+        int index = temp.lastIndexOf(".");
+        if (index >= 0) {
+            return temp.substring(0, index);
+        }
+        return temp;
+    }
+
+    /**
      * 获取 文件的后缀名称 会转换为小写
      *
      * @param location
