@@ -144,6 +144,7 @@ public class BaseTileExtractor {
         } else {
             this.colorTable = null;
         }
+
     }
 
     /**
