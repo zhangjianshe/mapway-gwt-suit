@@ -6,16 +6,11 @@ import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 import cn.mapway.ui.client.util.Jss;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
-import elemental2.core.JsObject;
 import elemental2.dom.DomGlobal;
-import jsinterop.annotations.JsOverlay;
-import jsinterop.annotations.JsPackage;
-import jsinterop.annotations.JsProperty;
-import jsinterop.annotations.JsType;
-import jsinterop.base.Js;
+import jsinterop.annotations.*;
 import jsinterop.base.JsArrayLike;
 
-@JsType(isNative = true, namespace = JsPackage.GLOBAL, name = "Object")
+@JsType
 public class JsonEditorData {
     public JsArrayLike<ParameterValue> parameters;
     @JsProperty
@@ -23,21 +18,23 @@ public class JsonEditorData {
     @JsProperty
     private String editorName;
 
-    protected JsonEditorData() {
+    @JsConstructor
+    public JsonEditorData() {
     }
 
-    @JsOverlay
     public final static JsonEditorData create(String editorCode) {
         JsonEditorData data = new JsonEditorData();
         data.editorCode = editorCode;
         return data;
     }
-
-    @JsOverlay
     public final static JsonEditorData load(String jsonString) {
+        if (jsonString == null || jsonString.length() < 2) {
+            DomGlobal.console.log("field editor is null ");
+            return createDefaultEditor();
+        }
         try {
             Object json = Global.JSON.parse(jsonString);
-            JsonEditorData data = Jss.castTo(json,JsonEditorData.class);
+            JsonEditorData data = Jss.castTo(json, JsonEditorData.class);
             data.check();
             return data;
         } catch (Exception e) {
@@ -45,16 +42,12 @@ public class JsonEditorData {
             return createDefaultEditor();
         }
     }
-
-    @JsOverlay
     public final static JsonEditorData createDefaultEditor() {
         JsonEditorData jsonEditorData = new JsonEditorData();
         jsonEditorData.editorCode = TextboxAttributeEditor.EDITOR_CODE;
         jsonEditorData.parameters = new JsArray<>();
         return jsonEditorData;
     }
-
-    @JsOverlay
     public final void check() {
         if (editorCode == null || editorCode.length() == 0) {
             DomGlobal.console.log("解析出的编辑器对象数据格式 不正确,转为缺省的输入框");
@@ -72,13 +65,9 @@ public class JsonEditorData {
             }
         }
     }
-
-    @JsOverlay
     public final String getEditorCode() {
         return editorCode;
     }
-
-    @JsOverlay
     public final String getEditorName() {
         return editorName;
     }

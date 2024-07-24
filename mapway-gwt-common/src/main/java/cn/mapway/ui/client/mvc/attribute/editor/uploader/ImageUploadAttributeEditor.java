@@ -121,7 +121,7 @@ public class ImageUploadAttributeEditor extends AbstractAttributeEditor<String> 
 
             List<IAttribute> parameters = new ArrayList<>();
             parameters.add(new ParameterAttribute(ParameterKeys.KEY_HEIGHT, "高度", "80px"));
-            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_ACTION, "上传URL", ""));
+            parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_ACTION, "上传URL", "/fileUpload"));
             parameters.add(new ParameterAttribute(ParameterKeys.KEY_IMAGE_UPLOAD_REL, "相对路径", "project"));
 
             designer.setParameters("图像上传组件参数", parameters);
