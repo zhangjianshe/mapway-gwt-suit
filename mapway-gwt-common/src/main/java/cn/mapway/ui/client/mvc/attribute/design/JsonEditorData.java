@@ -3,6 +3,7 @@ package cn.mapway.ui.client.mvc.attribute.design;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorInfo;
 import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
+import cn.mapway.ui.client.util.Jss;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
 import elemental2.core.JsObject;
@@ -35,8 +36,8 @@ public class JsonEditorData {
     @JsOverlay
     public final static JsonEditorData load(String jsonString) {
         try {
-            JsObject json = Js.uncheckedCast(Global.JSON.parse(jsonString));
-            JsonEditorData data = Js.uncheckedCast(json);
+            Object json = Global.JSON.parse(jsonString);
+            JsonEditorData data = Jss.castTo(json,JsonEditorData.class);
             data.check();
             return data;
         } catch (Exception e) {
