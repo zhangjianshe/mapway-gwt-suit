@@ -1,13 +1,10 @@
 package cn.mapway.common.geo.gdal;
 
 import lombok.extern.slf4j.Slf4j;
-import org.gdal.ogr.Driver;
-import org.gdal.ogr.GeomTransformer;
-import org.gdal.ogr.Layer;
-import org.gdal.ogr.ogr;
+import org.gdal.ogr.*;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
-import org.nutz.lang.Files;
+import org.nutz.lang.*;
 
 import java.io.File;
 import java.util.Hashtable;
@@ -23,6 +20,21 @@ import java.util.Vector;
  */
 @Slf4j
 public class GeoPackageUtil extends VectorUtil {
+
+    public static void main(String[] args) {
+        GdalUtil.init();
+        GeoPackageUtil geoPackageUtil = new GeoPackageUtil("/data/personal/1/geopackage/example.gpkg");
+        System.out.println("feature count "+ geoPackageUtil.count());
+        geoPackageUtil.each(new Each<Feature>() {
+            @Override
+            public void invoke(int index, Feature ele, int length) throws ExitLoop, ContinueLoop, LoopException {
+                System.out.println(ele.GetFID() + " " + ele.GetFieldAsString(1));
+            }
+        });
+        Feature feature = geoPackageUtil.getFeature(1);
+        System.out.println(feature.GetFID());
+
+    }
 
     public GeoPackageUtil(String path) {
         super(path);

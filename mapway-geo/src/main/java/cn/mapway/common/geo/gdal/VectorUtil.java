@@ -191,10 +191,12 @@ public abstract class VectorUtil {
     }
 
     public Feature getFeature(int index) {
-        if (index >= 0 && index < count()) {
-            return layer.GetFeature(index);
-        }
-        return null;
+        layer.SetNextByIndex(index);
+        return layer.GetNextFeature();
+    }
+
+    public Feature getFeatureById(long fid) {
+        return layer.GetFeature(fid);
     }
 
     /*
