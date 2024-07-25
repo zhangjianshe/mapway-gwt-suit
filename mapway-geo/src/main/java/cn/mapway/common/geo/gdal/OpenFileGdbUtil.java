@@ -17,11 +17,11 @@ import java.io.File;
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
 @Slf4j
-public class FileGdbUtil extends VectorUtil {
+public class OpenFileGdbUtil extends VectorUtil {
 
     public static void main(String[] args) {
         GdalUtil.init();
-        FileGdbUtil geoPackageUtil = new FileGdbUtil("/data/personal/1/geopackage/test.gdb");
+        OpenFileGdbUtil geoPackageUtil = new OpenFileGdbUtil("/data/personal/1/geopackage/test.gdb");
         System.out.println("feature count "+ geoPackageUtil.count());
         geoPackageUtil.each(new Each<Feature>() {
             @Override
@@ -34,7 +34,7 @@ public class FileGdbUtil extends VectorUtil {
 
     }
 
-    public FileGdbUtil(String path) {
+    public OpenFileGdbUtil(String path) {
         super(path);
         try {
             source = getDriver().Open(fileName);
@@ -60,7 +60,7 @@ public class FileGdbUtil extends VectorUtil {
      * @param geoType
      * @param epsgCode
      */
-    public FileGdbUtil(String fileName, Integer geoType, Integer epsgCode) {
+    public OpenFileGdbUtil(String fileName, Integer geoType, Integer epsgCode) {
         super(fileName,geoType,epsgCode);
         try {
             if (Files.isFile(new File(fileName))) {
