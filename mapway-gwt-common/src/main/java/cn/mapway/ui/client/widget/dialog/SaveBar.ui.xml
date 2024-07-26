@@ -36,7 +36,7 @@
             align-self: center;
             padding-right: 10px;
         }</ui:style>
-    <g:HTMLPanel styleName="{style.box}">
+    <g:HTMLPanel styleName="{style.box} saveBarbox">
         <g:Label addStyleNames="{style.msg}" ui:field="lbMessage"/>
         <g:Label addStyleNames="{style.warn}" ui:field="lbWarn"/>
         <g:HTMLPanel styleName="{style.panel}">

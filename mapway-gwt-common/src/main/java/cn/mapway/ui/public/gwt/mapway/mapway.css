@@ -100,7 +100,7 @@
     border-radius: 3px;
 }
 .iti-default:HOVER{
-    background-color:#f0f0f0 !important;
+    background-color:#f0f0f0;
 }
 .iti-default[select="true"]{
     background-color: #e0e0e0;
