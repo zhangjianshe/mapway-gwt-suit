@@ -182,7 +182,10 @@ public class StringUtil {
         return time.substring(0, 10) + time.substring(11, 19);
     }
 
-    public static String formatNumber(int num, int length) {
+    public static String formatNumber(Integer num, int length) {
+        if(num == null){
+            return "";
+        }
         String format = "#";
         for (int i = 0; i < length; i++) {
             format += "0";
@@ -191,7 +194,10 @@ public class StringUtil {
         return df.format(num);
     }
 
-    public static String formatDouble(double num, int precision) {
+    public static String formatDouble(Double num, int precision) {
+        if(num == null){
+            return "";
+        }
         String format = "";
         if (precision > 0) {
             format = ".";
@@ -203,7 +209,11 @@ public class StringUtil {
         return df.format(num);
     }
 
-    public static String formatFloat(float num, int precision) {
+    public static String formatFloat(Float num, int precision) {
+        if(num==null)
+        {
+            return "";
+        }
         String format = "";
         if (precision > 0) {
             format = ".";
