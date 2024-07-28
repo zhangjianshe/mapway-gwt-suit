@@ -293,4 +293,10 @@ public abstract class AbstractAttribute implements IAttribute {
         this.callback = callback;
         return this;
     }
+
+    public AbstractAttribute param(String key,String value)
+    {
+        editorData.getParameterValues().add(ParameterValue.create(key,value));
+        return this;
+    }
 }
