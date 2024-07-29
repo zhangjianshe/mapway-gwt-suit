@@ -31,6 +31,7 @@ public class AttributeEditorInfo {
     public int rank;
 
 
+
     public AttributeEditorInfo(String code, String name, String group) {
         this.code = code;
         this.name = name;

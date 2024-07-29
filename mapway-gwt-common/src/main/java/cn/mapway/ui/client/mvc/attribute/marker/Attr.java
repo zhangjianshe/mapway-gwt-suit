@@ -64,6 +64,12 @@ public @interface Attr {
     String errorTip() default "";
 
     /**
+     * 是否显示
+     * @return
+     */
+    boolean visible() default  true;
+
+    /**
      * 为属性提供一个图标
      *
      * @return
