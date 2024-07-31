@@ -282,7 +282,10 @@ public abstract class AbstractAttribute implements IAttribute {
         return this;
     }
 
-    private void notifyPropertyChange() {
+    /**
+     * 属性发生变化　通知UI
+     */
+    public void notifyPropertyChange() {
         if (callback != null) {
             callback.onAttributePropertyChange(this);
         }

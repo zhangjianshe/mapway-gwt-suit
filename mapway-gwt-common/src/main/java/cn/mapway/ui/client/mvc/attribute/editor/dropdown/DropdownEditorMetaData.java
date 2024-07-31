@@ -6,7 +6,7 @@ import cn.mapway.ui.client.mvc.attribute.marker.AbstractEditorMetaData;
 /**
  * DropdownEditorMetaData 对应的编辑器实例数据
  */
-public abstract class DropdownEditorMetaData extends AbstractEditorMetaData {
+public class DropdownEditorMetaData extends AbstractEditorMetaData {
     public DropdownEditorMetaData() {
         super(DropdownAttributeEditor.EDITOR_CODE);
     }
@@ -26,5 +26,7 @@ public abstract class DropdownEditorMetaData extends AbstractEditorMetaData {
      *
      * @return
      */
-    protected abstract ParameterValues initDropdownOptions();
+    public ParameterValues initDropdownOptions() {
+        return new ParameterValues();
+    }
 }

@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.editor.proxy;
 
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.IAttributePropertyChangeCallback;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.util.Logs;
@@ -23,7 +24,7 @@ import com.google.gwt.user.client.ui.Widget;
  * 所有编辑器组件的一个代理
  * [name   :    EDITOR]
  */
-public class AttributeItemEditorProxy extends Composite implements HasCommonHandlers {
+public class AttributeItemEditorProxy extends Composite implements HasCommonHandlers, IAttributePropertyChangeCallback {
     private static final AttributeItemEditorProxyUiBinder ourUiBinder = GWT.create(AttributeItemEditorProxyUiBinder.class);
     @UiField
     Label lbHeader;
@@ -85,6 +86,7 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         attributeEditor.editAttribute(attribute.getRuntimeParameters(), attribute);
         //属性名称
         lbHeader.setText(getAttributeName());
+
 
     }
 
@@ -171,10 +173,20 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         }
     }
 
-    public void fromUI(){
+    public void fromUI() {
         if (attributeEditor != null) {
             attributeEditor.fromUI();
         }
+    }
+
+    /**
+     * 属性发生变更　更新UI渲染
+     *
+     * @param senderAttribute
+     */
+    @Override
+    public void onAttributePropertyChange(IAttribute senderAttribute) {
+        attributeEditor.updateAllEditorOption();
     }
 
 

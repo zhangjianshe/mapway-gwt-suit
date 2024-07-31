@@ -85,6 +85,12 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
     }
 
 
+    @Override
+    public void onEditorOptionChanged(String key) {
+        hasInit = false;
+        updateUI();
+    }
+
     /**
      * 当数据发生变化后 调用这个方法更新界面的数据
      */
@@ -103,7 +109,7 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
             IOptionProvider optionProvider = attribute.getOptionProvider();
             if (optionProvider != null) {
                 setOptionProvider(optionProvider);
-            } else if (dropdownParameter != null) {
+            } else if (dropdownParameter != null && dropdownParameter.length() > 2) {
                 try {
                     JsArrayLike<ParameterValue> arrayLike;
                     try {
@@ -128,6 +134,15 @@ public class DropdownAttributeEditor extends AbstractAttributeEditor<String> {
                 } catch (Exception e) {
                     Logs.info("extract dropdwon list data error " + e.getMessage());
                 }
+            } else {
+                OptionProvider optionProvider1 = new OptionProvider();
+                for (ParameterValue data : attribute.getRuntimeParameters()) {
+                    Option option = new Option(data.name, DataCastor.castToString(data.value));
+                    option.setIcon(data.unicode);
+                    option.setInitSelected(data.init);
+                    optionProvider1.getOptions().add(option);
+                }
+                setOptionProvider(optionProvider1);
             }
             hasInit = true;
         }

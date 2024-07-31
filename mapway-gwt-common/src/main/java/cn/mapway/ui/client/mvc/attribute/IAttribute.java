@@ -85,6 +85,11 @@ public interface IAttribute {
     IAttribute setAttrVisible(boolean visible);
 
     /**
+     * 属性相关的数据发生变更　通知
+     */
+    void notifyPropertyChange();
+
+    /**
      * 设置属性改变的回调
      *
      * @param callback

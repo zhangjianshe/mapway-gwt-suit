@@ -326,7 +326,7 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public IAttribute findAttributeByName(String name) {
-        if (attributeProvider != null) {
+        if (attributeProvider == null) {
             return null;
         } else {
             return attributeProvider.findAttributeByName(name);
