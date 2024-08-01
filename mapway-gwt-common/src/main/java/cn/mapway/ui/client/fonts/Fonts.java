@@ -10,11 +10,12 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String LOGFILE = "e72c";
+    	public final static String TABLEDATA = "e732";
+	public final static String TRAIN = "e72c";
 	public final static String REST = "e72d";
-	public final static String JSON = "e72e";
-	public final static String CSV = "e72f";
-	public final static String TRAIN = "e730";
+	public final static String CSV = "e72e";
+	public final static String JSON = "e72f";
+	public final static String LOGFILE = "e730";
 	public final static String XML = "e731";
 	public final static String CURSOR = "e72b";
 	public final static String CHART = "e72a";
@@ -346,11 +347,12 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("LOGFILE", Fonts.LOGFILE);
-	unicodes.put("REST", Fonts.REST);
-	unicodes.put("JSON", Fonts.JSON);
-	unicodes.put("CSV", Fonts.CSV);
+			unicodes.put("TABLEDATA", Fonts.TABLEDATA);
 	unicodes.put("TRAIN", Fonts.TRAIN);
+	unicodes.put("REST", Fonts.REST);
+	unicodes.put("CSV", Fonts.CSV);
+	unicodes.put("JSON", Fonts.JSON);
+	unicodes.put("LOGFILE", Fonts.LOGFILE);
 	unicodes.put("XML", Fonts.XML);
 	unicodes.put("CURSOR", Fonts.CURSOR);
 	unicodes.put("CHART", Fonts.CHART);
