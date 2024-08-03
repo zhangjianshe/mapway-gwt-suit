@@ -209,9 +209,9 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
             }
 
             int itemCount = upPanel.getWidgetCount();
-            int height = itemCount * 30;
-            if (height < 60) {
-                height = 60;
+            int height = itemCount * 32;
+            if (height < 64) {
+                height = 64;
             }
             if (height > maxHeight) {
                 height = maxHeight;
