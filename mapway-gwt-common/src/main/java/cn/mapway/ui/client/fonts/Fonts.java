@@ -10,7 +10,10 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String IFRAME = "e735";
+    	public final static String BOLD = "e737";
+	public final static String UNDERLINE = "e738";
+	public final static String ITALIC = "e739";
+	public final static String IFRAME = "e735";
 	public final static String HTML = "e736";
 	public final static String MAP_GLOBAL = "e733";
 	public final static String DATA_SOURCE = "e734";
@@ -351,7 +354,10 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("IFRAME", Fonts.IFRAME);
+			unicodes.put("BOLD", Fonts.BOLD);
+	unicodes.put("UNDERLINE", Fonts.UNDERLINE);
+	unicodes.put("ITALIC", Fonts.ITALIC);
+	unicodes.put("IFRAME", Fonts.IFRAME);
 	unicodes.put("HTML", Fonts.HTML);
 	unicodes.put("MAP_GLOBAL", Fonts.MAP_GLOBAL);
 	unicodes.put("DATA_SOURCE", Fonts.DATA_SOURCE);
