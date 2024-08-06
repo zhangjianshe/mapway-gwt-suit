@@ -124,6 +124,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int UPDATE_UI = 111;
     public final static int SAVE_ENABLE = 112;
     public final static int SAVE_DISABLE = 113;
+    public final static int FAVORITE = 114;
+    public final static int UNFAVORITE = 115;
 
 
     public final static int OK = 200;
@@ -145,6 +147,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent favoriteEvent(Object data) {
+        return new CommonEvent(FAVORITE, data);
+    }
+    public static CommonEvent unFavoriteEvent(Object data) {
+        return new CommonEvent(UNFAVORITE, data);
     }
 
     public static CommonEvent updateUiEvent(Object data) {
@@ -898,6 +906,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isMouseMove() {
         return MOUSEMOVE == this.type;
+    }
+    public boolean isFavorite() {
+        return FAVORITE == this.type;
+    }
+    public boolean isUnFavorite() {
+        return UNFAVORITE == this.type;
     }
 
     public boolean isMouseDown() {
