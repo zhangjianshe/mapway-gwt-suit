@@ -33,7 +33,10 @@ public class ColorTable implements Serializable, IsSerializable {
     Boolean normalize;
 
     List<ColorMap> colorMaps;
-
+    /**
+     * 是否是缺省系统的颜色表
+     */
+    Boolean defaultTable;
 
     /**
      * 缺省构造一个  单波段为彩色 单一值的颜色表
@@ -43,6 +46,7 @@ public class ColorTable implements Serializable, IsSerializable {
         colorTableType = COLOR_TYPE_SINGLE_BAND_PSEUDO_COLOR.code;
         colorMapType = ColorMapType.COLOR_MAP_TYPE_UNIQUE.code;
         colorMaps = new ArrayList<>();
+        defaultTable=false;
     }
 
     public void add(ColorMap colorMap) {
