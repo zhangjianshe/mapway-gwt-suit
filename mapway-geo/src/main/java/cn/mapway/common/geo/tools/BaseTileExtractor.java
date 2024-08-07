@@ -752,7 +752,7 @@ public class BaseTileExtractor {
 
                     int rgba;
 
-                    //没有设置替换颜色 使用颜色表
+
                     if (source1.getInfo().enableGamma) {
                         // 采用Gamma矫正算法
                         //  value  [outputMin,outputMax]
@@ -772,22 +772,40 @@ public class BaseTileExtractor {
                             int v= (int) value;
                             rgba =Colors.fromColorInt(v,v,v,0xFF);
                         }
-                    } else if (sourceBand.getInfo().colorMaps != null) {
-                        rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
-                    } else if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
-                        //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
-                        // 讲数据中的颜色进行归一化处理
-                        pixelValue = normalizePixel(sourceBand, pixelValue);
-
-                        if (pixelValue < 0.0 || pixelValue > 1.0) {
-                            rgba = 0xFFFFFF00;
-                        } else {
-                            rgba = translateColor(pixelValue);
+                    } else if (colorTable != null) {
+                        //颜色表为缺省的　首先使用
+                        if(colorTable.getDefaultTable()!=null && colorTable.getDefaultTable()){
+                            //这是一个缺省的条色办
+                            if(sourceBand.getInfo().colorMaps!=null){
+                                    rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
+                            }
+                            else {
+                                rgba = translateColor(pixelValue);
+                            }
                         }
-                    } else {
-                        //颜色表不是归一化颜色表 直接使用像素值进行查找替换
-                        rgba = translateColor(pixelValue);
+                        else {
+                            //用户自定义了颜色表
+                            if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
+                                //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
+                                // 讲数据中的颜色进行归一化处理
+                                pixelValue = normalizePixel(sourceBand, pixelValue);
+
+                                if (pixelValue < 0.0 || pixelValue > 1.0) {
+                                    rgba = 0xFFFFFF00;
+                                } else {
+                                    rgba = translateColor(pixelValue);
+                                }
+                            } else {
+                                //颜色表不是归一化颜色表 直接使用像素值进行查找替换
+                                rgba = translateColor(pixelValue);
+                            }
+                        }
                     }
+                    else{
+                        //没有条色斑　原始数据
+                        rgba= (int) pixelValue;
+                    }
+
                     sourceBuffer[0].put(tilePosition, (byte) (Colors.r(rgba) & 0xFF));
                     sourceBuffer[1].put(tilePosition, (byte) (Colors.g(rgba) & 0xFF));
                     sourceBuffer[2].put(tilePosition, (byte) (Colors.b(rgba) & 0xFF));
