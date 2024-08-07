@@ -32,8 +32,7 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
     AiButton btnCancel;
     @UiField
     Label lbMessage;
-    @UiField
-    Label lbWarn;
+
     Object data;
 
     String topic = null;
@@ -50,10 +49,12 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
         lbMessage.setText(message);
         lbMessage.setTitle(message);
     }
+
     public void setButtonWidth(int width) {
         btnSave.setWidth(width + "px");
         btnCancel.setWidth(width + "px");
     }
+
     public void msg(Object message) {
         if (message == null) {
             return;
@@ -128,7 +129,7 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
     }
 
     public void setWarning(String warningHtml) {
-        lbWarn.getElement().setInnerHTML(warningHtml);
+        msg(warningHtml);
     }
 
     /**
