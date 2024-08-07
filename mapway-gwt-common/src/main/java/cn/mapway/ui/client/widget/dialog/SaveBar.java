@@ -50,7 +50,10 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
         lbMessage.setText(message);
         lbMessage.setTitle(message);
     }
-
+    public void setButtonWidth(int width) {
+        btnSave.setWidth(width + "px");
+        btnCancel.setWidth(width + "px");
+    }
     public void msg(Object message) {
         if (message == null) {
             return;
