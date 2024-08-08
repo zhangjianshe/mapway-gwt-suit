@@ -112,9 +112,11 @@ public class TiffTools {
 
         filePath = "/data/personal/1/成果展示/基于无人机图像的分类/ndvi.tif";
         filePath = "/data/personal/1/成果展示/S_842_387_3371_1549.tif";
-        long tilex = 53941;
-        long tiley = 24785;
-        int zoom = 16;
+        filePath = "/data/personal/1/test/R_398_196_1595_785.tif";
+        //15/25526/12570
+        long tilex = 25526;
+        long tiley = 12570;
+        int zoom = 15;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
@@ -134,8 +136,11 @@ public class TiffTools {
         });
         System.out.println("INFO image extend " + md5File.getBox().toString());
         System.out.println("INFO image size " + md5File.width + " " + md5File.height);
+        md5File.getBandInfos().get(0).enableGamma=false;
+        ColorTable colorTable=new ColorTable();
+        colorTable.setDefaultTable(true);
         md5File.getBandInfos().get(0).enableGamma=true;
-        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, null);
+        byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, colorTable);
         if (bytes == null) {
             System.out.println("gen error");
         } else {

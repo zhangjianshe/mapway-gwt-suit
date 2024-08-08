@@ -12,7 +12,6 @@ import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.util.Colors;
-import com.sun.media.jai.opimage.FFT;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
@@ -88,7 +87,7 @@ public class BaseTileExtractor {
         BaseTileExtractor extractor = new BaseTileExtractor();
         GdalUtil.init();
         Dataset dataset = gdal.Open("F:\\data\\personal\\1\\hsi_data\\Ortho_P1C_20230416083433516_0002_VNIR.bsq", GA_ReadOnly);
-        Box tileLngLatExtent = new Box(116.77505493164064, 35.88126165890353,116.77642822265626, 35.88237433729238);
+        Box tileLngLatExtent = new Box(116.77505493164064, 35.88126165890353, 116.77642822265626, 35.88237433729238);
         Box box = extractor.locationBoxPixelExtentFromWgs84(dataset, tileLngLatExtent);
         System.out.println(box.toString());
     }
@@ -121,7 +120,7 @@ public class BaseTileExtractor {
         System.out.println("[INFO] tile extend in source right top   [" + topRight[0] + " " + topRight[1] + "]");
 
         // 影像参考系下的坐标范围
-        Box source = new Box( bottomLeft[0], bottomLeft[1], topRight[0],topRight[1]);
+        Box source = new Box(bottomLeft[0], bottomLeft[1], topRight[0], topRight[1]);
 
 
         Point point = imageSpaceToSourceSpace(sourceDataset.GetGeoTransform(), new Point(bottomLeft[0], bottomLeft[1]));
@@ -140,11 +139,7 @@ public class BaseTileExtractor {
      * @param table
      */
     public void setColorTable(ColorTable table) {
-        if (table != null) {
-            this.colorTable = table;
-        } else {
-            this.colorTable = null;
-        }
+        this.colorTable = table;
 
     }
 
@@ -173,6 +168,7 @@ public class BaseTileExtractor {
 
     /**
      * 处理波段数据
+     *
      * @param imageInfo
      * @param sourceDataset
      * @param targetDataset
@@ -620,7 +616,7 @@ public class BaseTileExtractor {
         List<BandData> sourceBandList = new ArrayList<>(3);
         List<Band> targetBandList = new ArrayList<>(3);
 
-        boolean singleBand=processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
+        boolean singleBand = processBands(imageInfo, sourceDataset, targetDataset, sourceBandList, targetBandList);
         byte[] transparentBand = getBlackBuffer(targetWidth * targetHeight);
         for (int bandIndex = 0; bandIndex < 3; bandIndex++) {
 
@@ -750,7 +746,6 @@ public class BaseTileExtractor {
                         pixelValue = doubleBuffer.get(location);
                     }
 
-
                     int rgba;
 
 
@@ -760,37 +755,32 @@ public class BaseTileExtractor {
                         double value = source1.getInfo().calValue(pixelValue);
                         if (colorTable != null && colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
                             //缺省的颜色表
-                            int v= (int) value;
-                            rgba =Colors.fromColorInt(v,v,v,0xFF);
+                            int v = (int) value;
+                            rgba = Colors.fromColorInt(v, v, v, 0xFF);
                         } else {
 
-                            if( colorTable.getNormalize() != null && colorTable.getNormalize()){
+                            if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
                                 //用户设置了归一化调色板
-                                pixelValue= normalizePixel(sourceBand, value);
+                                pixelValue = normalizePixel(sourceBand, value);
                                 rgba = translateColor(pixelValue);
-                            }
-                            else {
+                            } else {
                                 long valueLong = Math.round(value);
-                                rgba=translateColor(valueLong);
+                                rgba = translateColor(valueLong);
                             }
-                            transparentBand[tilePosition] =(byte) (Colors.b(rgba) & 0xFF);
                         }
                     } else if (colorTable != null) {
                         //颜色表为缺省的　首先使用
-                        if(colorTable.getDefaultTable()!=null && colorTable.getDefaultTable()){
+                        if (colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
 
-                            if(sourceBand.getInfo().colorMaps!=null){
-                                    //用户设定了自己的颜色表　就用用户的颜色表渲染
-                                    rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
-                                       transparentBand[tilePosition] =(byte) 0xFF;
-                            }
-                            else {
+                            if (sourceBand.getInfo().colorMaps != null) {
+                                //用户设定了自己的颜色表　就用用户的颜色表渲染
+                                rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
+                            } else {
                                 //如果没有设定,直接用像素值
-                                rgba= (int) pixelValue;
-                                transparentBand[tilePosition] =(byte) 0xFF;
+                                int v = (int) pixelValue;
+                                rgba = Colors.fromColorInt(v, v, v, 0xFF);
                             }
-                        }
-                        else {
+                        } else {
                             //不是缺省的颜色表
                             //用户自定义了颜色表
                             if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
@@ -806,23 +796,21 @@ public class BaseTileExtractor {
 
                             } else {
                                 //颜色表不是归一化颜色表 直接使用像素值进行查找替换
-                                rgba = translateColor(pixelValue);
+
+                                int v = (int) pixelValue;
+                                rgba = Colors.fromColorInt(v, v, v, 0xFF);
                             }
-                            //使用颜色表中的透明色
-                            transparentBand[tilePosition] = (byte) (Colors.b(rgba) & (0xFF));
                         }
-                    }
-                    else{
+                    } else {
                         //没有条色斑　原始数据
-                        rgba= (int) pixelValue;
-                        transparentBand[tilePosition] =(byte) 0xFF;
+                        int v = (int) pixelValue;
+                        rgba = Colors.fromColorInt(v, v, v, 0xFF);
                     }
 
                     sourceBuffer[0].put(tilePosition, (byte) (Colors.r(rgba) & 0xFF));
                     sourceBuffer[1].put(tilePosition, (byte) (Colors.g(rgba) & 0xFF));
                     sourceBuffer[2].put(tilePosition, (byte) (Colors.b(rgba) & 0xFF));
-
-
+                    transparentBand[tilePosition] = (byte) (Colors.a(rgba) & 0xFF);
                 }
             }
 
