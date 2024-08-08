@@ -12,6 +12,7 @@ import cn.mapway.geo.shared.vector.Point;
 import cn.mapway.geo.shared.vector.Rect;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.util.Colors;
+import com.sun.media.jai.opimage.FFT;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
@@ -772,6 +773,7 @@ public class BaseTileExtractor {
                                 long valueLong = Math.round(value);
                                 rgba=translateColor(valueLong);
                             }
+                            transparentBand[tilePosition] =(byte) (Colors.b(rgba) & 0xFF);
                         }
                     } else if (colorTable != null) {
                         //颜色表为缺省的　首先使用
@@ -780,10 +782,12 @@ public class BaseTileExtractor {
                             if(sourceBand.getInfo().colorMaps!=null){
                                     //用户设定了自己的颜色表　就用用户的颜色表渲染
                                     rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
+                                       transparentBand[tilePosition] =(byte) 0xFF;
                             }
                             else {
                                 //如果没有设定,直接用像素值
-                                rgba = (int) pixelValue;
+                                rgba= (int) pixelValue;
+                                transparentBand[tilePosition] =(byte) 0xFF;
                             }
                         }
                         else {
@@ -799,22 +803,25 @@ public class BaseTileExtractor {
                                 } else {
                                     rgba = translateColor(pixelValue);
                                 }
+
                             } else {
                                 //颜色表不是归一化颜色表 直接使用像素值进行查找替换
                                 rgba = translateColor(pixelValue);
                             }
+                            //使用颜色表中的透明色
+                            transparentBand[tilePosition] = (byte) (Colors.b(rgba) & (0xFF));
                         }
                     }
                     else{
                         //没有条色斑　原始数据
                         rgba= (int) pixelValue;
+                        transparentBand[tilePosition] =(byte) 0xFF;
                     }
 
                     sourceBuffer[0].put(tilePosition, (byte) (Colors.r(rgba) & 0xFF));
                     sourceBuffer[1].put(tilePosition, (byte) (Colors.g(rgba) & 0xFF));
                     sourceBuffer[2].put(tilePosition, (byte) (Colors.b(rgba) & 0xFF));
-                    //使用颜色表中的透明色
-                    transparentBand[tilePosition] = (byte) (Colors.a(rgba) & 0xFF);
+
 
                 }
             }
