@@ -776,15 +776,18 @@ public class BaseTileExtractor {
                     } else if (colorTable != null) {
                         //颜色表为缺省的　首先使用
                         if(colorTable.getDefaultTable()!=null && colorTable.getDefaultTable()){
-                            //这是一个缺省的条色办
+
                             if(sourceBand.getInfo().colorMaps!=null){
+                                    //用户设定了自己的颜色表　就用用户的颜色表渲染
                                     rgba = translateImageColorTable(sourceBand.getInfo().colorMaps, pixelValue);
                             }
                             else {
-                                rgba = translateColor(pixelValue);
+                                //如果没有设定,直接用像素值
+                                rgba = (int) pixelValue;
                             }
                         }
                         else {
+                            //不是缺省的颜色表
                             //用户自定义了颜色表
                             if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
                                 //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
