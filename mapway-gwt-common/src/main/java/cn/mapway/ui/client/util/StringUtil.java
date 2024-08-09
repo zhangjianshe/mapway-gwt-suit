@@ -325,7 +325,12 @@ public class StringUtil {
         if (month == 0) {
             result = year + "年";
         } else {
-            result = year + "年" + month + "月";
+            if(year == 0) {
+                result = month + "月";
+            }
+            else {
+                result = year + "年" + month + "月";
+            }
         }
         if (StringUtil.isBlank(suffix)) {
             return result;
