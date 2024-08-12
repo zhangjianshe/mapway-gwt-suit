@@ -35,7 +35,7 @@ public abstract class AbstractAttribute implements IAttribute {
     protected IOptionProvider optionProvider = null;
     // 属性名称
     protected String name;
-    protected boolean visible = true;
+    protected Boolean visible = true;
     IEditorMetaData editorData;
     IAttributePropertyChangeCallback callback;
 
@@ -264,7 +264,7 @@ public abstract class AbstractAttribute implements IAttribute {
 
     @Override
     public boolean getAttrVisible() {
-        return visible;
+        return visible == null || visible;
     }
 
     /**
