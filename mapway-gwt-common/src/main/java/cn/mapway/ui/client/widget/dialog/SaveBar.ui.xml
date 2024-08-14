@@ -31,7 +31,7 @@
             justify-self: flex-start;
         }
     </ui:style>
-    <g:HTMLPanel styleName="{style.box} ">
+    <g:HTMLPanel styleName="{style.box} ai-savebar">
         <g:Label addStyleNames="{style.msg}" ui:field="lbMessage"/>
         <g:HTMLPanel styleName="{style.panel}">
             <buttons:AiButton ui:field="btnSave">保存</buttons:AiButton>
