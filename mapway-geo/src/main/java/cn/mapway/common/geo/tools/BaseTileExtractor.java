@@ -738,7 +738,7 @@ public class BaseTileExtractor {
                     } else if (dt == gdalconstConstants.GDT_Int32) {
                         pixelValue = intBuffer.get(location);
                     } else if (dt == GDT_UInt32) {
-                        long v = intBuffer.get(location) & 0xFFFFFFFF;
+                        long v = intBuffer.get(location);
                         pixelValue = v;
                     } else if (dt == gdalconstConstants.GDT_Float32) {
                         pixelValue = floatBuffer.get(location);
@@ -795,9 +795,8 @@ public class BaseTileExtractor {
                                 }
 
                             } else {
-                                //颜色表不是归一化颜色表 直接使用像素值进行查找替换
-
-                                int v = (int) pixelValue;
+                                //颜色表不是归一化颜色表 使用颜色表进行转换
+                                int v=translateColor(pixelValue);
                                 rgba = Colors.fromColorInt(v, v, v, 0xFF);
                             }
                         }
