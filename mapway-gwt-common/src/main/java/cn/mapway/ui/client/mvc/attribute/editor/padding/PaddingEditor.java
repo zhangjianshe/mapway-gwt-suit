@@ -118,9 +118,9 @@ class PaddingEditor extends CommonEventComposite implements IData<String[]> {
             data[3] = "0";
         }
         txtTop.setValue(data[0]);
-        txtLeft.setValue(data[1]);
-        txtRight.setValue(data[2]);
-        txtBottom.setValue(data[3]);
+        txtRight.setValue(data[1]);
+        txtBottom.setValue(data[2]);
+        txtLeft.setValue(data[3]);
     }
 
     interface PaddingEditorUiBinder extends UiBinder<LayoutPanel, PaddingEditor> {
