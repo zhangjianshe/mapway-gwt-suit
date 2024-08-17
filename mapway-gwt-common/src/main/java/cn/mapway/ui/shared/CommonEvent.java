@@ -126,7 +126,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int SAVE_DISABLE = 113;
     public final static int FAVORITE = 114;
     public final static int UNFAVORITE = 115;
-    public final static int DRAG = 116;
+    public final static int DRAG_START = 116;
+    public final static int DRAG = 117;
+    public final static int DRAG_END = 118;
 
 
     public final static int OK = 200;
@@ -165,6 +167,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public static CommonEvent dragEvent(Object data) {
         return new CommonEvent(DRAG, data);
+    }
+    public static CommonEvent dragEndEvent(Object data) {
+        return new CommonEvent(DRAG_END, data);
+    }
+    public static CommonEvent dragStartEvent(Object data) {
+        return new CommonEvent(DRAG_START, data);
     }
 
 
@@ -1052,6 +1060,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isDrag() {
         return DRAG == this.type;
+    }
+    public boolean isDragEnd() {
+        return DRAG_END == this.type;
+    }
+    public boolean isDragStart() {
+        return DRAG_START == this.type;
     }
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
