@@ -126,6 +126,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int SAVE_DISABLE = 113;
     public final static int FAVORITE = 114;
     public final static int UNFAVORITE = 115;
+    public final static int DRAG = 116;
 
 
     public final static int OK = 200;
@@ -162,6 +163,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent saveEnableEvent(Object data) {
         return new CommonEvent(SAVE_ENABLE, data);
     }
+    public static CommonEvent dragEvent(Object data) {
+        return new CommonEvent(DRAG, data);
+    }
+
 
     public static CommonEvent saveDisableEvent(Object data) {
         return new CommonEvent(SAVE_DISABLE, data);
@@ -1045,7 +1050,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isDesign() {
         return DESIGN == this.type;
     }
-
+    public boolean isDrag() {
+        return DRAG == this.type;
+    }
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
         return TYPE;
