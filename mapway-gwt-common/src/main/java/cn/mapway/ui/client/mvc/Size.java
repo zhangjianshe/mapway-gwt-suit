@@ -10,6 +10,12 @@ public class Size {
         x=0;
         y=0;
     }
+    public double distanceTo(double tx, double ty) {
+        return Math.sqrt((tx - x) * (tx - x) + (ty - y) * (ty - y));
+    }
+    public double distanceTo(Size target){
+        return distanceTo(target.x, target.y);
+    }
     public Size(double x, double y) {
         this.x = x;
         this.y = y;
