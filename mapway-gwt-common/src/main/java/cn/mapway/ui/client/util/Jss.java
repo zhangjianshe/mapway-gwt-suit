@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.util;
 
+import elemental2.core.Function;
 import elemental2.core.JsObject;
 import jsinterop.base.Js;
 
@@ -21,4 +22,16 @@ public class Jss {
         return Js.uncheckedCast(JsObject.setPrototypeOf(instance, prototypeInstance));
     }
 
+    /**
+     * cast instance to Function
+     * @param instance
+     * @return
+     */
+    public static Function castToFunction(Object instance) {
+        if (instance != null && Js.typeof(instance) == "function") {
+            return Js.uncheckedCast(instance);
+        } else {
+            return null;
+        }
+    }
 }
