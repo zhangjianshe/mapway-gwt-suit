@@ -90,7 +90,8 @@ public class AxisLineStyle {
     }
 
     @JsOverlay
-    public final void set(String key, Object value){
+    public final AxisLineStyle set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 }

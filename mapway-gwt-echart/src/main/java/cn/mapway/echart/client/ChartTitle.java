@@ -21,7 +21,8 @@ public class ChartTitle {
         return chartTitle;
     }
     @JsOverlay
-    public final void set(String key, Object value){
+    public final ChartTitle set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 }

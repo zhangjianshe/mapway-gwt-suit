@@ -165,7 +165,8 @@ public class ChartSerial {
     }
 
     @JsOverlay
-    public final void set(String key, Object value){
+    public final ChartSerial set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 }

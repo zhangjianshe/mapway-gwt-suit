@@ -42,8 +42,9 @@ public class ChartGrid {
         return grid;
     }
     @JsOverlay
-    public final void set(String key, Object value){
+    public final ChartGrid set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 
 }

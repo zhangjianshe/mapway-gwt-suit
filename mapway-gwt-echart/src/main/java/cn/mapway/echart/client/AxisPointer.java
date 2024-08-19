@@ -14,8 +14,9 @@ public class AxisPointer {
     public String type;
 
     @JsOverlay
-    public final void set(String key, Object value){
+    public final AxisPointer set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 
 }

@@ -32,7 +32,8 @@ public class LineStyle {
     }
 
     @JsOverlay
-    public final void set(String key, Object value){
+    public final LineStyle set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 }

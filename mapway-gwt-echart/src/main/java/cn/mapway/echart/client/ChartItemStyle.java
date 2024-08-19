@@ -20,7 +20,8 @@ public class ChartItemStyle {
     public String borderColor;
     public double borderWidth;
     @JsOverlay
-    public final void set(String key, Object value){
+    public final ChartItemStyle set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 }

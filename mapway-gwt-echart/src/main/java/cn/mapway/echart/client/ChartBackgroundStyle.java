@@ -14,7 +14,8 @@ import jsinterop.base.Js;
 public class ChartBackgroundStyle {
     public String color;
     @JsOverlay
-    public final void set(String key, Object value){
+    public final ChartBackgroundStyle set(String key, Object value){
         Js.asPropertyMap(this).set(key, value);
+        return this;
     }
 }
