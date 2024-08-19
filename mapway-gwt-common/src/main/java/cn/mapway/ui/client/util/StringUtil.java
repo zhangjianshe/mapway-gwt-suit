@@ -636,17 +636,7 @@ public class StringUtil {
         return sb.toString();
     }
 
-    public static String addNumberPrefix(String str) {
-        if (str == null) {
-            return null;
-        }
-        if (str.startsWith(NUMBER_PREFIX)) {
-            return str;
-        }
-        return NUMBER_PREFIX + str;
-    }
-
-    public String removeNumberPrefix(String str) {
+    public static String removeNumberPrefix(String str) {
         if (str == null) {
             return "";
         }
