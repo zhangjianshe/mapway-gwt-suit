@@ -26,8 +26,7 @@ public class StringUtil {
     public final static String STRING_MINUTE = "分";
     public final static String STRING_SECOND = "秒";
 
-    //public final static String STRING_MILLIONSECOND = "豪秒";
-
+    public static final String NUMBER_PREFIX = "^\\d*\\.";
     private static final String character = "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz";
     public static DateTimeFormat df;
     public static DateTimeFormat dfS;
@@ -183,7 +182,7 @@ public class StringUtil {
     }
 
     public static String formatNumber(Integer num, int length) {
-        if(num == null){
+        if (num == null) {
             return "";
         }
         String format = "#";
@@ -195,7 +194,7 @@ public class StringUtil {
     }
 
     public static String formatDouble(Double num, int precision) {
-        if(num == null){
+        if (num == null) {
             return "";
         }
         String format = "";
@@ -210,8 +209,7 @@ public class StringUtil {
     }
 
     public static String formatFloat(Float num, int precision) {
-        if(num==null)
-        {
+        if (num == null) {
             return "";
         }
         String format = "";
@@ -325,10 +323,9 @@ public class StringUtil {
         if (month == 0) {
             result = year + "年";
         } else {
-            if(year == 0) {
+            if (year == 0) {
                 result = month + "月";
-            }
-            else {
+            } else {
                 result = year + "年" + month + "月";
             }
         }
@@ -501,7 +498,7 @@ public class StringUtil {
      * @return
      */
     public static String extractBaseName(String location) {
-        String temp=extractName(location);
+        String temp = extractName(location);
         int index = temp.lastIndexOf(".");
         if (index >= 0) {
             return temp.substring(0, index);
@@ -525,7 +522,6 @@ public class StringUtil {
         }
         return "";
     }
-
 
     public static String formatDate(Date date, String format) {
         if (date == null) {
@@ -638,5 +634,22 @@ public class StringUtil {
             sb.append(item);
         }
         return sb.toString();
+    }
+
+    public static String addNumberPrefix(String str) {
+        if (str == null) {
+            return null;
+        }
+        if (str.startsWith(NUMBER_PREFIX)) {
+            return str;
+        }
+        return NUMBER_PREFIX + str;
+    }
+
+    public String removeNumberPrefix(String str) {
+        if (str == null) {
+            return "";
+        }
+        return str.replaceFirst(NUMBER_PREFIX, "");
     }
 }
