@@ -27,6 +27,8 @@ public class StringUtil {
     public final static String STRING_SECOND = "秒";
 
     public static final String NUMBER_PREFIX = "^\\d*\\.";
+    public static final String NUMBER_PREFIX_EXTRACT = "^(\\d*)\\.";
+
     private static final String character = "ABCDEFGHIGKLMNOPQRSTUVWXYZabcdefghigklmnopqrstuvwxyz";
     public static DateTimeFormat df;
     public static DateTimeFormat dfS;
@@ -641,5 +643,21 @@ public class StringUtil {
             return "";
         }
         return str.replaceFirst(NUMBER_PREFIX, "");
+    }
+
+    public static int parseNumberPrefix(String str,int defaultValue)
+    {
+        if (str==null || str.length()==0)
+        {
+            return defaultValue;
+        }
+        RegExp regExp=RegExp.compile(NUMBER_PREFIX_EXTRACT);
+        MatchResult exec = regExp.exec(str);
+        if(exec!=null)
+        {
+            exec.getGroup(1);
+            return Integer.parseInt(exec.getGroup(1));
+        }
+        return defaultValue;
     }
 }
