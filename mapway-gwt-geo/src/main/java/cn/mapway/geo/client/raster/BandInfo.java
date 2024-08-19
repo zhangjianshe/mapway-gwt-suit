@@ -65,6 +65,12 @@ public class BandInfo implements Serializable, IsSerializable {
      */
     public String[] overviews;
 
+    /**
+     * 波段名称
+     * 比如 映像数据 映像分类
+     */
+    public String name;
+
     public double calValue(double v) {
             if (Objects.equals(gammaMax, gammaMin)) {
                 return v;
