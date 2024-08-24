@@ -321,7 +321,7 @@ public class ModuleFactoryGenerator extends Generator {
             //处理事件声明
             for (EventInfo eventInfo : item.getEvents()) {
                 intiCodes.append(String.format("moduleInfo.getEvents().add(" +
-                        "new EventInfo(" +
+                        " EventInfo.create(" +
                         "\"" + StringEscapeUtils.escapeJava(eventInfo.name) + "\"," +
                         "\"" + StringEscapeUtils.escapeJava(eventInfo.code) + "\"," +
                         "\"" + StringEscapeUtils.escapeJava(eventInfo.summary) + "\"," +
