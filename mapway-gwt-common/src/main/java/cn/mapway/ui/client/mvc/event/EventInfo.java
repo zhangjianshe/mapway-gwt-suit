@@ -1,28 +1,30 @@
 package cn.mapway.ui.client.mvc.event;
 
-import lombok.Data;
+import jsinterop.annotations.JsConstructor;
+import jsinterop.annotations.JsType;
 
 /**
  * 用于描述一个事件
  */
-@Data
+@JsType
 public class EventInfo {
-    String name;
-    String code;
-    String summary;
-    String signature;
-    String group;
+    public String name;
+    public String code;
+    public String summary;
+    public String signature;
+    public String group;
 
+    @JsConstructor
     public EventInfo() {
-
     }
 
-    public EventInfo(String name, String code, String summary, String signature, String group) {
-        this.name = name;
-        this.code = code;
-        this.summary = summary;
-        this.signature = signature;
-
-        this.group = group;
+    public static EventInfo create(String name, String code, String summary, String signature, String group) {
+        EventInfo eventInfo = new EventInfo();
+        eventInfo.name = name;
+        eventInfo.code = code;
+        eventInfo.summary = summary;
+        eventInfo.signature = signature;
+        eventInfo.group = group;
+        return eventInfo;
     }
 }
