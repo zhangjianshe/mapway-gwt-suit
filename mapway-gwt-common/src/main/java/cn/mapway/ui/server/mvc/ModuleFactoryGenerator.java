@@ -322,11 +322,11 @@ public class ModuleFactoryGenerator extends Generator {
             for (EventInfo eventInfo : item.getEvents()) {
                 intiCodes.append(String.format("moduleInfo.getEvents().add(" +
                         "new EventInfo(" +
-                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getName()) + "\"," +
-                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getCode()) + "\"," +
-                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getSummary()) + "\"," +
-                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getSignature()) + "\"," +
-                        "\"" + StringEscapeUtils.escapeJava(eventInfo.getGroup()) + "\"" +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.name) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.code) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.summary) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.signature) + "\"," +
+                        "\"" + StringEscapeUtils.escapeJava(eventInfo.group) + "\"" +
                         ")" +
                         ");\r\n"));
             }
@@ -407,11 +407,11 @@ public class ModuleFactoryGenerator extends Generator {
 
         for (EventMarker eventMarker : eventMarkers) {
             EventInfo eventInfo = new EventInfo();
-            eventInfo.setCode(eventMarker.code());
-            eventInfo.setSignature(eventMarker.signature());
-            eventInfo.setSummary(eventMarker.summary());
-            eventInfo.setGroup(eventMarker.group());
-            eventInfo.setName(eventMarker.name());
+            eventInfo.code=(eventMarker.code());
+            eventInfo.signature=(eventMarker.signature());
+            eventInfo.summary=(eventMarker.summary());
+            eventInfo.group=(eventMarker.group());
+            eventInfo.name=(eventMarker.name());
             item.getEvents().add(eventInfo);
         }
 
