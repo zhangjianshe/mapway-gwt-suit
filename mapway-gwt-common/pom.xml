@@ -134,6 +134,7 @@
                             </annotationProcessorPaths>
                         </configuration>
                     </plugin>
+
                     <plugin>
                         <groupId>net.ltgt.gwt.maven</groupId>
                         <artifactId>gwt-maven-plugin</artifactId>
@@ -146,6 +147,12 @@
                                     -javaagent:${settings.localRepository}/org/projectlombok/lombok/1.18.20/lombok-1.18.20.jar=ECJ
                                 </arg>
                             </jvmArgs>
+                            <archive>
+                                <manifest>
+                                    <addClasspath>true</addClasspath>
+                                    <mainClass>cn.mapway.ui.server.font.WebFontImport</mainClass> <!-- If necessary -->
+                                </manifest>
+                            </archive>
                         </configuration>
                     </plugin>
                 </plugins>
