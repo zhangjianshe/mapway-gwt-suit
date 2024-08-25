@@ -10,7 +10,19 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String VECTOR = "e73e";
+    	public final static String YINGYANG = "e74b";
+	public final static String ZHENGSANFA = "e74a";
+	public final static String SHUILIANG = "e748";
+	public final static String SHUIHUA = "e749";
+	public final static String GANGMAO = "e740";
+	public final static String TOUMINGDU = "e741";
+	public final static String SHENGTAI = "e742";
+	public final static String WENDU = "e743";
+	public final static String YELVSU = "e744";
+	public final static String ZHIBEI = "e745";
+	public final static String XUANFUWU = "e746";
+	public final static String HEICHOU = "e747";
+	public final static String VECTOR = "e73e";
 	public final static String EXPLORER = "e73f";
 	public final static String CMS = "e73d";
 	public final static String TABLE_STYLE = "e73c";
@@ -360,7 +372,19 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("VECTOR", Fonts.VECTOR);
+			unicodes.put("YINGYANG", Fonts.YINGYANG);
+	unicodes.put("ZHENGSANFA", Fonts.ZHENGSANFA);
+	unicodes.put("SHUILIANG", Fonts.SHUILIANG);
+	unicodes.put("SHUIHUA", Fonts.SHUIHUA);
+	unicodes.put("GANGMAO", Fonts.GANGMAO);
+	unicodes.put("TOUMINGDU", Fonts.TOUMINGDU);
+	unicodes.put("SHENGTAI", Fonts.SHENGTAI);
+	unicodes.put("WENDU", Fonts.WENDU);
+	unicodes.put("YELVSU", Fonts.YELVSU);
+	unicodes.put("ZHIBEI", Fonts.ZHIBEI);
+	unicodes.put("XUANFUWU", Fonts.XUANFUWU);
+	unicodes.put("HEICHOU", Fonts.HEICHOU);
+	unicodes.put("VECTOR", Fonts.VECTOR);
 	unicodes.put("EXPLORER", Fonts.EXPLORER);
 	unicodes.put("CMS", Fonts.CMS);
 	unicodes.put("TABLE_STYLE", Fonts.TABLE_STYLE);
