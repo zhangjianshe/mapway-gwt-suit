@@ -549,4 +549,31 @@ public abstract class VectorUtil {
             return this;
         }
     }
+
+    public static boolean isShapeFile(File file) {
+        return file.exists() && file.isFile() && file.getName().toLowerCase().endsWith(".shp");
+    }
+    public static boolean isGeoPackage(File file) {
+        return file.exists() && file.isFile() && file.getName().toLowerCase().endsWith(".gpkg");
+    }
+    public static boolean isOpenFileGdb(File file) {
+        return file.exists() && file.isDirectory() && file.getName().toLowerCase().endsWith(".gdb");
+    }
+
+    /**
+     * 打开矢量数据
+     * @param filename
+     * @return
+     */
+    public static VectorUtil openFile(String filename) {
+            File file = new File(filename);
+            if (isShapeFile(file)) {
+                return new ShapeUtil(file.getAbsolutePath());
+            } else if (isGeoPackage(file)) {
+                return new GeoPackageUtil(file.getAbsolutePath());
+            } else if (isOpenFileGdb(file)) {
+                return new OpenFileGdbUtil(file.getAbsolutePath());
+            }
+            return null;
+    }
 }
