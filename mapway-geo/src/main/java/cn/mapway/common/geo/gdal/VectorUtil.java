@@ -560,6 +560,10 @@ public abstract class VectorUtil {
         return file.exists() && file.isDirectory() && file.getName().toLowerCase().endsWith(".gdb");
     }
 
+    public Layer getLayer()
+    {
+        return layer;
+    }
     /**
      * 打开矢量数据
      * @param filename
