@@ -1,8 +1,9 @@
 package cn.mapway.ui.client.widget.buttons;
 
 import cn.mapway.ui.client.tools.IData;
+import com.google.gwt.user.client.ui.CheckBox;
 
-public class CheckBoxEx implements IData {
+public class CheckBoxEx extends CheckBox implements IData {
     Object data;
 
     @Override
