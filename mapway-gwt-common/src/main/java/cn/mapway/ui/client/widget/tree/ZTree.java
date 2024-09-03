@@ -264,6 +264,21 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         }
     }
 
+    public int getVisibleCount()
+    {
+        int count=0;
+        for (int i = 0; i < getWidgetCount(); i++) {
+            Widget widget = getWidget(i);
+            if (widget instanceof ImageTextItem) {
+                ImageTextItem item = (ImageTextItem) widget;
+                if (item.isVisible()) {
+                    count+=item.getVisibleCount();
+                }
+            }
+        }
+        return count;
+    }
+
     public void sortItem(Comparator<ImageTextItem> sort) {
         List<ImageTextItem> all = new ArrayList<>();
         for (int index = 0; index < getWidgetCount(); index++) {

@@ -645,6 +645,21 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
+    /**
+     * 获取可见的项目数 包含本条以及子条目
+     * @return
+     */
+    public int getVisibleCount() {
+
+        int count = 1;
+        if(childrenPanel.isVisible()) {
+            for (ImageTextItem item : children) {
+                count += item.getVisibleCount();
+            }
+        }
+        return count;
+    }
+
     public interface MyStyle extends CssResource {
 
         String bar();
