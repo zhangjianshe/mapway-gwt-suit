@@ -49,10 +49,12 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             if (storage != null) {
                 storage.setItem(item.getStorageKey(), "1");
             }
+            resize();
         } else if (event.isClose()) {
             if (storage != null) {
                 storage.setItem(item.getStorageKey(), "0");
             }
+            resize();
         } else if (event.isMenu()) {
             fireEvent(CommonEvent.menuEvent(event.getValue()));
         } else if (event.isChecked() || event.isUnChecked()) {
@@ -71,6 +73,9 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         add(messagePanel);
     }
 
+    public void resize()
+    {
+    }
     private void checkChildren(ImageTextItem item, boolean checked) {
         for (ImageTextItem child : item.getChildren()) {
             child.setChecked(checked, false);
