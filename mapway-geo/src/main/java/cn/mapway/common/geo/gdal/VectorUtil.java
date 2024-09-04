@@ -13,6 +13,7 @@ import org.nutz.lang.Files;
 import org.nutz.lang.Strings;
 
 import java.io.File;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -125,6 +126,15 @@ public abstract class VectorUtil {
         } else {
             return feature.GetFieldAsString(fieldName);
         }
+    }
+
+    public  String readAsString(Feature feature, Integer fieldIndex) {
+        String value = readAsString(feature, fieldIndex, getEncoding());
+        return value;
+    }
+    public  String readAsString(Feature feature, String fileName) {
+        String value = readAsString(feature, fileName, getEncoding());
+        return value;
     }
 
     public static String readString(Feature feature, Integer fieldIndex, String encoding) {
