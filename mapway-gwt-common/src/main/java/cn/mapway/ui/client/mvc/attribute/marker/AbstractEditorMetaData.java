@@ -13,18 +13,15 @@ import java.util.List;
  * 描述一个编辑器的实例化数据
  * 一般用于 @Attr 中 向属性提供实例化数据
  */
-public abstract class AbstractEditorMetaData implements IEditorMetaData {
-
-    List<ParameterValue> parameters;
-    String editorCode;
+public abstract class AbstractEditorMetaData extends AttrEditorMetaData implements IEditorMetaData {
 
     public AbstractEditorMetaData() {
         this(TextboxAttributeEditor.EDITOR_CODE);
     }
 
     public AbstractEditorMetaData(String editorCode) {
+        super();
         this.editorCode = editorCode;
-        parameters = new ArrayList<>();
         initMetaData();
     }
 
@@ -38,9 +35,6 @@ public abstract class AbstractEditorMetaData implements IEditorMetaData {
         return editorCode;
     }
 
-    public void setEditorCode(String editorCode) {
-        this.editorCode = editorCode;
-    }
 
     /**
      * 编辑器名称

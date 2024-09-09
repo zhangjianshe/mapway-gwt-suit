@@ -88,5 +88,5 @@ public @interface Attr {
      *
      * @return
      */
-    Class<? extends AbstractEditorMetaData> editor() default TextBoxEditorMetaData.class;
+    Class<? extends AttrEditorMetaData> editor() default TextBoxEditorMetaData.class;
 }
