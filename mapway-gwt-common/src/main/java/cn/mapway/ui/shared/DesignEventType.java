@@ -17,5 +17,22 @@ public enum DesignEventType {
     Resize,
     Refresh,
     Create,
-    Locked;
+    Locked,
+    Copy,
+    Paste,
+    Save,
+    Open,
+    Close,
+    Undo,
+    Redo,
+    AlignLeft,
+    AlignRight,
+    AlignCenter,
+    AlignTop,
+    AlignBottom,
+    AlignMiddle,
+    AlignWidth,
+    AlignHeight,
+    Left,
+    Right;
 }

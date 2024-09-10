@@ -75,6 +75,66 @@ public class DesignEvent {
         return new DesignEvent(DesignEventType.Create, data);
     }
 
+    public final static DesignEvent createLocked(Object data) {
+        return new DesignEvent(DesignEventType.Locked, data);
+    }
+
+    public final static DesignEvent createCopy(Object data) {
+        return new DesignEvent(DesignEventType.Copy, data);
+    }
+
+    public final static DesignEvent createPaste(Object data) {
+        return new DesignEvent(DesignEventType.Paste, data);
+    }
+
+    public final static DesignEvent createUndo(Object data) {
+        return new DesignEvent(DesignEventType.Undo, data);
+    }
+
+    public final static DesignEvent createRedo(Object data) {
+        return new DesignEvent(DesignEventType.Redo, data);
+    }
+    public final static DesignEvent createLeft(Object data){
+        return new DesignEvent(DesignEventType.Left,data);
+    }
+
+    public final static DesignEvent createRight(Object data){
+        return new DesignEvent(DesignEventType.Right,data);
+    }
+
+    public final static DesignEvent createAlignLeft(Object data) {
+        return new DesignEvent(DesignEventType.AlignLeft, data);
+    }
+
+    public final static DesignEvent createAlignRight(Object data) {
+        return new DesignEvent(DesignEventType.AlignRight, data);
+    }
+
+    public final static DesignEvent createAlignTop(Object data) {
+        return new DesignEvent(DesignEventType.AlignTop, data);
+    }
+
+    public final static DesignEvent createAlignBottom(Object data) {
+        return new DesignEvent(DesignEventType.AlignBottom, data);
+    }
+
+    public final static DesignEvent createAlignCenter(Object data) {
+        return new DesignEvent(DesignEventType.AlignCenter, data);
+    }
+
+    public final static DesignEvent createAlignMiddle(Object data) {
+        return new DesignEvent(DesignEventType.AlignMiddle, data);
+    }
+
+
+
+    public final static DesignEvent createSave(Object data) {
+        return new DesignEvent(DesignEventType.Save, data);
+    }
+
+    public final static DesignEvent createOpen(Object data) {
+        return new DesignEvent(DesignEventType.Open, data);
+    }
 
     public Object getData() {
         return data;
