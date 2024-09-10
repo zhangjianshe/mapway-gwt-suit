@@ -129,6 +129,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int DRAG_START = 116;
     public final static int DRAG = 117;
     public final static int DRAG_END = 118;
+    public final static int VIEW = 119;
 
 
     public final static int OK = 200;
@@ -173,6 +174,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public static CommonEvent dragStartEvent(Object data) {
         return new CommonEvent(DRAG_START, data);
+    }
+    public static CommonEvent viewEvent(Object data) {
+        return new CommonEvent(VIEW, data);
+    }
+    public  boolean isView(){
+        return CommonEvent.VIEW == type;
     }
 
 
