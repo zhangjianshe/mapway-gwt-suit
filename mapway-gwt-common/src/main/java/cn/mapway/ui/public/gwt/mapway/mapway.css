@@ -125,7 +125,7 @@
     line-height:28px;
     cursor: default;
     user-select: none;
-    padding-left:8px;
+    padding-left:2px;
 }
 .iti-default-label[select]{
     font-style: italic;

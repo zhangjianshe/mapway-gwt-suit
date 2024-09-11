@@ -293,14 +293,11 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     }
 
     private int calPaddingLeft() {
-        int spacing = this.level * 22;
+        int spacing = this.level * 44;
         if (level > 0 && check.isVisible()) {
             spacing += 15;
         }
-        if (parentItem != null && (parentItem.icon.isVisible() || parentItem.fontIcon.isVisible())) {
-            spacing += 22;
-        }
-        return spacing + 4;
+        return spacing;
     }
 
     /**

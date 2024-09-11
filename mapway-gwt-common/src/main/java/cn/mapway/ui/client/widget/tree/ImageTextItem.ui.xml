@@ -8,6 +8,11 @@
         }
 
         .ic {
+            width: 22px;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
         }
 
         .bar {
@@ -41,7 +46,7 @@
         <g:HTMLPanel  ui:field="root">
             <g:HTMLPanel ui:field="bar" styleName="{style.bar}"/>
             <g:Label ui:field="gap" styleName="{style.gap}" width="1px"/>
-            <widget:FontIcon visible="false" ui:field="openClose"/>
+            <widget:FontIcon width="22px" visible="false" ui:field="openClose"/>
             <g:CheckBox ui:field="check" visible="false" />
             <widget:FontIcon visible="false" ui:field="fontIcon" addStyleNames="{style.ic}"/>
             <g:Image ui:field="icon" addStyleNames="{style.ic}" visible="false" width="22px" height="22px"/>
