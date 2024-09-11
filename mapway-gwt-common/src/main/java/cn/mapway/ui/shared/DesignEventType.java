@@ -28,11 +28,15 @@ public enum DesignEventType {
     AlignLeft,
     AlignRight,
     AlignCenter,
+    AlignHorizontal,
     AlignTop,
     AlignBottom,
     AlignMiddle,
     AlignWidth,
     AlignHeight,
+    AlignVertical,
     Left,
-    Right;
+    Right,
+
+
 }
