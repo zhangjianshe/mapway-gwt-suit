@@ -753,13 +753,15 @@ public class BaseTileExtractor {
                         // 采用Gamma矫正算法
                         //  value  [outputMin,outputMax]
                         double value = source1.getInfo().calValue(pixelValue);
-                        if (colorTable != null && colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
+                        if(colorTable == null){
+                            int v = (int) value;
+                            rgba = Colors.fromColorInt(v, v, v, 0xFF);
+                        } else  if (colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
                             //缺省的颜色表
                             int v = (int) value;
                             rgba = Colors.fromColorInt(v, v, v, 0xFF);
                         } else {
-
-                            if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
+                            if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
                                 //用户设置了归一化调色板
                                 pixelValue = normalizePixel(sourceBand, value);
                                 rgba = translateColor(pixelValue);
