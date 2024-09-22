@@ -10,7 +10,10 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String DISTANCE = "e74d";
+    	public final static String TREE = "e750";
+	public final static String LAYER_VIEW = "e751";
+	public final static String LAYER_DATA = "e752";
+	public final static String DISTANCE = "e74d";
 	public final static String WIDTH_EQUAL = "e74e";
 	public final static String HEIGHT_EQUAL = "e74f";
 	public final static String RIVER = "e74c";
@@ -376,7 +379,10 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("DISTANCE", Fonts.DISTANCE);
+			unicodes.put("TREE", Fonts.TREE);
+	unicodes.put("LAYER_VIEW", Fonts.LAYER_VIEW);
+	unicodes.put("LAYER_DATA", Fonts.LAYER_DATA);
+	unicodes.put("DISTANCE", Fonts.DISTANCE);
 	unicodes.put("WIDTH_EQUAL", Fonts.WIDTH_EQUAL);
 	unicodes.put("HEIGHT_EQUAL", Fonts.HEIGHT_EQUAL);
 	unicodes.put("RIVER", Fonts.RIVER);
