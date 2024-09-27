@@ -10,7 +10,8 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String PATH = "e753";
+    	public final static String MARKER = "e754";
+	public final static String PATH = "e753";
 	public final static String TREE = "e750";
 	public final static String LAYER_VIEW = "e751";
 	public final static String LAYER_DATA = "e752";
@@ -380,7 +381,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("PATH", Fonts.PATH);
+			unicodes.put("MARKER", Fonts.MARKER);
+	unicodes.put("PATH", Fonts.PATH);
 	unicodes.put("TREE", Fonts.TREE);
 	unicodes.put("LAYER_VIEW", Fonts.LAYER_VIEW);
 	unicodes.put("LAYER_DATA", Fonts.LAYER_DATA);
