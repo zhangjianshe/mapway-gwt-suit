@@ -5,6 +5,7 @@ import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.resource.MapwayResource;
 import cn.mapway.ui.client.tools.MapwayLog;
+import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.UploadReturn;
 import com.google.gwt.core.client.GWT;
@@ -346,6 +347,7 @@ public class ImageUploader extends CommonEventComposite {
     public void setUrl(String url) {
         currentImageHeight = 0;
         currentImageWidth = 0;
+      //  Logs.info("setUrl " + url);
         if (url == null || url.length() == 0) {
             img.setUrl(EMPTY_PICTURE);
         } else {
