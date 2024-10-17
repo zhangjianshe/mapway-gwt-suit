@@ -279,6 +279,11 @@ public class StringUtil {
         return formatTimeSpan(estTime, "前");
     }
 
+    // 判断闰年
+    public static boolean isLeapYear(int year) {
+        return (year % 4 == 0 && year % 100 != 0) || (year % 400 == 0);
+    }
+
     /**
      * 格式化时间区间
      * < 60           分钟内        刚刚
@@ -315,21 +320,63 @@ public class StringUtil {
         else if (estTime < 365 * 24 * 60 * 60) {
             result = (int) ((estTime / (30 * 24 * 60 * 60)) + 1) + "月";
         }else {
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(0);  // 1970-01-01 00:00:00
 
-            // 增加指定的秒数
-            calendar.add(Calendar.SECOND,  estTime.intValue());
+            long SECONDS_IN_MINUTE = 60;
+            long SECONDS_IN_HOUR = 3600;
+            long SECONDS_IN_DAY = 86400;
+            long SECONDS_IN_YEAR = 31536000;  // 不考虑闰年，后面会调整
+            long SECONDS_IN_LEAP_YEAR = 31622400;
 
-            // 计算年、月、天
-            int years = calendar.get(Calendar.YEAR) - 1970;  // 从1970开始计算的年数
-            int months = calendar.get(Calendar.MONTH);  // 月份，注意 Calendar 的月份从 0 开始
-            int days = calendar.get(Calendar.DAY_OF_MONTH) - 1;  // 天数，修正为从1号开始
+            // 从1970年开始的基础年份
+            int startYear = 1970;
+            long secondsRemaining = estTime;
 
-            // 获取小时、分钟、秒
-            int hours = calendar.get(Calendar.HOUR_OF_DAY);
-            int minutes = calendar.get(Calendar.MINUTE);
-            int seconds = calendar.get(Calendar.SECOND);
+            // 计算年数
+            int years = 0;
+            while (secondsRemaining >= SECONDS_IN_YEAR) {
+                // 判断是否闰年
+                if (isLeapYear(startYear + years)) {
+                    if (secondsRemaining >= SECONDS_IN_LEAP_YEAR) {
+                        secondsRemaining -= SECONDS_IN_LEAP_YEAR;
+                    } else {
+                        break;
+                    }
+                } else {
+                    if (secondsRemaining >= SECONDS_IN_YEAR) {
+                        secondsRemaining -= SECONDS_IN_YEAR;
+                    } else {
+                        break;
+                    }
+                }
+                years++;
+            }
+
+            // 计算月数
+            int[] daysInMonths = {31, isLeapYear(startYear + years) ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+            int months = 0;
+            for (int i = 0; i < 12; i++) {
+                long secondsInMonth = daysInMonths[i] * SECONDS_IN_DAY;
+                if (secondsRemaining >= secondsInMonth) {
+                    secondsRemaining -= secondsInMonth;
+                    months++;
+                } else {
+                    break;
+                }
+            }
+
+            // 计算天数
+            int days = (int) (secondsRemaining / SECONDS_IN_DAY);
+            secondsRemaining %= SECONDS_IN_DAY;
+
+            // 计算小时
+            long hours = secondsRemaining / SECONDS_IN_HOUR;
+            secondsRemaining %= SECONDS_IN_HOUR;
+
+            // 计算分钟
+            long minutes = secondsRemaining / SECONDS_IN_MINUTE;
+
+            // 剩余秒
+            long seconds = secondsRemaining % SECONDS_IN_MINUTE;
 
             // 输出结果
             result = years + "年" + months + "月" + days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
