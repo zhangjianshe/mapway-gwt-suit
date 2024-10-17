@@ -101,7 +101,7 @@ public class StringUtil {
 
     public static List<String> splitIgnoreBlank(String s, String regex) {
         if (s == null || regex == null) {
-            return new ArrayList<>();
+            return new ArrayList<String>();
         }
         String[] ss = s.split(regex);
         List<String> list = new LinkedList<String>();
