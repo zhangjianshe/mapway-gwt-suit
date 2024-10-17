@@ -12,6 +12,9 @@ import com.google.gwt.regexp.shared.MatchResult;
 import com.google.gwt.regexp.shared.RegExp;
 import elemental2.core.JsObject;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -294,42 +297,44 @@ public class StringUtil {
         if (estTime == null || estTime < 0) {
             result = "";
         }
-        if (estTime < 60) {
+        else if (estTime < 60) {
             result = estTime + "秒";
         }
-        if (estTime < 60 * 60) {
+        else if (estTime < 60 * 60) {
             result = (int) (estTime / 60) + "分钟";
         }
-        if (estTime < 24 * 60 * 60) {
+        else if (estTime < 24 * 60 * 60) {
             result = (int) (estTime / (60 * 60)) + "小时";
         }
-        if (estTime < 7 * 24 * 60 * 60) {
+        else if (estTime < 7 * 24 * 60 * 60) {
             result = (int) (estTime / (24 * 60 * 60)) + "天";
         }
-        if (estTime < 4 * 7 * 24 * 60 * 60) {
+        else if (estTime < 4 * 7 * 24 * 60 * 60) {
             result = (int) (estTime / (7 * 24 * 60 * 60)) + "周";
         }
-        if (estTime < 365 * 24 * 60 * 60) {
+        else if (estTime < 365 * 24 * 60 * 60) {
             result = (int) ((estTime / (30 * 24 * 60 * 60)) + 1) + "月";
-        }
-        //estTime分鐘之對應的時間點
-        long time = System.currentTimeMillis() - estTime * 1000;
-        Date then = new Date(time);
-        Date now = new Date();
-        int year = now.getYear() - then.getYear() - 1;
-        int month = now.getMonth() + (11 - then.getMonth());
-        if (month >= 11) {
-            year = year + 1;
-            month -= 11;
-        }
-        if (month == 0) {
-            result = year + "年";
-        } else {
-            if (year == 0) {
-                result = month + "月";
-            } else {
-                result = year + "年" + month + "月";
-            }
+        }else {
+            LocalDateTime startDate = LocalDateTime.of(1970, 1, 1, 0, 0, 0);  // 从Unix epoch时间开始
+            LocalDateTime endDate = startDate.plusSeconds(estTime);      // 添加秒数后的时间
+
+            // 计算年、月、天差异
+            Period period = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
+            Duration duration = Duration.between(startDate.toLocalTime(), endDate.toLocalTime());
+
+            long years = period.getYears();
+            long months = period.getMonths();
+            long days = period.getDays();
+
+            // 计算小时、分钟、秒
+            long totalHours = duration.toHours();  // 总小时
+            long totalMinutes = duration.toMinutes();  // 总分钟
+            long totalSecondsRemainder = duration.getSeconds();  // 总秒数（时间部分）
+
+            long hours = totalHours % 24;  // 剩余小时
+            long minutes = totalMinutes % 60 ;  // 剩余分钟
+            long seconds = totalSecondsRemainder % 60;  // 剩余秒数
+            result= years+"年"+months+"月"+days+"天"+hours+"小时"+minutes+"分钟"+seconds+"秒";
         }
         if (StringUtil.isBlank(suffix)) {
             return result;
