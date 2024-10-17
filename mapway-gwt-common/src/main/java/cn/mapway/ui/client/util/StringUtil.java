@@ -315,26 +315,24 @@ public class StringUtil {
         else if (estTime < 365 * 24 * 60 * 60) {
             result = (int) ((estTime / (30 * 24 * 60 * 60)) + 1) + "月";
         }else {
-            LocalDateTime startDate = LocalDateTime.of(1970, 1, 1, 0, 0, 0);  // 从Unix epoch时间开始
-            LocalDateTime endDate = startDate.plusSeconds(estTime);      // 添加秒数后的时间
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(0);  // 1970-01-01 00:00:00
 
-            // 计算年、月、天差异
-            Period period = Period.between(startDate.toLocalDate(), endDate.toLocalDate());
-            Duration duration = Duration.between(startDate.toLocalTime(), endDate.toLocalTime());
+            // 增加指定的秒数
+            calendar.add(Calendar.SECOND,  estTime.intValue());
 
-            long years = period.getYears();
-            long months = period.getMonths();
-            long days = period.getDays();
+            // 计算年、月、天
+            int years = calendar.get(Calendar.YEAR) - 1970;  // 从1970开始计算的年数
+            int months = calendar.get(Calendar.MONTH);  // 月份，注意 Calendar 的月份从 0 开始
+            int days = calendar.get(Calendar.DAY_OF_MONTH) - 1;  // 天数，修正为从1号开始
 
-            // 计算小时、分钟、秒
-            long totalHours = duration.toHours();  // 总小时
-            long totalMinutes = duration.toMinutes();  // 总分钟
-            long totalSecondsRemainder = duration.getSeconds();  // 总秒数（时间部分）
+            // 获取小时、分钟、秒
+            int hours = calendar.get(Calendar.HOUR_OF_DAY);
+            int minutes = calendar.get(Calendar.MINUTE);
+            int seconds = calendar.get(Calendar.SECOND);
 
-            long hours = totalHours % 24;  // 剩余小时
-            long minutes = totalMinutes % 60 ;  // 剩余分钟
-            long seconds = totalSecondsRemainder % 60;  // 剩余秒数
-            result= years+"年"+months+"月"+days+"天"+hours+"小时"+minutes+"分钟"+seconds+"秒";
+            // 输出结果
+            result = years + "年" + months + "月" + days + "天" + hours + "小时" + minutes + "分钟" + seconds + "秒";
         }
         if (StringUtil.isBlank(suffix)) {
             return result;
