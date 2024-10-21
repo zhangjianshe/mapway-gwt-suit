@@ -10,7 +10,6 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
 public class TestMainPage extends Composite {
     interface TestMainPageUiBinder extends UiBinder<DockLayoutPanel, TestMainPage> {
     }
-
     private static TestMainPageUiBinder ourUiBinder = GWT.create(TestMainPageUiBinder.class);
     @UiField
     AiColor color;

@@ -83,6 +83,11 @@
             <artifactId>javapoet</artifactId>
             <version>1.13.0</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.11.0</version>
+        </dependency>
     </dependencies>
     <profiles>
         <profile>
@@ -94,6 +99,9 @@
                         <artifactId>gwt-maven-plugin</artifactId>
                         <version>1.0.0</version>
                         <extensions>true</extensions>
+                        <dependencies>
+
+                        </dependencies>
                         <configuration>
                             <moduleName>cn.mapway.test.Test</moduleName>
                             <jvmArgs>

@@ -18,6 +18,7 @@ import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.RequiresResize;
 import elemental2.dom.CanvasRenderingContext2D;
+import elemental2.dom.OffscreenCanvas;
 import jsinterop.base.Js;
 
 /**
@@ -26,7 +27,7 @@ import jsinterop.base.Js;
  * @author zhang
  */
 public class ColorCanvas extends CanvasWidget implements RequiresResize, HasCommonHandlers {
-    double hue;
+    double hue=-1;
     ColorData colorData = new ColorData();
     Size colorPosition = new Size();
     elemental2.dom.ImageData imageData;
@@ -73,6 +74,8 @@ public class ColorCanvas extends CanvasWidget implements RequiresResize, HasComm
                 Element element = getElement();
                 int x = event.getRelativeX(element);
                 int y = event.getRelativeY(element);
+                x=Math.max(0, Math.min(x, getOffsetWidth()));
+                y=Math.max(0, Math.min(y, getOffsetHeight()));
                 calPositionAndFireEvent(x, y);
                 event.stopPropagation();
                 event.preventDefault();
@@ -124,30 +127,32 @@ public class ColorCanvas extends CanvasWidget implements RequiresResize, HasComm
      * @param hue
      */
     public void draw(double hue, boolean fireEvent) {
-        this.hue = hue;
         int width = getOffsetWidth();
         int height = getOffsetHeight();
         if (width == 0 || height == 0) {
             return;
         }
-
         CanvasRenderingContext2D canvasRenderingContext2D = Js.uncheckedCast(getContext2d());
-        if (imageData == null) {
+        if(this.hue!=hue ||imageData==null)
+        {
+            this.hue = hue;
             imageData = canvasRenderingContext2D.getImageData(0, 0, width, height);
-        }
-        double[] values = new double[4];
-        for (int row = 0; row < height; row++) {
-            for (int col = 0; col < width; col++) {
-                int index = (row * width + col) * 4;
-                int[] rgb = Colors.hsv2rgb(hue, col * 1. / width, 1 - row * 1. / height);
-                values[0] = rgb[0];
-                values[1] = rgb[1];
-                values[2] = rgb[2];
-                values[3] = 255;
-                imageData.data.set(values, index);
+            double[] values = new double[4];
+            for (int row = 0; row < height; row++) {
+                for (int col = 0; col < width; col++) {
+                    int index = (row * width + col) * 4;
+                    int[] rgb = Colors.hsv2rgb(hue, col * 1. / width, 1 - row * 1. / height);
+                    values[0] = rgb[0];
+                    values[1] = rgb[1];
+                    values[2] = rgb[2];
+                    values[3] = 255;
+                    imageData.data.set(values, index);
+                }
             }
         }
-        canvasRenderingContext2D.putImageData(imageData, 0, 0);
+        if(imageData!=null) {
+            canvasRenderingContext2D.putImageData(imageData, 0, 0);
+        }
         drawCross();
 
         if (fireEvent) {
@@ -162,13 +167,12 @@ public class ColorCanvas extends CanvasWidget implements RequiresResize, HasComm
 
     @Override
     public void onResize() {
-        imageData = null;
+        imageData=null;
         Scheduler.get().scheduleFinally(() -> {
             com.google.gwt.dom.client.Element parentElement = getElement().getParentElement();
             int clientWidth = parentElement.getClientWidth();
             int clientHeight = parentElement.getClientHeight();
             setPixelSize(clientWidth, clientHeight);
-            redraw();
         });
     }
 

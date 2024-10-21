@@ -129,7 +129,6 @@ public class ColorChooser extends CommonEventComposite implements IData<ColorDat
 
     public static Popup<ColorChooser> getPopup(boolean reuse) {
         if (reuse) {
-
             if (POPUP_CHOOSER == null) {
                 POPUP_CHOOSER = createPopup();
             }
@@ -340,10 +339,10 @@ public class ColorChooser extends CommonEventComposite implements IData<ColorDat
     }
 
     private void toUI() {
-        colorCanvas.setColor(colorData);
         double[] hsv = Colors.rgb2hsv(colorData.r(), colorData.g(), colorData.b());
         hueSelector.setData(hsv[0] * 360);
         transparentSelector.setColor(colorData, false);
+        colorCanvas.setColor(colorData);
     }
 
     @Override
