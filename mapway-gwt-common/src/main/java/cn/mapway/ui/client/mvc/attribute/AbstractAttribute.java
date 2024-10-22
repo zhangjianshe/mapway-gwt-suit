@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute;
 
 import cn.mapway.ui.client.mvc.attribute.design.*;
 import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.marker.AttrEditorMetaData;
 import cn.mapway.ui.client.util.StringUtil;
 import elemental2.core.Global;
 import elemental2.core.JsArray;
@@ -170,6 +171,8 @@ public abstract class AbstractAttribute implements IAttribute {
         return this;
     }
 
+
+
     @Override
     public int getDataType() {
         return dataType;
@@ -300,6 +303,48 @@ public abstract class AbstractAttribute implements IAttribute {
     public AbstractAttribute param(String key,String value)
     {
         editorData.getParameterValues().add(ParameterValue.create(key,value));
+        return this;
+    }
+
+    /**
+     * 查找 [key] 的参数信息
+     *
+     * @param key
+     * @return
+     */
+    public ParameterValue findParameterValue(String key) {
+        if (getEditorMetaData().getParameterValues() == null || key == null || key.length() == 0) {
+            return null;
+        }
+        for (ParameterValue parameter : getEditorMetaData().getParameterValues()) {
+            if (key.equals(parameter.name)) {
+                return parameter;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 替换参数
+     *
+     * @param key
+     * @param value
+     * @param init
+     * @return
+     */
+    public AbstractAttribute replaceParameter(String key, Object value, boolean init) {
+        if (key == null || key.length() == 0 || value == null) {
+            return this;
+        }
+        ParameterValue parameterValue = findParameterValue(key);
+        if (parameterValue == null) {
+            parameterValue = ParameterValue.create(key, value, init);
+            editorData.getParameterValues().add(parameterValue);
+        } else {
+            parameterValue.name = key;
+            parameterValue.value = value;
+            parameterValue.init = init;
+        }
         return this;
     }
 }

@@ -138,9 +138,14 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
         if (attribute == null) {
             return;
         }
-        ParameterValue kind = attribute.getRuntimeParameters().findNByName(KEY_INPUT_KIND);
-        if (kind != null) {
-            setTextInputKind(TextInputKind.valueOf(kind.value.toString()));
+         Object inputKind= option(KEY_INPUT_KIND,null);
+        if(inputKind  instanceof TextInputKind)
+        {
+            setTextInputKind((TextInputKind)inputKind);
+        }
+        else if(inputKind instanceof String)
+        {
+            setTextInputKind(TextInputKind.valueOfName((String)inputKind));
         }
 
         if (getAttribute().isReadonly()) {
