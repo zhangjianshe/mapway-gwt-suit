@@ -2,6 +2,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.textbox;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
@@ -24,9 +25,39 @@ import com.google.gwt.user.client.ui.Widget;
 )
 public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     public static final String EDITOR_CODE = EditorCodes.EDITOR_TEXTBOX;
+    //输入类型
+    public static final String KEY_INPUT_KIND="input_kind";
     private static final TextboxAttributeEditorUiBinder ourUiBinder = GWT.create(TextboxAttributeEditorUiBinder.class);
     @UiField
     TextBox txtBox;
+    TextInputKind textInputKind;
+    public void setTextInputKind(TextInputKind kind) {
+        this.textInputKind = kind;
+        switch (kind) {
+            case EMAIL:
+                txtBox.getElement().setAttribute("type","email");
+                break;
+            case NUMBER:
+                txtBox.getElement().setAttribute("type","number");
+                break;
+            case DATE:
+                txtBox.getElement().setAttribute("type","date");
+                break;
+            case URL:
+                txtBox.getElement().setAttribute("type","url");
+                break;
+            case TIME:
+                txtBox.getElement().setAttribute("type","time");
+                break;
+            case DATE_TIME:
+                txtBox.getElement().setAttribute("type","datetime-local");
+            case TEXT:
+            default:
+                txtBox.getElement().setAttribute("type","text");
+        }
+    }
+
+
 
     public TextboxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -61,6 +92,11 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
         if (attribute == null) {
             return;
         }
+        ParameterValue kind = attribute.getRuntimeParameters().findNByName(KEY_INPUT_KIND);
+        if (kind != null) {
+            setTextInputKind(TextInputKind.valueOf(kind.value.toString()));
+        }
+
         if (getAttribute().isReadonly()) {
             txtBox.setReadOnly(true);
         }
@@ -70,10 +106,8 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
         Object obj = attribute.getValue();
         if (obj == null) {
             txtBox.setValue(castToString(attribute.getDefaultValue()));
-
         } else {
             txtBox.setValue(castToString(obj));
-
         }
     }
 

@@ -59,29 +59,7 @@ public abstract class AbstractEditorMetaData extends AttrEditorMetaData implemen
         return this;
     }
 
-    /**
-     * 替换参数
-     *
-     * @param key
-     * @param value
-     * @param init
-     * @return
-     */
-    public AbstractEditorMetaData replaceParameter(String key, Object value, boolean init) {
-        if (key == null || key.length() == 0 || value == null) {
-            return this;
-        }
-        ParameterValue parameterValue = findParameterValue(key);
-        if (parameterValue == null) {
-            parameterValue = ParameterValue.create(key, value, init);
-            parameters.add(parameterValue);
-        } else {
-            parameterValue.name = key;
-            parameterValue.value = value;
-            parameterValue.init = init;
-        }
-        return this;
-    }
+
 
     @Override
     public List<ParameterValue> getParameterValues() {
@@ -122,22 +100,4 @@ public abstract class AbstractEditorMetaData extends AttrEditorMetaData implemen
     }
 
 
-    /**
-     * 查找 [key] 的参数信息
-     *
-     * @param key
-     * @return
-     */
-    @Override
-    public ParameterValue findParameterValue(String key) {
-        if (parameters == null || key == null || key.length() == 0) {
-            return null;
-        }
-        for (ParameterValue parameter : parameters) {
-            if (key.equals(parameter.name)) {
-                return parameter;
-            }
-        }
-        return null;
-    }
 }
