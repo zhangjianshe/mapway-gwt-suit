@@ -6,7 +6,11 @@ import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.attribute.editor.*;
 import cn.mapway.ui.client.mvc.attribute.editor.common.AbstractAttributeEditor;
+import cn.mapway.ui.client.util.StringUtil;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.MouseWheelEvent;
+import com.google.gwt.event.dom.client.MouseWheelHandler;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.HTMLPanel;
@@ -31,14 +35,58 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
     @UiField
     TextBox txtBox;
     TextInputKind textInputKind;
+    HandlerRegistration register;
+    private MouseWheelHandler wheelHandler=new MouseWheelHandler() {
+        @Override
+        public void onMouseWheel(MouseWheelEvent event) {
+            event.preventDefault();
+            event.stopPropagation();
+            String value=txtBox.getValue();
+            if(StringUtil.isBlank(value))
+            {
+                value="0";
+            }
+            double step=1.0;
+            double v=Double.parseDouble(value);
+            boolean isFloat=false;
+            if(value.contains("."))
+            {
+                isFloat=true;
+                step=0.1;
+            }
+
+            if (event.isNorth()) {
+                v+=step;
+            } else {
+                v-=step;
+            }
+            if(isFloat) {
+                txtBox.setValue(String.valueOf(v));
+            }
+            else {
+                txtBox.setValue(String.valueOf((int)v));
+            }
+        }
+    };
+
+    private void clearWheelHandler()
+    {
+        if(register!=null)
+        {
+            register.removeHandler();
+            register=null;
+        }
+    }
     public void setTextInputKind(TextInputKind kind) {
         this.textInputKind = kind;
+        clearWheelHandler();
         switch (kind) {
             case EMAIL:
                 txtBox.getElement().setAttribute("type","email");
                 break;
             case NUMBER:
                 txtBox.getElement().setAttribute("type","number");
+                register = txtBox.addMouseWheelHandler(wheelHandler);
                 break;
             case DATE:
                 txtBox.getElement().setAttribute("type","date");
@@ -56,8 +104,6 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
                 txtBox.getElement().setAttribute("type","text");
         }
     }
-
-
 
     public TextboxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
