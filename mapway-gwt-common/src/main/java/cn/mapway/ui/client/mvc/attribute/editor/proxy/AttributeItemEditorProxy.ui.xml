@@ -1,6 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <ui:style type="cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy.SStyle">
+        @eval COLOR_START "var(--color-background-hover)";
         .layout2 {
             display: grid;
             grid-gap: 8px;
@@ -14,7 +15,7 @@
         }
 
         .layout2:hover {
-            background: linear-gradient(45deg, #bdedff, transparent);
+            background: linear-gradient(45deg, COLOR_START, transparent);
         }
 
         .error {

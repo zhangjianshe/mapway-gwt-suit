@@ -12,7 +12,6 @@
         }
 
         .lb {
-            background-color: #f0f0f0;
             overflow: hidden;
             width: 100%;
             line-height: 34px;
