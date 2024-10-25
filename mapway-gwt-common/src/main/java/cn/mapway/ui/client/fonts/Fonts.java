@@ -10,7 +10,8 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String IMAGE_BUTTON = "e759";
+    	public final static String MULTI_LEVEL = "e75a";
+	public final static String IMAGE_BUTTON = "e759";
 	public final static String NETWORK = "e758";
 	public final static String THREE_SCENE = "e757";
 	public final static String POPUP = "e756";
@@ -386,7 +387,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("IMAGE_BUTTON", Fonts.IMAGE_BUTTON);
+			unicodes.put("MULTI_LEVEL", Fonts.MULTI_LEVEL);
+	unicodes.put("IMAGE_BUTTON", Fonts.IMAGE_BUTTON);
 	unicodes.put("NETWORK", Fonts.NETWORK);
 	unicodes.put("THREE_SCENE", Fonts.THREE_SCENE);
 	unicodes.put("POPUP", Fonts.POPUP);

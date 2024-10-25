@@ -132,40 +132,6 @@
     font-weight: bold;
 }
 
-.attr-table {
-    overflow: hidden;
-    width: 100%;
-    max-width: 100%;
-    border-collapse: collapse;
-    border-spacing: 0;
-}
-
-.attr-table > tbody > tr {
-    border-bottom: 1px solid #f0f0f0;
-    height: 38px;
-}
-
-.attr-table > tbody > tr > td {
-    padding: 4px;
-    cursor: default;
-}
-.attr-table > tbody > tr:hover {
-    background-color: #e0e0e0;
-}
-
-.attr-table > tbody > tr:nth-child(2n+3) {
-    background-color: #f0f0f0;
-}
-
-.attr-table > tbody > tr:first-child {
-    background-color: #d0d0d0;
-}
-
-
-.attr-table > tbody > tr[select="true"] {
-    background-color: skyblue;
-}
-
 
 .ai-button--primary {
     color: #fff;
