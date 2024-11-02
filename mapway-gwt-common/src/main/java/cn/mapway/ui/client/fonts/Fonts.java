@@ -10,7 +10,8 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String FOLDER_SHARE = "e75b";
+    	public final static String CSS = "e75d";
+	public final static String FOLDER_SHARE = "e75b";
 	public final static String FONTS = "e75c";
 	public final static String MULTI_LEVEL = "e75a";
 	public final static String IMAGE_BUTTON = "e759";
@@ -389,7 +390,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("FOLDER_SHARE", Fonts.FOLDER_SHARE);
+			unicodes.put("CSS", Fonts.CSS);
+	unicodes.put("FOLDER_SHARE", Fonts.FOLDER_SHARE);
 	unicodes.put("FONTS", Fonts.FONTS);
 	unicodes.put("MULTI_LEVEL", Fonts.MULTI_LEVEL);
 	unicodes.put("IMAGE_BUTTON", Fonts.IMAGE_BUTTON);
