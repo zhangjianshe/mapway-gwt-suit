@@ -2,6 +2,7 @@ package cn.mapway.ui.client.widget.color;
 
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.util.Colors;
+import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.dialog.Popup;
 import com.google.gwt.dom.client.Style;
 import com.google.gwt.event.logical.shared.*;
@@ -80,7 +81,7 @@ public class AiColor extends Label implements IData<Object>, HasValue<String>, H
 
     @Override
     public void setValue(String value, boolean fireEvents) {
-        if (value == null) {
+        if (StringUtil.isBlank(value)) {
             value = "rgba(0,0,0,1)";
         }
         if (value.startsWith("#")) {

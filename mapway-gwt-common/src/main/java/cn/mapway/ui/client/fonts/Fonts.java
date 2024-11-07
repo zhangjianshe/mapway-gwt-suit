@@ -10,7 +10,10 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String CSS = "e75d";
+    	public final static String CREATE2 = "e760";
+	public final static String RUST = "e75f";
+	public final static String PYTHON = "e75e";
+	public final static String CSS = "e75d";
 	public final static String FOLDER_SHARE = "e75b";
 	public final static String FONTS = "e75c";
 	public final static String MULTI_LEVEL = "e75a";
@@ -390,7 +393,10 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("CSS", Fonts.CSS);
+			unicodes.put("CREATE2", Fonts.CREATE2);
+	unicodes.put("RUST", Fonts.RUST);
+	unicodes.put("PYTHON", Fonts.PYTHON);
+	unicodes.put("CSS", Fonts.CSS);
 	unicodes.put("FOLDER_SHARE", Fonts.FOLDER_SHARE);
 	unicodes.put("FONTS", Fonts.FONTS);
 	unicodes.put("MULTI_LEVEL", Fonts.MULTI_LEVEL);
