@@ -13,6 +13,10 @@ public class Rect implements Serializable, IsSerializable {
     public Rect() {
     }
 
+    public Size getSize()
+    {
+        return new Size(width,height);
+    }
     public int getXAsInt()
     {
         return (int)x;
