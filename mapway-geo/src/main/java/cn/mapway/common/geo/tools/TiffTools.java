@@ -110,12 +110,14 @@ public class TiffTools {
         TileNo tileNo = WebMercator.tileNoFromWgs84(39.975, 111.29, 18);
         System.out.println(tileNo);
 
+        // http://localhost:7100/api/v1/map3/50cc3696b12053bf6aa92a3997c3dd1248a468b94f72a65363e3663c8f95100f/15/26782/13539.png
         filePath = "/data/personal/1/成果展示/基于无人机图像的分类/ndvi.tif";
         filePath = "/data/personal/1/成果展示/S_842_387_3371_1549.tif";
         filePath = "/data/personal/1/test/R_398_196_1595_785.tif";
+        filePath = "/data/personal/1/bhg/guoyuan_ndvi_20240910.tif";
         //15/25526/12570
-        long tilex = 25526;
-        long tiley = 12570;
+        long tilex = 26782;
+        long tiley = 13538;
         int zoom = 15;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");

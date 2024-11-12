@@ -180,7 +180,7 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
                 targetRect.height = (int) (rightBottom.getY() - leftTop.getY());
             }
         } else {
-            //瓦片包含了整个影像 包含一下这三种情况
+            //影像瓦片包含了瓦片 包含一下这三种情况
             //     sourceRect imageRect      sourceRect imageRect
             //   (3) T  I               (1)T I         (2) T I
             //          ┯                    ┯             ┯
@@ -198,9 +198,11 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
             ) {
                 //情况1
                 sourceRect.y = sourceRect.y;
-                sourceRect.height = imageRect.getHeight() - sourceRect.y;
                 targetRect.y = 0;
-                targetRect.height = (int) rightBottom.getY();
+
+                double imageSourceHeight=imageRect.getHeight() - sourceRect.y;
+                sourceRect.height = imageSourceHeight;
+                targetRect.height = sourceRect.height/ imageSourceHeight * tileSize;
             } else if (imageRect.y > sourceRect.y
                     && imageRect.y < sourceRect.y + sourceRect.getHeight()
                     && (sourceRect.y + sourceRect.getHeight() < imageRect.y + imageRect.getHeight())
