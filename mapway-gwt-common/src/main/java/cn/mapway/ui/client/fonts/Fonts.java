@@ -10,7 +10,12 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String VIDEO_CLOUD = "e761";
+    	public final static String TIME = "e763";
+	public final static String STACK_UP = "e767";
+	public final static String STACK_LEFT = "e764";
+	public final static String VIDEO_EVENTS = "e765";
+	public final static String VIDEO_LIST = "e766";
+	public final static String VIDEO_CLOUD = "e761";
 	public final static String VIDEO_VIEW = "e762";
 	public final static String CREATE2 = "e760";
 	public final static String RUST = "e75f";
@@ -395,7 +400,12 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("VIDEO_CLOUD", Fonts.VIDEO_CLOUD);
+			unicodes.put("TIME", Fonts.TIME);
+	unicodes.put("STACK_UP", Fonts.STACK_UP);
+	unicodes.put("STACK_LEFT", Fonts.STACK_LEFT);
+	unicodes.put("VIDEO_EVENTS", Fonts.VIDEO_EVENTS);
+	unicodes.put("VIDEO_LIST", Fonts.VIDEO_LIST);
+	unicodes.put("VIDEO_CLOUD", Fonts.VIDEO_CLOUD);
 	unicodes.put("VIDEO_VIEW", Fonts.VIDEO_VIEW);
 	unicodes.put("CREATE2", Fonts.CREATE2);
 	unicodes.put("RUST", Fonts.RUST);
