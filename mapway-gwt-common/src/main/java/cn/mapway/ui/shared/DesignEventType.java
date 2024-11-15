@@ -35,6 +35,8 @@ public enum DesignEventType {
     AlignWidth,
     AlignHeight,
     AlignVertical,
+    StackVertical,
+    StackHorizontal,
     Left,
     Right,
 
