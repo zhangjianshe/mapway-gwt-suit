@@ -61,10 +61,10 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
                 v-=step;
             }
             if(isFloat) {
-                txtBox.setValue(String.valueOf(v));
+                txtBox.setValue(String.valueOf(v),true);
             }
             else {
-                txtBox.setValue(String.valueOf((int)v));
+                txtBox.setValue(String.valueOf((int)v),true);
             }
         }
     };
