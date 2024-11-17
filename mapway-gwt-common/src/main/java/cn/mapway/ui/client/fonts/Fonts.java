@@ -10,7 +10,15 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String TIME = "e763";
+    	public final static String IOT_PLATFORM = "e76f";
+	public final static String RBAC_ROLE_RESOURCE = "e76c";
+	public final static String RBAC_RESOURCE = "e76d";
+	public final static String RBAC_ROLE = "e76e";
+	public final static String IOT_SERVER = "e768";
+	public final static String IOT_TCP = "e769";
+	public final static String IOT_MQTT = "e76a";
+	public final static String IOT = "e76b";
+	public final static String TIME = "e763";
 	public final static String STACK_UP = "e767";
 	public final static String STACK_LEFT = "e764";
 	public final static String VIDEO_EVENTS = "e765";
@@ -400,7 +408,15 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("TIME", Fonts.TIME);
+			unicodes.put("IOT_PLATFORM", Fonts.IOT_PLATFORM);
+	unicodes.put("RBAC_ROLE_RESOURCE", Fonts.RBAC_ROLE_RESOURCE);
+	unicodes.put("RBAC_RESOURCE", Fonts.RBAC_RESOURCE);
+	unicodes.put("RBAC_ROLE", Fonts.RBAC_ROLE);
+	unicodes.put("IOT_SERVER", Fonts.IOT_SERVER);
+	unicodes.put("IOT_TCP", Fonts.IOT_TCP);
+	unicodes.put("IOT_MQTT", Fonts.IOT_MQTT);
+	unicodes.put("IOT", Fonts.IOT);
+	unicodes.put("TIME", Fonts.TIME);
 	unicodes.put("STACK_UP", Fonts.STACK_UP);
 	unicodes.put("STACK_LEFT", Fonts.STACK_LEFT);
 	unicodes.put("VIDEO_EVENTS", Fonts.VIDEO_EVENTS);
