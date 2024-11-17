@@ -107,6 +107,10 @@ public class MqttLib {
     }
 
     public void unsubAll() {
+        if(mqttClient==null)
+        {
+            return;
+        }
         if (mqttClient.isConnected()) {
             for (String topic : topics.keySet()) {
                 mqttClient.unsubscribe(topic);
