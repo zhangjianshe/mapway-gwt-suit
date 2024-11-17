@@ -16,7 +16,8 @@
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
         <gwt.version>2.10.0</gwt.version>
-        <nutz.version>1.r.66</nutz.version>
+        <nutz.version>1.r.67</nutz.version>
+
         <slfj-api.version>1.7.33</slfj-api.version>
         <elementalVersion>1.2.1</elementalVersion>
         <auto-service.version>1.0.1</auto-service.version>
