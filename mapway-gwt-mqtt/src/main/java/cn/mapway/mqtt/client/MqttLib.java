@@ -41,6 +41,10 @@ public class MqttLib {
         }
     };
 
+    public void clearTopic()
+    {
+        topics.clear();
+    }
     /**
      * 链接之前 请先添加topic
      * addTopic(BizConstant.MQTT_TOPIC_PROJECT_MESSAGE + "#");
