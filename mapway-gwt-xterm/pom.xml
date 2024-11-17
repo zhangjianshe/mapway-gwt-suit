@@ -16,7 +16,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <gwt.version>2.10.0</gwt.version>
-        <nutz.version>1.r.68.v20191031</nutz.version>
+        <nutz.version>1.r.69.v20220703</nutz.version>
         <slfj-api.version>1.7.33</slfj-api.version>
         <elementalVersion>1.2.1</elementalVersion>
     </properties>
