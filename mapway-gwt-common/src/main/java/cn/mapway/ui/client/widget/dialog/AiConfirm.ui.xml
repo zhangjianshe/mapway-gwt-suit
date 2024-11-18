@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog">
+    <ui:style>
+        .box {
+            display: flex;
+            padding: 10px;
+            justify-content: center;
+            align-items: center;
+        }
+    </ui:style>
+    <g:DockLayoutPanel>
+        <g:south size="68">
+            <dialog:SaveBar ui:field="saveBar" saveText="确认"/>
+        </g:south>
+        <g:center>
+            <g:ScrollPanel styleName="ai-panel">
+                <g:HTMLPanel styleName="{style.box}">
+                    <g:HorizontalPanel verticalAlignment="middle" width="100%" spacing="10">
+                        <g:cell horizontalAlignment="center">
+                            <g:Image ui:field="icon"/>
+                        </g:cell>
+                        <g:HTML ui:field="html"/>
+                    </g:HorizontalPanel>
+                </g:HTMLPanel>
+            </g:ScrollPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>
