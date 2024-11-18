@@ -29,7 +29,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <gwt.version>2.10.0</gwt.version>
-        <nutz.version>1.r.67</nutz.version>
+        <nutz.version>1.r.68.v20201205</nutz.version>
 
         <slfj-api.version>1.7.33</slfj-api.version>
         <elementalVersion>1.2.1</elementalVersion>

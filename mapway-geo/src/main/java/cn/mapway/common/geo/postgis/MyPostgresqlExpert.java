@@ -42,25 +42,25 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
         if (ColType.PSQL_JSON == ef.getColumnType()) {
             return new PGObject2JsonObjectAdaptor(ef.getType());
         }
-        if (ef.getTypeMirror().isOf(GeoObject.class)) {
+        if (ef.getMirror().isOf(GeoObject.class)) {
             return new GeoObjectAdaptor();
         }
-        if (ef.getTypeMirror().isOf(PGpolygon.class)) {
+        if (ef.getMirror().isOf(PGpolygon.class)) {
             return new PGpolygonAdaptor();
         }
-        if (ef.getTypeMirror().isOf(PGline.class)) {
+        if (ef.getMirror().isOf(PGline.class)) {
             return new PGLineAdaptor();
         }
-        if (ef.getTypeMirror().isOf(PGpoint.class)) {
+        if (ef.getMirror().isOf(PGpoint.class)) {
             return new PGPointAdaptor();
         }
-        if (ef.getTypeMirror().isOf(PGpath.class)) {
+        if (ef.getMirror().isOf(PGpath.class)) {
             return new PGPathAdaptor();
         }
-        if (ef.getTypeMirror().isOf(PGcircle.class)) {
+        if (ef.getMirror().isOf(PGcircle.class)) {
             return new PGCircleAdaptor();
         }
-        if (ef.getTypeMirror().isOf(PGbox.class)) {
+        if (ef.getMirror().isOf(PGbox.class)) {
             return new PGBoxAdaptor();
         } else {
             return super.getAdaptor(ef);
@@ -76,7 +76,7 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
                     return "NUMERIC(" + mf.getWidth() + "," + mf.getPrecision() + ")";
                 }
                 // 用默认精度
-                if (mf.getTypeMirror().isDouble())
+                if (mf.getMirror().isDouble())
                     return "NUMERIC(53,10)";
                 return "NUMERIC";
             default:
