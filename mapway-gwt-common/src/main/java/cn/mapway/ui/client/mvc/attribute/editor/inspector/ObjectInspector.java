@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc.attribute.editor.inspector;
 
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.IAttributeReadyCallback;
@@ -78,6 +79,8 @@ public class ObjectInspector extends CommonEventComposite implements IData<IAttr
                 showInfo(data.getAttributeSummary());
             }
         }, MouseOverEvent.getType());
+        btnInfo.setIconUnicode(Fonts.INFO);
+        btnSave.setIconUnicode(Fonts.SAVE);
     }
 
     private void showInfo(String infoHtml) {
