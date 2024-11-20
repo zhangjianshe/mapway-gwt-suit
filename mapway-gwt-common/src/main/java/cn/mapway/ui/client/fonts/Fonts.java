@@ -10,7 +10,8 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String IOT_PLATFORM = "e76f";
+    	public final static String CANVAS = "e770";
+	public final static String IOT_PLATFORM = "e76f";
 	public final static String RBAC_ROLE_RESOURCE = "e76c";
 	public final static String RBAC_RESOURCE = "e76d";
 	public final static String RBAC_ROLE = "e76e";
@@ -408,7 +409,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("IOT_PLATFORM", Fonts.IOT_PLATFORM);
+			unicodes.put("CANVAS", Fonts.CANVAS);
+	unicodes.put("IOT_PLATFORM", Fonts.IOT_PLATFORM);
 	unicodes.put("RBAC_ROLE_RESOURCE", Fonts.RBAC_ROLE_RESOURCE);
 	unicodes.put("RBAC_RESOURCE", Fonts.RBAC_RESOURCE);
 	unicodes.put("RBAC_ROLE", Fonts.RBAC_ROLE);
