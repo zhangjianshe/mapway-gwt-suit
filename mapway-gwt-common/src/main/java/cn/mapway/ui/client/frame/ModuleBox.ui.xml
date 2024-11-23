@@ -1,0 +1,37 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:widget="urn:import:cn.mapway.ui.client.widget">
+    <ui:style>
+        .box {
+            border: solid 1px #f0f0f0;
+            border-radius: 5px;
+            padding: 15px;
+            margin: 15px;
+        }
+
+        .box:HOVER {
+            background-color: #63a563;
+        }
+
+        .name {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: black;
+            margin: 4px auto;
+            cursor: default;
+        }
+
+        .summary {
+            font-weight: bold;
+            color: #666;
+            margin: 0;
+            cursor: default;
+        }</ui:style>
+    <g:HorizontalPanel styleName="{style.box}" spacing="5" verticalAlignment="middle">
+        <g:Image ui:field="icon" visible="false" width="48px" height="48px"/>
+        <widget:FontIcon fontSize="30" visible="false" ui:field="fontIcon"/>
+        <g:VerticalPanel>
+            <g:Label ui:field="name" styleName="{style.name}"/>
+            <g:Label ui:field="subtitle" styleName="{style.summary}"/>
+        </g:VerticalPanel>
+    </g:HorizontalPanel>
+</ui:UiBinder>
