@@ -1,6 +1,5 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:frame="urn:import:cn.satway.cis.client.component.frame"
              xmlns:frame="urn:import:cn.mapway.ui.client.frame">
     <g:DockLayoutPanel ui:field="root" >
         <g:center>
