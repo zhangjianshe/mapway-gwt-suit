@@ -1,0 +1,35 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        .slider {
+            box-sizing: border-box;
+            border: 1px solid #DCDFE6;
+            height: 28px;
+            width: 150px;
+            overflow: hidden;
+            position: relative;
+            line-height: 28px;
+            text-align: center;
+            transition: border-color 0.2s cubic-bezier(0.645, 0.045, 0.355, 1);
+        }
+
+        .slider:HOVER {
+            border: solid 1px #91c0ef;
+        }
+
+        .mover {
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 10px;
+            background-color: rgba(0, 0, 0, 0.2);
+            vertical-align: middle;
+        }
+
+    </ui:style>
+    <g:HTMLPanel styleName="{style.slider} el-color-primary-light-3-background" ui:field="box">
+        <g:HTMLPanel ui:field="mover" styleName="{style.mover}"/>
+        <g:Label ui:field="text"/>
+    </g:HTMLPanel>
+</ui:UiBinder>
