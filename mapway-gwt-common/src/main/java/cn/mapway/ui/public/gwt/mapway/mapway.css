@@ -4,65 +4,68 @@
 }
 
 .mapway-font[enabled="false"] {
-     cursor: not-allowed;
-     color: #808080;
-     text-shadow: none;
- }
+    cursor: not-allowed;
+    color: #808080;
+    text-shadow: none;
+}
 
 .mapway-font[disabled="true"] {
     cursor: not-allowed;
     color: #808080;
     text-shadow: none;
- }
+}
 
 .mapway-font[select="true"] {
-     text-shadow: #808080 0 0 15px;
- }
+    text-shadow: #808080 0 0 15px;
+}
 
 .mapway-font[count]::before {
-     position: absolute;
-     right: 0;
-     top: 0;
-     font-weight: normal;
-     display: inline-block;
-     content: attr(count);
-     font-size: 7px;
-     border-radius: 50%;
-     padding: 2px 2px;
-     font-style: normal;
-     margin: auto;
-     background-color: rgba(20, 150, 220, 0.9);
-     color: white;
-     height: 2em;
-     min-width: 2em;
-     max-width: 2em;
-     overflow: hidden;
-     text-overflow: ellipsis;
-     transform: translate(50%, -50%);
- }
+    position: absolute;
+    right: 0;
+    top: 0;
+    font-weight: normal;
+    display: inline-block;
+    content: attr(count);
+    font-size: 7px;
+    border-radius: 50%;
+    padding: 2px 2px;
+    font-style: normal;
+    margin: auto;
+    background-color: rgba(20, 150, 220, 0.9);
+    color: white;
+    height: 2em;
+    min-width: 2em;
+    max-width: 2em;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    transform: translate(50%, -50%);
+}
 
-.mapway-dropdown{
+.mapway-dropdown {
     border: solid 1px #f0f0f0 !important;
     color: black;
     user-select: none;
     cursor: default;
     line-height: 28px;
 }
-.mapway-dropdown:hover{
-     border: solid 1px #808080;
-     box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
-     transition: all 0.1s ease-in;
- }
-.mapway-dropdown[select="true"]{
-     border: solid 1px skyblue;
-     background-color: #f0f0f0;
+
+.mapway-dropdown:hover {
+    border: solid 1px #808080;
+    box-shadow: 0 0 5px 0 rgba(0, 0, 0, 0.5);
+    transition: all 0.1s ease-in;
 }
-.mapway-label{
+
+.mapway-dropdown[select="true"] {
+    border: solid 1px skyblue;
+    background-color: #f0f0f0;
+}
+
+.mapway-label {
     font-weight: bold;
     line-height: 28px;
 }
 
-.mapway-text-item{
+.mapway-text-item {
     cursor: pointer;
     padding: 0px;
     margin: 0px;
@@ -72,22 +75,26 @@
     background: transparent;
     color: black;
 }
-.mapway-text-item:hover{
+
+.mapway-text-item:hover {
     background-color: #f0f0f0;
 }
+
 .mapway-text-item[select="true"] {
     background-color: #f0f0f0;
     color: black;
 }
+
 .mapway-text-item > div[hovershow=true] {
     visibility: hidden;
 }
+
 .mapway-text-item:hover > div[hovershow=true] {
     visibility: hidden;
 }
 
 /** tree item   ImageTextItem */
-.iti-default{
+.iti-default {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -99,35 +106,42 @@
     background-color: #fff;
     border-radius: 3px;
 }
-.iti-default:HOVER{
-    background-color:#f0f0f0;
+
+.iti-default:HOVER {
+    background-color: #f0f0f0;
 }
-.iti-default[select="true"]{
+
+.iti-default[select="true"] {
     background-color: #e0e0e0;
 }
-.iti-default-openclose{
+
+.iti-default-openclose {
     color: #000;
 }
-.iti-default-checkbox{
+
+.iti-default-checkbox {
     color: #000;
 }
-.iti-default-icon{
-    color:#000;
+
+.iti-default-icon {
+    color: #000;
     /*height: 22px;*/
     width: 22px;
     text-align: center;
 }
-.iti-default-label{
+
+.iti-default-label {
     flex-grow: 1;
     white-space: nowrap;
     font-size: 1rem;
-    color:#000;
-    line-height:28px;
+    color: #000;
+    line-height: 28px;
     cursor: default;
     user-select: none;
-    padding-left:2px;
+    padding-left: 2px;
 }
-.iti-default-label[select]{
+
+.iti-default-label[select] {
     font-style: italic;
     font-weight: bold;
 }
@@ -566,4 +580,12 @@
     height: 18px;
     background: white;
     border-radius: 9px;
+}
+
+.ai-module-bar {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    gap: 1rem;
+    user-select: none;
 }
