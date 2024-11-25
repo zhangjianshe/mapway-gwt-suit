@@ -35,6 +35,11 @@
             <version>5.2.22.RELEASE</version>
         </dependency>
         <dependency>
+            <groupId>de.huxhorn.sulky</groupId>
+            <artifactId>de.huxhorn.sulky.ulid</artifactId>
+            <version>8.2.0</version>
+        </dependency>
+        <dependency>
             <groupId>com.google.elemental2</groupId>
             <artifactId>elemental2-core</artifactId>
             <version>${elementalVersion}</version>

@@ -20,6 +20,7 @@
         <module>mapway-geo</module>
         <module>mapway-platform</module>
         <module>mapway-gwt-mqtt</module>
+        <module>mapway-module-rbac</module>
         <!--        <module>mapway-gwt-test</module>-->
     </modules>
 
@@ -35,6 +36,7 @@
         <elementalVersion>1.2.1</elementalVersion>
         <gdal.version>3.3.0</gdal.version>
     </properties>
+
 
     <distributionManagement>
         <repository>
