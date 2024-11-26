@@ -589,3 +589,10 @@
     gap: 1rem;
     user-select: none;
 }
+.ai-top{
+    display: flex;
+    align-items: center;
+    padding: 0 8px;
+    justify-content: space-between;
+    background-color: var(--color-background-header);
+}

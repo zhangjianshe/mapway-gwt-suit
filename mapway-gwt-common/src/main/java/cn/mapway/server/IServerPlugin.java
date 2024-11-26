@@ -1,5 +1,6 @@
 package cn.mapway.server;
 
+import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.server.IServerContext;
 
 /**
@@ -21,4 +22,10 @@ public interface IServerPlugin {
      * @param context
      */
     void destroy(IServerContext context);
+
+    /**
+     * 服务插件获取当前请求的用户信息
+     * @return
+     */
+    IUserInfo requestUser();
 }

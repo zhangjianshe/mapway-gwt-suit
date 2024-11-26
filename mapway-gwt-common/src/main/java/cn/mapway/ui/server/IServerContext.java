@@ -1,5 +1,6 @@
 package cn.mapway.ui.server;
 
+import cn.mapway.ui.client.IUserInfo;
 import org.nutz.dao.Dao;
 
 /**
@@ -8,14 +9,25 @@ import org.nutz.dao.Dao;
 public interface IServerContext {
     /**
      * 获取容器中的Bean
+     *
      * @param clazz
-     * @return
      * @param <T>
+     * @return
      */
-     <T> T getBean(Class<T> clazz);
-     <T> T getBeanByName(String name);
-     Dao getManagerDao();
+    <T> T getBean(Class<T> clazz);
 
-     void putToSession(String key, Object value);
-     Object getFromSession(String key);
+    <T> T getBeanByName(String name);
+
+    Dao getManagerDao();
+
+    void putToSession(String key, Object value);
+
+    Object getFromSession(String key);
+
+    /**
+     * 获取当前的登录用户
+     *
+     * @return
+     */
+    IUserInfo requestUser();
 }
