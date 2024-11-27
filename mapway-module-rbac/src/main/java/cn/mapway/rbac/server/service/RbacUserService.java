@@ -7,6 +7,7 @@ import cn.mapway.rbac.shared.RbacConstant;
 import cn.mapway.rbac.shared.ResourceKind;
 import cn.mapway.rbac.shared.db.postgis.*;
 import cn.mapway.rbac.shared.rpc.*;
+import cn.mapway.server.MyScans;
 import cn.mapway.spring.tools.ServletUtils;
 import cn.mapway.spring.tools.UUIDTools;
 import cn.mapway.ui.client.IUserInfo;
@@ -26,10 +27,7 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * this service save IUserInfo in the http session.
@@ -288,7 +286,7 @@ public class RbacUserService {
 
         // search all resource decalre annotation
         for (Class<?> aClass : scanPackages) {
-            List<Class<?>> classList = Scans.me().scanPackage(aClass);
+            Set<Class<?>> classList = MyScans.getClasses(aClass.getPackage().getName());
             for (Class<?> aClass1 : classList) {
                 ResourceDeclares annotation = aClass1.getAnnotation(ResourceDeclares.class);
                 RoleDeclares     roles = aClass1.getAnnotation(RoleDeclares.class);
