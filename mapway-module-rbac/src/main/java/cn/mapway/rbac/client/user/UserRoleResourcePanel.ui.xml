@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree"
+             xmlns:widget="urn:import:cn.mapway.ui.client.widget"
+             xmlns:role="urn:import:cn.mapway.rbac.client.role">
+    <g:DockLayoutPanel>
+        <g:west size="400">
+            <g:DockLayoutPanel addStyleNames="ai-border-right">
+                <g:north size="50">
+                    <g:HTMLPanel styleName="ai-top">
+                        <widget:Header>角色列表</widget:Header>
+                        <g:HorizontalPanel ui:field="tools">
+                            <g:Button ui:field="btnAdd">添加</g:Button>
+                            <g:Button ui:field="btnDelete" enabled="false">删除</g:Button>
+                        </g:HorizontalPanel>
+                    </g:HTMLPanel>
+                </g:north>
+                <g:center>
+                    <g:ScrollPanel>
+                        <tree:ZTree  width="100%" ui:field="roleList"/>
+                    </g:ScrollPanel>
+                </g:center>
+            </g:DockLayoutPanel>
+        </g:west>
+        <g:center>
+            <role:ResourceTable enableDelete="false" ui:field="resourceTable"/>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

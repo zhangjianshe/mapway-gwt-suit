@@ -1,0 +1,20 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:widget="urn:import:cn.mapway.ui.client.widget"
+             xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree">
+    <g:DockLayoutPanel>
+        <g:north size="50">
+            <g:HorizontalPanel spacing="4" height="50px" addStyleNames="ai-top" width="100%" verticalAlignment="middle">
+                <widget:Header>角色树</widget:Header>
+                <g:cell horizontalAlignment="right">
+                        <widget:FontIcon fontSize="26" ui:field="btnCreate"/>
+                </g:cell>
+            </g:HorizontalPanel>
+        </g:north>
+        <g:center>
+            <g:ScrollPanel>
+                <tree:ZTree ui:field="roleTree" width="100%"/>
+            </g:ScrollPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

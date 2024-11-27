@@ -1,0 +1,29 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:org="urn:import:cn.mapway.rbac.client.org"
+             xmlns:inspector="urn:import:cn.mapway.ui.client.mvc.attribute.editor.inspector"
+             xmlns:user="urn:import:cn.mapway.rbac.client.user"
+>
+    <g:DockLayoutPanel>
+        <g:west size="400">
+            <g:DockLayoutPanel unit="PCT" addStyleNames="ai-border-right">
+                <g:north size="50">
+                    <org:OrgPanel ui:field="orgPanel"/>
+                </g:north>
+                <g:center>
+                    <inspector:ObjectInspector
+                            addStyleNames="ai-border-top"
+                            vertical="true" saveButtonVisible="true" ui:field="objectInspector"/>
+                </g:center>
+            </g:DockLayoutPanel>
+        </g:west>
+        <g:west size="400">
+            <org:OrgUserListPanel addStyleNames="ai-border-right" ui:field="userList">
+
+            </org:OrgUserListPanel>
+        </g:west>
+        <g:center>
+            <user:UserRoleResourcePanel ui:field="userRoleResourcePanel"/>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

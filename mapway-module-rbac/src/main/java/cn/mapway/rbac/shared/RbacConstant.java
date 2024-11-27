@@ -1,0 +1,29 @@
+package cn.mapway.rbac.shared;
+
+public class RbacConstant {
+    public static final String X_PROTOCOL = "X-Protocol";
+    public static final String MODULE_GROUP_RBAC = "角色权限";
+    public static final String MODULE_GROUP_MAIN = "应用页面";
+    public static final String SALT = "8L+*&^N$#SDS__213213";
+    public static final String DEFAULT_SERVER_PATH="rbac";
+
+    public static final String KEY_AUTH_CODE = "KEY_AUTH_CODE";
+    /**
+     *
+     * may be other application will pass ServletInitParameter to overide this key
+     * <initParameter>TOKEN-KEY</initParameter>
+     * <initParameterValue>Authorization</initParameterValue>
+     */
+    public static final String TOKEN_HEADER_KEY = "TOKEN-KEY";
+
+    /////////////////// RBAC 子系统的资源点常量定义/////////////////////
+    public static final String RESOURCE_RBAC_MAINTAINER = "RESOURCE_RBAC_MAINTAINER";
+    public static final String RESOURCE_RBAC_AUTHORITY = "RESOURCE_RBAC_AUTHORITY";
+
+    //　　系统管理组织机构
+    public static final String SYSTEM_MANAGER_ORG_CODE = "RBAC_ORG_SYSTEM";
+
+    //  系统角色
+    public static final String ROLE_SYS = "ROLE_SYS";
+    public static final String ROLE_SYS_MAINTAINER = "ROLE_SYS_MAINTAINER";
+}

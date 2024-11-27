@@ -1,0 +1,37 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        @eval BK_HOVER "var(--color-background-hover)";
+        @eval BK_SELECT "var(--color-background-selected)";
+        .box {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: flex-start;
+            padding: 0 8px;
+            gap:1rem;
+        }
+
+        .box:HOVER {
+            background-color: BK_HOVER;
+        }
+
+        .box[select="true"] {
+            background-color: BK_SELECT;
+        }
+
+        .name {
+            font-size: 1.2rem;
+            font-weight: bold;
+        }
+
+        .img {
+            width: 60px;
+            height: 60px;
+            overflow: hidden;
+        }</ui:style>
+    <g:HTMLPanel styleName="{style.box}">
+        <g:Image ui:field="avatar" styleName="{style.img}"/>
+        <g:Label ui:field="lbName" styleName="{style.name}"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

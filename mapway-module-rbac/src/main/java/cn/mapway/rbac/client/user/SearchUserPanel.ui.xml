@@ -1,0 +1,25 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog"
+             xmlns:widget="urn:import:cn.mapway.ui.client.widget">
+    <g:DockLayoutPanel>
+        <g:south size="68">
+            <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
+        </g:south>
+        <g:north size="50">
+            <g:HorizontalPanel height="50px" spacing="4" verticalAlignment="middle">
+                <g:cell width="60px">
+                    <widget:Header>搜索</widget:Header>
+                </g:cell>
+                <g:TextBox width="100%" ui:field="txtSearch"/>
+            </g:HorizontalPanel>
+        </g:north>
+        <g:center>
+            <g:ScrollPanel>
+                <g:VerticalPanel ui:field="list" width="100%">
+
+                </g:VerticalPanel>
+            </g:ScrollPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>
