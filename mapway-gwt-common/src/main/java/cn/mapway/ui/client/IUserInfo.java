@@ -7,6 +7,7 @@ import java.util.Date;
  * 用户信息的标准接口
  */
 public interface IUserInfo extends Serializable {
+    String getSystemCode();
     String getUserName();
     String getNickName();
     String getAvatar();

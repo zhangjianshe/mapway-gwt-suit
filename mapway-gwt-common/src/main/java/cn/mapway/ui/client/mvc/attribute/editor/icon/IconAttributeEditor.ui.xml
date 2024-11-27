@@ -1,0 +1,7 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:buttons="urn:import:cn.mapway.ui.client.widget.buttons">
+    <g:HTMLPanel>
+        <buttons:IconSelectorButton fontSize="28" ui:field="iconSelector"/>
+    </g:HTMLPanel>
+</ui:UiBinder>

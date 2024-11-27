@@ -1,6 +1,5 @@
 package cn.mapway.ui.client.mvc.attribute.marker;
 
-import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextInputKind;
 import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;

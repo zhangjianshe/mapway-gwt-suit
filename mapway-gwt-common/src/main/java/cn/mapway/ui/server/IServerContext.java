@@ -3,6 +3,8 @@ package cn.mapway.ui.server;
 import cn.mapway.ui.client.IUserInfo;
 import org.nutz.dao.Dao;
 
+import java.util.Collection;
+
 /**
  * 服务器的运行环境
  */
@@ -30,4 +32,16 @@ public interface IServerContext {
      * @return
      */
     IUserInfo requestUser();
+
+    /**
+     * 需要扫描的package
+     * @return
+     */
+    Collection<Class<?>> getScanPackages();
+
+    /**
+     * 超级管理员
+     * @return
+     */
+    IUserInfo getSuperUser();
 }

@@ -4,6 +4,7 @@ import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
+import elemental2.core.JsArray;
 import elemental2.promise.Promise;
 
 
@@ -77,4 +78,11 @@ public interface IClientContext  {
     void alert(String message);
 
     void fireEvent(GwtEvent <?> event);
+
+
+    /**
+     * 全局提供一个选择用户对话框
+     * @return
+     */
+     Promise<JsArray<IUserInfo>> chooseUser();
 }

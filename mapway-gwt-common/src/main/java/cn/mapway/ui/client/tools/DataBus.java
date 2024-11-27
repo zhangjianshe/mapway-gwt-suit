@@ -2,8 +2,10 @@ package cn.mapway.ui.client.tools;
 
 import cn.mapway.ui.client.event.EventBus;
 import cn.mapway.ui.client.event.IEventHandler;
+import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.frame.ModuleDispatcher;
 import cn.mapway.ui.client.mvc.SwitchModuleData;
+import cn.mapway.ui.shared.CommonConstant;
 
 /**
  * Databus 全局的数据总线
@@ -66,6 +68,10 @@ public class DataBus {
 
     public void switchModule(SwitchModuleData data) {
         getEventBus().fire(ModuleDispatcher.MODULE_DISPATCH_EVENT,0,data);
+    }
+
+    public void message(String message) {
+        getEventBus().fire(CommonConstant.BUS_EVENT_MESSAGE,0, MessageObject.info(0,message));
     }
 
     /**
