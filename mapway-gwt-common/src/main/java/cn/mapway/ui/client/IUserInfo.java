@@ -1,11 +1,14 @@
 package cn.mapway.ui.client;
 
+import jsinterop.annotations.JsType;
+
 import java.io.Serializable;
 import java.util.Date;
 
 /**
  * 用户信息的标准接口
  */
+@JsType
 public interface IUserInfo extends Serializable {
     String getSystemCode();
     String getUserName();
