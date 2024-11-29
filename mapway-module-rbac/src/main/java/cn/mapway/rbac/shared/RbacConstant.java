@@ -26,4 +26,8 @@ public class RbacConstant {
     //  系统角色
     public static final String ROLE_SYS = "ROLE_SYS";
     public static final String ROLE_SYS_MAINTAINER = "ROLE_SYS_MAINTAINER";
+
+    //超级用户ID
+    public static final Long SUPER_USER_ID = 1L;
+
 }

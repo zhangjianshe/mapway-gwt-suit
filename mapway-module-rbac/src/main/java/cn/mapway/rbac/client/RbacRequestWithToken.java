@@ -1,6 +1,7 @@
 package cn.mapway.rbac.client;
 
 import cn.mapway.rbac.shared.RbacConstant;
+import cn.mapway.ui.shared.CommonConstant;
 import com.google.gwt.http.client.RequestBuilder;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.RpcRequestBuilder;
@@ -21,14 +22,14 @@ public class RbacRequestWithToken extends RpcRequestBuilder {
 
     public static void appendHeader(XMLHttpRequest request) {
         //从Cookie中读取token
-        request.setRequestHeader("Authorization", "Bearer " + RbacClient.get().getAuthCode());
+        request.setRequestHeader(CommonConstant.API_TOKEN, RbacClient.get().getAuthCode());
         request.setRequestHeader(RbacConstant.X_PROTOCOL, getProtocolHeader());
         request.setRequestHeader("Access-Control-Allow-Origin", "*");
     }
 
     public static Headers getHeaders() {
         Headers headers=new Headers();
-        headers.set("Authorization", "Bearer " + RbacClient.get().getAuthCode());
+        headers.set(CommonConstant.API_TOKEN, RbacClient.get().getAuthCode());
         headers.set(RbacConstant.X_PROTOCOL, getProtocolHeader());
         headers.set("Access-Control-Allow-Origin", "*");
         return headers;
@@ -38,7 +39,7 @@ public class RbacRequestWithToken extends RpcRequestBuilder {
     protected void doFinish(RequestBuilder rb) {
         super.doFinish(rb);
         //从Cookie中读取token
-        rb.setHeader("Authorization", "Bearer " +RbacClient.get().getAuthCode());
+        rb.setHeader(CommonConstant.API_TOKEN, RbacClient.get().getAuthCode());
         rb.setHeader(RbacConstant.X_PROTOCOL, getProtocolHeader());
     }
 

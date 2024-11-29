@@ -30,12 +30,8 @@ public class RbacClient {
         context=new HashMap<>();
     }
 
-
-    public void setAuthCode(String authCode) {
-        context.put(RbacConstant.KEY_AUTH_CODE,authCode);
-    }
     public String getAuthCode() {
-        return (String)context.get(RbacConstant.KEY_AUTH_CODE);
+        return clientContext.getToken();
     }
 
     public void setUser(IUserInfo currentUser) {

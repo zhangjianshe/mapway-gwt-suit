@@ -21,16 +21,18 @@ import org.nutz.dao.util.cri.SqlValueRange;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.random.R;
-import org.nutz.resource.Scans;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
 /**
  * this service save IUserInfo in the http session.
+ * ===============================================
  */
 @Service
 @Slf4j
@@ -250,8 +252,8 @@ public class RbacUserService {
     /**
      * 确保管理员用户存在
      */
-    public void sureAdmin() {
-        Cnd where = Cnd.where(RbacUserEntity.FLD_USER_ID, "=", 1L);
+    public synchronized void sureSuperUser() {
+        Cnd where = Cnd.where(RbacUserEntity.FLD_USER_ID, "=", RbacConstant.SUPER_USER_ID);
 
         RbacUserEntity user = rbacUserDao.fetch(where);
 
@@ -272,7 +274,7 @@ public class RbacUserService {
 
             user.setPassword(Lang.sha1(RbacConstant.SALT + "_imagebot__"));
             user.setStatus("0");
-            user.setUserId(1L);
+            user.setUserId(RbacConstant.SUPER_USER_ID);
             rbacUserDao.insert(user);
         }
     }
@@ -556,5 +558,32 @@ public class RbacUserService {
         entity.setCreateUser("SYSTEM ADMIN");
         rbacUserCodeRoleDao.insert(entity);
         return BizResult.success(new CreateUserRoleResponse());
+    }
+
+    /**
+     * 超级管理
+     * @return
+     */
+    public RbacUser findSuperUser()
+    {
+        RbacUserEntity fetch = rbacUserDao.fetch(Cnd.where(RbacUserEntity.FLD_USER_ID, "=", RbacConstant.SUPER_USER_ID));
+        return new RbacUser(fetch);
+    }
+
+    /**
+     * 退出系统
+     */
+    public void logout()
+    {
+        ServletUtils.getSession().removeAttribute(CommonConstant.KEY_LOGIN_USER);
+    }
+
+    /**
+     * 获取登录用户
+     * @return
+     */
+    public RbacUser getLoginUser()
+    {
+        return (RbacUser)ServletUtils.getSession().getAttribute(CommonConstant.KEY_LOGIN_USER);
     }
 }

@@ -59,9 +59,12 @@ public class RbacServerPlugin implements IServerPlugin {
             dao.create(table, false);
             Daos.migration(dao, table, true, false, false);
         }
+        RbacUserService rbacUserService = iServerContext.getBean(RbacUserService.class);
+
+        // make sure super user exist
+        rbacUserService.sureSuperUser();
 
         // register system resource point
-        RbacUserService rbacUserService = iServerContext.getBean(RbacUserService.class);
         if (rbacUserService != null) {
             List<Class<?>> scanPackages = new ArrayList<>();
             scanPackages.add(RbacServerPlugin.class);
@@ -71,6 +74,7 @@ public class RbacServerPlugin implements IServerPlugin {
             }
             rbacUserService.importResourcePointFromCode(scanPackages, iServerContext.getSuperUser());
         }
+
 
     }
 
