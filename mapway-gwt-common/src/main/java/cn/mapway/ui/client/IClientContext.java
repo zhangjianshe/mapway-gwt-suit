@@ -85,4 +85,10 @@ public interface IClientContext  {
      * @return
      */
      Promise<JsArray<IUserInfo>> chooseUser();
+
+    /**
+     *  当前用户的tokeｎ
+     * @return
+     */
+     String getToken();
 }
