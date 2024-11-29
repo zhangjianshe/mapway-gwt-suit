@@ -593,6 +593,10 @@ public class AceEditor extends Composite implements RequiresResize, HasText, Tak
 
 	@Override
 	public void setValue(String value) {
+		if(value==null)
+		{
+			value="";
+		}
 		this.setText(value);
 	}
 
