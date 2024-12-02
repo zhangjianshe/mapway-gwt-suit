@@ -4,6 +4,7 @@ import cn.mapway.geo.shared.vector.Point;
 import lombok.extern.slf4j.Slf4j;
 import org.gdal.gdal.gdal;
 import org.gdal.gdal.gdalJNI;
+import org.gdal.gdalconst.gdalconstJNI;
 import org.nutz.lang.Files;
 
 import java.util.List;
@@ -14,6 +15,35 @@ import java.util.List;
 @Slf4j
 public class GdalUtil {
 
+    public static void main(String[] args) {
+        GdalUtil.init();
+        int GDT_Unknown = gdalconstJNI.GDT_Unknown_get();
+        int GDT_Byte = gdalconstJNI.GDT_Byte_get();
+        int GDT_UInt16 = gdalconstJNI.GDT_UInt16_get();
+        int GDT_Int16 = gdalconstJNI.GDT_Int16_get();
+        int GDT_UInt32 = gdalconstJNI.GDT_UInt32_get();
+        int GDT_Int32 = gdalconstJNI.GDT_Int32_get();
+        int GDT_Float32 = gdalconstJNI.GDT_Float32_get();
+        int GDT_Float64 = gdalconstJNI.GDT_Float64_get();
+        int GDT_CInt16 = gdalconstJNI.GDT_CInt16_get();
+        int GDT_CInt32 = gdalconstJNI.GDT_CInt32_get();
+        int GDT_CFloat32 = gdalconstJNI.GDT_CFloat32_get();
+        int GDT_CFloat64 = gdalconstJNI.GDT_CFloat64_get();
+
+        System.out.println("GDT_Byte:"+ GDT_Byte);
+        System.out.println("GDT_UInt16:"+ GDT_UInt16);
+        System.out.println("GDT_Int16:"+ GDT_Int16);
+        System.out.println("GDT_UInt32:"+ GDT_UInt32);
+        System.out.println("GDT_Int32:"+ GDT_Int32);
+        System.out.println("GDT_Float32:"+ GDT_Float32);
+        System.out.println("GDT_Float64:"+ GDT_Float64);
+        System.out.println("GDT_CInt16:"+ GDT_CInt16);
+        System.out.println("GDT_CInt32:"+ GDT_CInt32);
+        System.out.println("GDT_CFloat32:"+ GDT_CFloat32);
+        System.out.println("GDT_CFloat64:"+ GDT_CFloat64);
+        System.out.println("GDT_Unknown:"+ GDT_Unknown);
+
+    }
     public GdalUtil() {
     }
 

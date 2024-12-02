@@ -130,6 +130,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int DRAG = 117;
     public final static int DRAG_END = 118;
     public final static int VIEW = 119;
+    public final static int CREATE_FILE = 120;
+
 
 
     public final static int OK = 200;
@@ -151,6 +153,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent createFileEvent(Object data) {
+        return new CommonEvent(CREATE_FILE, data);
     }
     public static CommonEvent favoriteEvent(Object data) {
         return new CommonEvent(FAVORITE, data);
@@ -710,6 +715,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isInfo() {
         return INFO == this.type;
+    }
+    public boolean isCreateFile() {
+        return CREATE_FILE == this.type;
     }
 
     public boolean isRename() {
