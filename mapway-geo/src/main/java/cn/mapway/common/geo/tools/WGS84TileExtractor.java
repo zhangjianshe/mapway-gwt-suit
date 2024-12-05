@@ -201,7 +201,7 @@ public class WGS84TileExtractor extends BaseTileExtractor implements ITileExtrac
                 targetRect.y = 0;
 
                 double imageSourceHeight=imageRect.getHeight() - sourceRect.y;
-                targetRect.height = sourceRect.height/ imageSourceHeight * tileSize;
+                targetRect.height = imageSourceHeight/sourceRect.height  * tileSize;
                 sourceRect.height = imageSourceHeight;
             } else if (imageRect.y > sourceRect.y
                     && imageRect.y < sourceRect.y + sourceRect.getHeight()
