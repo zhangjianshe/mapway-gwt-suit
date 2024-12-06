@@ -505,8 +505,22 @@ public class StringUtil {
         return name;
     }
 
+    /**
+     * 不会产生异常的parseInt
+     * @param text
+     * @param defaultValue
+     * @return
+     */
     public static Integer parseInteger(String text, int defaultValue) {
-        return StringUtil.isBlank(text) ? defaultValue : Integer.parseInt(text);
+        if(text == null|| text.length() == 0){
+            return defaultValue;
+        }
+        try {
+            return Integer.parseInt(text);
+        }
+        catch (Exception e){
+            return defaultValue;
+        }
     }
 
     /**
@@ -648,7 +662,15 @@ public class StringUtil {
     }
 
     public static Double parseDouble(String value, double defaultValue) {
-        return StringUtil.isBlank(value) ? defaultValue : Double.parseDouble(value);
+        if (value == null || value.length() == 0) {
+            return defaultValue;
+        }
+        try {
+            return Double.parseDouble(value);
+        }
+        catch (Exception e) {
+            return defaultValue;
+        }
     }
 
     public static String extractSuffix(String name) {
