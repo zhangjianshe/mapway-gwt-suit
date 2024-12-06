@@ -21,7 +21,9 @@ public enum DbFieldType {
     FLD_TYPE_GEOMETRY(5, "地理字段", Fonts.EARTH),
     FLD_TYPE_SERIAL(7, "序列", Fonts.SERIAL),
     FLD_TYPE_STRING_ARRAY(8, "字符串数组", Fonts.LIST),
-    FLD_TYPE_CLOB(9, "文本块", Fonts.FILES);
+    FLD_TYPE_CLOB(9, "文本块", Fonts.FILES),
+    FLD_TYPE_BLOB(10, "二进制块", Fonts.RECT),
+    FLD_TYPE_CUSTOM(99, "自定义数据类型", Fonts.UNKNOWN);
     //TODO 添加新的图标样式
     int code;
     String name;
