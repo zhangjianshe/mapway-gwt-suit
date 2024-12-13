@@ -10,4 +10,5 @@ public class EditorCodes {
     public static final String EDITOR_CHECKBOX="CHECKBOX_EDITOR";
     public static final String EDITOR_ATTR_SELECT="ATTR_SELECT_EDITOR";
     public static final String EDITOR_IMAGE_UPLOAD="IMAGE_UPLOAD_EDITOR";
+    public static final String EDITOR_RESOURCE_DROPDOWN = "RESOURCE_DROPDOWN_EDITOR";
 }
