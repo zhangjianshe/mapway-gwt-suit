@@ -407,7 +407,7 @@ public class MultipleDropdown extends HorizontalPanel implements IOptionProvider
         }
     }
 
-    class MultipleDropdownEvent<T>{
+    public class MultipleDropdownEvent<T>{
         public MultipleDropdownEvent() {}
 
         public MultipleDropdownEvent(boolean flag, T target, List<T> selected) {
