@@ -10,7 +10,9 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String KV_COPY = "e775";
+    	public final static String CAMERA_NIGHT = "e776";
+	public final static String CAMERA_SUN = "e777";
+	public final static String KV = "e775";
 	public final static String NAVI_TREE = "e773";
 	public final static String NAVI_BAR = "e774";
 	public final static String SHANGFAN = "e771";
@@ -414,7 +416,9 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("KV_COPY", Fonts.KV_COPY);
+			unicodes.put("CAMERA_NIGHT", Fonts.CAMERA_NIGHT);
+	unicodes.put("CAMERA_SUN", Fonts.CAMERA_SUN);
+	unicodes.put("KV", Fonts.KV);
 	unicodes.put("NAVI_TREE", Fonts.NAVI_TREE);
 	unicodes.put("NAVI_BAR", Fonts.NAVI_BAR);
 	unicodes.put("SHANGFAN", Fonts.SHANGFAN);
