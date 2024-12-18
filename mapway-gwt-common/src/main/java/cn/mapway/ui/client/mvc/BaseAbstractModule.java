@@ -218,8 +218,4 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
             throw new RuntimeException("300001");
         }
     }
-
-    public void message(String text) {
-        fireMessage(MessageObject.info(0, text));
-    }
 }

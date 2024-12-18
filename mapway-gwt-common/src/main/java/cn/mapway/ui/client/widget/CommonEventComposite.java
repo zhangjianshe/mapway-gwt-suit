@@ -465,5 +465,15 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         return addHandler(handler, AttributeStateChangeEvent.TYPE);
     }
 
-
+    /**
+     * 向父窗口发送消息
+     * @param message
+     */
+    public void message(String message)
+    {
+        if (message == null || message.length() == 0) {
+            return;
+        }
+        fireMessage(MessageObject.info(0, message));
+    }
 }
