@@ -36,6 +36,11 @@ public class SaveDialog<T extends Widget> extends AiDialog {
             }
         }
     };
+
+    public SaveBar getSaveBar()
+    {
+        return saveBar;
+    }
     T content;
     private final CommonEventHandler saveBarHandler = new CommonEventHandler() {
         @Override
