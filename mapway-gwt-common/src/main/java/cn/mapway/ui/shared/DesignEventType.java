@@ -39,6 +39,9 @@ public enum DesignEventType {
     StackHorizontal,
     Left,
     Right,
+    Rename,
+    SaveAs,
+    New,
 
 
 }
