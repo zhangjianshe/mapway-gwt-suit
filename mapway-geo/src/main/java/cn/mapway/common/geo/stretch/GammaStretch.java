@@ -28,7 +28,7 @@ public class GammaStretch {
         max = minMax[1];
         if(gamma == null){
             if(histograms.isEmpty()){
-                Histogram histogram = HistogramStretch.getHistogram(data, noValues, minMax[0], minMax[1], minPct, maxPct, DEFAULT_BINS);
+                Histogram histogram = HistogramStretchUtils.getHistogram(data, noValues, minMax[0], minMax[1], minPct, maxPct, DEFAULT_BINS);
                 histograms.add(histogram);
             }
             gamma = calculateGamma(histograms.get(0));
@@ -84,7 +84,7 @@ public class GammaStretch {
         max = (double) minMax[1];
         if(gamma == null){
             if(histograms.isEmpty()){
-                Histogram histogram = HistogramStretch.getHistogram(data, noValues, (double) minMax[0], (double) minMax[1], minPct, maxPct, DEFAULT_BINS);
+                Histogram histogram = HistogramStretchUtils.getHistogram(data, noValues, (double) minMax[0], (double) minMax[1], minPct, maxPct, DEFAULT_BINS);
                 histograms.add(histogram);
             }
             gamma = calculateGamma(histograms.get(0));

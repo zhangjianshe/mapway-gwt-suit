@@ -1,6 +1,5 @@
 package cn.mapway.common.geo.stretch;
 
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -38,7 +37,7 @@ public class LinearStretch {
         } else if(maxPct == null || maxPct < 0.0 || maxPct > 1.0){
             maxPct = 1.0;
         }
-        Histogram histogram = HistogramStretch.getHistogram(data, noValues, minMax[0], minMax[1], minPct, maxPct, DEFAULT_BINS);
+        Histogram histogram = HistogramStretchUtils.getHistogram(data, noValues, minMax[0], minMax[1], minPct, maxPct, DEFAULT_BINS);
         minMax[0] = histogram.getHistogramNodeByMinPct(minPct);
         minMax[1] = histogram.getHistogramNodeByMaxPct(maxPct);
         if(out != null){
@@ -75,7 +74,7 @@ public class LinearStretch {
         } else if(maxPct == null || maxPct < 0.0 || maxPct > 1.0){
             maxPct = 1.0;
         }
-        Histogram histogram = HistogramStretch.getHistogram(data, noValues, (double)minMax[0], (double)minMax[1], minPct, maxPct, DEFAULT_BINS);
+        Histogram histogram = HistogramStretchUtils.getHistogram(data, noValues, (double)minMax[0], (double)minMax[1], minPct, maxPct, DEFAULT_BINS);
         minMax[0] = (int)histogram.getHistogramNodeByMinPct(minPct);
         minMax[1] = (int)histogram.getHistogramNodeByMaxPct(maxPct);
         if(out != null){
