@@ -10,8 +10,12 @@ public class HistogramNode {
 
     double brightness;
 
-    public double count;
+    public int count;
 
     public double pct;
+
+    public int accumulation;
+
+    public byte pixel;
 
 }
