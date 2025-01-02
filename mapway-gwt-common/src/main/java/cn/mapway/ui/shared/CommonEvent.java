@@ -131,6 +131,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int DRAG_END = 118;
     public final static int VIEW = 119;
     public final static int CREATE_FILE = 120;
+    public final static int EXPORT_PRODUCT = 121;
+    public final static int IMPORT_PRODUCT = 122;
 
 
 
@@ -624,6 +626,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent convertEvent(Object data) {
         return new CommonEvent(CONVERT, data);
     }
+    public static CommonEvent importProductEvent(Object data) {
+        return new CommonEvent(IMPORT_PRODUCT, data);
+    }
+    public static CommonEvent exportProductEvent(Object data) {
+        return new CommonEvent(EXPORT_PRODUCT, data);
+    }
 
     public boolean isObject() {
         return type == OBJECT;
@@ -1081,6 +1089,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isDragStart() {
         return DRAG_START == this.type;
+    }
+    public boolean isExportProduct() {
+        return EXPORT_PRODUCT == this.type;
+    }
+    public boolean isImportProduct() {
+        return IMPORT_PRODUCT == this.type;
     }
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
