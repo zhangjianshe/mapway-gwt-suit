@@ -35,7 +35,19 @@ public class Popup<T extends Widget> extends PopupPanel implements HasCommonHand
                     } else {
                         Logs.info("resize event' data is not Size object");
                     }
-                } else {
+                } else if(event.isOffset()){
+                    //移动操作
+                    if (event.getValue() instanceof Size) {
+                        Size size = event.getValue();
+                        double x=getAbsoluteLeft();
+                        double y=getAbsoluteTop();
+                        x+=size.getX();
+                        y+=size.getY();
+                        setPopupPosition((int) x, (int) y);
+                    } else {
+                        Logs.info("resize event' data is not Size object");
+                    }
+                }else {
                     //代理内部容器发送事件
                     fireEvent(event);
                 }

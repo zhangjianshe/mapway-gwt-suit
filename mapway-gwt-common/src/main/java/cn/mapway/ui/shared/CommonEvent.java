@@ -131,6 +131,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int DRAG_END = 118;
     public final static int VIEW = 119;
     public final static int CREATE_FILE = 120;
+    public final static int OFFSET = 121;
     public final static int EXPORT_PRODUCT = 121;
     public final static int IMPORT_PRODUCT = 122;
 
@@ -155,6 +156,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent offsetEvent(Object data) {
+        return new CommonEvent(OFFSET, data);
     }
     public static CommonEvent createFileEvent(Object data) {
         return new CommonEvent(CREATE_FILE, data);
@@ -1016,6 +1020,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isUnChecked() {
         return UNCHECKED == type;
+    }
+    public boolean isOffset() {
+        return OFFSET == type;
     }
 
     public boolean isValueChanged() {
