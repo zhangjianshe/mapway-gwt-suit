@@ -132,8 +132,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int VIEW = 119;
     public final static int CREATE_FILE = 120;
     public final static int OFFSET = 121;
-    public final static int EXPORT_PRODUCT = 121;
-    public final static int IMPORT_PRODUCT = 122;
+    public final static int EXPORT_PRODUCT = 122;
+    public final static int IMPORT_PRODUCT = 123;
 
 
 
