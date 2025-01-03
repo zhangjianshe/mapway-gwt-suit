@@ -134,6 +134,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int OFFSET = 121;
     public final static int EXPORT_PRODUCT = 122;
     public final static int IMPORT_PRODUCT = 123;
+    public final static int ZOOMIN = 124;
+    public final static int ZOOMOUT = 125;
 
 
 
@@ -157,6 +159,13 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
     }
+    public static CommonEvent zoomInEvent(Object data) {
+        return new CommonEvent(ZOOMIN, data);
+    }
+    public static CommonEvent zoomOutEvent(Object data) {
+        return new CommonEvent(ZOOMOUT, data);
+    }
+
     public static CommonEvent offsetEvent(Object data) {
         return new CommonEvent(OFFSET, data);
     }
@@ -1102,6 +1111,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isImportProduct() {
         return IMPORT_PRODUCT == this.type;
+    }
+    public boolean isZoomIn() {
+        return ZOOMIN == this.type;
+    }
+    public boolean isZoomOut() {
+        return ZOOMOUT == this.type;
     }
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
