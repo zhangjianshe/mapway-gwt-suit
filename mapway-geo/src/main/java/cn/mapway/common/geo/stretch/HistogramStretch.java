@@ -72,7 +72,10 @@ public class HistogramStretch {
         }
     }
 
-    public byte[] histogramStretch(double[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, int bins) {
+    public static byte[] histogramStretch(double[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, Integer bins) {
+        if(bins == null){
+            bins = 256;
+        }
         Histogram histogram = HistogramStretchUtils.getHistogram(data, noValues, min, max, minPct, maxPct, bins);
         double[] minMax = new double[2];
         minMax[0] = histogram.getHistogramNodeByMinPct(minPct);
@@ -94,7 +97,10 @@ public class HistogramStretch {
         return result;
     }
 
-    public byte[] histogramStretch(int[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, int bins) {
+    public static byte[] histogramStretch(int[] data, Double[] noValues, Double min, Double max, Double minPct, Double maxPct, Integer bins) {
+        if(bins == null){
+            bins = 256;
+        }
         Histogram histogram = HistogramStretchUtils.getHistogram(data, noValues, min, max, minPct, maxPct, bins);
         double[] minMax = new double[2];
         minMax[0] = histogram.getHistogramNodeByMinPct(minPct);
