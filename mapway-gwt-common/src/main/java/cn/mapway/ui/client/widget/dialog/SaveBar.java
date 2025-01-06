@@ -16,6 +16,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -32,6 +36,8 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
     AiButton btnCancel;
     @UiField
     Label lbMessage;
+    @UiField
+    HTMLPanel btnPanel;
 
     Object data;
 
@@ -53,6 +59,23 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
     public void setButtonWidth(int width) {
         btnSave.setWidth(width + "px");
         btnCancel.setWidth(width + "px");
+    }
+    public AiButton addNewButton(String name) {
+        if(name==null || "".equals(name)){
+            return null;
+        }
+        List<Widget> children=new ArrayList<Widget>();
+        AiButton aiButton=new AiButton();
+        aiButton.setText(name);
+        children.add(aiButton);
+        for(int i=0;i<btnPanel.getWidgetCount();i++){
+            children.add(btnPanel.getWidget(i));
+        }
+        btnPanel.clear();
+        for (int i = 0; i < children.size(); i++) {
+            btnPanel.add(children.get(i));
+        }
+        return aiButton;
     }
 
     public void msg(Object message) {
