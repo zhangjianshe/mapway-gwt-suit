@@ -5,7 +5,7 @@ public enum StretchTypeEnum {
 
     logStretch(1, "对数拉伸"),
 
-    equalizeStretch(2, "直方图均衡"),
+    histogramStretch(2, "直方图均衡"),
 
     sigmoidStretch(3, "Sigmoid拉伸"),
 
