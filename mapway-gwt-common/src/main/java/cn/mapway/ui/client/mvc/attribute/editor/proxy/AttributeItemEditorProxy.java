@@ -4,7 +4,9 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.IAttributePropertyChangeCallback;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 import cn.mapway.ui.client.util.Logs;
+import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
@@ -63,18 +65,22 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
      * @param attribute 编辑器组件的定义(属性的定义)
      */
     public void createEditorInstance(IAttribute attribute) {
-        if (attribute == null || attribute.getEditorMetaData() == null || attribute.getEditorMetaData().getEditorCode() == null) {
+        String editorCode= TextboxAttributeEditor.EDITOR_CODE;
+        if (attribute == null || attribute.getEditorMetaData() == null ||
+                StringUtil.isBlank(attribute.getEditorMetaData().getEditorCode())) {
             Logs.info("Attribute is null or editorCode is null in AttributeItemEditorProxy");
-            return;
+        }
+        else {
+            editorCode=attribute.getEditorMetaData().getEditorCode();
         }
 
         box.clear();
         box.add(lbHeader);
 
         //创建统一的属性列表编辑UI
-        attributeEditor = AttributeEditorFactory.get().createEditor(attribute.getEditorMetaData().getEditorCode(), false);
+        attributeEditor = AttributeEditorFactory.get().createEditor(editorCode, false);
         if (attributeEditor == null) {
-            errorInput("创建属性组件出错" + attribute.getEditorMetaData().getEditorCode());
+            errorInput("创建"+attribute.getName()+"编辑器:" + attribute.getEditorMetaData().getEditorCode());
             return;
         }
 
@@ -86,7 +92,6 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         attributeEditor.editAttribute(attribute.getRuntimeParameters(), attribute);
         //属性名称
         lbHeader.setText(getAttributeName());
-
 
     }
 
