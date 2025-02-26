@@ -14,9 +14,9 @@ import java.io.Serializable;
 @JsType
 public class GeoExtend implements Serializable, IsSerializable {
     public Double minLng = Double.MAX_VALUE;
-    public Double maxLng = Double.MIN_VALUE;
+    public Double maxLng = -Double.MAX_VALUE;
     public Double minLat = Double.MAX_VALUE;
-    public Double maxLat = Double.MIN_VALUE;
+    public Double maxLat = -Double.MAX_VALUE;
 
     public void set(Double t, Double r, Double b, Double l) {
         this.minLat = b;
@@ -102,4 +102,5 @@ public class GeoExtend implements Serializable, IsSerializable {
         polygon.getLines().add(line);
         return polygon;
     }
+
 }
