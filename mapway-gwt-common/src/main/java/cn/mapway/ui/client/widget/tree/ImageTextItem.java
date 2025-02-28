@@ -188,7 +188,11 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         rightWidgets.add(widget);
         return this;
     }
-
+    public String clearContentAndGetText() {
+        String text = lbText.getText();
+        root.clear();
+        return text;
+    }
     public ImageTextItem appendWidget(Widget widget) {
         return appendWidget(widget, 26);
     }
