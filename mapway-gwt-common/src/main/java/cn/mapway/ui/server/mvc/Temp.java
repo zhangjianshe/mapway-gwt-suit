@@ -135,4 +135,11 @@ public class Temp implements ModuleFactory {
         return findHash(modulesFlat, hash);
     }
 
+    @Override
+    public ModuleInfo registerComponent(ModuleInfo moduleInfo) {
+        modulesFlat.add(moduleInfo);
+        modules.add(moduleInfo);
+        return moduleInfo;
+    }
+
 }
