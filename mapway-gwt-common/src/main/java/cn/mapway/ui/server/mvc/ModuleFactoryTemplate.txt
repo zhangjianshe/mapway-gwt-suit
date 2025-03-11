@@ -99,9 +99,36 @@
         }
     }
 
+    /**
+     * 注册一个Java组件
+     * @param moduleInfo
+     * @return
+     */
+     public ModuleInfo registerComponent(ModuleInfo moduleInfo){
+        modulesFlat.add(moduleInfo);
+        modules.add(moduleInfo);
+        return moduleInfo;
+     }
+
     private IModule createOne(String moduleCode) {
         if (moduleCode == null || moduleCode.isEmpty()) {
             return null;
+        }
+        ModuleInfo moduleInfo=findModuleInfo(moduleCode);
+        if(moduleInfo==null)
+        {
+            return null;
+        }
+        if(moduleInfo.custom!=null && moduleInfo.custom==true)
+        {
+            if(moduleInfo.creator==null)
+            {
+                return null;
+            }
+            else
+            {
+               return moduleInfo.creator.create();
+            }
         }
         __MODULE_CREATE_LIST__
         return null;

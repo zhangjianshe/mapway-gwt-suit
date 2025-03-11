@@ -1,7 +1,9 @@
 package cn.mapway.ui.client.mvc;
 
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.event.EventInfo;
+import cn.mapway.ui.client.util.StringUtil;
 import com.google.gwt.resources.client.ImageResource;
 
 import java.util.ArrayList;
@@ -85,6 +87,35 @@ public class ModuleInfo {
     public List<EventInfo> events;
 
     /**
+     * 是否是引入组件
+     */
+    public Boolean custom;
+    public ICustomModuleCreator creator;
+
+    /**
+     * 构建自定义组件
+     * @param name
+     * @param code
+     * @param summary
+     * @param creator
+     */
+    public ModuleInfo(String name, String code,String iconUrl,String unicode, String summary,ICustomModuleCreator creator) {
+        this.name = name;
+        this.code = code;
+        this.summary = summary;
+        this.isPublic = true;
+        this.unicode = StringUtil.isBlank(unicode)?Fonts.MODULE:unicode;
+        this.hash = "";
+        this.icon = null;
+        this.isVisible = true;
+        this.tags = new ArrayList<>();
+        this.themes = new ArrayList<>();
+        children = new ArrayList<>();
+        events = new ArrayList<>();
+        this.custom = true;
+        this.creator = creator;
+    }
+    /**
      * Instantiates a new module item.
      *
      * @param name         the name
@@ -106,6 +137,7 @@ public class ModuleInfo {
         this.isVisible = visible;
         this.tags = new ArrayList<>();
         this.themes = new ArrayList<>();
+        this.custom=false;
         children = new ArrayList<>();
         events = new ArrayList<>();
     }

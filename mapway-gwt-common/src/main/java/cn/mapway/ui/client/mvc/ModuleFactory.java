@@ -48,5 +48,11 @@ public interface ModuleFactory {
      */
      ModuleInfo findModuleInfoByHash(String hash);
 
+    /**
+     * 注册一个Java组件
+     * @param moduleInfo
+     * @return
+     */
+     public ModuleInfo registerComponent(ModuleInfo moduleInfo);
 
 }
