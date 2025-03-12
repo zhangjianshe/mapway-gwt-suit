@@ -200,7 +200,8 @@ public class GenerateThumbnail {
     }
 
     private static boolean emptyLabel(File rasterFile, String imageFormat, double quality, File exportUrl) throws IOException {
-        BufferedImage bi = Images.read(rasterFile);
+        BufferedImage bi = readImage(rasterFile.getAbsolutePath());
+//        BufferedImage bi = Images.read(rasterFile);
         File parentFile = exportUrl.getParentFile();
         if (!parentFile.exists()) {
             parentFile.mkdirs();
@@ -360,32 +361,11 @@ public class GenerateThumbnail {
 
     public static void main(String[] args) throws IOException {
         GdalUtil.init();
-//        String imageUrl = "F:\\数据\\4波段\\A\\result_0_19.tif";
-//        String labelUrl = "F:\\数据\\4波段\\labels\\result_0_19.tif";
-//        File thumbnailUrl = new File("F:\\数据\\4波段\\thumbnail\\result_0_19.webp");
-//        int width = 256;
-//        int height = 256;
-//        gdal.AllRegister();
-//        BufferedImage imageImage = readImage(imageUrl);
-//        imageImage = Thumbnails.of(imageImage)
-//                .size(width, height).asBufferedImage();
-//        BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
-//
-//        BufferedImage cannyImg = new Canny().getCannyImg(labelImage, imageImage);
-//        thumbnailUrl.getParentFile().mkdirs();
-//        Thumbnails.of(cannyImg)
-//                .scale(1.0)
-//                .outputFormat("webp")
-//                .outputQuality(0.9)
-//                .toFile(thumbnailUrl);
 
-        String imageUrl = "F:\\data\\cis\\labels\\sample_94\\image\\f324006559c765262e3aab7d6566723d80d8bba275f7687af4cc1ceebc17ec52.tif";
-        String labelUrl = "F:\\data\\cis\\labels\\sample_94\\label\\f324006559c765262e3aab7d6566723d80d8bba275f7687af4cc1ceebc17ec52.geojson";
-        String outUrl = "F:\\data\\cis\\labels\\sample_94\\t.webp";
+        String imageUrl = "F:\\data\\cis\\labels\\sample_189\\image\\43257.tif";
+        String outUrl = "F:\\data\\cis\\labels\\sample_189\\t.webp";
 
         File image1File = new File(imageUrl);
-        String json = FileUtils.readFileToString(new File(labelUrl), "utf-8");
-        File thumbnailFile = new File(outUrl);
-        GenerateThumbnail.generateVector(image1File, json, 256, thumbnailFile, false);
+        emptyLabel(image1File, "webp", 0.9, new File(outUrl));
     }
 }
