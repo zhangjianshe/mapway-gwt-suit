@@ -136,6 +136,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int IMPORT_PRODUCT = 123;
     public final static int ZOOMIN = 124;
     public final static int ZOOMOUT = 125;
+    public final static int SCRIPT_UPDATE = 126;
 
 
 
@@ -164,6 +165,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public static CommonEvent zoomOutEvent(Object data) {
         return new CommonEvent(ZOOMOUT, data);
+    }
+    public static CommonEvent scriptUpdate(Object data) {
+        return new CommonEvent(SCRIPT_UPDATE, data);
     }
 
     public static CommonEvent offsetEvent(Object data) {
@@ -652,6 +656,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isResult() {
         return type == RESULT;
+    }
+    public boolean isScriptUpdate() {
+        return type == SCRIPT_UPDATE;
     }
 
     public boolean isMultiSelect() {
