@@ -93,6 +93,18 @@ public class ModuleInfo {
     public ICustomModuleCreator creator;
 
     /**
+     *  获取所有的标签
+     * @return
+     */
+    public List<String> getTags()
+    {
+        if(tags==null)
+        {
+            tags=new ArrayList<>();
+        }
+        return tags;
+    }
+    /**
      * 构建自定义组件
      * @param name
      * @param code
