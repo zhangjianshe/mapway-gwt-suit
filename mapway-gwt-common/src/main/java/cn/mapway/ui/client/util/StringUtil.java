@@ -767,4 +767,28 @@ public class StringUtil {
         }
         return sb.toString();
     }
+
+    public static String uuidToPath(String uuid)
+    {
+        // Validate input
+        if (uuid == null || uuid.length() < 2) {
+            throw new IllegalArgumentException("UUID must be non-null and at least 2 characters long");
+        }
+
+        // Remove hyphens to get a continuous string (optional, depending on desired format)
+        String cleanUuid = uuid.replace("-", "");
+
+        // Ensure the cleaned UUID is long enough
+        if (cleanUuid.length() < 2) {
+            throw new IllegalArgumentException("UUID after removing hyphens is too short");
+        }
+
+        // Split into directory (first 2 chars) and file (remaining chars)
+        String directory = cleanUuid.substring(0, 2);
+        String file = cleanUuid.substring(2);
+
+        // Combine into path format
+        return directory + "/" + file;
+
+    }
 }
