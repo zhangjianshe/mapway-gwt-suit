@@ -19,6 +19,9 @@ public class AttrEditorMetaData {
     public void setEditorCode(String code) {
         editorCode = code;
     }
+    public String getEditorCode(){
+        return editorCode;
+    }
 
     public List<ParameterValue> getParameters() {
         return parameters;

@@ -30,10 +30,6 @@ public abstract class AbstractEditorMetaData extends AttrEditorMetaData implemen
      */
     protected abstract void initMetaData();
 
-    @Override
-    public String getEditorCode() {
-        return editorCode;
-    }
 
 
     /**
