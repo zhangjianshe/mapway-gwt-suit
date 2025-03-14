@@ -732,4 +732,39 @@ public class StringUtil {
         }
         return defaultValue;
     }
+
+    /**
+     * Converts a Long number to a path-like string by formatting it with '/' every three characters.
+     *
+     * @param number the Long number to convert
+     * @return the formatted path string
+     * @throws IllegalArgumentException if the number is null
+     */
+    public static String numberToPath(Long number) {
+        if (number == null) {
+            throw new IllegalArgumentException("Number cannot be null");
+        }
+        return stringToPath(String.valueOf(number));
+    }
+
+    /**
+     * Formats a string by inserting '/' every three characters.
+     *
+     * @param str the string to format
+     * @return the formatted path string
+     */
+    public static String stringToPath(String str) {
+        if (str == null || str.isEmpty()) {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < str.length(); i += 2) {
+            int end = Math.min(i + 2, str.length());
+            if (i > 0) {
+                sb.append("/");
+            }
+            sb.append(str.substring(i, end));
+        }
+        return sb.toString();
+    }
 }
