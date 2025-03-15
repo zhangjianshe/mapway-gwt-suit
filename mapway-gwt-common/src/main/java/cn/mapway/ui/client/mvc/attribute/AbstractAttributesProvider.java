@@ -103,7 +103,14 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
             } else {
                 editCode = attribute.getEditorMetaData().getEditorCode();
             }
-            values.add(new AttributeValue(attribute.getName(), attribute.getAltName(), value, InputTypeEnum.INPUT_OTHERS.code, editCode));
+            AttributeValue attributeValue=new AttributeValue();
+            attributeValue.setEditCode(editCode);
+            attributeValue.setName(attribute.getName());
+            attributeValue.setAltName(attribute.getAltName());
+            attributeValue.setValue(value);
+            // TODO add parameterType
+            attributeValue.setInputType(InputTypeEnum.INPUT_OTHERS.code);
+            values.add(attributeValue);
         }
         return values;
     }
