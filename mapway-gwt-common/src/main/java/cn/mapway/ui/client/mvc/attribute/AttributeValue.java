@@ -33,6 +33,24 @@ public class AttributeValue implements Serializable, IsSerializable {
         this.name = name;
         this.value = value;
     }
+
+    /**
+     *
+     * @param name
+     * @param altName
+     * @param value
+     * @param inputType
+     * @param editCode
+     * @param parameterType is type
+     */
+    public AttributeValue(String name, String altName,String value,Integer inputType,String editCode,Integer parameterType) {
+        this.name = name;
+        this.altName = altName;
+        this.value = value;
+        this.inputType = inputType;
+        this.editCode = editCode;
+        this.parameterType = parameterType;
+    }
     public AttributeValue()
     {
 
