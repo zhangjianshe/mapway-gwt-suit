@@ -1,5 +1,7 @@
 package cn.mapway.geo.shared.vector;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
+
 import java.io.Serializable;
 
 /**
@@ -8,7 +10,7 @@ import java.io.Serializable;
  *
  * @author zhang
  */
-public class Point extends GeoObject implements Serializable {
+public class Point extends GeoObject implements Serializable, IsSerializable {
     public double x;
     public double y;
 
