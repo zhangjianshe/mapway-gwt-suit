@@ -8,6 +8,7 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.storage.client.Storage;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -165,6 +166,28 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         item.addCommonHandler(itemClicked);
         return item;
     }
+
+    public ImageTextItem addImageItem(ImageTextItem parent, String text, String imageUrl) {
+        ImageTextItem item;
+        if (parent == null) {
+            item = new ImageTextItem();
+            if (itemStyleName != null && itemStyleName.length() > 0) {
+                item.setStyleName(itemStyleName);
+            }
+            item.setParentItem(null);
+            item.setValue(new Image(imageUrl), text);
+            item.setLevel(0);
+            item.setStorageKey(storagePrefix + "/" + text);
+            item.enableCheck(enabledChecked);
+            add(item);
+            item.setParentItem(null);
+        } else {
+            item = parent.addChild(text, new Image(imageUrl));
+        }
+        item.addCommonHandler(itemClicked);
+        return item;
+    }
+
 
     public ImageTextItem addFontIconItem(ImageTextItem parent, String text, String unicode) {
         ImageTextItem item;

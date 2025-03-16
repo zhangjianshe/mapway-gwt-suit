@@ -112,6 +112,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         setValue(resource, text);
         installEvent();
     }
+    public ImageTextItem(Image resource, String text) {
+        initWidget(ourUiBinder.createAndBindUi(this));
+        setStyleName("iti-default");
+        children = new ArrayList<>();
+        setValue(resource, text);
+        installEvent();
+    }
 
     /**
      * 根据unnicode 创建条目
@@ -213,7 +220,22 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         lbText.getElement().setAttribute("bold", "true");
         return item;
     }
-
+    public ImageTextItem addChild(String text, Image image) {
+        ImageTextItem item = new ImageTextItem(image, text);
+        item.setStyleName(root.getStyleName());
+        item.setStorageKey(storageKey + "/" + text);
+        item.setParentItem(this);
+        if (this.children.size() == 0) {
+            openClose.setIconUnicode(Fonts.DOWN);
+            openClose.setVisible(true);
+        }
+        item.enableCheck(check.isVisible());
+        childrenPanel.add(item);
+        item.setLevel(getLevel() + 1);
+        children.add(item);
+        lbText.getElement().setAttribute("bold", "true");
+        return item;
+    }
     public ImageTextItem addChild(String text, ImageResource icon) {
         ImageTextItem item = new ImageTextItem(icon, text);
         item.setStyleName(root.getStyleName());
@@ -401,10 +423,11 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         return fontIcon;
     }
 
-    public void setValue(Image resource, String text) {
-        setIcon(resource);
+    public void setValue(Image image, String text) {
+        setIcon(image);
         setText(text);
     }
+
 
     public void setValue(String iconUnicode, String text) {
         setIcon(iconUnicode);
