@@ -11,6 +11,10 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.dom.DomGlobal;
+import elemental2.dom.Element;
+import elemental2.svg.SVGElement;
+import jsinterop.base.Js;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -166,6 +170,28 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         item.addCommonHandler(itemClicked);
         return item;
     }
+
+    public ImageTextItem addSvgItem(ImageTextItem parent, String text, String svgString) {
+        ImageTextItem item;
+        if (parent == null) {
+            item = new ImageTextItem();
+            if (itemStyleName != null && itemStyleName.length() > 0) {
+                item.setStyleName(itemStyleName);
+            }
+            item.setParentItem(null);
+            item.setSvgIcon(svgString, text);
+            item.setLevel(0);
+            item.setStorageKey(storagePrefix + "/" + text);
+            item.enableCheck(enabledChecked);
+            add(item);
+        } else {
+            item = parent.addChild(text, "");
+            item.setSvgIcon(svgString, text);
+        }
+        item.addCommonHandler(itemClicked);
+        return item;
+    }
+
 
     public ImageTextItem addImageItem(ImageTextItem parent, String text, String imageUrl) {
         ImageTextItem item;

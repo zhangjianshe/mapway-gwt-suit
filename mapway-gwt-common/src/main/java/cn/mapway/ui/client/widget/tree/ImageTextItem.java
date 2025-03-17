@@ -23,6 +23,10 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.*;
+import elemental2.dom.DomGlobal;
+import elemental2.svg.SVGAElement;
+import elemental2.svg.SVGElement;
+import jsinterop.base.Js;
 
 import java.util.*;
 
@@ -387,6 +391,25 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
+    public void setSvgIcon(String svgIcon,String text) {
+        icon.setVisible(false);
+        fontIcon.setVisible(true);
+        if (!StringUtil.isBlank(svgIcon) && svgIcon.startsWith("<svg ")) {
+            SVGElement svg = createSVG(svgIcon);
+            svg.setAttribute("width","22");
+            svg.setAttribute("height","22");
+            fontIcon.getElement().appendChild(Js.uncheckedCast(svg));
+        }
+        else {
+            fontIcon.setIconUnicode(Fonts.UNKNOWN);
+        }
+        setText(text);
+    }
+    private static SVGElement createSVG(String svgXMl) {
+        elemental2.dom.Element element = DomGlobal.document.createElement("div");
+        element.innerHTML = svgXMl;
+        return Js.uncheckedCast(element.firstElementChild);
+    }
     public void setIcon(ImageResource resource) {
         icon.setVisible(false);
         fontIcon.setVisible(false);
