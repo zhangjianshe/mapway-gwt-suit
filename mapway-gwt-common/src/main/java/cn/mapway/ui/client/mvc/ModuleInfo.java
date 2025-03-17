@@ -50,6 +50,11 @@ public class ModuleInfo {
     public ImageResource icon;
 
     /**
+     * iconUrl  link or svg String or Base64 Image
+     */
+    public String iconUrl;
+
+    /**
      * 是否单例创建.
      */
     public Boolean single;
