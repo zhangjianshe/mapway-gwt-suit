@@ -50,6 +50,11 @@ public class ModuleInfo {
     public ImageResource icon;
 
     /**
+     * iconUrl  link or svg String or Base64 Image
+     */
+    public String iconUrl;
+
+    /**
      * 是否单例创建.
      */
     public Boolean single;
@@ -124,6 +129,7 @@ public class ModuleInfo {
         this.themes = new ArrayList<>();
         children = new ArrayList<>();
         events = new ArrayList<>();
+        this.iconUrl=iconUrl;
         this.custom = true;
         this.creator = creator;
     }
