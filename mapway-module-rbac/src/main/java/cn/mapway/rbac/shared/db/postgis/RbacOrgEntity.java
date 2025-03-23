@@ -84,6 +84,12 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   public static final String FLD_CODE = "code";
 
   /**
+   * code
+   * 数据库字段序号:12
+   */
+  public static final String FLD_REGION_CODE = "region_code";
+
+  /**
    * 数据库表名称:rbac_org
    */
   public static final String TBL_RBAC_ORG = "rbac_org";
@@ -242,6 +248,22 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   @Comment("组织代码")
   private String code;
 
+
+  /**
+   * 行政区划代码
+   * 缺省值:null
+   * 数据类型varchar
+   * 数据库字段长度:255(不允许为空)
+   */
+  @ApiField("行政区划代码")
+  @Column("region_code")
+  @ColDefine(
+          type = org.nutz.dao.entity.annotation.ColType.VARCHAR
+  )
+  @Comment("行政区划代码")
+  private String regionCode;
+
+
   public String getId() {
     return this.id;
   }
@@ -328,5 +350,12 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
 
   public void setCode(String code) {
     this.code=code;
+  }
+
+  public String getRegionCode() {
+    return this.regionCode;
+  }
+  public void setRegionCode(String regionCode) {
+    this.regionCode=regionCode;
   }
 }

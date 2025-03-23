@@ -4,7 +4,9 @@ import cn.mapway.biz.core.BizResult;
 import cn.mapway.rbac.client.user.RbacUser;
 import cn.mapway.rbac.server.dao.*;
 import cn.mapway.rbac.shared.RbacConstant;
+import cn.mapway.rbac.shared.RbacUserOrg;
 import cn.mapway.rbac.shared.ResourceKind;
+import cn.mapway.rbac.shared.UserRoleResource;
 import cn.mapway.rbac.shared.db.postgis.*;
 import cn.mapway.rbac.shared.rpc.*;
 import cn.mapway.server.MyScans;
@@ -15,18 +17,19 @@ import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.shared.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Cnd;
+import org.nutz.dao.Sqls;
+import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.cri.Exps;
 import org.nutz.dao.util.cri.SqlRange;
 import org.nutz.dao.util.cri.SqlValueRange;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
+import org.nutz.lang.random.ListRandom;
 import org.nutz.lang.random.R;
-import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
-import javax.servlet.http.Cookie;
 import java.lang.annotation.Annotation;
 import java.util.*;
 
@@ -50,10 +53,10 @@ import java.util.*;
 @RoleDeclares(
         {
                 @RoleDeclare(
-                        name = "系统", code =RbacConstant.ROLE_SYS, summary = "系统"
+                        name = "系统", code = RbacConstant.ROLE_SYS, summary = "系统"
                 ),
                 @RoleDeclare(
-                        name = "系统维护员", code = RbacConstant.ROLE_SYS_MAINTAINER, summary = "系统维护", parentCode =RbacConstant.ROLE_SYS,
+                        name = "系统维护员", code = RbacConstant.ROLE_SYS_MAINTAINER, summary = "系统维护", parentCode = RbacConstant.ROLE_SYS,
                         resources = {RbacConstant.RESOURCE_RBAC_MAINTAINER, RbacConstant.RESOURCE_RBAC_AUTHORITY}
                 )
         }
@@ -79,6 +82,52 @@ public class RbacUserService {
 
     public BizResult<Boolean> isAssignRole(IUserInfo userInfo, String userCode, String roleCode) {
         return isAssignRole(userInfo.getSystemCode(), userInfo.getId(), userCode, roleCode);
+    }
+
+    /**
+     * 获取用户在某个组织下的o所有角色以及资源
+     * @param userCode
+     * @return
+     */
+    public BizResult<UserRoleResource> userRoleResourceInOrg(String userCode) {
+
+
+        return BizResult.success(new UserRoleResource());
+    }
+    /**
+     * 用户所属组织
+     * select * from org where org_code in(select org_code from rbac_org_user where user_code=?)
+     *
+     * @param systemCode
+     * @param userId
+     * @return
+     */
+    public BizResult<List<RbacUserOrg>> userOrgList(String systemCode, String userId) {
+
+        List<RbacOrgUserEntity> users=rbacOrgUserDao.query(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
+                .and(RbacOrgUserEntity.FLD_SYSTEM_CODE, "=", systemCode));
+        List<RbacUserOrg> list=new ArrayList<>();
+        users.forEach(user-> {
+            RbacOrgEntity org = rbacOrgDao.fetch(user.getOrgCode());
+            RbacUserOrg userOrg = new RbacUserOrg();
+            userOrg.systemCode = systemCode;
+            userOrg.orgId = org.getId();
+            userOrg.parentId = org.getParentId();
+            userOrg.orgName = org.getName();
+            userOrg.orgIcon = org.getIcon();
+            userOrg.summary = org.getSummary();
+            userOrg.link = org.getLink();
+            userOrg.charger = org.getCharger();
+            userOrg.email = org.getEmail();
+            userOrg.tel = org.getTel();
+            userOrg.regionCode = org.getRegionCode();
+            userOrg.userId = user.getUserId();
+            userOrg.userCode = user.getUserCode();
+            userOrg.userName = user.getAliasName();
+            userOrg.userIcon = user.getAvatar();
+            list.add(userOrg);
+        });
+        return BizResult.success(list);
     }
 
 
@@ -131,6 +180,66 @@ public class RbacUserService {
                 return BizResult.success(false);
             }
         }
+    }
+
+    /**
+     * 用户身份 是否拥有某个角色
+     * @param userCode
+     * @param roleCode
+     * @return
+     */
+    public BizResult<Boolean> isUserCodeAssignRole( String userCode, String roleCode) {
+        //用户身份列表
+        Cnd where = Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", userCode);
+        RbacOrgUserEntity orgUser= rbacOrgUserDao.fetch(where);
+        if(orgUser==null){
+            log.warn("没有查询到用户身份:" + userCode);
+            return BizResult.success(false);
+        }
+         where = Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", userCode)
+                .and(RbacUserCodeRoleEntity.FLD_ROLE_CODE, "=", roleCode);
+        if (rbacUserCodeRoleDao.count(where) > 0) {
+            return BizResult.success(true);
+        } else {
+            return BizResult.success(false);
+        }
+    }
+
+    /**
+     * 用户身份 是否拥有某个角色
+     * @param userCode
+     * @param resourceCode
+     * @return
+     */
+    public BizResult<Boolean> isUserCodeAssignResource( String userCode, String resourceCode) {
+        //用户身份列表
+        Cnd where = Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", userCode);
+        RbacOrgUserEntity orgUser= rbacOrgUserDao.fetch(where);
+        if(orgUser==null){
+            log.warn("没有查询到用户身份:" + userCode);
+            return BizResult.success(false);
+        }
+
+        Set<String> assignRoleCodes=new HashSet<>();
+        List<RbacUserCodeRoleEntity> roleEntities = rbacUserCodeRoleDao.query(Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", userCode));
+        if(roleEntities==null || roleEntities.size()==0){
+            log.warn("没有查询到用户身份:" + userCode);
+            return BizResult.success(false);
+        }
+        for(RbacUserCodeRoleEntity entity:roleEntities){
+            List<String> roleCodes = queryRolesWidthAllChildren(entity.getRoleCode());
+            assignRoleCodes.addAll(roleCodes);
+        }
+        //角色列表　对应的所有资源
+        String subSql = "select count(*) from rbac_role_resource where role_code in @roleCodes and resource_code= @resourceCode";
+
+        Sql sql = Sqls.create(subSql);
+        sql.setCallback(Sqls.callback.longValue());
+        sql.setParam("roleCodes", assignRoleCodes);
+        sql.setParam("resourceCode", resourceCode);
+        rbacResourceDao.execute(sql);
+        return BizResult.success(sql.getLong()>0);
+
     }
 
     public BizResult<Boolean> isAssignResource(IUserInfo userInfo, String userCode, String roleCode) {
@@ -282,7 +391,7 @@ public class RbacUserService {
     /**
      * 从代码中分析权限点　并同步到数据库中
      */
-    public void importResourcePointFromCode(List<Class<?>> scanPackages,IUserInfo superUser) {
+    public void importResourcePointFromCode(List<Class<?>> scanPackages, IUserInfo superUser) {
         List<ResourceDeclare> resourceDeclares = new ArrayList<>();
         List<RoleDeclare> roleDeclares = new ArrayList<>();
 
@@ -291,7 +400,7 @@ public class RbacUserService {
             Set<Class<?>> classList = MyScans.getClasses(aClass.getPackage().getName());
             for (Class<?> aClass1 : classList) {
                 ResourceDeclares annotation = aClass1.getAnnotation(ResourceDeclares.class);
-                RoleDeclares     roles = aClass1.getAnnotation(RoleDeclares.class);
+                RoleDeclares roles = aClass1.getAnnotation(RoleDeclares.class);
 
                 if (roles == null) {
                     Annotation[] declaredAnnotations = aClass1.getDeclaredAnnotations();
@@ -388,12 +497,12 @@ public class RbacUserService {
                 }
             }
             // update role's resource
-            for(String resourceCode : roleDeclare.resources()){
+            for (String resourceCode : roleDeclare.resources()) {
                 RbacRoleResourceEntity resource = rbacRoleResourceDao.fetch(
                         Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", roleDeclare.code())
                                 .and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resourceCode)
                 );
-                if(resource == null){
+                if (resource == null) {
                     RbacRoleResourceEntity roleResource = new RbacRoleResourceEntity();
                     roleResource.setResourceCode(resourceCode);
                     roleResource.setRoleCode(roleDeclare.code());
@@ -403,8 +512,7 @@ public class RbacUserService {
         }
         log.info("更新权限点完成，共{}个", resourceDeclares.size());
 
-        if(superUser!=null)
-        {
+        if (superUser != null) {
             log.info("检查超级管理员的权限");
             checkSystemOrganization(superUser);
 
@@ -413,8 +521,7 @@ public class RbacUserService {
 
     private void checkSystemOrganization(IUserInfo superUser) {
         RbacOrgEntity orgEntity = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", RbacConstant.SYSTEM_MANAGER_ORG_CODE));
-        if(orgEntity==null)
-        {
+        if (orgEntity == null) {
             orgEntity = new RbacOrgEntity();
             orgEntity.setCode(RbacConstant.SYSTEM_MANAGER_ORG_CODE);
             orgEntity.setName("系统管理组织");
@@ -430,8 +537,7 @@ public class RbacUserService {
         //check superUser
         RbacOrgUserEntity orgUserEntity = rbacOrgUserDao.fetch(Cnd.where(RbacOrgUserEntity.FLD_ORG_CODE, "=", RbacConstant.SYSTEM_MANAGER_ORG_CODE)
                 .and(RbacOrgUserEntity.FLD_USER_ID, "=", superUser.getId()));
-        if(orgUserEntity==null)
-        {
+        if (orgUserEntity == null) {
             orgUserEntity = new RbacOrgUserEntity();
             orgUserEntity.setOrgCode(RbacConstant.SYSTEM_MANAGER_ORG_CODE);
             orgUserEntity.setUserId(superUser.getId());
@@ -447,9 +553,8 @@ public class RbacUserService {
         RbacUserCodeRoleEntity codeRoleEntity = rbacUserCodeRoleDao.fetch(Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", orgUserEntity.getUserCode())
                 .and(RbacUserCodeRoleEntity.FLD_ROLE_CODE, "=", RbacConstant.ROLE_SYS_MAINTAINER));
 
-        if(codeRoleEntity==null)
-        {
-            codeRoleEntity=new RbacUserCodeRoleEntity();
+        if (codeRoleEntity == null) {
+            codeRoleEntity = new RbacUserCodeRoleEntity();
             codeRoleEntity.setRoleCode(RbacConstant.ROLE_SYS_MAINTAINER);
             codeRoleEntity.setUserCode(orgUserEntity.getUserCode());
             codeRoleEntity.setCreateTime(new Date());
@@ -562,10 +667,10 @@ public class RbacUserService {
 
     /**
      * 超级管理
+     *
      * @return
      */
-    public RbacUser findSuperUser()
-    {
+    public RbacUser findSuperUser() {
         RbacUserEntity fetch = rbacUserDao.fetch(Cnd.where(RbacUserEntity.FLD_USER_ID, "=", RbacConstant.SUPER_USER_ID));
         return new RbacUser(fetch);
     }
@@ -573,24 +678,23 @@ public class RbacUserService {
     /**
      * 退出系统
      */
-    public void logout()
-    {
+    public void logout() {
         ServletUtils.getSession().removeAttribute(CommonConstant.KEY_LOGIN_USER);
     }
 
     /**
      * 获取登录用户
+     *
      * @return
      */
-    public RbacUser getLoginUser()
-    {
-        if(ServletUtils.getSession().getAttribute(CommonConstant.KEY_LOGIN_USER)==null){
-           String apiToken=ServletUtils.getRequest().getHeader(CommonConstant.API_TOKEN);
-           if(apiToken!=null && "123456".equals(apiToken)){
-               RbacUser user = findSuperUser();
-               ServletUtils.getSession().setAttribute(CommonConstant.KEY_LOGIN_USER, user);
-           }
+    public RbacUser getLoginUser() {
+        if (ServletUtils.getSession().getAttribute(CommonConstant.KEY_LOGIN_USER) == null) {
+            String apiToken = ServletUtils.getRequest().getHeader(CommonConstant.API_TOKEN);
+            if ("123456".equals(apiToken)) {
+                RbacUser user = findSuperUser();
+                ServletUtils.getSession().setAttribute(CommonConstant.KEY_LOGIN_USER, user);
+            }
         }
-        return (RbacUser)ServletUtils.getSession().getAttribute(CommonConstant.KEY_LOGIN_USER);
+        return (RbacUser) ServletUtils.getSession().getAttribute(CommonConstant.KEY_LOGIN_USER);
     }
 }

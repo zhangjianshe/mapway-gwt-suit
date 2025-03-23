@@ -54,6 +54,18 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         });
 
+        getAttributes().add(new TextBoxAttribute("regionCode", "行政区划代码") {
+            @Override
+            public Object getValue() {
+                return org.getRegionCode();
+            }
+
+            @Override
+            public void setValue(Object o) {
+                org.setRegionCode(DataCastor.castToString(o));
+            }
+        });
+
         getAttributes().add(new TextBoxAttribute("charge","负责人") {
             @Override
             public Object getValue() {
