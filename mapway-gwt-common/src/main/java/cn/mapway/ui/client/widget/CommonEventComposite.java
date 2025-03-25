@@ -154,10 +154,7 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
 
     @Override
     public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
-        if (oldHandler != null) {
-            oldHandler.removeHandler();
-            oldHandler = null;
-        }
+       removeHandler();
         if (handler == null) {
             return null;
         }
@@ -165,6 +162,13 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         return oldHandler;
     }
 
+    public void removeHandler()
+    {
+        if (oldHandler != null) {
+            oldHandler.removeHandler();
+            oldHandler = null;
+        }
+    }
 
     /**
      * 发送消息记录

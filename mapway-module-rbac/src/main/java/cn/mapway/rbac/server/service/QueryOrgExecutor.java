@@ -16,6 +16,7 @@ import org.nutz.dao.Sqls;
 import org.nutz.dao.sql.Sql;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
+import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.springframework.stereotype.Component;
 
@@ -53,7 +54,7 @@ public class QueryOrgExecutor extends AbstractBizExecutor<QueryOrgResponse, Quer
             } else {
                 //查询组织结构数据
                 RbacOrgEntity org = rbacOrgDao.fetch(request.getOrgId());
-                queryOrgResponse.setOrgs(List.of(org));
+                queryOrgResponse.setOrgs(Lang.list(org));
             }
         }
         return BizResult.success(queryOrgResponse);

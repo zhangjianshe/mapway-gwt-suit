@@ -1,6 +1,5 @@
 package cn.mapway.ui.client;
 
-import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.Callback;
 import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.resources.client.ImageResource;
@@ -11,13 +10,16 @@ import elemental2.promise.Promise;
 /**
  * 浏览器中的运行环境
  */
-public interface IClientContext  {
+public interface IClientContext {
     /**
      * 获取当前登录的用户信息
+     *
      * @return
      */
     IUserInfo getUserInfo();
+
     void setUserInfo(IUserInfo userInfo);
+
     Promise<Void> confirmDelete(String message);
 
     Promise<Void> confirm3(ImageResource icon, String title, String message);
@@ -77,18 +79,20 @@ public interface IClientContext  {
      */
     void alert(String message);
 
-    void fireEvent(GwtEvent <?> event);
+    void fireEvent(GwtEvent<?> event);
 
 
     /**
      * 全局提供一个选择用户对话框
+     *
      * @return
      */
-     Promise<JsArray<IUserInfo>> chooseUser();
+    Promise<JsArray<IUserInfo>> chooseUser();
 
     /**
-     *  当前用户的tokeｎ
+     * 当前用户的tokeｎ
+     *
      * @return
      */
-     String getToken();
+    String getToken();
 }

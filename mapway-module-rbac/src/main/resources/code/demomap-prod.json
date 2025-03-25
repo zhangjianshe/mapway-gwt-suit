@@ -1,0 +1,18 @@
+[{
+  "name": "Global",
+  "id": "5cb5a34363bd450ca39c163dcd0540c2",
+  "location": "/data/sample/world",
+  "lng": 0.0,
+  "lat": 0.0,
+  "minZoom": 0,
+  "maxZoom": 9
+}, {
+  "name": "测试地图",
+  "id": "5acb81906152495bad8d85d21e4f2fe3",
+  "location": "/data/sample/test",
+  "lng": 104.1064453125,
+  "lat": 30.751277776257798,
+  "minZoom": 16,
+  "maxZoom": 16
+}]
+

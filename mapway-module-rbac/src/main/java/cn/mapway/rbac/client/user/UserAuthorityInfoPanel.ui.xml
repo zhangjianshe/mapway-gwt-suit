@@ -1,0 +1,19 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:tree="urn:import:cn.mapway.ui.client.widget.tree">
+    <ui:style>
+        .left {
+            background-color: #f9f9f9;
+        }</ui:style>
+    <g:DockLayoutPanel>
+        <g:west size="300">
+            <g:ScrollPanel addStyleNames="{style.left}">
+                <tree:ZTree ui:field="orgList" width="100%"/>
+            </g:ScrollPanel>
+        </g:west>
+        <g:center>
+            <g:ScrollPanel>
+                <tree:ZTree ui:field="roleList" width="100%"/>
+            </g:ScrollPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

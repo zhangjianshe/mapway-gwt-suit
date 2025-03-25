@@ -6,7 +6,6 @@ import cn.mapway.rbac.server.dao.*;
 import cn.mapway.rbac.shared.RbacConstant;
 import cn.mapway.rbac.shared.RbacUserOrg;
 import cn.mapway.rbac.shared.ResourceKind;
-import cn.mapway.rbac.shared.UserRoleResource;
 import cn.mapway.rbac.shared.db.postgis.*;
 import cn.mapway.rbac.shared.rpc.*;
 import cn.mapway.server.MyScans;
@@ -24,7 +23,6 @@ import org.nutz.dao.util.cri.SqlRange;
 import org.nutz.dao.util.cri.SqlValueRange;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
-import org.nutz.lang.random.ListRandom;
 import org.nutz.lang.random.R;
 import org.springframework.stereotype.Service;
 
@@ -85,16 +83,6 @@ public class RbacUserService {
     }
 
     /**
-     * 获取用户在某个组织下的o所有角色以及资源
-     * @param userCode
-     * @return
-     */
-    public BizResult<UserRoleResource> userRoleResourceInOrg(String userCode) {
-
-
-        return BizResult.success(new UserRoleResource());
-    }
-    /**
      * 用户所属组织
      * select * from org where org_code in(select org_code from rbac_org_user where user_code=?)
      *
@@ -104,11 +92,15 @@ public class RbacUserService {
      */
     public BizResult<List<RbacUserOrg>> userOrgList(String systemCode, String userId) {
 
-        List<RbacOrgUserEntity> users=rbacOrgUserDao.query(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
+        List<RbacOrgUserEntity> users = rbacOrgUserDao.query(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
                 .and(RbacOrgUserEntity.FLD_SYSTEM_CODE, "=", systemCode));
-        List<RbacUserOrg> list=new ArrayList<>();
-        users.forEach(user-> {
-            RbacOrgEntity org = rbacOrgDao.fetch(user.getOrgCode());
+        List<RbacUserOrg> list = new ArrayList<>();
+        for (RbacOrgUserEntity user : users) {
+            RbacOrgEntity org = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", user.getOrgCode()));
+            if (org == null) {
+                log.error("用户所属组织不存在" + user.getOrgCode());
+                continue;
+            }
             RbacUserOrg userOrg = new RbacUserOrg();
             userOrg.systemCode = systemCode;
             userOrg.orgId = org.getId();
@@ -126,7 +118,8 @@ public class RbacUserService {
             userOrg.userName = user.getAliasName();
             userOrg.userIcon = user.getAvatar();
             list.add(userOrg);
-        });
+        }
+
         return BizResult.success(list);
     }
 
@@ -184,19 +177,20 @@ public class RbacUserService {
 
     /**
      * 用户身份 是否拥有某个角色
+     *
      * @param userCode
      * @param roleCode
      * @return
      */
-    public BizResult<Boolean> isUserCodeAssignRole( String userCode, String roleCode) {
+    public BizResult<Boolean> isUserCodeAssignRole(String userCode, String roleCode) {
         //用户身份列表
         Cnd where = Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", userCode);
-        RbacOrgUserEntity orgUser= rbacOrgUserDao.fetch(where);
-        if(orgUser==null){
+        RbacOrgUserEntity orgUser = rbacOrgUserDao.fetch(where);
+        if (orgUser == null) {
             log.warn("没有查询到用户身份:" + userCode);
             return BizResult.success(false);
         }
-         where = Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", userCode)
+        where = Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", userCode)
                 .and(RbacUserCodeRoleEntity.FLD_ROLE_CODE, "=", roleCode);
         if (rbacUserCodeRoleDao.count(where) > 0) {
             return BizResult.success(true);
@@ -207,26 +201,27 @@ public class RbacUserService {
 
     /**
      * 用户身份 是否拥有某个角色
+     *
      * @param userCode
      * @param resourceCode
      * @return
      */
-    public BizResult<Boolean> isUserCodeAssignResource( String userCode, String resourceCode) {
+    public BizResult<Boolean> isUserCodeAssignResource(String userCode, String resourceCode) {
         //用户身份列表
         Cnd where = Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", userCode);
-        RbacOrgUserEntity orgUser= rbacOrgUserDao.fetch(where);
-        if(orgUser==null){
+        RbacOrgUserEntity orgUser = rbacOrgUserDao.fetch(where);
+        if (orgUser == null) {
             log.warn("没有查询到用户身份:" + userCode);
             return BizResult.success(false);
         }
 
-        Set<String> assignRoleCodes=new HashSet<>();
+        Set<String> assignRoleCodes = new HashSet<>();
         List<RbacUserCodeRoleEntity> roleEntities = rbacUserCodeRoleDao.query(Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", userCode));
-        if(roleEntities==null || roleEntities.size()==0){
+        if (roleEntities == null || roleEntities.size() == 0) {
             log.warn("没有查询到用户身份:" + userCode);
             return BizResult.success(false);
         }
-        for(RbacUserCodeRoleEntity entity:roleEntities){
+        for (RbacUserCodeRoleEntity entity : roleEntities) {
             List<String> roleCodes = queryRolesWidthAllChildren(entity.getRoleCode());
             assignRoleCodes.addAll(roleCodes);
         }
@@ -238,7 +233,7 @@ public class RbacUserService {
         sql.setParam("roleCodes", assignRoleCodes);
         sql.setParam("resourceCode", resourceCode);
         rbacResourceDao.execute(sql);
-        return BizResult.success(sql.getLong()>0);
+        return BizResult.success(sql.getLong() > 0);
 
     }
 
@@ -558,7 +553,7 @@ public class RbacUserService {
             codeRoleEntity.setRoleCode(RbacConstant.ROLE_SYS_MAINTAINER);
             codeRoleEntity.setUserCode(orgUserEntity.getUserCode());
             codeRoleEntity.setCreateTime(new Date());
-            codeRoleEntity.setCreateUser("SYSTEM ADMIn");
+            codeRoleEntity.setCreateUser("SYSTEM ADMIN");
             rbacUserCodeRoleDao.insert(codeRoleEntity);
         }
 
@@ -696,5 +691,15 @@ public class RbacUserService {
             }
         }
         return (RbacUser) ServletUtils.getSession().getAttribute(CommonConstant.KEY_LOGIN_USER);
+    }
+
+    /**
+     * 查询用户身份 信息 根据用户身份代码
+     *
+     * @param userCode
+     * @return
+     */
+    public RbacOrgUserEntity queryUserOrg(String userCode) {
+        return rbacOrgUserDao.fetch(Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", userCode));
     }
 }

@@ -6,6 +6,10 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IRbacServerAsync {
     ///CODE_GEN_INSERT_POINT///
+	void queryUserRoleResource(QueryUserRoleResourceRequest request, AsyncCallback<RpcResult<QueryUserRoleResourceResponse>> async);
+
+	void queryUserOrg(QueryUserOrgRequest request, AsyncCallback<RpcResult<QueryUserOrgResponse>> async);
+
 	void deleteOrgUser(DeleteOrgUserRequest request, AsyncCallback<RpcResult<DeleteOrgUserResponse>> async);
 
 	void updateOrgUser(UpdateOrgUserRequest request, AsyncCallback<RpcResult<UpdateOrgUserResponse>> async);

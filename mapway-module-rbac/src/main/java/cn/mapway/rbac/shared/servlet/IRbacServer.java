@@ -9,6 +9,10 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 @RemoteServiceRelativePath(RbacConstant.DEFAULT_SERVER_PATH)
 public interface IRbacServer extends RemoteService {
     ///CODE_GEN_INSERT_POINT///
+	RpcResult<QueryUserRoleResourceResponse> queryUserRoleResource(QueryUserRoleResourceRequest request);
+
+	RpcResult<QueryUserOrgResponse> queryUserOrg(QueryUserOrgRequest request);
+
 	RpcResult<DeleteOrgUserResponse> deleteOrgUser(DeleteOrgUserRequest request);
 
 	RpcResult<UpdateOrgUserResponse> updateOrgUser(UpdateOrgUserRequest request);

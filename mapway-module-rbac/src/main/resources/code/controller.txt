@@ -1,0 +1,15 @@
+
+    @Resource
+    __NAME__Executor __name__Executor;
+    /**
+     * __NAME__
+     *
+     * @param request request
+     * @return data
+     */
+    @Doc(value = "__NAME__", retClazz = {__NAME__Response.class})
+    @RequestMapping(value = "/__name__", method = RequestMethod.POST)
+    public ApiResult<__NAME__Response> __name__(@RequestBody __NAME__Request request) {
+        BizResult<__NAME__Response> bizResult = __name__Executor.execute(getBizContext(), BizRequest.wrap("", request));
+        return bizResult.toApiResult();
+    }

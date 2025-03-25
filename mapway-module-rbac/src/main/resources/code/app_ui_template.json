@@ -1,0 +1,557 @@
+{
+  "layout": {
+    "moduleCode": null,
+    "attributes": [
+      {
+        "name": "zIndex",
+        "altName": "ZIndex",
+        "value": "0",
+        "inputType": 99,
+        "editCode": "TEXTBOX_EDITOR"
+      },
+      {
+        "name": "background",
+        "altName": "背景",
+        "value": "",
+        "inputType": 99,
+        "editCode": "background_editor"
+      },
+      {
+        "name": "position",
+        "altName": "布局方向位置",
+        "value": "",
+        "inputType": 99,
+        "editCode": "LAYOUT_POSITION_EDITOR"
+      },
+      {
+        "name": "name",
+        "altName": "组件名称",
+        "value": "",
+        "inputType": 99,
+        "editCode": "TEXTBOX_EDITOR"
+      },
+      {
+        "name": "locked",
+        "altName": "锁定位置",
+        "value": "False",
+        "inputType": 99,
+        "editCode": "CHECKBOX_EDITOR"
+      }
+    ],
+    "id": "page_root_id",
+    "order": 1000.0,
+    "children": [
+      {
+        "moduleCode": "widget_layout",
+        "attributes": [
+          {
+            "name": "zIndex",
+            "altName": "ZIndex",
+            "value": "0",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "background",
+            "altName": "背景",
+            "value": "background-color:rgb(8,26,39);background-image:url('__SITE__img/app/background.png');background-repeat-x:no-repeat;background-repeat-y:no-repeat;background-position-x:left;background-size:contain",
+            "inputType": 99,
+            "editCode": "background_editor"
+          },
+          {
+            "name": "position",
+            "altName": "布局方向位置",
+            "value": "horizontalStyle:LEFT_RIGHT,h1:1px,h2:0px,verticalStyle:TOP_HEIGHT,v1:0px,v2:80px",
+            "inputType": 99,
+            "editCode": "LAYOUT_POSITION_EDITOR"
+          },
+          {
+            "name": "name",
+            "altName": "组件名称",
+            "value": "",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "locked",
+            "altName": "锁定位置",
+            "value": "False",
+            "inputType": 99,
+            "editCode": "CHECKBOX_EDITOR"
+          }
+        ],
+        "id": "FpRRFS",
+        "order": 1000.0,
+        "children": [
+          {
+            "moduleCode": "widget_date_time",
+            "attributes": [
+              {
+                "name": "zIndex",
+                "altName": "ZIndex",
+                "value": "0",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "background",
+                "altName": "背景",
+                "value": "",
+                "inputType": 99,
+                "editCode": "background_editor"
+              },
+              {
+                "name": "position",
+                "altName": "布局方向位置",
+                "value": "horizontalStyle:RIGHT_WIDTH,h1:19px,h2:241px,verticalStyle:TOP_HEIGHT,v1:21px,v2:28px",
+                "inputType": 99,
+                "editCode": "LAYOUT_POSITION_EDITOR"
+              },
+              {
+                "name": "name",
+                "altName": "组件名称",
+                "value": "时间标签1",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "locked",
+                "altName": "锁定位置",
+                "value": "False",
+                "inputType": 99,
+                "editCode": "CHECKBOX_EDITOR"
+              },
+              {
+                "name": "dataSourceWidget",
+                "altName": "数据源",
+                "value": "",
+                "inputType": 99,
+                "editCode": "DROPDOWN_EDITOR"
+              },
+              {
+                "name": "scripts",
+                "altName": "脚本",
+                "value": "",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "geoLayers",
+                "altName": "查询的图层ID列表",
+                "value": "",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "style",
+                "altName": "字体样式",
+                "value": "display: flex; color: rgb(248, 247, 247); font-weight: bold; font-size: 24px;",
+                "inputType": 99,
+                "editCode": "html_block_editor"
+              },
+              {
+                "name": "format",
+                "altName": "时间格式",
+                "value": "yyyy-MM-dd HH:mm:ss",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              }
+            ],
+            "id": "TAgSiy",
+            "order": 1000.0,
+            "children": [],
+            "locked": false,
+            "tempRect": {
+              "x": 10.0,
+              "y": 10.0,
+              "width": 100.0,
+              "height": 100.0
+            }
+          },
+          {
+            "moduleCode": "project_list_widget",
+            "attributes": [
+              {
+                "name": "zIndex",
+                "altName": "ZIndex",
+                "value": "0",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "background",
+                "altName": "背景",
+                "value": "",
+                "inputType": 99,
+                "editCode": "background_editor"
+              },
+              {
+                "name": "position",
+                "altName": "布局方向位置",
+                "value": "horizontalStyle:LEFT_RIGHT,h1:663px,h2:298px,verticalStyle:TOP_BOTTOM,v1:2px,v2:0px",
+                "inputType": 99,
+                "editCode": "LAYOUT_POSITION_EDITOR"
+              },
+              {
+                "name": "name",
+                "altName": "组件名称",
+                "value": "项目列表1",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "locked",
+                "altName": "锁定位置",
+                "value": "False",
+                "inputType": 99,
+                "editCode": "CHECKBOX_EDITOR"
+              },
+              {
+                "name": "txtStyle",
+                "altName": "文本样式",
+                "value": "display: flex; color: rgb(224, 224, 224); font-weight: bold; font-size: 24px;",
+                "inputType": 99,
+                "editCode": "html_block_editor"
+              },
+              {
+                "name": "txtStyleSelected",
+                "altName": "选中样式",
+                "value": "display: flex; color: rgb(254, 254, 254); font-weight: bold; font-size: 24px;",
+                "inputType": 99,
+                "editCode": "html_block_editor"
+              },
+              {
+                "name": "btnWidth",
+                "altName": "按钮宽度",
+                "value": "130px",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "btnHeight",
+                "altName": "按钮高度",
+                "value": "80px",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "btnBackground",
+                "altName": "背景图片",
+                "value": "__SITE__img/btn_main.png",
+                "inputType": 99,
+                "editCode": "IMAGE_UPLOAD_EDITOR"
+              },
+              {
+                "name": "backgroundHover",
+                "altName": "鼠标HOVER",
+                "value": "__SITE__img/btn_main_hover.png",
+                "inputType": 99,
+                "editCode": "IMAGE_UPLOAD_EDITOR"
+              },
+              {
+                "name": "backgroundSelected",
+                "altName": "选中",
+                "value": "",
+                "inputType": 99,
+                "editCode": "IMAGE_UPLOAD_EDITOR"
+              }
+            ],
+            "id": "GGtVYF",
+            "order": 1000.0,
+            "children": [],
+            "locked": false,
+            "tempRect": {
+              "x": 10.0,
+              "y": 10.0,
+              "width": 100.0,
+              "height": 100.0
+            }
+          },
+          {
+            "moduleCode": "widget_common_html",
+            "attributes": [
+              {
+                "name": "zIndex",
+                "altName": "ZIndex",
+                "value": "1200",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "background",
+                "altName": "背景",
+                "value": "",
+                "inputType": 99,
+                "editCode": "background_editor"
+              },
+              {
+                "name": "position",
+                "altName": "布局方向位置",
+                "value": "horizontalStyle:LEFT_WIDTH,h1:21px,h2:447px,verticalStyle:TOP_HEIGHT,v1:11px,v2:55px",
+                "inputType": 99,
+                "editCode": "LAYOUT_POSITION_EDITOR"
+              },
+              {
+                "name": "name",
+                "altName": "组件名称",
+                "value": "通用HTML组件1",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "locked",
+                "altName": "锁定位置",
+                "value": "False",
+                "inputType": 99,
+                "editCode": "CHECKBOX_EDITOR"
+              },
+              {
+                "name": "dataSourceWidget",
+                "altName": "数据源",
+                "value": "",
+                "inputType": 99,
+                "editCode": "DROPDOWN_EDITOR"
+              },
+              {
+                "name": "scripts",
+                "altName": "脚本",
+                "value": "",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "geoLayers",
+                "altName": "查询的图层ID列表",
+                "value": "",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "boxImageIndex",
+                "altName": "边框样式",
+                "value": "7",
+                "inputType": 99,
+                "editCode": "BORDERS_EDITOR"
+              },
+              {
+                "name": "iconCode",
+                "altName": "组件图标",
+                "value": "",
+                "inputType": 99,
+                "editCode": "ICON_EDITOR"
+              },
+              {
+                "name": "titleText",
+                "altName": "标题",
+                "value": "",
+                "inputType": 99,
+                "editCode": "TEXTBOX_EDITOR"
+              },
+              {
+                "name": "titleBar",
+                "altName": "显示标题栏",
+                "value": "False",
+                "inputType": 99,
+                "editCode": "CHECKBOX_EDITOR"
+              },
+              {
+                "name": "passthroughEvent",
+                "altName": "穿透事件",
+                "value": "False",
+                "inputType": 99,
+                "editCode": "CHECKBOX_EDITOR"
+              },
+              {
+                "name": "htmlContent",
+                "altName": "内容",
+                "value": "<div style=\"color:white;fotn-weight:bold;font-size:1.8rem\">__TITLE__</div>",
+                "inputType": 99,
+                "editCode": "TEXTAREA_EDITOR"
+              }
+            ],
+            "id": "lClKqG",
+            "order": 1000.0,
+            "children": [],
+            "locked": false,
+            "tempRect": {
+              "x": 10.0,
+              "y": 10.0,
+              "width": 100.0,
+              "height": 100.0
+            }
+          }
+        ],
+        "locked": false,
+        "tempRect": {
+          "x": 10.0,
+          "y": 10.0,
+          "width": 100.0,
+          "height": 100.0
+        }
+      },
+      {
+        "moduleCode": "project_list_widget",
+        "attributes": [
+          {
+            "name": "zIndex",
+            "altName": "ZIndex",
+            "value": "1100",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "background",
+            "altName": "背景",
+            "value": "",
+            "inputType": 99,
+            "editCode": "background_editor"
+          },
+          {
+            "name": "position",
+            "altName": "布局方向位置",
+            "value": "horizontalStyle:LEFT_RIGHT,h1:518px,h2:555px,verticalStyle:TOP_HEIGHT,v1:113px,v2:59px",
+            "inputType": 99,
+            "editCode": "LAYOUT_POSITION_EDITOR"
+          },
+          {
+            "name": "name",
+            "altName": "组件名称",
+            "value": "subBar",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "locked",
+            "altName": "锁定位置",
+            "value": "False",
+            "inputType": 99,
+            "editCode": "CHECKBOX_EDITOR"
+          },
+          {
+            "name": "txtStyle",
+            "altName": "文本样式",
+            "value": "display: flex; color: rgb(212, 209, 209); font-weight: bold; font-size: 18px;",
+            "inputType": 99,
+            "editCode": "html_block_editor"
+          },
+          {
+            "name": "txtStyleSelected",
+            "altName": "选中样式",
+            "value": "display: flex; color: rgb(254, 255, 255); font-weight: bold; font-size: 18px;",
+            "inputType": 99,
+            "editCode": "html_block_editor"
+          },
+          {
+            "name": "btnWidth",
+            "altName": "按钮宽度",
+            "value": "119px",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "btnHeight",
+            "altName": "按钮高度",
+            "value": "47px",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "btnBackground",
+            "altName": "背景图片",
+            "value": "__SITE__img/app/btn_sub.png",
+            "inputType": 99,
+            "editCode": "IMAGE_UPLOAD_EDITOR"
+          },
+          {
+            "name": "backgroundHover",
+            "altName": "鼠标HOVER",
+            "value": "",
+            "inputType": 99,
+            "editCode": "IMAGE_UPLOAD_EDITOR"
+          },
+          {
+            "name": "backgroundSelected",
+            "altName": "选中",
+            "value": "",
+            "inputType": 99,
+            "editCode": "IMAGE_UPLOAD_EDITOR"
+          }
+        ],
+        "id": "UnyrGP",
+        "order": 1000.0,
+        "children": [],
+        "locked": false,
+        "tempRect": {
+          "x": 10.0,
+          "y": 10.0,
+          "width": 100.0,
+          "height": 100.0
+        }
+      },
+      {
+        "moduleCode": "map_data_widget",
+        "attributes": [
+          {
+            "name": "zIndex",
+            "altName": "ZIndex",
+            "value": "1500",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "background",
+            "altName": "背景",
+            "value": "",
+            "inputType": 99,
+            "editCode": "background_editor"
+          },
+          {
+            "name": "position",
+            "altName": "布局方向位置",
+            "value": "horizontalStyle:LEFT_WIDTH,h1:204px,h2:80px,verticalStyle:TOP_HEIGHT,v1:283px,v2:80px",
+            "inputType": 99,
+            "editCode": "LAYOUT_POSITION_EDITOR"
+          },
+          {
+            "name": "name",
+            "altName": "组件名称",
+            "value": "shareLayer",
+            "inputType": 99,
+            "editCode": "TEXTBOX_EDITOR"
+          },
+          {
+            "name": "locked",
+            "altName": "锁定位置",
+            "value": "False",
+            "inputType": 99,
+            "editCode": "CHECKBOX_EDITOR"
+          },
+          {
+            "name": "layers",
+            "altName": "图层数据",
+            "value": "[{\"name\":\"全球影像\",\"kind\":4,\"id\":\"SYSLAYER2\",\"relId\":\"SYSLAYER2\",\"url\":\"http://nanyang.mapway.cn:7600/api/v1/map3/592bafeb4788dfb931de2d21620f4b85316c98adca4c082733dcdba4fad85498/{z}/{x}/{y}.png\",\"lng\":64.07,\"lat\":27.14,\"zoom\":4,\"children\":[],\"color\":\"#F8F8FF\",\"scripts\":\"\",\"initShow\":true,\"legendUrl\":\"\",\"legendHeight\":0,\"legendWidth\":0,\"timeline\":false,\"fields\":[],\"eventFields\":[],\"onoff\":true,\"parent\":null,\"order\":10,\"hidden\":true,\"opacity\":100,\"filter\":\"contrast(1.04) brightness(0.98) invert(1)\"}]",
+            "inputType": 99,
+            "editCode": "map_data_editor"
+          }
+        ],
+        "id": "iVeDlP",
+        "order": 1000.0,
+        "children": [],
+        "locked": false,
+        "tempRect": {
+          "x": 10.0,
+          "y": 10.0,
+          "width": 100.0,
+          "height": 100.0
+        }
+      }
+    ],
+    "locked": false,
+    "tempRect": {
+      "x": 10.0,
+      "y": 10.0,
+      "width": 100.0,
+      "height": 100.0
+    }
+  }
+}

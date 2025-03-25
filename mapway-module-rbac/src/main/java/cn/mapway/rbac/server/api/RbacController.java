@@ -23,6 +23,36 @@ public class RbacController extends ApiBaseController {
 
 
     @Resource
+    QueryUserOrgExecutor queryUserOrgExecutor;
+    /**
+     * QueryUserOrg
+     *
+     * @param request request
+     * @return data
+     */
+    @Doc(value = "QueryUserOrg", retClazz = {QueryUserOrgResponse.class})
+    @RequestMapping(value = "/queryUserOrg", method = RequestMethod.POST)
+    public ApiResult<QueryUserOrgResponse> queryUserOrg(@RequestBody QueryUserOrgRequest request) {
+        BizResult<QueryUserOrgResponse> bizResult = queryUserOrgExecutor.execute(getBizContext(), BizRequest.wrap("", request));
+        return bizResult.toApiResult();
+    }
+
+    @Resource
+    QueryUserRoleResourceExecutor queryUserRoleResourceExecutor;
+    /**
+     * QueryUserRoleResource
+     *
+     * @param request request
+     * @return data
+     */
+    @Doc(value = "QueryUserRoleResource", retClazz = {QueryUserRoleResourceResponse.class})
+    @RequestMapping(value = "/queryUserRoleResource", method = RequestMethod.POST)
+    public ApiResult<QueryUserRoleResourceResponse> queryUserRoleResource(@RequestBody QueryUserRoleResourceRequest request) {
+        BizResult<QueryUserRoleResourceResponse> bizResult = queryUserRoleResourceExecutor.execute(getBizContext(), BizRequest.wrap("", request));
+        return bizResult.toApiResult();
+    }
+
+    @Resource
     UpdateOrgExecutor updateOrgExecutor;
     /**
      * UpdateOrg

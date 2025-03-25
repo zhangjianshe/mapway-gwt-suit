@@ -1,0 +1,8 @@
+
+    @Resource
+    __NAME__Executor __name__Executor;
+    @Override
+    public RpcResult<__NAME__Response> __name__(__NAME__Request request) {
+        BizResult<__NAME__Response> bizResult = __name__Executor.execute(getBizContext(), BizRequest.wrap("", request));
+        return toRpcResult(bizResult);
+    }

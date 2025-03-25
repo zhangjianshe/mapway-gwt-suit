@@ -104,6 +104,26 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
 
 
     ///CODE_GEN_INSERT_POINT///
+	
+    @Resource
+    QueryUserRoleResourceExecutor queryUserRoleResourceExecutor;
+    @Override
+    public RpcResult<QueryUserRoleResourceResponse> queryUserRoleResource(QueryUserRoleResourceRequest request) {
+        BizResult<QueryUserRoleResourceResponse> bizResult = queryUserRoleResourceExecutor.execute(getBizContext(), BizRequest.wrap("", request));
+        return toRpcResult(bizResult);
+    }
+
+
+	
+    @Resource
+    QueryUserOrgExecutor queryUserOrgExecutor;
+    @Override
+    public RpcResult<QueryUserOrgResponse> queryUserOrg(QueryUserOrgRequest request) {
+        BizResult<QueryUserOrgResponse> bizResult = queryUserOrgExecutor.execute(getBizContext(), BizRequest.wrap("", request));
+        return toRpcResult(bizResult);
+    }
+
+
 
     @Override
     public RpcResult<DeleteOrgUserResponse> deleteOrgUser(DeleteOrgUserRequest request) {
