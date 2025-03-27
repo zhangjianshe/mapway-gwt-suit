@@ -20,5 +20,4 @@ public @interface RoleDeclare {
 
     String parentCode() default "";
 
-    String[] resources() default {};
 }

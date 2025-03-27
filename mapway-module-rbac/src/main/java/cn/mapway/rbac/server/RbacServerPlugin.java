@@ -47,15 +47,8 @@ public class RbacServerPlugin implements IServerPlugin {
         Dao dao = iServerContext.getBean(Dao.class);
 
         // build tables
-        List<Class> tables = new ArrayList<>();
-        tables.add(RbacOrgEntity.class);
-        tables.add(RbacOrgUserEntity.class);
-        tables.add(RbacRoleEntity.class);
-        tables.add(RbacRoleResourceEntity.class);
-        tables.add(RbacUserCodeRoleEntity.class);
-        tables.add(RbacUserEntity.class);
-        tables.add(RbacResourceEntity.class);
-        for (Class table : tables) {
+
+        for (Class table : getTableClasses()) {
             dao.create(table, false);
             Daos.migration(dao, table, true, false, false);
         }
@@ -65,16 +58,13 @@ public class RbacServerPlugin implements IServerPlugin {
         rbacUserService.sureSuperUser();
 
         // register system resource point
-        if (rbacUserService != null) {
-            List<Class<?>> scanPackages = new ArrayList<>();
-            scanPackages.add(RbacServerPlugin.class);
-            Collection<Class<?>> scanPackages1 = iServerContext.getScanPackages();
-            if (scanPackages1 != null) {
-                scanPackages.addAll(scanPackages1);
-            }
-            rbacUserService.importResourcePointFromCode(scanPackages, iServerContext.getSuperUser());
+        List<Class<?>> scanPackages = new ArrayList<>();
+        scanPackages.add(RbacServerPlugin.class);
+        Collection<Class<?>> scanPackages1 = iServerContext.getScanPackages();
+        if (scanPackages1 != null) {
+            scanPackages.addAll(scanPackages1);
         }
-
+        rbacUserService.importResourcePointFromCode(scanPackages, iServerContext.getSuperUser());
 
     }
 
@@ -86,6 +76,19 @@ public class RbacServerPlugin implements IServerPlugin {
     @Override
     public IUserInfo requestUser() {
         return serverContext.requestUser();
+    }
+
+    @Override
+    public List<Class> getTableClasses() {
+        List<Class> tables = new ArrayList<>();
+        tables.add(RbacOrgEntity.class);
+        tables.add(RbacOrgUserEntity.class);
+        tables.add(RbacRoleEntity.class);
+        tables.add(RbacRoleResourceEntity.class);
+        tables.add(RbacUserCodeRoleEntity.class);
+        tables.add(RbacUserEntity.class);
+        tables.add(RbacResourceEntity.class);
+        return tables;
     }
 
 }

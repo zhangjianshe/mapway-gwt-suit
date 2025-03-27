@@ -4,6 +4,7 @@ import cn.mapway.biz.core.BizResult;
 import cn.mapway.rbac.client.user.RbacUser;
 import cn.mapway.rbac.server.dao.*;
 import cn.mapway.rbac.shared.RbacConstant;
+import cn.mapway.rbac.shared.RbacRoleResource;
 import cn.mapway.rbac.shared.RbacUserOrg;
 import cn.mapway.rbac.shared.ResourceKind;
 import cn.mapway.rbac.shared.db.postgis.*;
@@ -37,28 +38,31 @@ import java.util.*;
  */
 @Service
 @Slf4j
-@ResourceDeclares(
-        {@ResourceDeclare(
-                catalog = "系统", name = "资源维护", code = RbacConstant.RESOURCE_RBAC_MAINTAINER,
-                summary = "维护系统角色以及资源点", kind = ResourceKind.RESOURCE_KIND_SYSTEM
-        ),
-                @ResourceDeclare(
-                        catalog = "系统", name = "用户授权", code = RbacConstant.RESOURCE_RBAC_AUTHORITY,
-                        summary = "为用户授权", kind = ResourceKind.RESOURCE_KIND_SYSTEM
-                )
-        }
-)
 @RoleDeclares(
         {
                 @RoleDeclare(
                         name = "系统", code = RbacConstant.ROLE_SYS, summary = "系统"
                 ),
                 @RoleDeclare(
-                        name = "系统维护员", code = RbacConstant.ROLE_SYS_MAINTAINER, summary = "系统维护", parentCode = RbacConstant.ROLE_SYS,
-                        resources = {RbacConstant.RESOURCE_RBAC_MAINTAINER, RbacConstant.RESOURCE_RBAC_AUTHORITY}
+                        name = "系统维护员", code = RbacConstant.ROLE_SYS_MAINTAINER, summary = "系统维护", parentCode = RbacConstant.ROLE_SYS
                 )
         }
 )
+@ResourceDeclares(
+        {@ResourceDeclare(
+                roleCode = RbacConstant.ROLE_SYS,
+                catalog = "系统", name = "资源维护", code = RbacConstant.RESOURCE_RBAC_MAINTAINER,
+                summary = "维护系统角色以及资源点", kind = ResourceKind.RESOURCE_KIND_SYSTEM
+
+        ),
+                @ResourceDeclare(
+                        roleCode = RbacConstant.ROLE_SYS,
+                        catalog = "系统", name = "用户授权", code = RbacConstant.RESOURCE_RBAC_AUTHORITY,
+                        summary = "为用户授权", kind = ResourceKind.RESOURCE_KIND_SYSTEM
+                )
+        }
+)
+
 public class RbacUserService {
     // global session list
 
@@ -268,7 +272,15 @@ public class RbacUserService {
                 userCodes.add(entity.getUserCode());
             }
             //用户身份列表
-            Cnd where = Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "in", userCodes).and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resourceCode);
+            List<String> roleCodes = new ArrayList<>();
+            for(String uc : userCodes){
+                List<RbacUserCodeRoleEntity> roles = rbacUserCodeRoleDao.query(Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", uc));
+                for (RbacUserCodeRoleEntity entity : roles) {
+                    roleCodes.add(entity.getRoleCode());
+                }
+            }
+
+            Cnd where = Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "in", roleCodes).and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resourceCode);
             if (rbacRoleResourceDao.count(where) > 0) {
                 return BizResult.success(true);
             } else {
@@ -421,43 +433,7 @@ public class RbacUserService {
 
             }
         }
-        for (ResourceDeclare resourceDeclare : resourceDeclares) {
-            if (Strings.isBlank(resourceDeclare.code())) {
-                log.warn("ResourceDeclare code is blank" + resourceDeclare.name());
-                continue;
-            }
-            RbacResourceEntity entity = rbacResourceDao.fetch(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resourceDeclare.code()));
-            if (entity == null) {
-                entity = new RbacResourceEntity();
-                entity.setCatalog(resourceDeclare.catalog());
-                entity.setName(resourceDeclare.name());
-                entity.setResourceCode(resourceDeclare.code());
-                entity.setKind(resourceDeclare.kind().getCode());
-                entity.setSummary(resourceDeclare.summary());
-                entity.setData(resourceDeclare.data());
-
-                try {
-                    rbacResourceDao.insert(entity);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            } else {
-                log.warn("ResourceDeclare already exists" + resourceDeclare.name());
-                // update it
-                entity.setCatalog(resourceDeclare.catalog());
-                entity.setName(resourceDeclare.name());
-                entity.setResourceCode(resourceDeclare.code());
-                entity.setKind(resourceDeclare.kind().getCode());
-                entity.setSummary(resourceDeclare.summary());
-                entity.setData(resourceDeclare.data());
-                try {
-                    rbacResourceDao.update(entity);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
+        //先处理角色
         // update parsed roles
         for (RoleDeclare roleDeclare : roleDeclares) {
             if (Strings.isBlank(roleDeclare.code())) {
@@ -486,31 +462,83 @@ public class RbacUserService {
                 entity.setSummary(roleDeclare.summary());
                 entity.setParentCode(roleDeclare.parentCode());
                 try {
-                    rbacRoleDao.update(entity);
+                    rbacRoleDao.updateIgnoreNull(entity);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
-            // update role's resource
-            for (String resourceCode : roleDeclare.resources()) {
-                RbacRoleResourceEntity resource = rbacRoleResourceDao.fetch(
-                        Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", roleDeclare.code())
-                                .and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resourceCode)
-                );
-                if (resource == null) {
-                    RbacRoleResourceEntity roleResource = new RbacRoleResourceEntity();
-                    roleResource.setResourceCode(resourceCode);
-                    roleResource.setRoleCode(roleDeclare.code());
-                    rbacRoleResourceDao.insert(roleResource);
+
+        }
+        for (ResourceDeclare resourceDeclare : resourceDeclares) {
+            if (Strings.isBlank(resourceDeclare.code()) || Strings.isBlank(resourceDeclare.roleCode())) {
+                log.warn("ResourceDeclare code is blank" + resourceDeclare.name());
+                continue;
+            }
+            RbacRoleEntity role = rbacRoleDao.fetch(Cnd.where(RbacRoleEntity.FLD_CODE, "=", resourceDeclare.roleCode()));
+            if(role==null)
+            {
+                log.warn("RoleDeclare not exists" + resourceDeclare.roleCode());
+                continue;
+            }
+            RbacResourceEntity entity = rbacResourceDao.fetch(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resourceDeclare.code()));
+            if (entity == null) {
+                entity = new RbacResourceEntity();
+                entity.setCatalog(resourceDeclare.catalog());
+                entity.setName(resourceDeclare.name());
+                entity.setResourceCode(resourceDeclare.code());
+                entity.setKind(resourceDeclare.kind().getCode());
+                entity.setSummary(resourceDeclare.summary());
+                entity.setData(resourceDeclare.data());
+                try {
+                    rbacResourceDao.insert(entity);
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
+                updateRoleResource(resourceDeclare);
+
+            } else {
+                log.warn("ResourceDeclare already exists" + resourceDeclare.name());
+                // update it
+                entity.setCatalog(resourceDeclare.catalog());
+                entity.setName(resourceDeclare.name());
+                entity.setResourceCode(resourceDeclare.code());
+                entity.setKind(resourceDeclare.kind().getCode());
+                entity.setSummary(resourceDeclare.summary());
+                entity.setData(resourceDeclare.data());
+                try {
+                    rbacResourceDao.updateIgnoreNull(entity);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+               updateRoleResource(resourceDeclare);
             }
         }
+
+
         log.info("更新权限点完成，共{}个", resourceDeclares.size());
 
         if (superUser != null) {
             log.info("检查超级管理员的权限");
             checkSystemOrganization(superUser);
 
+        }
+    }
+
+    private void updateRoleResource(ResourceDeclare resourceDeclare) {
+        RbacRoleResourceEntity rbacRoleResourceEntity=rbacRoleResourceDao.fetch(
+                Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", resourceDeclare.roleCode())
+                        .and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resourceDeclare.code()));
+        if(rbacRoleResourceEntity==null) {
+            rbacRoleResourceEntity=new RbacRoleResourceEntity();
+            rbacRoleResourceEntity.setRoleCode(resourceDeclare.roleCode());
+            rbacRoleResourceEntity.setResourceCode(resourceDeclare.code());
+            try {
+                rbacRoleResourceDao.insert(rbacRoleResourceEntity);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
     }
 

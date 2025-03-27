@@ -24,4 +24,10 @@ public @interface ResourceDeclare {
     ResourceKind kind() default ResourceKind.RESOURCE_KIND_SYSTEM;
 
     String data() default "";
+
+    /**
+     * 角色代码
+     * @return
+     */
+    String roleCode() default "";
 }

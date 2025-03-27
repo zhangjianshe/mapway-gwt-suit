@@ -3,6 +3,8 @@ package cn.mapway.server;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.server.IServerContext;
 
+import java.util.List;
+
 /**
  * 服务器端模块
  */
@@ -28,4 +30,10 @@ public interface IServerPlugin {
      * @return
      */
     IUserInfo requestUser();
+
+    /**
+     * 获取数据库表的定义
+     * @return
+     */
+    List<Class> getTableClasses();
 }
