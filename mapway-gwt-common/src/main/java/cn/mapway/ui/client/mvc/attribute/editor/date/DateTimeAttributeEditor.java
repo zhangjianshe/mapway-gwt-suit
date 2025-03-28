@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.date;
 
+import cn.mapway.ui.client.db.DbFieldType;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
@@ -66,11 +67,15 @@ public class DateTimeAttributeEditor extends AbstractAttributeEditor<String> {
     public void updateUI() {
         IAttribute attribute = getAttribute();
         dateBox.setEnabled(!getAttribute().isReadonly());
-
-        Object obj = attribute.getValue();
         String format = option(ParameterKeys.KEY_DATETIME_FORMAT, "yyyy-MM-dd HH:mm:ss");
         dateBox.setFormat(new DateBox.DefaultFormat(DateTimeFormat.getFormat(format)));
-        dateBox.setValue(DataCastor.castToDate(obj, format));
+
+        Object obj = attribute.getValue();
+        if (obj instanceof String) {
+            dateBox.setValue(DataCastor.castToDate(obj, format));
+        } else if (obj instanceof Date) {
+            dateBox.setValue((Date) obj);
+        }
     }
 
     /**
@@ -80,9 +85,23 @@ public class DateTimeAttributeEditor extends AbstractAttributeEditor<String> {
     public void fromUI() {
         if (getAttribute() != null) {
             Date date = dateBox.getValue();
-            String format = option(ParameterKeys.KEY_DATETIME_FORMAT, "yyyy-MM-dd HH:mm:ss");
-            String value = StringUtil.formatDate(date, format);
-            getAttribute().setValue(value);
+            DbFieldType fieldType = DbFieldType.valueOfCode(getAttribute().getDataType());
+
+            switch (fieldType) {
+                case FLD_TYPE_DATETIME:
+                    getAttribute().setValue(date);
+                    break;
+                case FLD_TYPE_BIGINTEGER:
+                    getAttribute().setValue(date.getTime());
+                    break;
+                case FLD_TYPE_STRING:
+                default:
+                    String format = option(ParameterKeys.KEY_DATETIME_FORMAT, "yyyy-MM-dd HH:mm:ss");
+                    String value = StringUtil.formatDate(date, format);
+                    getAttribute().setValue(value);
+                    break;
+            }
+
 
         }
     }
