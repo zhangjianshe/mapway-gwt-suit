@@ -137,6 +137,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int ZOOMIN = 124;
     public final static int ZOOMOUT = 125;
     public final static int SCRIPT_UPDATE = 126;
+    public final static int CHECKIN = 127;
+    public final static int CHECKOUT = 128;
 
 
 
@@ -159,6 +161,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent checkinEvent(Object data) {
+        return new CommonEvent(CHECKIN, data);
+    }
+    public static CommonEvent checkoutEvent(Object data) {
+        return new CommonEvent(CHECKOUT, data);
     }
     public static CommonEvent zoomInEvent(Object data) {
         return new CommonEvent(ZOOMIN, data);
@@ -719,6 +727,14 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isClose() {
         return CLOSE == this.type;
+    }
+
+    public boolean isCheckin() {
+        return CHECKIN == this.type;
+    }
+
+    public boolean isCheckOut() {
+        return CHECKOUT == this.type;
     }
 
     public boolean isCreate() {
