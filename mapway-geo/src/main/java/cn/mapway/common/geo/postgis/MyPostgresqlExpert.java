@@ -79,6 +79,12 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
                 if (mf.getMirror().isDouble())
                     return "NUMERIC(53,10)";
                 return "NUMERIC";
+            case VARCHAR:
+                if(mf.getWidth()<=0)
+                {
+                    return "VARCHAR(255)";
+                }
+                return "VARCHAR(" + mf.getWidth() + ")";
             default:
                 return super.evalFieldType(mf);
         }
