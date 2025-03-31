@@ -42,8 +42,8 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
         if (ColType.PSQL_JSON == ef.getColumnType()) {
             return new PGObject2JsonObjectAdaptor(ef.getType());
         }
-        else if(ef.getColumnType().equals(ColType.AUTO)){
-            if(ef.getCustomDbType().equals("POLYGON")){
+        else if(ef.getColumnType().equals(ColType.VARCHAR)){
+            if(ef.getCustomDbType()!=null && ef.getCustomDbType().startsWith("GEOMETRY")){
                 return new WktAdaptor();
             }
             else {
@@ -88,16 +88,15 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
                     return "NUMERIC(53,10)";
                 return "NUMERIC";
             case VARCHAR:
+                if(Strings.isNotBlank(mf.getCustomDbType()))
+                {
+                    return mf.getCustomDbType();
+                }
                 if(mf.getWidth()<=0)
                 {
                     return "VARCHAR(255)";
                 }
                 return "VARCHAR(" + mf.getWidth() + ")";
-            case AUTO:
-                if("POLYGON".equals(mf.getCustomDbType()))
-                {
-                    return "GEOMETRY(POLYGON, 4326)";
-                }
             default:
 
                 return super.evalFieldType(mf);

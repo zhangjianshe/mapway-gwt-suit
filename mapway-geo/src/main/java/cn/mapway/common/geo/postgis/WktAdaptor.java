@@ -1,9 +1,8 @@
 package cn.mapway.common.geo.postgis;
 
-import cn.mapway.geo.geometry.GeoObject;
 import lombok.extern.slf4j.Slf4j;
-import net.postgis.jdbc.PGgeo;
 import net.postgis.jdbc.PGgeometry;
+import net.postgis.jdbc.geometry.Geometry;
 import org.nutz.dao.jdbc.ValueAdaptor;
 
 import java.sql.PreparedStatement;
@@ -18,23 +17,33 @@ public class WktAdaptor implements ValueAdaptor {
         Object object = rs.getObject(colName);
         if (object != null) {
             if (object instanceof PGgeometry) {
-                return ((PGgeometry) object).getGeometry().getValue();
+                PGgeometry pGgeometry= (PGgeometry) object;
+                return toWKT(pGgeometry);
             } else {
                 log.warn("不能确定数据类型:{}", object.getClass().toString());
+                return "POLYGON EMPTY";
             }
-        }
-        else {
+        } else {
             return "POLYGON EMPTY";
         }
+    }
+
+    private String toWKT(PGgeometry pGgeometry) {
+        StringBuffer stringBuilder = new StringBuffer();
+        pGgeometry.getGeometry().outerWKT(stringBuilder);
+        return stringBuilder.toString();
     }
 
     @Override
     public void set(PreparedStatement stat, Object obj, int index) throws SQLException {
         if (null == obj) {
-            stat.setString(index, "POLYGON EMPTY");
+            PGgeometry pGgeometry = new PGgeometry();
+            pGgeometry.setValue("POLYGON EMPTY");
+            stat.setObject(index, pGgeometry, Types.OTHER);
         } else {
-            assert obj instanceof String;
-            stat.setObject(index, obj, Types.VARCHAR);
+            PGgeometry pGgeometry = new PGgeometry();
+            pGgeometry.setValue((String) obj);
+            stat.setObject(index, pGgeometry, Types.OTHER);
         }
     }
 }
