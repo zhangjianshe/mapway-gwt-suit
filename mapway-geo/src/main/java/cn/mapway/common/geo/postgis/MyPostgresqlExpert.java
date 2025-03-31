@@ -42,6 +42,14 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
         if (ColType.PSQL_JSON == ef.getColumnType()) {
             return new PGObject2JsonObjectAdaptor(ef.getType());
         }
+        else if(ef.getColumnType().equals(ColType.AUTO)){
+            if(ef.getCustomDbType().equals("POLYGON")){
+                return new WktAdaptor();
+            }
+            else {
+                return super.getAdaptor(ef);
+            }
+        }
         if (ef.getMirror().isOf(GeoObject.class)) {
             return new GeoObjectAdaptor();
         }
@@ -85,7 +93,13 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
                     return "VARCHAR(255)";
                 }
                 return "VARCHAR(" + mf.getWidth() + ")";
+            case AUTO:
+                if("POLYGON".equals(mf.getCustomDbType()))
+                {
+                    return "GEOMETRY(POLYGON, 4326)";
+                }
             default:
+
                 return super.evalFieldType(mf);
         }
     }
