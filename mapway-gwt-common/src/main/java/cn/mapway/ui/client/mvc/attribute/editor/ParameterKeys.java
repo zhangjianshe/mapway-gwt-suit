@@ -15,10 +15,8 @@ public class ParameterKeys {
     public final static String KEY_OPTIONS = "options";
     public static final String KEY_EDITOR_CODE = "editorCode";
     public static final String KEY_EDITOR_NAME = "editorName";
-
     public static final String KEY_MIN = "min";
-
     public static final String KEY_MAX = "max";
-
     public static final String KEY_DATETIME_FORMAT = "datetime_format";
+    public static final String KEY_PRODUCT_ID="product_id";
 }

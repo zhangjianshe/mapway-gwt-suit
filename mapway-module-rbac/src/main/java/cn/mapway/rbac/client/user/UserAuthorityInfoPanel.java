@@ -12,6 +12,7 @@ import cn.mapway.rbac.shared.rpc.QueryUserOrgResponse;
 import cn.mapway.rbac.shared.rpc.QueryUserRoleResourceRequest;
 import cn.mapway.rbac.shared.rpc.QueryUserRoleResourceResponse;
 import cn.mapway.ui.client.IUserInfo;
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.tree.ImageTextItem;
 import cn.mapway.ui.client.widget.tree.ZTree;
@@ -66,7 +67,7 @@ public class UserAuthorityInfoPanel extends CommonEventComposite {
                 if(result.isSuccess())
                 {
                     for (RbacUserOrg org : result.getData().getUserOrgs()) {
-                        ImageTextItem item = orgList.insertItem(null, org.orgName, null);
+                        ImageTextItem item = orgList.addFontIconItem(null, org.orgName, Fonts.LAYER_VIEW);
                         item.setData(org);
                     }
                 }
@@ -112,11 +113,11 @@ public class UserAuthorityInfoPanel extends CommonEventComposite {
                 if(result.isSuccess())
                 {
                     for (RbacRoleEntity role : result.getData().getRoles()) {
-                        ImageTextItem item = roleList.insertItem(null, role.getName(), null);
+                        ImageTextItem item = roleList.addFontIconItem(null, role.getName(), Fonts.RBAC_ROLE);
                         item.setData(role);
                         List<RbacRoleResource> resources=findResource(role.getCode(),result.getData().getResource());
                         for (RbacRoleResource resource : resources) {
-                            ImageTextItem child = roleList.insertItem(item, resource.name, null);
+                            ImageTextItem child = roleList.addFontIconItem(item, resource.name,  Fonts.RBAC_ROLE_RESOURCE);
                             child.setData(resource);
                         }
                     }

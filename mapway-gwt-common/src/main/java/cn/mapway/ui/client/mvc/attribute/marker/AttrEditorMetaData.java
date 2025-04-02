@@ -1,13 +1,15 @@
 package cn.mapway.ui.client.mvc.attribute.marker;
 
+import cn.mapway.ui.client.mvc.attribute.IProductAware;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
+import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
 import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextInputKind;
 import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class AttrEditorMetaData {
+public class AttrEditorMetaData implements IProductAware {
     List<ParameterValue> parameters;
     String editorCode;
 
@@ -90,5 +92,10 @@ public class AttrEditorMetaData {
 
     public void asDateTime() {
         replaceParameter(TextboxAttributeEditor.KEY_INPUT_KIND, TextInputKind.DATE_TIME,false);
+    }
+
+    @Override
+    public void setProductId(String productId) {
+        replaceParameter(ParameterKeys.KEY_PRODUCT_ID, productId, false);
     }
 }

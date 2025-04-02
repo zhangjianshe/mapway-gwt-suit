@@ -1,0 +1,23 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog">
+    <ui:style>
+        .box{
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+            gap: 8px;
+            padding: 0 8px;
+        }
+    </ui:style>
+    <g:DockLayoutPanel ui:field="root">
+        <g:south size="68">
+            <dialog:SaveBar ui:field="saveBar"/>
+        </g:south>
+        <g:north size="50">
+            <g:HTMLPanel addStyleNames="{style.box}" ui:field="tabs">
+
+            </g:HTMLPanel>
+        </g:north>
+    </g:DockLayoutPanel>
+</ui:UiBinder>
