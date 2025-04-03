@@ -21,10 +21,10 @@ public class WktAdaptor implements ValueAdaptor {
                 return toWKT(pGgeometry);
             } else {
                 log.warn("不能确定数据类型:{}", object.getClass().toString());
-                return "POLYGON EMPTY";
+                return "GEOMETRY EMPTY";
             }
         } else {
-            return "POLYGON EMPTY";
+            return "GEOMETRY EMPTY";
         }
     }
 
@@ -38,7 +38,7 @@ public class WktAdaptor implements ValueAdaptor {
     public void set(PreparedStatement stat, Object obj, int index) throws SQLException {
         if (null == obj) {
             PGgeometry pGgeometry = new PGgeometry();
-            pGgeometry.setValue("POLYGON EMPTY");
+            pGgeometry.setValue("GEOMETRY EMPTY");
             stat.setObject(index, pGgeometry, Types.OTHER);
         } else {
             PGgeometry pGgeometry = new PGgeometry();
