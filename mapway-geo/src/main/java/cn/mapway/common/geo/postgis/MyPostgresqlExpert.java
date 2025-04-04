@@ -42,7 +42,27 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
         if (ColType.PSQL_JSON == ef.getColumnType()) {
             return new PGObject2JsonObjectAdaptor(ef.getType());
         }
-        else if(ef.getColumnType().equals(ColType.VARCHAR)){
+        else if (ef.getMirror().isOf(GeoObject.class)) {
+            return new GeoObjectAdaptor();
+        }
+        else if (ef.getMirror().isOf(PGpolygon.class)) {
+            return new PGpolygonAdaptor();
+        }
+        else if (ef.getMirror().isOf(PGline.class)) {
+            return new PGLineAdaptor();
+        }
+        else if (ef.getMirror().isOf(PGpoint.class)) {
+            return new PGPointAdaptor();
+        }
+        else if (ef.getMirror().isOf(PGpath.class)) {
+            return new PGPathAdaptor();
+        }
+        else if (ef.getMirror().isOf(PGcircle.class)) {
+            return new PGCircleAdaptor();
+        }
+        else if (ef.getMirror().isOf(PGbox.class)) {
+            return new PGBoxAdaptor();
+        } else if(ef.getColumnType().equals(ColType.VARCHAR)){
             if(ef.getCustomDbType()!=null && ef.getCustomDbType().startsWith("GEOMETRY")){
                 return new WktAdaptor();
             }
@@ -50,27 +70,7 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
                 return super.getAdaptor(ef);
             }
         }
-        if (ef.getMirror().isOf(GeoObject.class)) {
-            return new GeoObjectAdaptor();
-        }
-        if (ef.getMirror().isOf(PGpolygon.class)) {
-            return new PGpolygonAdaptor();
-        }
-        if (ef.getMirror().isOf(PGline.class)) {
-            return new PGLineAdaptor();
-        }
-        if (ef.getMirror().isOf(PGpoint.class)) {
-            return new PGPointAdaptor();
-        }
-        if (ef.getMirror().isOf(PGpath.class)) {
-            return new PGPathAdaptor();
-        }
-        if (ef.getMirror().isOf(PGcircle.class)) {
-            return new PGCircleAdaptor();
-        }
-        if (ef.getMirror().isOf(PGbox.class)) {
-            return new PGBoxAdaptor();
-        } else {
+        else {
             return super.getAdaptor(ef);
         }
     }
