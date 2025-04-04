@@ -6,10 +6,13 @@ import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
 import org.geotools.geojson.geom.GeometryJSON;
+import org.geotools.geometry.jts.WKTReader2;
+import org.geotools.geometry.jts.WKTWriter2;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
 import org.locationtech.jts.geom.GeometryCollection;
 import org.locationtech.jts.geom.Polygon;
+import org.locationtech.jts.io.ParseException;
 import org.opengis.feature.Feature;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.feature.simple.SimpleFeatureType;
@@ -28,6 +31,7 @@ import java.util.List;
 public class GeojsonUtils {
 
     static GeometryJSON gjson = new GeometryJSON(12);
+
     static FeatureJSON fjson = new FeatureJSON(gjson);
 
     public static Geometry parseGeometry(String geojson) {
@@ -35,6 +39,59 @@ public class GeojsonUtils {
             return gjson.read(geojson);
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public static Geometry parseGeometryFromWkt(String wkt) {
+        WKTReader2 reader=new WKTReader2();
+        if(wkt==null || wkt.length()==0){
+            wkt="GEOMETRY EMPTY";
+            try {
+                return reader.read(wkt);
+            } catch (ParseException e) {
+                return null;
+            }
+        }
+        if(wkt.startsWith("SRID=")){
+            int strat=wkt.indexOf(";");
+            String sird=wkt.substring(5,strat);
+            String wktData=wkt.substring(strat+1);
+            Geometry geometry= null;
+            try {
+                geometry = reader.read(wktData);
+            } catch (ParseException e) {
+                e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+            geometry.setSRID(Integer.parseInt(sird));
+            return geometry;
+        }
+        else {
+            Geometry geometry= null;
+            try {
+                geometry = reader.read(wkt);
+            } catch (ParseException e) {
+                e.toString();
+                return null;
+            }
+            geometry.setSRID(4326);
+            return geometry;
+        }
+    }
+
+    public static String toWkt(Geometry geom) {
+        WKTWriter2 wktWriter2=new WKTWriter2();
+        return wktWriter2.write(geom);
+    }
+    public static String toEWkt(Geometry geom) {
+        WKTWriter2 wktWriter2=new WKTWriter2();
+        String wkt = wktWriter2.write(geom);
+        int srid = geom.getSRID();
+        if(srid>0)
+        {
+            return  "SRID="+srid+";"+wkt;
+        }else {
+            return wkt;
         }
     }
 
@@ -136,6 +193,14 @@ public class GeojsonUtils {
 
 
     public static void main(String[] args) throws IOException {
+
+        if(true)
+        {
+            String wkt="SRID=4326;POLYGON ((93.56286624446513 44.04772094108898, 93.76885989680888 43.97858588318102, 93.45300296321513 43.93706616379512, 93.43927005305888 44.02995105251482, 93.56286624446513 44.04772094108898))";
+            Geometry geom = parseGeometryFromWkt(wkt);  //解析wkt
+            System.out.println(toEWkt(geom));
+            return;
+        }
         String readFileToString = FileUtils.readFileToString(new File("D:\\数据\\边界\\xuequ.geojson"), "UTF-8");
         String tStr = FileUtils.readFileToString(new File("D:\\数据\\边界\\t.geojson"), "UTF-8");
         FeatureCollection tsfc = parseFeatures(tStr);
