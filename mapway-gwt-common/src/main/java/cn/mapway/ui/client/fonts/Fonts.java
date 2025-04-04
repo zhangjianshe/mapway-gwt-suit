@@ -10,9 +10,11 @@ public class Fonts {
     public static String toHtmlEntity(String fontIndex){
         return "&#x"+fontIndex;
     }
-    	public final static String WEIXIN = "e79d";
+    	public final static String GEOM_CORRECT = "e79f";
+	public final static String SAMPLE_STA = "e79e";
+	public final static String WEIXIN = "e79d";
 	public final static String RENWUTUISONG = "e79c";
-	public final static String A_IMPORTDATA = "e736";
+	public final static String IMPORTDATA = "e736";
 	public final static String SPACE_TIME = "e731";
 	public final static String SHELL = "e72f";
 	public final static String GITIGNORE = "e798";
@@ -454,9 +456,11 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("WEIXIN", Fonts.WEIXIN);
+			unicodes.put("GEOM_CORRECT", Fonts.GEOM_CORRECT);
+	unicodes.put("SAMPLE_STA", Fonts.SAMPLE_STA);
+	unicodes.put("WEIXIN", Fonts.WEIXIN);
 	unicodes.put("RENWUTUISONG", Fonts.RENWUTUISONG);
-	unicodes.put("A_IMPORTDATA", Fonts.A_IMPORTDATA);
+	unicodes.put("IMPORTDATA", Fonts.IMPORTDATA);
 	unicodes.put("SPACE_TIME", Fonts.SPACE_TIME);
 	unicodes.put("SHELL", Fonts.SHELL);
 	unicodes.put("GITIGNORE", Fonts.GITIGNORE);
