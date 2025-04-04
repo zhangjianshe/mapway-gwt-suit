@@ -566,7 +566,7 @@
     bottom: 0;
     width: 50px;
     height: 24px;
-    background: var(--color-main);
+    background: var(--color-background-selected);
     border-radius: 12px;
 }
 
