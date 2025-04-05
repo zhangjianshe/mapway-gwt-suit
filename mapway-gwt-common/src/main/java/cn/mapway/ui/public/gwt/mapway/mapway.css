@@ -103,20 +103,20 @@
     overflow: hidden;
     width: 100%;
     position: relative;
-    background-color: #fff;
     border-radius: 3px;
+    padding: 0 4px;
 }
 
 .iti-default:HOVER {
-    background-color: #f0f0f0;
+    background-color: var(--color-background-hover);
 }
 
 .iti-default[select="true"] {
-    background-color: #e0e0e0;
+    background-color: var(--color-background-selected);
 }
 
 .iti-default-openclose {
-    color: #000;
+    color: var(--color-text);
 }
 
 .iti-default-checkbox {
@@ -124,8 +124,7 @@
 }
 
 .iti-default-icon {
-    color: #000;
-    /*height: 22px;*/
+    color: var(--color-text);
     width: 22px;
     text-align: center;
 }
@@ -134,7 +133,7 @@
     flex-grow: 1;
     white-space: nowrap;
     font-size: 1rem;
-    color: #000;
+    color: var(--color-text);
     line-height: 28px;
     cursor: default;
     user-select: none;
