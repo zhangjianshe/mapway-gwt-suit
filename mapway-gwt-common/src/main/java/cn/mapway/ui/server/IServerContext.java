@@ -22,8 +22,18 @@ public interface IServerContext {
 
     Dao getManagerDao();
 
+    /**
+     * 加入缓存
+     * @param key
+     * @param value
+     */
     void putToSession(String key, Object value);
 
+    /**
+     * 从缓存中获取
+     * @param key
+     * @return
+     */
     Object getFromSession(String key);
 
     /**

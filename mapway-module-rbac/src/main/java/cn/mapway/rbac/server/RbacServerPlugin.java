@@ -68,6 +68,10 @@ public class RbacServerPlugin implements IServerPlugin {
 
     }
 
+    public IServerContext getServerContext() {
+            return serverContext;
+    }
+
     @Override
     public void destroy(IServerContext iServerContext) {
 

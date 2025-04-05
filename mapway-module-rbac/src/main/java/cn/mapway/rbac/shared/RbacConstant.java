@@ -30,4 +30,10 @@ public class RbacConstant {
     //超级用户ID
     public static final Long SUPER_USER_ID = 1L;
 
+
+    //用户权限的缓存KEY
+    /**
+     * 每个用户的权限缓存 为该KEY加上用户ID 比如 USER_PERMISSION_1
+     */
+    public static final String USER_PERMISSION_CACHE_KEY_PREFIX = "USER_PERMISSION_";
 }
