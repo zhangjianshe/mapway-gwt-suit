@@ -4,6 +4,7 @@ import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.window.ISelectable;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.client.widget.CommonEventComposite;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.user.client.DOM;
@@ -72,11 +73,7 @@ public class AiButton extends Button implements IData, ISelectable {
 
     @Override
     public void setSelect(boolean select) {
-        setElementSelect(getElement(), select);
-    }
-
-    protected void setElementSelect(Element element, boolean select) {
-        setAttribute(ISelectable.SELECT_ATTRIBUTE, select ? "true" : null);
+        CommonEventComposite.setElementSelect(getElement(), select);
     }
 
     protected void setAttribute(String attribute, String value) {
@@ -122,9 +119,9 @@ public class AiButton extends Button implements IData, ISelectable {
         }
         StringBuffer sb = new StringBuffer();
         if(loading){
-            sb.append("<span class=\"ai-rotate ai-icon" + iconStyle + "\"> &#x" + Fonts.REFRESH + " </span>");
+            sb.append("<span class=\"ai-rotate ai-icon" + iconStyle + "\" "+fontSize+" > &#x" + Fonts.REFRESH + " </span>");
         } else if (!StringUtil.isBlank(icon)) {
-            sb.append("<span class=\" ai-icon " + iconStyle + "\"> &#x" + icon + "</span>");
+            sb.append("<span class=\" ai-icon " + iconStyle + "\"" +fontSize+" > &#x" + icon + "</span>");
         }
         sb.append("<span class=\" " + spanStyle + "\">" + spanContext + "</span>");
         return sb.toString();
@@ -148,6 +145,17 @@ public class AiButton extends Button implements IData, ISelectable {
 
     public void setIconStyle(String iconStyle) {
         this.iconStyle = iconStyle;
+        setHTML(getHtml());
+    }
+    String fontSize="";
+    public void setIconSize(int size)
+    {
+        if(size>0){
+            fontSize = " style='font-size:"+size+"px;'";
+        }
+        else {
+            fontSize = "";
+        }
         setHTML(getHtml());
     }
 
