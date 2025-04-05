@@ -1,11 +1,9 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:buttons="urn:import:cn.satway.cis.client.component.buttons"
-             xmlns:component="urn:import:cn.satway.cis.client.component"
              xmlns:widget="urn:import:cn.mapway.ui.client.widget"
 >
     <ui:style>
-        @eval BK_HEADER "var(--color-background-header)";
+        @eval BK_HEADER "var(--color-table-header)";
         .summary {
             font-size: 1rem;
             padding: 15px;
