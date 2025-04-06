@@ -11,11 +11,9 @@ import cn.mapway.ui.client.widget.tree.ZTree;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Label;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * 组织树
@@ -64,6 +62,7 @@ public class OrgTree extends ZTree {
                 list.add(org);
             }
         }
+        Collections.sort(roots,Comparator.comparing(RbacOrgEntity::getRank));
         recursiveRenderTree(null,roots);
 
     }
@@ -74,8 +73,12 @@ public class OrgTree extends ZTree {
             return;
         }
         for (RbacOrgEntity org : roots) {
-            ImageTextItem item = addItem(parent, org.getName(), null);
+            ImageTextItem item = addFontIconItem(parent, org.getName(), org.getIcon());
             item.setData(org);
+            Label label = new Label();
+            label.setText(org.getCode());
+            label.setStyleName("ai-summary");
+            item.appendWidget(label,null);
 
             List<RbacOrgEntity> children = orgTemp.get(org.getId());
             recursiveRenderTree(item,children);

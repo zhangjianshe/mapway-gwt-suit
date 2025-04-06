@@ -36,4 +36,5 @@ public class RbacConstant {
      * 每个用户的权限缓存 为该KEY加上用户ID 比如 USER_PERMISSION_1
      */
     public static final String USER_PERMISSION_CACHE_KEY_PREFIX = "USER_PERMISSION_";
+    public static final String SESSION_CACHE_GROUP = "rbac";
 }

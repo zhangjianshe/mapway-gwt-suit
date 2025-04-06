@@ -1,6 +1,9 @@
 package cn.mapway.rbac.shared.model;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import jsinterop.annotations.JsType;
+
+import java.io.Serializable;
 
 /**
  * 系统角色信息
@@ -8,7 +11,7 @@ import jsinterop.annotations.JsType;
  * 也就是说　父角色不会拥有子角色的权限
  */
 @JsType
-public class Role {
+public class Role implements Serializable, IsSerializable {
     public String name;
     public String code;
     public String summary;

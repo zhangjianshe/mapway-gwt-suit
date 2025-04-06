@@ -1,6 +1,9 @@
 package cn.mapway.rbac.shared.model;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import jsinterop.annotations.JsType;
+
+import java.io.Serializable;
 
 /**
  *　用户权限信息,该信息包含了用户的所有组织.角色.资源.数据
@@ -11,7 +14,7 @@ import jsinterop.annotations.JsType;
  *  当用户登录的时候　系统加载用户的权限信息，到缓存数据库中。
  */
 @JsType
-public class UserPermissions {
+public class UserPermissions implements Serializable, IsSerializable {
     /**
      * 用户所属组织机构
      * 组织机构是一个树状结构

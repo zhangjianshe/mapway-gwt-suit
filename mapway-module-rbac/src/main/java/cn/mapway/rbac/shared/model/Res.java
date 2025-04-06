@@ -1,7 +1,10 @@
 package cn.mapway.rbac.shared.model;
 
 import cn.mapway.document.annotation.ApiField;
+import com.google.gwt.user.client.rpc.IsSerializable;
 import jsinterop.annotations.JsType;
+
+import java.io.Serializable;
 
 /**
  * 资源
@@ -9,7 +12,7 @@ import jsinterop.annotations.JsType;
  * 加上这一级　***纯属多余***
  */
 @JsType
-public class Res {
+public class Res implements Serializable, IsSerializable {
     @ApiField(value = "资源CODE", example = "1")
     public String resourceCode;
     @ApiField(value = "资源名称", example = "1")

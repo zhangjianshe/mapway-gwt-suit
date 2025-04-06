@@ -1,12 +1,15 @@
 package cn.mapway.rbac.shared.model;
 
+import com.google.gwt.user.client.rpc.IsSerializable;
 import jsinterop.annotations.JsType;
+
+import java.io.Serializable;
 
 /**
  * 组织信息
  */
 @JsType
-public class Organization {
+public class Organization implements Serializable, IsSerializable {
     public String orgId;
     public String orgCode;
     public String parentId;
@@ -22,8 +25,14 @@ public class Organization {
     public String userCode;
     public String userName;
     public String userIcon;
+    public Integer rank;
+    public Boolean major;//是否为主要组织机构
     public Organization[] children;
 
+    public Integer getRank()
+    {
+        return rank;
+    }
     /**
      * 复制　仅仅复制这一层　不复制子节点
      * @return
@@ -45,6 +54,7 @@ public class Organization {
         organization.userCode=userCode;
         organization.userName=userName;
         organization.userIcon=userIcon;
+        organization.rank=rank;
         organization.children=new Organization[0];
         return organization;
     }

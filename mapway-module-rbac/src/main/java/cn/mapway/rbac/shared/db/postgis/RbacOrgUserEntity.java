@@ -147,6 +147,21 @@ public class RbacOrgUserEntity implements Serializable, IsSerializable {
   private String avatar;
 
   /**
+   * 是否是主要组织机构
+   * 缺省值:null
+   * 数据类型varchar
+   * 数据库字段长度:255(允许为空)
+   */
+  @ApiField("major")
+  @Column("major")
+  @ColDefine(
+          type = ColType.BOOLEAN
+  )
+  @Default("false")
+  @Comment("major")
+  private Boolean major;
+
+  /**
    * system
    * 缺省值:null
    * 数据类型varchar
@@ -210,8 +225,15 @@ public class RbacOrgUserEntity implements Serializable, IsSerializable {
   public String getAvatar() {
     return this.avatar;
   }
-
   public void setAvatar(String avatar) {
     this.avatar=avatar;
   }
+
+  public Boolean getMajor() {
+    return this.major;
+  }
+  public void setMajor(Boolean major) {
+    this.major=major;
+  }
+
 }

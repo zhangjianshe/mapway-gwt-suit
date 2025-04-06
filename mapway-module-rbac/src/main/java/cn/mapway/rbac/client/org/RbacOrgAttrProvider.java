@@ -66,6 +66,23 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         });
 
+        getAttributes().add(new TextBoxAttribute("charge","排序") {
+            @Override
+            public Object getValue() {
+                return org.getRank();
+            }
+
+            @Override
+            public String getDefaultValue() {
+                return "100";
+            }
+
+            @Override
+            public void setValue(Object o) {
+                org.setRank(DataCastor.castToInteger(o));
+            }
+        }.asNumber());
+
         getAttributes().add(new TextBoxAttribute("charge","负责人") {
             @Override
             public Object getValue() {

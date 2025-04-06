@@ -263,6 +263,21 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   @Comment("行政区划代码")
   private String regionCode;
 
+  /**
+   * 排序
+   * 缺省值:100
+   * 数据类型varchar
+   * 数据库字段长度:255(不允许为空)
+   */
+  @ApiField("排序")
+  @Column("rank")
+  @ColDefine(
+          type = ColType.INT
+  )
+  @Default("100")
+  @Comment("排序")
+  private Integer rank;
+
 
   public String getId() {
     return this.id;
@@ -357,5 +372,12 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   }
   public void setRegionCode(String regionCode) {
     this.regionCode=regionCode;
+  }
+
+  public Integer getRank() {
+    return this.rank;
+  }
+  public void setRank(Integer rank) {
+    this.rank=rank;
   }
 }

@@ -27,14 +27,14 @@ public interface IServerContext {
      * @param key
      * @param value
      */
-    void putToSession(String key, Object value);
+    void putToSession(String group,String key, Object value);
 
     /**
      * 从缓存中获取
      * @param key
      * @return
      */
-    Object getFromSession(String key);
+    Object getFromSession(String group,String key);
 
     /**
      * 获取当前的登录用户
@@ -54,4 +54,11 @@ public interface IServerContext {
      * @return
      */
     IUserInfo getSuperUser();
+
+    /**
+     * clear session cache by group
+     * @param sessionCacheGroup
+     */
+    void clearSessionGroup(String sessionCacheGroup);
+
 }

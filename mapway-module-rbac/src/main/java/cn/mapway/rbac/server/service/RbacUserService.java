@@ -5,7 +5,6 @@ import cn.mapway.rbac.client.user.RbacUser;
 import cn.mapway.rbac.server.RbacServerPlugin;
 import cn.mapway.rbac.server.dao.*;
 import cn.mapway.rbac.shared.RbacConstant;
-import cn.mapway.rbac.shared.RbacRoleResource;
 import cn.mapway.rbac.shared.RbacUserOrg;
 import cn.mapway.rbac.shared.ResourceKind;
 import cn.mapway.rbac.shared.db.postgis.*;
@@ -19,10 +18,9 @@ import cn.mapway.spring.tools.ServletUtils;
 import cn.mapway.spring.tools.UUIDTools;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.client.fonts.Fonts;
-import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.shared.CommonConstant;
+import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.language.DaitchMokotoffSoundex;
 import org.apache.commons.lang3.ArrayUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Sqls;
@@ -90,7 +88,11 @@ public class RbacUserService {
     RbacOrgDao rbacOrgDao;
     @Resource
     RbacServerPlugin plugin;
-
+    /**
+     * 全局
+     */
+    Map<String, Organization> organizationIdMap = new HashMap<>();
+    Map<String, Organization> organizationCodeMap = new HashMap<>();
 
     public BizResult<Boolean> isAssignRole(IUserInfo userInfo, String userCode, String roleCode) {
         return isAssignRole(userInfo.getSystemCode(), userInfo.getId(), userCode, roleCode);
@@ -136,7 +138,6 @@ public class RbacUserService {
 
         return BizResult.success(list);
     }
-
 
     /**
      * 用户是否拥有某个角色
@@ -283,7 +284,7 @@ public class RbacUserService {
             }
             //用户身份列表
             List<String> roleCodes = new ArrayList<>();
-            for(String uc : userCodes){
+            for (String uc : userCodes) {
                 List<RbacUserCodeRoleEntity> roles = rbacUserCodeRoleDao.query(Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", uc));
                 for (RbacUserCodeRoleEntity entity : roles) {
                     roleCodes.add(entity.getRoleCode());
@@ -485,8 +486,7 @@ public class RbacUserService {
                 continue;
             }
             RbacRoleEntity role = rbacRoleDao.fetch(Cnd.where(RbacRoleEntity.FLD_CODE, "=", resourceDeclare.roleCode()));
-            if(role==null)
-            {
+            if (role == null) {
                 log.warn("RoleDeclare not exists" + resourceDeclare.roleCode());
                 continue;
             }
@@ -522,7 +522,7 @@ public class RbacUserService {
                     e.printStackTrace();
                 }
 
-               updateRoleResource(resourceDeclare);
+                updateRoleResource(resourceDeclare);
             }
         }
 
@@ -537,11 +537,11 @@ public class RbacUserService {
     }
 
     private void updateRoleResource(ResourceDeclare resourceDeclare) {
-        RbacRoleResourceEntity rbacRoleResourceEntity=rbacRoleResourceDao.fetch(
+        RbacRoleResourceEntity rbacRoleResourceEntity = rbacRoleResourceDao.fetch(
                 Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", resourceDeclare.roleCode())
                         .and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resourceDeclare.code()));
-        if(rbacRoleResourceEntity==null) {
-            rbacRoleResourceEntity=new RbacRoleResourceEntity();
+        if (rbacRoleResourceEntity == null) {
+            rbacRoleResourceEntity = new RbacRoleResourceEntity();
             rbacRoleResourceEntity.setRoleCode(resourceDeclare.roleCode());
             rbacRoleResourceEntity.setResourceCode(resourceDeclare.code());
             try {
@@ -557,13 +557,14 @@ public class RbacUserService {
         if (orgEntity == null) {
             orgEntity = new RbacOrgEntity();
             orgEntity.setCode(RbacConstant.SYSTEM_MANAGER_ORG_CODE);
-            orgEntity.setName("系统管理组织");
-            orgEntity.setSummary("系统管理组织");
+            orgEntity.setName("系统管理组");
+            orgEntity.setSummary("管理系统全局配置信息");
             orgEntity.setAddress("中科院");
             orgEntity.setIcon(Fonts.CANGLING_TEXT);
             orgEntity.setCharger("cangling");
             orgEntity.setEmail("admin@cangling.cn");
             orgEntity.setId(UUIDTools.uuid());
+            orgEntity.setRank(1000);//缺省该组织排在最后
             orgEntity.setLink("https://cangling.cn");
             rbacOrgDao.insert(orgEntity);
         }
@@ -741,24 +742,24 @@ public class RbacUserService {
         return rbacOrgUserDao.fetch(Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", userCode));
     }
 
-
     /**
      * 获取用户的所有权限
      * 很复杂，花费了一晚上
+     *
      * @param systemCode 系统代码
-     * @param userId  用户ID
+     * @param userId     用户ID
      * @return
      */
     public UserPermissions getUserPermissions(String systemCode, String userId) {
-        if(Strings.isBlank(systemCode) || Strings.isBlank(userId)){
+        if (Strings.isBlank(systemCode) || Strings.isBlank(userId)) {
             UserPermissions userPermissions = new UserPermissions();
-            userPermissions.organizations=new Organization[0];
-            userPermissions.roles=new Role[0];
+            userPermissions.organizations = new Organization[0];
+            userPermissions.roles = new Role[0];
             return userPermissions;
         }
         String cacheKey = getCacheKey(systemCode, userId);
-        Object obj=plugin.getServerContext().getFromSession(cacheKey);
-        if(obj instanceof UserPermissions){
+        Object obj = plugin.getServerContext().getFromSession(RbacConstant.SESSION_CACHE_GROUP,cacheKey);
+        if (obj instanceof UserPermissions) {
             return (UserPermissions) obj;
         }
 
@@ -773,104 +774,116 @@ public class RbacUserService {
         //       ->D  <<----用户所在的组织
         //       ->E
 
-        Map<String,Organization> idMap=getSystemOrganizationTree();
+        Map<String, Organization> idMap = getSystemOrganizationTree();
 
         //最终的结果
-        List<Organization> organizationsTree=new ArrayList<>();
-        List<String> userCodes=new ArrayList<>();
-        for(RbacOrgUserEntity userInOrg:userInOrgs) {
+        List<Organization> organizationsTree = new ArrayList<>();
+        List<String> userCodes = new ArrayList<>();
+        for (RbacOrgUserEntity userInOrg : userInOrgs) {
+            userCodes.add(userInOrg.getUserCode());
             Organization organization = organizationCodeMap.get(userInOrg.getOrgCode());
             if (organization != null) {
                 //寻找到根节点
-                Organization cloned=organization.clone();
-                cloned.userId=userId;
-                cloned.userName=userInOrg.getAliasName();
-                cloned.userCode=userInOrg.getUserCode();
-                cloned.userIcon=userInOrg.getAvatar();
-                findRoot(cloned, idMap,organizationsTree);
+                Organization cloned = organization.clone();
+                cloned.userId = userId;
+                cloned.userName = userInOrg.getAliasName();
+                cloned.userCode = userInOrg.getUserCode();
+                cloned.userIcon = userInOrg.getAvatar();
+                cloned.major = userInOrg.getMajor();
+                findRoot(cloned, idMap, organizationsTree);
                 //拷贝子节点
-                copyChild(organization, idMap,organizationsTree);
+                copyChild(organization, idMap, organizationsTree);
             }
         }
-        userPermissions.organizations=organizationsTree.toArray(new Organization[0]);
+        Collections.sort(organizationsTree, Comparator.comparing(Organization::getRank));
+        userPermissions.organizations = organizationsTree.toArray(new Organization[0]);
         //查找所有的角色
-        String sql="select * from rbac_role  left join rbac_user_code_role where rbac_role.code=rbac_user_code_role.role_code and rbac_user_code_role.user_code in @userCodes";
-        Sql sql1=Sqls.create(sql);
-        sql1.params().set("userCodes",userCodes);
-        sql1.setEntity(rbacRoleDao.getEntity());
-        rbacUserCodeRoleDao.getDao().execute(sql1);
-        List<Role> roles=new ArrayList<>();
-        for(RbacRoleEntity roleEntity:sql1.getList(RbacRoleEntity.class)){
-            roles.add(fromRoleEntity(roleEntity));
+        List<Role> roles = new ArrayList<>();
+        if (userCodes.size() > 0) {
+            String sql = "select * from rbac_role  left join rbac_user_code_role on rbac_role.code=rbac_user_code_role.role_code where rbac_user_code_role.user_code in (@userCodes)";
+            Sql sql1 = Sqls.create(sql);
+            sql1.params().set("userCodes", userCodes);
+            sql1.setEntity(rbacRoleDao.getEntity());
+            sql1.setCallback(Sqls.callback.entities());
+            rbacUserCodeRoleDao.getDao().execute(sql1);
+
+            List<RbacRoleEntity> list = sql1.getList(RbacRoleEntity.class);
+            if (list != null) {
+                for (RbacRoleEntity roleEntity : list) {
+                    roles.add(fromRoleEntity(roleEntity));
+                }
+            }
         }
-        userPermissions.roles=roles.toArray(new Role[0]);
-        plugin.getServerContext().putToSession(cacheKey,userPermissions);
+
+        userPermissions.roles = roles.toArray(new Role[0]);
+        plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP,cacheKey, userPermissions);
         return userPermissions;
     }
 
     private Role fromRoleEntity(RbacRoleEntity roleEntity) {
-        Role role=new Role();
-        role.code=roleEntity.getCode();
-        role.name=roleEntity.getName();
-        role.icon=roleEntity.getIcon();
-        role.summary=roleEntity.getSummary();
-        role.parentCode=roleEntity.getParentCode();
-        role.resources=new Res[0];
+        Role role = new Role();
+        role.code = roleEntity.getCode();
+        role.name = roleEntity.getName();
+        role.icon = roleEntity.getIcon();
+        role.summary = roleEntity.getSummary();
+        role.parentCode = roleEntity.getParentCode();
+        role.resources = new Res[0];
         return role;
     }
 
     /**
      * 拷贝　organization 及其字节点到　organizationsTree数中
+     *
      * @param organization
      * @param idMap
      * @param organizationsTree
      */
     private void copyChild(Organization organization, Map<String, Organization> idMap, List<Organization> organizationsTree) {
-            Organization subRoot=idMap.get(organization.orgId);
+        Organization subRoot = idMap.get(organization.orgId);
 
-            Organization targetRoot=null;
-            targetRoot= recursiveFindOrgById(organizationsTree.toArray(new Organization[0]),subRoot.orgId);
-            if(targetRoot==null) {
-              log.error("copyChild error");
-              return;
-            }
-            //　将subRoot的所有字节点　拷贝到targetRoot
-            recursiveCopyNode(targetRoot,subRoot);
+        Organization targetRoot = null;
+        targetRoot = recursiveFindOrgById(organizationsTree.toArray(new Organization[0]), subRoot.orgId);
+        if (targetRoot == null) {
+            log.error("copyChild error");
+            return;
+        }
+        //　将subRoot的所有字节点　拷贝到targetRoot
+        recursiveCopyNode(targetRoot, subRoot);
     }
 
     private void recursiveCopyNode(Organization targetRoot, Organization subRoot) {
-        if(subRoot.children==null|| subRoot.children.length==0){
+        if (subRoot.children == null) {
             return;
         }
-        for(Organization child:subRoot.children) {
-            Organization find=null;
-            if(targetRoot.children==null){
-                targetRoot.children=new Organization[0];
+        for (Organization child : subRoot.children) {
+            Organization find = null;
+            if (targetRoot.children == null) {
+                targetRoot.children = new Organization[0];
             }
-            for(Organization organization:targetRoot.children){
-                if(organization.orgId.equals(child.orgId)){
-                    find=organization;
+            for (Organization organization : targetRoot.children) {
+                if (organization.orgId.equals(child.orgId)) {
+                    find = organization;
                     break;
                 }
             }
-            if(find==null){
-                find=child.clone();
-                ArrayUtils.add(targetRoot.children,find);
+            if (find == null) {
+                find = child.clone();
+                targetRoot.children=ArrayUtils.add(targetRoot.children, find);
             }
-            recursiveCopyNode(find,child);
+            recursiveCopyNode(find, child);
         }
     }
 
     private Organization recursiveFindOrgById(Organization[] organizations, String orgId) {
-        if(organizations==null || organizations.length==0){
+        if (organizations == null) {
             return null;
         }
-        for(Organization organization:organizations){
-            if(organization.orgId.equals(orgId)){
+        for (Organization organization : organizations) {
+            if (organization.orgId.equals(orgId)) {
                 return organization;
             }
-            Organization child=recursiveFindOrgById(organization.children,orgId);
-            if(child!=null){
+            Organization child = recursiveFindOrgById(organization.children, orgId);
+            if (child != null) {
                 return child;
             }
         }
@@ -879,15 +892,15 @@ public class RbacUserService {
 
     private void findRoot(Organization organization, Map<String, Organization> idMap, List<Organization> organizationsTree) {
         List<Organization> list = new ArrayList<>();
-        String parentId=organization.parentId;
+        String parentId = organization.parentId;
         list.add(organization);
-        while(Strings.isNotBlank(parentId)){
+        while (Strings.isNotBlank(parentId)) {
             Organization parent = idMap.get(parentId);
-            if(parent==null){
+            if (parent == null) {
                 break;
             }
             list.add(parent);
-            parentId=parent.parentId;
+            parentId = parent.parentId;
         }
         Collections.reverse(list);
         mergeList(organizationsTree, list);
@@ -895,70 +908,65 @@ public class RbacUserService {
 
     /**
      * merge list
+     *
      * @param organizationsTree
      * @param list
      */
     private void mergeList(List<Organization> organizationsTree, List<Organization> list) {
-        Organization find=null;
-        for(Organization organization:organizationsTree){
-            if(organization.orgId.equals(list.get(0).orgId)){
-                find=organization;
+        Organization find = null;
+        for (Organization organization : organizationsTree) {
+            if (organization.orgId.equals(list.get(0).orgId)) {
+                find = organization;
                 break;
             }
         }
-        if(find==null){
-            Organization root=list.get(0).clone();
+        if (find == null) {
+            Organization root = list.get(0).clone();
             organizationsTree.add(root);
 
-            for(int i=1;i<list.size();i++){
-                Organization organization=list.get(i).clone();
-                ArrayUtils.add(root.children,organization);
-                root=organization;
+            for (int i = 1; i < list.size(); i++) {
+                Organization organization = list.get(i).clone();
+                root.children=ArrayUtils.add(root.children, organization);
+                root = organization;
             }
-        }
-        else {
-            Organization root=find;
-            for(int i=1;i<list.size();i++){
-                Organization organization=list.get(i);
-                Organization childFind=null;
-                for(Organization child:root.children){
-                    if(child.orgId.equals(organization.orgId)){
-                        childFind=child;
+        } else {
+            Organization root = find;
+            for (int i = 1; i < list.size(); i++) {
+                Organization organization = list.get(i);
+                Organization childFind = null;
+                for (Organization child : root.children) {
+                    if (child.orgId.equals(organization.orgId)) {
+                        childFind = child;
                         break;
                     }
                 }
-                if(childFind==null){
+                if (childFind == null) {
                     Organization cloned = organization.clone();
-                    ArrayUtils.add(root.children,cloned);
-                    root=cloned;
-                }
-                else {
-                    root=childFind;
+                    root.children=ArrayUtils.add(root.children, cloned);
+                    root = cloned;
+                } else {
+                    root = childFind;
                 }
             }
         }
     }
 
     private String getCacheKey(String systemCode, String userId) {
-        return RbacConstant.USER_PERMISSION_CACHE_KEY_PREFIX +"_"+ systemCode + "_" + userId;
+        return RbacConstant.USER_PERMISSION_CACHE_KEY_PREFIX + "_" + systemCode + "_" + userId;
     }
 
     /**
-     * 全局
-     */
-    Map<String,Organization> organizationIdMap=new HashMap<>();
-    Map<String,Organization> organizationCodeMap=new HashMap<>();
-    /**
      * 获取系统组织架构图
+     *
      * @return
      */
-    private synchronized Map<String,Organization> getSystemOrganizationTree() {
+    private synchronized Map<String, Organization> getSystemOrganizationTree() {
 
-        if(organizationIdMap==null || organizationIdMap.size()>0){
+        if (organizationIdMap == null || organizationIdMap.size() > 0) {
             return organizationIdMap;
         }
-        organizationIdMap=new HashMap<>();
-        organizationCodeMap=new HashMap<>();
+        organizationIdMap = new HashMap<>();
+        organizationCodeMap = new HashMap<>();
 
         //获取所有的组织机构信息
         List<RbacOrgEntity> orgs = rbacOrgDao.query(null);
@@ -969,15 +977,19 @@ public class RbacUserService {
         //构建组织结构MAP
         for (RbacOrgEntity org : orgs) {
             Organization organization = toOrganization(org);
-            organizationIdMap.put(org.getId(),organization);
-            organizationCodeMap.put(org.getCode(),organization);
+            organizationIdMap.put(org.getId(), organization);
+            organizationCodeMap.put(org.getCode(), organization);
         }
 
         //构建组织结构树
-        for (Organization org : organizationIdMap.values()) {
+        for (Organization org : organizationCodeMap.values()) {
+            if(Strings.isBlank(org.parentId))
+            {
+                continue;
+            }
             Organization parent = organizationIdMap.get(org.parentId);
-            if(parent!=null){
-                parent.children= ArrayUtils.add(parent.children,org);
+            if (parent != null) {
+                parent.children = ArrayUtils.add(parent.children, org);
             }
         }
         return organizationIdMap;
@@ -986,23 +998,35 @@ public class RbacUserService {
 
     /**
      * 转换数据结构
+     *
      * @param org
      * @return
      */
     private Organization toOrganization(RbacOrgEntity org) {
-        Organization organization=new Organization();
-        organization.charger=org.getCharger();
-        organization.email=org.getEmail();
-        organization.link=org.getLink();
-        organization.orgId=org.getId();
-        organization.orgIcon=org.getIcon();
-        organization.orgCode=org.getCode();
-        organization.orgName=org.getName();
-        organization.regionCode=org.getRegionCode();
-        organization.summary=org.getSummary();
-        organization.tel=org.getTel();
-        organization.parentId=org.getParentId();
-        organization.children=new Organization[0];
+        Organization organization = new Organization();
+        organization.charger = org.getCharger();
+        organization.email = org.getEmail();
+        organization.link = org.getLink();
+        organization.orgId = org.getId();
+        organization.orgIcon = org.getIcon();
+        organization.orgCode = org.getCode();
+        organization.orgName = org.getName();
+        organization.regionCode = org.getRegionCode();
+        organization.summary = org.getSummary();
+        organization.tel = org.getTel();
+        organization.parentId = org.getParentId();
+        organization.rank = org.getRank();
+        organization.children = new Organization[0];
         return organization;
+    }
+
+    /**
+     * 清空组织机构的缓存
+     * 需要通知SessionService 清除session中有关用户权限的信息
+     */
+    public synchronized void clearGlobalCache() {
+        organizationIdMap.clear();
+        organizationCodeMap.clear();
+        plugin.getServerContext().clearSessionGroup(RbacConstant.SESSION_CACHE_GROUP);
     }
 }

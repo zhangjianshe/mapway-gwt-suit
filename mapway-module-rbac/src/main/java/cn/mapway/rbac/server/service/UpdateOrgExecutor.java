@@ -56,6 +56,8 @@ public class UpdateOrgExecutor extends AbstractBizExecutor<UpdateOrgResponse, Up
         }
         UpdateOrgResponse updateOrgResponse = new UpdateOrgResponse();
         updateOrgResponse.setOrg(rbacOrgDao.fetch(org.getId()));
+        //清空组织机构的缓存
+        rbacUserService.clearGlobalCache();
         return BizResult.success(updateOrgResponse);
     }
 }
