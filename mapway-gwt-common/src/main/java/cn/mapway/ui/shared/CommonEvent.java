@@ -139,6 +139,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int SCRIPT_UPDATE = 126;
     public final static int CHECKIN = 127;
     public final static int CHECKOUT = 128;
+    public final static int SWITCH_ORG = 129;//组织切换
 
 
 
@@ -161,6 +162,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent switchOrg(Object data) {
+        return new CommonEvent(SWITCH_ORG, data);
     }
     public static CommonEvent checkinEvent(Object data) {
         return new CommonEvent(CHECKIN, data);
@@ -1140,6 +1144,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isZoomOut() {
         return ZOOMOUT == this.type;
+    }
+    public boolean isSwitchOrg() {
+        return SWITCH_ORG == this.type;
     }
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
