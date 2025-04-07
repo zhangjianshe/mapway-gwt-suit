@@ -21,6 +21,7 @@ import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.dom.DomGlobal;
 
 /**
  * 所有编辑器组件的一个代理
@@ -80,8 +81,9 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         //创建统一的属性列表编辑UI
         attributeEditor = AttributeEditorFactory.get().createEditor(editorCode, false);
         if (attributeEditor == null) {
-            errorInput("创建"+attribute.getName()+"编辑器:" + attribute.getEditorMetaData().getEditorCode());
-            return;
+            DomGlobal.console.log("创建"+attribute.getName()+"编辑器:" + attribute.getEditorMetaData().getEditorCode());
+            //用一个文本框替换
+            attributeEditor= new TextboxAttributeEditor();
         }
 
         Widget displayWidget = attributeEditor.getDisplayWidget();

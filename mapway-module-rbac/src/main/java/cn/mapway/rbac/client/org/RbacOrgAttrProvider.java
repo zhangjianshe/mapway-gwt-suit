@@ -10,6 +10,7 @@ import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.icon.IconSelectorEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.sys.TextAreaAttribute;
 import cn.mapway.ui.client.mvc.attribute.editor.sys.TextAreaAttributeEditorData;
+import cn.mapway.ui.client.mvc.attribute.marker.AbstractEditorMetaData;
 
 public class RbacOrgAttrProvider extends AbstractAttributesProvider {
     RbacOrgEntity org;
@@ -54,7 +55,18 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         });
 
-        getAttributes().add(new TextBoxAttribute("regionCode", "行政区划代码") {
+        getAttributes().add(new AbstractAttribute("regionCode", "行政区划代码") {
+            @Override
+            public IEditorMetaData getEditorMetaData() {
+                return new AbstractEditorMetaData() {
+                    @Override
+                    protected void initMetaData() {
+                        // this is a magic ,需要系统提供一个区域属性编辑器,如果没有就会使用textbox
+                        setEditorCode("region_code_editor");
+                    }
+                };
+            }
+
             @Override
             public Object getValue() {
                 return org.getRegionCode();
