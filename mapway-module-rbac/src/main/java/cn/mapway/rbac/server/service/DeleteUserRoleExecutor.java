@@ -39,7 +39,9 @@ public class DeleteUserRoleExecutor extends AbstractBizExecutor<DeleteUserRoleRe
         if(assignResource.isFailed()){
             return assignResource.asBizResult();
         }
-        
+        //添加完成后修改用户的缓存信息
+        rbacUserService.resetUserPermissionsCache(user);
+
         return rbacUserService.deleteUserRole(request.getUserCode(), request.getRoleCode());
     }
 }

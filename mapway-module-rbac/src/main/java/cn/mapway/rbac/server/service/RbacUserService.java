@@ -820,6 +820,15 @@ public class RbacUserService {
         return userPermissions;
     }
 
+    /**
+     * 清楚用户权限缓存
+     * @param userInfo
+     */
+    public void resetUserPermissionsCache(IUserInfo userInfo) {
+        String cacheKey = getCacheKey(userInfo.getSystemCode(), userInfo.getId());
+        plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP,cacheKey,null);
+    }
+
     private Role fromRoleEntity(RbacRoleEntity roleEntity) {
         Role role = new Role();
         role.code = roleEntity.getCode();

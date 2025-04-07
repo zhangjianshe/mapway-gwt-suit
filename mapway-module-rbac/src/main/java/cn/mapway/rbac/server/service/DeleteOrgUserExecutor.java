@@ -60,6 +60,8 @@ public class DeleteOrgUserExecutor extends AbstractBizExecutor<DeleteOrgUserResp
                 rbacOrgUserDao.clear(Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", request.getUserCode()));
             }
         });
+        //添加完成后修改用户的缓存信息
+        rbacUserService.resetUserPermissionsCache(user);
 
         return BizResult.success(new DeleteOrgUserResponse());
     }

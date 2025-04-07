@@ -66,6 +66,8 @@ public class UpdateRoleExecutor extends AbstractBizExecutor<UpdateRoleResponse, 
             rbacRoleDao.insert(roleEntity);
         }
 
+        //添加完成后修改用户的缓存信息
+        rbacUserService.resetUserPermissionsCache(user);
         return BizResult.success(new UpdateRoleResponse());
     }
 }

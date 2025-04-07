@@ -61,6 +61,8 @@ public class DeleteOrgExecutor extends AbstractBizExecutor<DeleteOrgResponse, De
                 rbacOrgDao.getDao().execute(Sqls.create(deleteOrg));
             }
         });
+        //添加完成后修改用户的缓存信息
+        rbacUserService.clearGlobalCache();
 
         return BizResult.success(new DeleteOrgResponse());
     }

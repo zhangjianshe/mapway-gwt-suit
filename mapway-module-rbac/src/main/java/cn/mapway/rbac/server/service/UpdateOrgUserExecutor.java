@@ -57,6 +57,9 @@ public class UpdateOrgUserExecutor extends AbstractBizExecutor<UpdateOrgUserResp
         } else {
             rbacOrgUserDao.updateIgnoreNull(orgUser);
         }
+        //添加完成后修改用户的缓存信息
+        rbacUserService.resetUserPermissionsCache(user);
+
         UpdateOrgUserResponse updateOrgUserResponse = new UpdateOrgUserResponse();
         updateOrgUserResponse.setOrgUser(rbacOrgUserDao.fetch(orgUser.getUserCode()));
         return BizResult.success(updateOrgUserResponse);
