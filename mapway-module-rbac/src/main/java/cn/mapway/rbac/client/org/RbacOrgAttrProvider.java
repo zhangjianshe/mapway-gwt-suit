@@ -66,7 +66,6 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
                     }
                 };
             }
-
             @Override
             public Object getValue() {
                 return org.getRegionCode();
