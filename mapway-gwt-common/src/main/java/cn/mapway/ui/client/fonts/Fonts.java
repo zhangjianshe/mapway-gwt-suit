@@ -7,10 +7,15 @@ import java.util.Map;
  * @author zhang
  */
 public class Fonts {
-    public static String toHtmlEntity(String fontIndex){
-        return "&#x"+fontIndex;
-    }
-    	public final static String GEOM_CORRECT = "e79f";
+	public static String toHtmlEntity(String fontIndex){
+		if(fontIndex==null || fontIndex.length()==0){
+			return "";
+		}
+		else{
+			return "&#x"+fontIndex;
+		}
+	}
+    public final static String GEOM_CORRECT = "e79f";
 	public final static String SAMPLE_STA = "e79e";
 	public final static String WEIXIN = "e79d";
 	public final static String RENWUTUISONG = "e79c";

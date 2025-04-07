@@ -8,8 +8,14 @@ import java.util.Map;
  */
 public class Fonts {
     public static String toHtmlEntity(String fontIndex){
-        return "&#x"+fontIndex;
+        if(fontIndex==null || fontIndex.length()==0){
+            return "";
+        }
+        else{
+            return "&#x"+fontIndex;
+        }
     }
+
     __FONT_LIST__
    public static Map<String,String> unicodes;
 	static {
