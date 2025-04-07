@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.widget.tree;
 
+import cn.mapway.ui.client.util.IEachElement;
 import cn.mapway.ui.client.widget.panel.MessagePanel;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
@@ -7,14 +8,9 @@ import cn.mapway.ui.shared.HasCommonHandlers;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.ImageResource;
 import com.google.gwt.storage.client.Storage;
-import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
-import elemental2.dom.DomGlobal;
-import elemental2.dom.Element;
-import elemental2.svg.SVGElement;
-import jsinterop.base.Js;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -78,9 +74,9 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         add(messagePanel);
     }
 
-    public void resize()
-    {
+    public void resize() {
     }
+
     private void checkChildren(ImageTextItem item, boolean checked) {
         for (ImageTextItem child : item.getChildren()) {
             child.setChecked(checked, false);
@@ -259,6 +255,40 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         return item;
     }
 
+
+    /**
+     * 迭代系统中的元素
+     *
+     * @param eachElement
+     * @return true continue next
+     */
+    public boolean eachItem(ImageTextItem parent, IEachElement<ImageTextItem> eachElement) {
+        if (eachElement == null) {
+            return false;
+        }
+        if (parent == null) {
+            // root list
+            for (int i = 0; i < getWidgetCount(); i++) {
+                Widget widget = getWidget(i);
+                if (widget instanceof ImageTextItem) {
+                    ImageTextItem item = (ImageTextItem) widget;
+                    if (!eachElement.each(item)) {
+                        return false;
+                    }
+                }
+            }
+        } else {
+            for (int i = 0; i < parent.getChildren().size(); i++) {
+                Widget widget = parent.getChildren().get(i);
+                ImageTextItem item = (ImageTextItem) widget;
+                if (!eachElement.each(item)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public void setMessage(String message, int height) {
         messagePanel.setHtml(message);
         messagePanel.setHeight(height + "px");
@@ -313,15 +343,14 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         }
     }
 
-    public int getVisibleCount()
-    {
-        int count=0;
+    public int getVisibleCount() {
+        int count = 0;
         for (int i = 0; i < getWidgetCount(); i++) {
             Widget widget = getWidget(i);
             if (widget instanceof ImageTextItem) {
                 ImageTextItem item = (ImageTextItem) widget;
                 if (item.isVisible()) {
-                    count+=item.getVisibleCount();
+                    count += item.getVisibleCount();
                 }
             }
         }
