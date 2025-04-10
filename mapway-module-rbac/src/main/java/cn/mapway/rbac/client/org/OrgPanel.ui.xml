@@ -16,7 +16,9 @@
             </g:HTMLPanel>
         </g:north>
         <g:center>
-            <org:OrgTree ui:field="orgTree" width="100%"/>
+            <g:ScrollPanel>
+                <org:OrgTree ui:field="orgTree" width="100%"/>
+            </g:ScrollPanel>
         </g:center>
     </g:DockLayoutPanel>
 </ui:UiBinder>

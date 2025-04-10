@@ -1,6 +1,7 @@
 package cn.mapway.rbac.server.service;
 
 import cn.mapway.biz.core.BizResult;
+import cn.mapway.biz.exception.BizException;
 import cn.mapway.rbac.client.user.RbacUser;
 import cn.mapway.rbac.server.RbacServerPlugin;
 import cn.mapway.rbac.server.dao.*;
@@ -957,6 +958,19 @@ public class RbacUserService {
                     root = childFind;
                 }
             }
+        }
+    }
+
+    /**
+     * 判断用户是否具有某一个角色 如果没有会出发异常 BizException,全局可以捕获该异常进行处理
+     * @param user
+     * @param permission
+     */
+    public void confirmUserPermission(IUserInfo user, String permission) {
+        BizResult<Boolean> assignRole = isAssignRole(user, "", permission);
+        if(assignRole.isFailed() || !assignRole.getData())
+        {
+            throw BizException.get(503,"权限不足("+permission+")");
         }
     }
 

@@ -13,6 +13,8 @@ import cn.mapway.spring.tools.UUIDTools;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.shared.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.nutz.dao.Cnd;
+import org.nutz.dao.Sqls;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
 import org.nutz.lang.Strings;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.Objects;
 
 /**
  * UpdateOrgUserExecutor
@@ -55,6 +58,17 @@ public class UpdateOrgUserExecutor extends AbstractBizExecutor<UpdateOrgUserResp
             orgUser.setUserCode(UUIDTools.uuid());
             rbacOrgUserDao.insert(orgUser);
         } else {
+            RbacOrgUserEntity old = rbacOrgUserDao.fetch(Cnd.where(RbacOrgUserEntity.FLD_USER_CODE, "=", orgUser.getUserCode()));
+            if(!Objects.equals(orgUser.getMajor(), old.getMajor()))
+            {
+                if(orgUser.getMajor()!=null && orgUser.getMajor())
+                {
+                    //新设定了主要机构 清空该用户的其他主要机构设置，一个用户只能有一个主要机构
+                    String sql="update rbac_org_user set major=false where user_id=@userId and major=true";
+                    rbacOrgUserDao.getDao().execute(Sqls.create(sql).setParam("userId",orgUser.getUserId()));
+                }
+            }
+
             rbacOrgUserDao.updateIgnoreNull(orgUser);
         }
         //添加完成后修改用户的缓存信息
