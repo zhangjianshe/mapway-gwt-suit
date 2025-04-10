@@ -9,7 +9,7 @@
             align-items: center;
             justify-content: flex-start;
             padding: 0 8px;
-            gap:1rem;
+            gap: 1rem;
         }
 
         .box:HOVER {
@@ -23,6 +23,7 @@
         .name {
             font-size: 1.2rem;
             font-weight: bold;
+            flex-grow: 1;
         }
 
         .img {
@@ -31,9 +32,17 @@
             overflow: hidden;
             margin: 3px;
             border-radius: 3px;
+            flex-grow: 0;
+        }
+
+        .major {
+            flex-grow: 0;
+            width: 24px;
+            justify-self: center;
         }</ui:style>
     <g:HTMLPanel styleName="{style.box}">
         <g:Image ui:field="avatar" styleName="{style.img}"/>
         <g:Label ui:field="lbName" styleName="{style.name}"/>
+        <g:Label ui:field="lbMajor" addStyleNames="{style.major}"/>
     </g:HTMLPanel>
 </ui:UiBinder>

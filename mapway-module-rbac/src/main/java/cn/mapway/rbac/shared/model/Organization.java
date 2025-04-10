@@ -55,6 +55,7 @@ public class Organization implements Serializable, IsSerializable {
         organization.userName=userName;
         organization.userIcon=userIcon;
         organization.rank=rank;
+        organization.major=major;
         organization.children=new Organization[0];
         return organization;
     }
