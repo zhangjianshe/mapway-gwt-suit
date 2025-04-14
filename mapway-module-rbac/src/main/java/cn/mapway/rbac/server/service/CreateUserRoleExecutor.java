@@ -42,6 +42,8 @@ public class CreateUserRoleExecutor extends AbstractBizExecutor<CreateUserRoleRe
             return assignResource.asBizResult();
         }
 
-        return rbacUserService.createUserRole(request.getUserCode(), request.getRoleCode());
+        BizResult<CreateUserRoleResponse> response = rbacUserService.createUserRole(request.getUserCode(), request.getRoleCode());
+        rbacUserService.resetUserPermissionsCache(user);
+        return response;
     }
 }
