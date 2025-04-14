@@ -64,7 +64,7 @@ public class MyPostgresqlExpert extends PsqlJdbcExpert {
             return new PGBoxAdaptor();
         } else if(ef.getColumnType().equals(ColType.VARCHAR)){
             if(ef.getCustomDbType()!=null && ef.getCustomDbType().startsWith("GEOMETRY")){
-                return new WktAdaptor();
+                return new WktAdaptor(ef.getCustomDbType());
             }
             else {
                 return super.getAdaptor(ef);
