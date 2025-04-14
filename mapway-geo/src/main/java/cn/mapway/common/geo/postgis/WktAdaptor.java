@@ -12,6 +12,13 @@ import java.sql.Types;
 
 @Slf4j
 public class WktAdaptor implements ValueAdaptor {
+    String emptyGeometryWkt = "";
+    public WktAdaptor(String geometryType) {
+        // GEOMETRY(XXX,4326)
+        // extract XXX from geometryType
+        String type = geometryType.substring(geometryType.indexOf("(") + 1, geometryType.indexOf(","));
+        emptyGeometryWkt=type + " EMPTY";
+    }
     @Override
     public Object get(ResultSet rs, String colName) throws SQLException {
         Object object = rs.getObject(colName);
@@ -21,10 +28,10 @@ public class WktAdaptor implements ValueAdaptor {
                 return toWKT(pGgeometry);
             } else {
                 log.warn("不能确定数据类型:{}", object.getClass().toString());
-                return "GEOMETRY EMPTY";
+                return emptyGeometryWkt;
             }
         } else {
-            return "GEOMETRY EMPTY";
+            return emptyGeometryWkt;
         }
     }
 
@@ -36,14 +43,12 @@ public class WktAdaptor implements ValueAdaptor {
 
     @Override
     public void set(PreparedStatement stat, Object obj, int index) throws SQLException {
+        PGgeometry pGgeometry = new PGgeometry();
         if (null == obj) {
-            PGgeometry pGgeometry = new PGgeometry();
-            pGgeometry.setValue("GEOMETRY EMPTY");
-            stat.setObject(index, pGgeometry, Types.OTHER);
+            pGgeometry.setValue(emptyGeometryWkt);
         } else {
-            PGgeometry pGgeometry = new PGgeometry();
             pGgeometry.setValue((String) obj);
-            stat.setObject(index, pGgeometry, Types.OTHER);
         }
+        stat.setObject(index, pGgeometry, Types.OTHER);
     }
 }
