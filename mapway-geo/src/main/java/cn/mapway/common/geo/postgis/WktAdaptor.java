@@ -51,7 +51,7 @@ public class WktAdaptor implements ValueAdaptor {
         if (null == obj) {
             pGgeometry.setGeometry(geomFromString(emptyGeometryWkt, new BinaryParser(), false));
         } else {
-            pGgeometry.setValue((String) obj);
+            pGgeometry.setGeometry(geomFromString((String) obj, new BinaryParser(), false));
         }
         stat.setObject(index, pGgeometry, Types.OTHER);
     }
