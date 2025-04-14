@@ -107,7 +107,7 @@ public class TextboxAttributeEditor extends AbstractAttributeEditor<String> {
 
     public TextboxAttributeEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        txtBox.addChangeHandler(event -> {
+        txtBox.addValueChangeHandler(event -> {
             if (getAttribute() != null) {
                 getAttribute().setValue(castToValue(txtBox.getValue()));
             }
