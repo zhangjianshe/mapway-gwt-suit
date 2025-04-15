@@ -46,13 +46,11 @@ public class SimpleFrame extends BaseAbstractModule {
         }
         else if(object instanceof String)
         {
-            HorizontalPanel panel=new HorizontalPanel();
-            panel.setWidth("100%");
-            panel.setHeight("100%");
+            HTMLPanel panel=new HTMLPanel("");
+            panel.setStyleName("ai-flex-panel");
             HTML html=new HTML((String) object);
+            html.setStyleName("ai-message");
             panel.add(html);
-            panel.setHorizontalAlignment(HasHorizontalAlignment.ALIGN_CENTER);
-            panel.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
             appendWidget(panel);
         }
         return b;
