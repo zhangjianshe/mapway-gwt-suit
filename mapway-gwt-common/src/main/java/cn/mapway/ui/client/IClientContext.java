@@ -20,6 +20,13 @@ public interface IClientContext {
 
     void setUserInfo(IUserInfo userInfo);
 
+    /**
+     * 判断用户是否拥有某个角色
+     * @param roleCode
+     * @return
+     */
+    boolean isAssignRole(String roleCode);
+
     Promise<Void> confirmDelete(String message);
 
     Promise<Void> confirm3(ImageResource icon, String title, String message);

@@ -1,8 +1,10 @@
 package cn.mapway.rbac.client.user;
 
+import cn.mapway.rbac.client.RbacClient;
 import cn.mapway.rbac.client.org.RbacOrgFrame;
 import cn.mapway.rbac.client.role.RoleResourceFrame;
 import cn.mapway.rbac.shared.RbacConstant;
+import cn.mapway.ui.client.IClientContext;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.frame.ModuleBar;
 import cn.mapway.ui.client.mvc.*;
@@ -12,6 +14,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,7 +25,7 @@ import java.util.List;
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
 @ModuleMarker(value = RbacFrame.MODULE_CODE,
-        name = "RBAC",
+        name = "角色授权",
         unicode = Fonts.RBAC_ROLE,
         summary = "RbacStudio",
         group = RbacConstant.MODULE_GROUP_RBAC,
@@ -36,6 +39,8 @@ public class RbacFrame extends BaseAbstractModule {
     DockLayoutPanel root;
     @UiField
     ModuleBar moduleBar;
+    @UiField
+    HTMLPanel tools;
     IModule selectedModule = null;
 
     public RbacFrame() {
@@ -44,6 +49,27 @@ public class RbacFrame extends BaseAbstractModule {
         codes.add(RbacOrgFrame.MODULE_CODE);
         codes.add(RoleResourceFrame.MODULE_CODE);
         moduleBar.setData(codes);
+    }
+
+    @Override
+    public boolean initialize(IModule parentModule, ModuleParameter parameter) {
+        boolean b= super.initialize(parentModule, parameter);
+        IClientContext clientContext = RbacClient.get().getClientContext();
+        if(!clientContext.isAssignRole(RbacConstant.ROLE_SYS_MAINTAINER))
+        {
+            //没有授权操作
+            SwitchModuleData switchModuleData = new SwitchModuleData(SimpleFrame.MODULE_CODE, "");
+            switchModuleData.getParameters().put("没有授权");
+            switchModule(switchModuleData);
+            root.setWidgetHidden(tools, true);
+        }
+        else{
+            root.setWidgetHidden(tools, false);
+            SwitchModuleData switchModuleData = new SwitchModuleData(SimpleFrame.MODULE_CODE, "");
+            switchModuleData.getParameters().put("");
+            switchModule(switchModuleData);
+        }
+        return b;
     }
 
     @Override

@@ -14,7 +14,7 @@
     </ui:style>
     <g:DockLayoutPanel ui:field="root">
         <g:north size="50">
-            <g:HTMLPanel styleName="{style.box} ai-border-right">
+            <g:HTMLPanel ui:field="tools" styleName="{style.box} ai-border-bottom">
                 <frame:ModuleBar styleName="{style.box}" ui:field="moduleBar"/>
             </g:HTMLPanel>
         </g:north>
