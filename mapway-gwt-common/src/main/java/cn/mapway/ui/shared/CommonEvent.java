@@ -141,6 +141,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int CHECKOUT = 128;
     public final static int SWITCH_ORG = 129;//组织切换
 
+    public final static int CHANGE_CRS = 130;//设置 tif或shp的坐标系
+
 
 
     public final static int OK = 200;
@@ -661,6 +663,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public static CommonEvent exportProductEvent(Object data) {
         return new CommonEvent(EXPORT_PRODUCT, data);
     }
+    public static CommonEvent changeCrsEvent(Object data) {
+        return new CommonEvent(CHANGE_CRS, data);
+    }
 
     public boolean isObject() {
         return type == OBJECT;
@@ -1147,6 +1152,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isSwitchOrg() {
         return SWITCH_ORG == this.type;
+    }
+    public boolean isChangeCrs() {
+        return CHANGE_CRS == this.type;
     }
     @Override
     public Type<CommonEventHandler> getAssociatedType() {
