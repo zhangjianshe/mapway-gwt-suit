@@ -4,6 +4,8 @@ import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.IAttributePropertyChangeCallback;
 import cn.mapway.ui.client.mvc.attribute.editor.AttributeEditorFactory;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditorNotifyHandler;
+import cn.mapway.ui.client.mvc.attribute.editor.NotifyKind;
 import cn.mapway.ui.client.mvc.attribute.editor.textbox.TextboxAttributeEditor;
 import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.util.StringUtil;
@@ -17,17 +19,14 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Label;
-import com.google.gwt.user.client.ui.Widget;
+import com.google.gwt.user.client.ui.*;
 import elemental2.dom.DomGlobal;
 
 /**
  * 所有编辑器组件的一个代理
  * [name   :    EDITOR]
  */
-public class AttributeItemEditorProxy extends Composite implements HasCommonHandlers, IAttributePropertyChangeCallback {
+public class AttributeItemEditorProxy extends Composite implements HasCommonHandlers, IAttributeEditorNotifyHandler, IAttributePropertyChangeCallback {
     private static final AttributeItemEditorProxyUiBinder ourUiBinder = GWT.create(AttributeItemEditorProxyUiBinder.class);
     @UiField
     Label lbHeader;
@@ -35,6 +34,8 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
     SStyle style;
     @UiField
     HTMLPanel box;
+    @UiField
+    VerticalPanel root;
     IAttributeEditor attributeEditor;
 
     public AttributeItemEditorProxy() {
@@ -89,6 +90,8 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         Widget displayWidget = attributeEditor.getDisplayWidget();
         box.add(displayWidget);
 
+        //接受属性变更通知
+        attributeEditor.setEditorNotifyHandler(this);
         //让属性编辑器 自己处理数据逻辑
         // attribute.getEditorData() 返回实例化这个属性编辑器的所有数据
         attributeEditor.editAttribute(attribute.getRuntimeParameters(), attribute);
@@ -110,13 +113,7 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         return attributeEditor;
     }
 
-    private void errorInput(String msg) {
-        Label error = new Label(msg);
-        error.setTitle(msg);
-        error.setStyleName(style.error());
-        box.setStyleName(style.layout2());
-        box.add(error);
-    }
+
 
     public void setLabelWidth(int width) {
         if (box.getWidgetCount() == 2) {
@@ -196,8 +193,26 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         attributeEditor.updateAllEditorOption();
     }
 
+    @Override
+    public void handlerEditorNotify(NotifyKind kind, Object data) {
+        switch (kind) {
+            case NK_EXPAND_WIDGET_ADD:
+                assert data instanceof Widget;
+                Widget widget = (Widget) data;
+                root.add(widget);
+                break;
+            case NK_EXPAND_WIDGET_REMOVE:
+                assert data instanceof Widget;
+                Widget widget2 = (Widget) data;
+                root.remove(widget2);
+                break;
+            default:
+                break;
+        }
+    }
 
-    interface AttributeItemEditorProxyUiBinder extends UiBinder<HTMLPanel, AttributeItemEditorProxy> {
+
+    interface AttributeItemEditorProxyUiBinder extends UiBinder<VerticalPanel, AttributeItemEditorProxy> {
     }
 
     interface SStyle extends CssResource {

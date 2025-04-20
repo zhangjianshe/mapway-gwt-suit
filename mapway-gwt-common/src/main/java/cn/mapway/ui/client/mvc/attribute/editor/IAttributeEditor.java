@@ -76,6 +76,9 @@ public interface IAttributeEditor extends IProvideSize, IData {
      */
     void setValueChangedHandler(IAttributeEditorValueChangedHandler handler);
 
+
+    void setEditorNotifyHandler(IAttributeEditorNotifyHandler notifyHandler);
+
     /**
      * 获取编辑器参数设计组件
      * 缺省返回null 不需要设计

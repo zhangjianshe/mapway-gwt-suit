@@ -35,7 +35,10 @@
             color: #666666;
             font-size: 0.9rem;
         }</ui:style>
-    <g:HTMLPanel styleName="{style.layout2}" ui:field="box">
-        <g:Label ui:field="lbHeader" styleName="{style.head}"/>
-    </g:HTMLPanel>
+    <g:VerticalPanel ui:field="root" width="100%">
+        <g:HTMLPanel styleName="{style.layout2}" ui:field="box">
+            <g:Label ui:field="lbHeader" styleName="{style.head}"/>
+        </g:HTMLPanel>
+    </g:VerticalPanel>
+
 </ui:UiBinder>

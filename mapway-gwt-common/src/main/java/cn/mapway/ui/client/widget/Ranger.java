@@ -34,11 +34,17 @@ public class Ranger extends Composite implements HasValueChangeHandlers<Double> 
     String label = "";
     Double min = 0.0d;
     Double max = 100.0d;
+    Boolean continueReport=false;
     int x0;
     int y0;
     int mx = 0;
     int my = 0;
     boolean moving = false;
+
+    public void setContinueReport(boolean report)
+    {
+        continueReport=report;
+    }
     private final MouseDownHandler mouseDownHandler = new MouseDownHandler() {
         @Override
         public void onMouseDown(MouseDownEvent mouseDownEvent) {
@@ -88,6 +94,11 @@ public class Ranger extends Composite implements HasValueChangeHandlers<Double> 
                 double v = min + (max - min) * (left * 1.0f / width);
                 value = v;
                 text.setInnerText(format((float) value));
+
+                if(continueReport)
+                {
+                    ValueChangeEvent.fire(Ranger.this,value);
+                }
             }
         }
     };

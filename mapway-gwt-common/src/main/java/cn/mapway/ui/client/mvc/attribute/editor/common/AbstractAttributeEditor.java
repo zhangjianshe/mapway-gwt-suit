@@ -8,8 +8,11 @@ import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValues;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
+import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditorNotifyHandler;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditorValueChangedHandler;
+import cn.mapway.ui.client.mvc.attribute.editor.NotifyKind;
 import cn.mapway.ui.client.widget.CommonEventComposite;
+import com.google.gwt.user.client.ui.Widget;
 import elemental2.core.JsObject;
 
 import java.util.ArrayList;
@@ -32,8 +35,8 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
      * 运行时的参数
      */
     List<ParameterValue> runtimeParameters;
+    IAttributeEditorNotifyHandler editorNotifyHandler;
     private Object data;
-
     private IAttributeEditorValueChangedHandler attributeValueChangedHandler;
 
     /**
@@ -120,6 +123,29 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
 
     }
 
+    @Override
+    public void setEditorNotifyHandler(IAttributeEditorNotifyHandler notifyHandler) {
+        this.editorNotifyHandler = notifyHandler;
+    }
+
+    /**
+     * 扩展属性编辑器编辑框
+     *
+     * @param widget
+     * @param appendOrRemove
+     */
+    public void expandExtraWidget(Widget widget, boolean appendOrRemove) {
+        if (editorNotifyHandler == null) {
+            return;
+        }
+        if (appendOrRemove) {
+            editorNotifyHandler.handlerEditorNotify(NotifyKind.NK_EXPAND_WIDGET_ADD, widget);
+        } else {
+            editorNotifyHandler.handlerEditorNotify(NotifyKind.NK_EXPAND_WIDGET_REMOVE, widget);
+        }
+
+    }
+
     /**
      * 设置组件编辑器的内容
      * 通过组件工厂 AttributeEditorFactory 创建一个编辑器组件实例后
@@ -195,6 +221,7 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
     public void setValueChangedHandler(IAttributeEditorValueChangedHandler handler) {
         this.attributeValueChangedHandler = handler;
     }
+
 
     /**
      * 通知监听器 属性发生了变化
