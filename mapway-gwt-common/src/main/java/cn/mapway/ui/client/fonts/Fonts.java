@@ -7,15 +7,17 @@ import java.util.Map;
  * @author zhang
  */
 public class Fonts {
-	public static String toHtmlEntity(String fontIndex){
-		if(fontIndex==null || fontIndex.length()==0){
-			return "";
-		}
-		else{
-			return "&#x"+fontIndex;
-		}
-	}
-    public final static String GEOM_CORRECT = "e79f";
+    public static String toHtmlEntity(String fontIndex){
+        if(fontIndex==null || fontIndex.length()==0){
+            return "";
+        }
+        else{
+            return "&#x"+fontIndex;
+        }
+    }
+
+    	public final static String GEO_FILTER = "e7a0";
+	public final static String GEOM_CORRECT = "e79f";
 	public final static String SAMPLE_STA = "e79e";
 	public final static String WEIXIN = "e79d";
 	public final static String RENWUTUISONG = "e79c";
@@ -461,7 +463,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("GEOM_CORRECT", Fonts.GEOM_CORRECT);
+			unicodes.put("GEO_FILTER", Fonts.GEO_FILTER);
+	unicodes.put("GEOM_CORRECT", Fonts.GEOM_CORRECT);
 	unicodes.put("SAMPLE_STA", Fonts.SAMPLE_STA);
 	unicodes.put("WEIXIN", Fonts.WEIXIN);
 	unicodes.put("RENWUTUISONG", Fonts.RENWUTUISONG);
