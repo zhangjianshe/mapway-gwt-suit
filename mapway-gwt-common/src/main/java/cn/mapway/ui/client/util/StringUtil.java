@@ -734,6 +734,16 @@ public class StringUtil {
     }
 
     /**
+     * 判断一个Boolean值是否为true
+     * @param b
+     * @return
+     */
+    public boolean isTrue(Boolean b)
+    {
+        return  b!=null && b;
+    }
+
+    /**
      * Converts a Long number to a path-like string by formatting it with '/' every three characters.
      *
      * @param number the Long number to convert
