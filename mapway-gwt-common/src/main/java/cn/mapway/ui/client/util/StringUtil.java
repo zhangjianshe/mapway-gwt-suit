@@ -738,7 +738,7 @@ public class StringUtil {
      * @param b
      * @return
      */
-    public boolean isTrue(Boolean b)
+    public static boolean isTrue(Boolean b)
     {
         return  b!=null && b;
     }
