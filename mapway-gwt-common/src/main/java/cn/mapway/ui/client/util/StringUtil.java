@@ -801,4 +801,29 @@ public class StringUtil {
         return directory + "/" + file;
 
     }
+
+    /**
+     * 连接路径
+     * @param paths
+     * @return
+     */
+    public static String concatPath(String... paths)
+    {
+        if(paths==null || paths.length==0)
+        {
+            return "";
+        }
+        StringBuilder sb = new StringBuilder();
+        for (int i = 0; i < paths.length; i++) {
+            String item = paths[i];
+            if (item == null|| item.length()==0) {
+                continue;
+            }
+            if (i > 0 && !item.startsWith("/")) {
+                sb.append("/");
+            }
+            sb.append(item);
+        }
+        return sb.toString();
+    }
 }
