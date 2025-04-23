@@ -6,6 +6,7 @@ import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.impl.SimpleDataSource;
 import org.nutz.lang.Strings;
 
+import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -13,7 +14,7 @@ import java.util.List;
  */
 public class DatabaseMetadata {
     NutDao dao;
-
+    SimpleDataSource dataSource;
     /**
      * 创建一个SQLITE数据源
      *
@@ -23,7 +24,6 @@ public class DatabaseMetadata {
         SimpleDataSource dataSource = new SimpleDataSource();
         dataSource.setJdbcUrl("jdbc:sqlite:" + sqliteDbPath);
         dao = new NutDao(dataSource);
-
         init();
     }
 
@@ -52,5 +52,10 @@ public class DatabaseMetadata {
 
     public void insert(TableMetadata tableMetadata) {
         dao.insert(tableMetadata);
+    }
+
+    public void close()
+    {
+        dataSource.close();
     }
 }
