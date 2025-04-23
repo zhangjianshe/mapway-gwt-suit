@@ -38,6 +38,8 @@ public class TableMetadata implements Serializable, IsSerializable {
     private List<String> primaryKeyColumns;
     @Column("total_count")
     private Long totalCount;
+    @Column("file_size")
+    private Long fileSize;
 
     public TableMetadata(String db, String schema, String tableName, String comment) {
         this.db = db;

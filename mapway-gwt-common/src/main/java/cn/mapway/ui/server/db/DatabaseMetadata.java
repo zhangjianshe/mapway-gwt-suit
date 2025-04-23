@@ -1,8 +1,10 @@
 package cn.mapway.ui.server.db;
 
 import cn.mapway.ui.shared.db.TableMetadata;
+import org.nutz.dao.Cnd;
 import org.nutz.dao.impl.NutDao;
 import org.nutz.dao.impl.SimpleDataSource;
+import org.nutz.lang.Strings;
 
 import java.util.List;
 
@@ -37,8 +39,15 @@ public class DatabaseMetadata {
      *
      * @return
      */
-    public List<TableMetadata> listTable() {
-        return dao.query(TableMetadata.class, null);
+    public List<TableMetadata> listTable(String db) {
+        Cnd where;
+        if (Strings.isNotBlank(db)) {
+            where = Cnd.where("db", "=", db);
+        } else {
+            where = Cnd.NEW();
+        }
+        where.asc("db").asc("schema").asc("table_name");
+        return dao.query(TableMetadata.class, where);
     }
 
     public void insert(TableMetadata tableMetadata) {

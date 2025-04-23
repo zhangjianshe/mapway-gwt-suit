@@ -2,18 +2,20 @@ package cn.mapway.ui.server.db;
 
 import cn.mapway.ui.shared.db.ColumnMetadata;
 import cn.mapway.ui.shared.db.TableMetadata;
-import org.nutz.lang.ContinueLoop;
-import org.nutz.lang.Each;
-import org.nutz.lang.ExitLoop;
-import org.nutz.lang.LoopException;
+import org.nutz.json.Json;
+import org.nutz.lang.*;
+import org.nutz.lang.util.Regex;
 
 import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -126,28 +128,44 @@ public class PgTools implements IDbSource , Closeable {
 
         // Fetch column metadata
         // Modified column query to include default value and sequence
-        String columnQuery = "SELECT a.attname, t.typname, a.attnotnull, " +
-                "CASE WHEN t.typname = 'varchar' THEN a.atttypmod - 4 " +
-                "     WHEN t.typname IN ('numeric', 'decimal') THEN ((a.atttypmod - 4) >> 16) " +
-                "     ELSE 0 END AS precision, " +
-                "CASE WHEN t.typname IN ('numeric', 'decimal') THEN (a.atttypmod - 4) & 65535 " +
-                "     ELSE 0 END AS scale, " +
-                "d.description, ad.adsrc AS default_value, " +
-                "s.seqname, s.last_value AS seq_value " +
-                "FROM pg_catalog.pg_attribute a " +
-                "JOIN pg_catalog.pg_class c ON a.attrelid = c.oid " +
-                "JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid " +
-                "JOIN pg_catalog.pg_type t ON a.atttypid = t.oid " +
-                "LEFT JOIN pg_catalog.pg_description d ON d.objoid = c.oid AND d.objsubid = a.attnum " +
-                "LEFT JOIN pg_catalog.pg_attrdef ad ON ad.adrelid = c.oid AND ad.adnum = a.attnum " +
-                "LEFT JOIN pg_catalog.pg_depend dep ON dep.objid = c.oid AND dep.refobjsubid = a.attnum " +
-                "LEFT JOIN pg_sequences s ON s.oid = dep.refobjid " +
-                "WHERE c.relname = ? AND n.nspname = ? AND a.attnum > 0 AND NOT a.attisdropped " +
-                "ORDER BY a.attnum";
+        // Fetch column metadata
+        String columnQuery = "SELECT a.attname, t.typname, a.attnotnull,\n" +
+                "           CASE WHEN t.typname = 'varchar' THEN a.atttypmod - 4\n" +
+                "                WHEN t.typname IN ('numeric', 'decimal') THEN ((a.atttypmod - 4) >> 16)\n" +
+                "                ELSE 0 END AS precision,\n" +
+                "           CASE WHEN t.typname IN ('numeric', 'decimal') THEN (a.atttypmod - 4) & 65535\n" +
+                "                ELSE 0 END AS scale,\n" +
+                "           d.description, pg_get_expr(ad.adbin, ad.adrelid) AS default_value,\n" +
+                "           n2.nspname AS seq_schema, s.relname AS seqname, NULL AS seq_value,\n" +
+                "           CASE WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval(%' THEN\n" +
+                "                regexp_replace(pg_get_expr(ad.adbin, ad.adrelid), '.*''(.+)''.*', '\u0001')\n" +
+                "                ELSE NULL END AS derived_seqname\n" +
+                "    FROM pg_catalog.pg_attribute a\n" +
+                "    JOIN pg_catalog.pg_class c ON a.attrelid = c.oid\n" +
+                "    JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid\n" +
+                "    JOIN pg_catalog.pg_type t ON a.atttypid = t.oid\n" +
+                "    LEFT JOIN pg_catalog.pg_description d ON d.objoid = c.oid AND d.objsubid = a.attnum\n" +
+                "    LEFT JOIN pg_catalog.pg_attrdef ad ON ad.adrelid = c.oid AND ad.adnum = a.attnum\n" +
+                "    LEFT JOIN pg_catalog.pg_depend dep ON dep.objid = c.oid AND dep.refobjsubid = a.attnum\n" +
+                "    LEFT JOIN pg_catalog.pg_class s ON s.oid = dep.refobjid AND s.relkind = 'S'\n" +
+                "    LEFT JOIN pg_catalog.pg_namespace n2 ON s.relnamespace = n2.oid\n" +
+                "    WHERE c.relname = ? AND n.nspname = ?\n" +
+                "    AND a.attnum > 0 AND NOT a.attisdropped\n" +
+                "    ORDER BY a.attnum";
 
         try (PreparedStatement stmt = connection.prepareStatement(columnQuery)) {
+            // Validate inputs
+            if (sourceTableName == null || sourceTableName.trim().isEmpty()) {
+                throw new IllegalArgumentException("Table name cannot be null or empty");
+            }
+            if (schema == null || schema.trim().isEmpty()) {
+                schema = "public";
+            }
+
+            // Set parameters
             stmt.setString(1, sourceTableName);
             stmt.setString(2, schema);
+
             try (ResultSet rs = stmt.executeQuery()) {
                 while (rs.next()) {
                     String columnName = rs.getString("attname");
@@ -157,11 +175,48 @@ public class PgTools implements IDbSource , Closeable {
                     int scale = rs.getInt("scale");
                     String comment = rs.getString("description");
                     String defaultValue = rs.getString("default_value");
+                    // default value  nextval('sss'::regclass) nextval('layer_1_2_fid_seq'::regclass)
+                    String seqSchema = rs.getString("seq_schema");
                     String seqName = rs.getString("seqname");
+                    String derivedSeqName = rs.getString("derived_seqname");
                     Long seqValue = rs.getLong("seq_value");
-                    if (rs.wasNull()) seqValue = null;
+                    if (rs.wasNull()) seqValue = 0L;
 
-                    // Get PostGIS geometry type and SRID
+                    // Clean default value (remove type casts)
+                    /*if (defaultValue != null && defaultValue.contains("::")) {
+                    nextval('table_test_is_seq'::regclass)
+                        defaultValue = defaultValue.substring(0, defaultValue.indexOf("::"));
+                    }*/
+
+                    // Combine seqSchema and seqName or use derivedSeqName
+                    // default value  nextval('sss'::regclass) nextval('layer_1_2_fid_seq'::regclass)
+                    // based defualt value to parse sqeuence
+                    if(Strings.isNotBlank(defaultValue))
+                    {
+                            defaultValue=defaultValue.trim();
+
+                            if(defaultValue.startsWith("nextval("))
+                            {
+                                String regex="'(.*)'";
+                                Pattern pattern = Regex.getPattern(regex);
+                                Matcher matcher = pattern.matcher(defaultValue);
+                                if(matcher.find()){
+                                    seqName=matcher.group(1);
+                                    seqValue=getSeqValue(tableMetadata.getSchema(), seqName);
+                                }
+                            }
+                            else {
+                                seqName=null;
+                                seqValue=0L;
+                            }
+                    }
+                    else {
+                        seqName=null;
+                        seqValue=0L;
+                    }
+
+
+                    // Get PostGIS geometry type and SRID (from earlier query)
                     String geometryType = null;
                     Integer srid = null;
                     if (typeName.equalsIgnoreCase("geometry") && geometryInfo.containsKey(columnName)) {
@@ -186,7 +241,12 @@ public class PgTools implements IDbSource , Closeable {
                     tableMetadata.addColumn(column);
                 }
             }
+        } catch (SQLException e) {
+            System.err.println("SQL Error: " + e.getMessage() + " for table: " + sourceTableName + ", schema: " + schema);
+            throw e;
         }
+
+
 
         // Fetch primary key constraints
         String pkQuery = "SELECT a.attname " +
@@ -208,6 +268,21 @@ public class PgTools implements IDbSource , Closeable {
         }
         long rowCount = getRowCount(tableMetadata);
         return tableMetadata;
+    }
+
+    private Long getSeqValue(String schema, String seqName) {
+        String sql = "SELECT last_value FROM " + schema + "." + seqName;
+        try (Statement stmt = connection.createStatement();
+             ResultSet rs = stmt.executeQuery(sql)) {
+            if (rs.next()) {
+                Long seqValue = rs.getLong(1);
+                return seqValue;
+            }
+        } catch (SQLException e) {
+            // Log the error and handle it appropriately
+            throw new RuntimeException("Failed to get count for table " + seqName, e);
+        }
+        return 0L;
     }
 
     /**
@@ -246,7 +321,10 @@ public class PgTools implements IDbSource , Closeable {
         String pgTableName = tableMetadata.getSchema() + "." + tableMetadata.getTableName();
         List<ColumnMetadata> columns = tableMetadata.getColumns();
 
-        //创建新表
+        //需不需要创建表
+        createTable(tableMetadata,true);
+
+        //插入记录对应的SQL statement
         StringBuilder insertSql = new StringBuilder("INSERT INTO ").append(pgTableName).append(" (");
         for (int i = 0; i < columns.size(); i++) {
             insertSql.append("\"").append(columns.get(i).getColumnName()).append("\"");
@@ -278,28 +356,8 @@ public class PgTools implements IDbSource , Closeable {
                     try {
                         for (int i = 0; i < columns.size(); i++) {
                             ColumnMetadata column = columns.get(i);
-                            String pgType = column.getTypeName().toLowerCase();
                             int paramIndex = i + 1;
-
-                            if (pgType.equals("geometry")) {
-                                // WKT to GEOMETRY
-                                String wkt = rs.getString(i + 1);
-                                if (wkt == null || wkt.equalsIgnoreCase("GEOMETRY EMPTY")) {
-                                    insertStatement.setNull(paramIndex, java.sql.Types.VARCHAR);
-                                } else {
-                                    insertStatement.setString(paramIndex, wkt);
-                                }
-                            } else if (pgType.equals("bytea")) {
-                                byte[] bytes = rs.getBytes(i + 1);
-                                insertStatement.setBytes(paramIndex, bytes);
-                            } else if (pgType.equals("bool") || pgType.equals("boolean")) {
-                                // INTEGER (0/1) to BOOLEAN
-                                int value = rs.getInt(i + 1);
-                                insertStatement.setBoolean(paramIndex, value != 0);
-                            } else {
-                                Object value = rs.getObject(i + 1);
-                                insertStatement.setObject(paramIndex, value);
-                            }
+                            fillColumn(insertStatement,rs,column,paramIndex);
                         }
                         // Execute INSERT
                         insertStatement.executeUpdate();
@@ -317,12 +375,85 @@ public class PgTools implements IDbSource , Closeable {
                             System.out.println("Inserting row " + index + " of " + length);
                         }
                     }catch (SQLException e) {
-                        e.printStackTrace();
+                        System.out.println("ERROR" +tableMetadata.getTableName()+ " "+e.getMessage());
+                        throw new RuntimeException(e);
                     }
                 }
             });
+            if(handler != null) {
+                handler.progress(100, "");
+            }
+            else {
+                System.out.println("process finished");
+            }
         }
         connection.commit();
+    }
+
+    /**
+     * 填充数据据
+     * @param insertStatement
+     * @param rs
+     * @param column
+     * @param i
+     */
+    private void fillColumn(PreparedStatement insertStatement, ResultSet rs, ColumnMetadata column, int paramIndex) throws SQLException {
+        switch (column.getTypeName().toLowerCase()) {
+            case "geometry":
+                String wkt = rs.getString(paramIndex);
+                if (wkt == null || wkt.endsWith("EMPTY") || wkt.contains("Infinity")) {
+                        wkt=column.getGeometryType()+ " EMPTY";
+                }
+                insertStatement.setString(paramIndex, wkt);
+                break;
+            case "char":
+            case "varchar":
+            case "text":
+            case "json":
+            case "jsonb":
+                insertStatement.setString(paramIndex, rs.getString(paramIndex));
+                break;
+            case "date":
+            case "timestamp":
+            case "timestamptz":
+                String tv=rs.getString(paramIndex);
+                if(tv!=null) {
+                    insertStatement.setDate(paramIndex, new java.sql.Date(Long.parseLong(tv)));
+                }
+                else {
+                    insertStatement.setNull(paramIndex, Types.DATE);
+                }
+                break;
+            case "int4":
+            case "integer":
+                insertStatement.setInt(paramIndex, rs.getInt(paramIndex));
+                break;
+            case "int8":
+            case "bigint":
+                insertStatement.setLong(paramIndex, rs.getLong(paramIndex));
+                break;
+            case "int2":
+            case "smallint":
+                insertStatement.setShort(paramIndex, rs.getShort(paramIndex));
+                break;
+            case "bool":
+            case "boolean":
+                // INTEGER (0/1) to BOOLEAN rs.getInt(paramIndex);
+                Integer bV= rs.getInt(paramIndex);
+                insertStatement.setBoolean(paramIndex, bV!=null && bV>0);
+                break;
+            case "float8":
+            case "double precision":
+            case "numeric":
+            case "decimal":
+                insertStatement.setDouble(paramIndex, rs.getDouble(paramIndex));
+                break;
+            case "bytea":
+                insertStatement.setBytes(paramIndex, rs.getBytes(paramIndex));
+                break;
+            default:
+                insertStatement.setObject(paramIndex, rs.getObject(paramIndex));
+        }
     }
 
     // Generate SELECT query with ST_AsText for geometry columns
@@ -386,13 +517,16 @@ public class PgTools implements IDbSource , Closeable {
         }
     }
 
-    public void dropTable(String schema, String tableName) {
-        if (schema == null || schema.isEmpty()) {
-            schema = "public";
+    public void dropTable(TableMetadata tableMetadata) {
+        if (Strings.isBlank(tableMetadata.getSchema())) {
+            tableMetadata.setSchema("public");
         }
         try {
+            connection.setAutoCommit(true);
             Statement stmt = connection.createStatement();
-            stmt.execute("DROP TABLE " + schema + "." + tableName);
+            String dropSql=generateDropTableSql(tableMetadata);
+            stmt.execute(dropSql);
+            stmt.close();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to drop table", e);
         }
@@ -410,18 +544,45 @@ public class PgTools implements IDbSource , Closeable {
         }
     }
 
+    public String generateDropTableSql(TableMetadata tableMetadata) {
+        String schemaName=tableMetadata.getSchema();
+        String tableName=tableMetadata.getTableName();
+        if (schemaName == null || schemaName.trim().isEmpty()) {
+            schemaName = "public";
+        }
+        if (tableName == null || tableName.trim().isEmpty()) {
+            throw new IllegalArgumentException("Table name is required");
+        }
+        String quotedSchemaName = "\"" + schemaName.replace("\"", "\"\"") + "\"";
+        String quotedTableName = "\"" + tableName.replace("\"", "\"\"") + "\"";
+        String tableFullName = quotedSchemaName + "." + quotedTableName;
+
+        StringBuilder sql = new StringBuilder("DROP TABLE IF EXISTS " + tableFullName + " CASCADE;");
+
+        // Drop associated sequences
+        for (ColumnMetadata column : tableMetadata.getColumns()) {
+            if (column.getSeqName() != null) {
+                // Validate sequence existence
+                sql.append("\nDROP SEQUENCE IF EXISTS \"")
+                        .append(column.getSeqName())
+                        .append("\" CASCADE;");
+            }
+        }
+        return sql.toString();
+    }
+
     public void createTable(TableMetadata tableMetadata, boolean dropIfExists) {
         try {
-            Statement stmt = connection.createStatement();
-            String sql = createSqlFromMetadata(tableMetadata, tableMetadata.getSchema(), tableMetadata.getTableName());
             if (dropIfExists) {
-                if(tableMetadata.getSchema() == null || tableMetadata.getSchema().isEmpty()) {
-                    tableMetadata.setSchema("public");
-                }
-                String tableName = tableMetadata.getSchema() + "." + tableMetadata.getTableName();
-                stmt.execute("DROP TABLE IF EXISTS " + tableMetadata.getTableName());
+               dropTable(tableMetadata);
             }
+            connection.setAutoCommit(true);
+            String sql = createSqlFromMetadata(tableMetadata, tableMetadata.getSchema(), tableMetadata.getTableName());
+            System.out.println(Json.toJson(tableMetadata));
+            System.out.println(sql);
+            Statement stmt = connection.createStatement();
             stmt.execute(sql);
+            stmt.close();
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create table", e);
         }
@@ -451,10 +612,20 @@ public class PgTools implements IDbSource , Closeable {
         String quotedTableName = "\"" + newTableName.replace("\"", "\"\"") + "\"";
         String tableFullName = quotedSchemaName + "." + quotedTableName;
 
-        StringBuilder sql = new StringBuilder("CREATE TABLE " + tableFullName + " (\n");
-
+        StringBuilder sql=new StringBuilder();
         // Build column definitions
         List<ColumnMetadata> columns = tableMetadata.getColumns();
+        //first create sequence
+        // Add sequence definitions (if applicable)
+        for (ColumnMetadata column : columns) {
+            if (column.getSeqName() != null) {
+                sql.append("\nCREATE SEQUENCE ").append(quotedSchemaName).append(".\"").append(column.getSeqName()).append("\"")
+                        .append(" START WITH ").append(column.getSeqValue() != null ? column.getSeqValue() : 1).append(";");
+            }
+        }
+
+         sql.append("CREATE TABLE " + tableFullName + " (\n");
+
         for (int i = 0; i < columns.size(); i++) {
             ColumnMetadata column = columns.get(i);
             String columnName = "\"" + column.getColumnName().replace("\"", "\"\"") + "\"";
@@ -516,13 +687,7 @@ public class PgTools implements IDbSource , Closeable {
                     .append(" IS '").append(comment.replace("'", "''")).append("';");
         }
 
-        // Add sequence definitions (if applicable)
-        for (ColumnMetadata column : columns) {
-            if (column.getSeqName() != null) {
-                sql.append("\nCREATE SEQUENCE ").append(quotedSchemaName).append(".\"").append(column.getSeqName()).append("\"")
-                        .append(" START WITH ").append(column.getSeqValue() != null ? column.getSeqValue() : 1).append(";");
-            }
-        }
+
 
         return sql.toString();
 

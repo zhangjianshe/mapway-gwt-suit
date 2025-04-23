@@ -5,10 +5,13 @@ import java.util.regex.Pattern;
 
 public class RegTest {
     public static void main(String[] args) {
-
-        String test="3";
-        String[] parse = parse(test);
-        System.out.println(parse[0]+","+parse[1]);
+        String test ="nextval('layer_1_2_fid_seq'::regclass)";
+        String regex="'(.*)'";
+        Pattern pattern = Regex.getPattern(regex);
+        Matcher matcher = pattern.matcher(test);
+        if(matcher.find()){
+            System.out.println(matcher.group(1));
+        }
     }
     static String[] parse(String test)
     {

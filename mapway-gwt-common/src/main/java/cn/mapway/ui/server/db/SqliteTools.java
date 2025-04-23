@@ -72,7 +72,7 @@ public class SqliteTools implements IDbSource , Closeable {
     public void eachRow(TableMetadata tableMetadata, Each<ResultSet> consumer) throws SQLException {
         // Generate SELECT query for PostgreSQL
         String selectQuery = generateSelectQuery(tableMetadata);
-        int rowCount = (int) getRowCount(tableMetadata);
+        int rowCount = Math.toIntExact(tableMetadata.getTotalCount());
 
         PreparedStatement pgStmt = connection.prepareStatement(selectQuery);
 
@@ -130,21 +130,22 @@ public class SqliteTools implements IDbSource , Closeable {
                             if (pgType.equals("geometry")) {
                                 // WKT to GEOMETRY
                                 String wkt = rs.getString(i + 1);
-                                if (wkt == null || wkt.equalsIgnoreCase("GEOMETRY EMPTY")) {
-                                    insertStatement.setNull(paramIndex, Types.VARCHAR);
-                                } else {
-                                    insertStatement.setString(paramIndex, wkt);
+                                if (wkt == null || wkt.endsWith("EMPTY")) {
+                                    wkt = column.getGeometryType()+" EMPTY";
                                 }
+                                insertStatement.setString(paramIndex, wkt);
                             } else if (pgType.equals("bytea")) {
                                 byte[] bytes = rs.getBytes(i + 1);
                                 insertStatement.setBytes(paramIndex, bytes);
-                            } else if (pgType.equals("bool") || pgType.equals("boolean")) {
-                                // INTEGER (0/1) to BOOLEAN
-                                int value = rs.getInt(i + 1);
-                                insertStatement.setBoolean(paramIndex, value != 0);
                             } else {
-                                Object value = rs.getObject(i + 1);
-                                insertStatement.setObject(paramIndex, value);
+                                Object object = rs.getObject(i + 1);
+                                if (pgType.equals("bool") || pgType.equals("boolean")) {
+                                    // INTEGER (0/1) to BOOLEAN
+                                    insertStatement.setBoolean(paramIndex, rs.getBoolean(i + 1));
+                                } else {
+                                    Object value = object;
+                                    insertStatement.setObject(paramIndex, value);
+                                }
                             }
                         }
                         // Execute INSERT
