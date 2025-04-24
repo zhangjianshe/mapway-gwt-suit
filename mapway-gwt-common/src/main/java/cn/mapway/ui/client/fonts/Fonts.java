@@ -16,7 +16,20 @@ public class Fonts {
         }
     }
 
-    	public final static String GEO_FILTER = "e7a0";
+    	public final static String SHANGCHUANJIEXIQUYU = "e948";
+	public final static String JUXING = "e93d";
+	public final static String TONGYONGBIANHUA = "e942";
+	public final static String FANGWUJIANZHUQU = "e94a";
+	public final static String SHUIYU = "e946";
+	public final static String DUOBIANXING = "e941";
+	public final static String LINDI = "e93b";
+	public final static String YUANDI = "e93e";
+	public final static String FAJIA = "e93a";
+	public final static String DAOLUYUTIELU = "e939";
+	public final static String WANGXIANG = "e932";
+	public final static String QITATUDI = "e950";
+	public final static String CAODI = "e94b";
+	public final static String GEO_FILTER = "e7a0";
 	public final static String GEOM_CORRECT = "e79f";
 	public final static String SAMPLE_STA = "e79e";
 	public final static String WEIXIN = "e79d";
@@ -463,7 +476,20 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("GEO_FILTER", Fonts.GEO_FILTER);
+			unicodes.put("SHANGCHUANJIEXIQUYU", Fonts.SHANGCHUANJIEXIQUYU);
+	unicodes.put("JUXING", Fonts.JUXING);
+	unicodes.put("TONGYONGBIANHUA", Fonts.TONGYONGBIANHUA);
+	unicodes.put("FANGWUJIANZHUQU", Fonts.FANGWUJIANZHUQU);
+	unicodes.put("SHUIYU", Fonts.SHUIYU);
+	unicodes.put("DUOBIANXING", Fonts.DUOBIANXING);
+	unicodes.put("LINDI", Fonts.LINDI);
+	unicodes.put("YUANDI", Fonts.YUANDI);
+	unicodes.put("FAJIA", Fonts.FAJIA);
+	unicodes.put("DAOLUYUTIELU", Fonts.DAOLUYUTIELU);
+	unicodes.put("WANGXIANG", Fonts.WANGXIANG);
+	unicodes.put("QITATUDI", Fonts.QITATUDI);
+	unicodes.put("CAODI", Fonts.CAODI);
+	unicodes.put("GEO_FILTER", Fonts.GEO_FILTER);
 	unicodes.put("GEOM_CORRECT", Fonts.GEOM_CORRECT);
 	unicodes.put("SAMPLE_STA", Fonts.SAMPLE_STA);
 	unicodes.put("WEIXIN", Fonts.WEIXIN);
