@@ -2,6 +2,7 @@ package cn.mapway.ui.server.db;
 
 import cn.mapway.ui.shared.db.ColumnMetadata;
 import cn.mapway.ui.shared.db.TableMetadata;
+import lombok.extern.slf4j.Slf4j;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
@@ -18,6 +19,7 @@ import java.util.Map;
 /**
  * Sqlite数据库工具
  */
+@Slf4j
 public class SqliteTools implements IDbSource , Closeable {
     final Connection connection;
 
@@ -193,14 +195,10 @@ public class SqliteTools implements IDbSource , Closeable {
      */
     public long getRowCount(TableMetadata tableMetadata) {
         String tableName = tableMetadata.getTableName();
-        String schemaName = tableMetadata.getSchema();
 
         // Construct the SQL query for counting rows
         String sql = "SELECT COUNT(*) FROM ";
-        if (schemaName != null && !schemaName.isEmpty()) {
-            sql += "\"" + schemaName + "\".";
-        }
-        sql += "\"" + tableName + "\"";
+        sql += tableName ;
 
         try (Statement stmt = connection.createStatement();
              ResultSet rs = stmt.executeQuery(sql)) {
@@ -210,7 +208,7 @@ public class SqliteTools implements IDbSource , Closeable {
                 return count;
             }
         } catch (SQLException e) {
-            // Log the error and handle it appropriately
+            e.printStackTrace();
             throw new RuntimeException("Failed to get count for table " + tableName, e);
         }
         tableMetadata.setTotalCount(0L);

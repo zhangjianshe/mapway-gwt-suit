@@ -10,7 +10,6 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,7 +20,7 @@ import java.util.stream.Collectors;
 /**
  * Pg数据库工具
  */
-public class PgTools implements IDbSource , Closeable {
+public class PgTools implements IDbSource, Closeable {
     final Connection connection;
     final String db;
 
@@ -191,28 +190,24 @@ public class PgTools implements IDbSource , Closeable {
                     // Combine seqSchema and seqName or use derivedSeqName
                     // default value  nextval('sss'::regclass) nextval('layer_1_2_fid_seq'::regclass)
                     // based defualt value to parse sqeuence
-                    if(Strings.isNotBlank(defaultValue))
-                    {
-                            defaultValue=defaultValue.trim();
+                    if (Strings.isNotBlank(defaultValue)) {
+                        defaultValue = defaultValue.trim();
 
-                            if(defaultValue.startsWith("nextval("))
-                            {
-                                String regex="'(.*)'";
-                                Pattern pattern = Regex.getPattern(regex);
-                                Matcher matcher = pattern.matcher(defaultValue);
-                                if(matcher.find()){
-                                    seqName=matcher.group(1);
-                                    seqValue=getSeqValue(tableMetadata.getSchema(), seqName);
-                                }
+                        if (defaultValue.startsWith("nextval(")) {
+                            String regex = "'(.*)'";
+                            Pattern pattern = Regex.getPattern(regex);
+                            Matcher matcher = pattern.matcher(defaultValue);
+                            if (matcher.find()) {
+                                seqName = matcher.group(1);
+                                seqValue = getSeqValue(tableMetadata.getSchema(), seqName);
                             }
-                            else {
-                                seqName=null;
-                                seqValue=0L;
-                            }
-                    }
-                    else {
-                        seqName=null;
-                        seqValue=0L;
+                        } else {
+                            seqName = null;
+                            seqValue = 0L;
+                        }
+                    } else {
+                        seqName = null;
+                        seqValue = 0L;
                     }
 
 
@@ -245,7 +240,6 @@ public class PgTools implements IDbSource , Closeable {
             System.err.println("SQL Error: " + e.getMessage() + " for table: " + sourceTableName + ", schema: " + schema);
             throw e;
         }
-
 
 
         // Fetch primary key constraints
@@ -312,6 +306,7 @@ public class PgTools implements IDbSource , Closeable {
 
     /**
      * 从数据源中恢复数据
+     *
      * @param dbSource
      * @param tableMetadata
      * @param handler
@@ -322,7 +317,7 @@ public class PgTools implements IDbSource , Closeable {
         List<ColumnMetadata> columns = tableMetadata.getColumns();
 
         //需不需要创建表
-        createTable(tableMetadata,true);
+        createTable(tableMetadata, false);
 
         //插入记录对应的SQL statement
         StringBuilder insertSql = new StringBuilder("INSERT INTO ").append(pgTableName).append(" (");
@@ -347,8 +342,8 @@ public class PgTools implements IDbSource , Closeable {
         }
         insertSql.append(")");
         connection.setAutoCommit(false);
-        try(
-                PreparedStatement insertStatement = connection.prepareStatement(insertSql.toString());
+        try (
+                PreparedStatement insertStatement = connection.prepareStatement(insertSql.toString())
         ) {
             dbSource.eachRow(tableMetadata, new Each<ResultSet>() {
                 @Override
@@ -357,33 +352,30 @@ public class PgTools implements IDbSource , Closeable {
                         for (int i = 0; i < columns.size(); i++) {
                             ColumnMetadata column = columns.get(i);
                             int paramIndex = i + 1;
-                            fillColumn(insertStatement,rs,column,paramIndex);
+                            fillColumn(insertStatement, rs, column, paramIndex);
                         }
                         // Execute INSERT
                         insertStatement.executeUpdate();
 
                         if (handler != null) {
-                            if(length>0) {
+                            if (length > 0) {
                                 int percent = (int) (Math.round(index * 100.) / length);
                                 handler.progress(percent, "");
-                            }
-                            else {
+                            } else {
                                 handler.progress(100, "");
                             }
-                        }
-                        else {
+                        } else {
                             System.out.println("Inserting row " + index + " of " + length);
                         }
-                    }catch (SQLException e) {
-                        System.out.println("ERROR" +tableMetadata.getTableName()+ " "+e.getMessage());
+                    } catch (SQLException e) {
+                        System.out.println("ERROR" + tableMetadata.getTableName() + " " + e.getMessage());
                         throw new RuntimeException(e);
                     }
                 }
             });
-            if(handler != null) {
+            if (handler != null) {
                 handler.progress(100, "");
-            }
-            else {
+            } else {
                 System.out.println("process finished");
             }
         }
@@ -392,17 +384,18 @@ public class PgTools implements IDbSource , Closeable {
 
     /**
      * 填充数据据
+     *
      * @param insertStatement
      * @param rs
      * @param column
-     * @param i
+     * @param paramIndex
      */
     private void fillColumn(PreparedStatement insertStatement, ResultSet rs, ColumnMetadata column, int paramIndex) throws SQLException {
         switch (column.getTypeName().toLowerCase()) {
             case "geometry":
                 String wkt = rs.getString(paramIndex);
                 if (wkt == null || wkt.endsWith("EMPTY") || wkt.contains("Infinity")) {
-                        wkt=column.getGeometryType()+ " EMPTY";
+                    wkt = column.getGeometryType() + " EMPTY";
                 }
                 insertStatement.setString(paramIndex, wkt);
                 break;
@@ -416,11 +409,10 @@ public class PgTools implements IDbSource , Closeable {
             case "date":
             case "timestamp":
             case "timestamptz":
-                String tv=rs.getString(paramIndex);
-                if(tv!=null) {
+                String tv = rs.getString(paramIndex);
+                if (tv != null) {
                     insertStatement.setDate(paramIndex, new java.sql.Date(Long.parseLong(tv)));
-                }
-                else {
+                } else {
                     insertStatement.setNull(paramIndex, Types.DATE);
                 }
                 break;
@@ -439,8 +431,8 @@ public class PgTools implements IDbSource , Closeable {
             case "bool":
             case "boolean":
                 // INTEGER (0/1) to BOOLEAN rs.getInt(paramIndex);
-                Integer bV= rs.getInt(paramIndex);
-                insertStatement.setBoolean(paramIndex, bV!=null && bV>0);
+                Integer bV = rs.getInt(paramIndex);
+                insertStatement.setBoolean(paramIndex, bV != null && bV > 0);
                 break;
             case "float8":
             case "double precision":
@@ -524,7 +516,7 @@ public class PgTools implements IDbSource , Closeable {
         try {
             connection.setAutoCommit(true);
             Statement stmt = connection.createStatement();
-            String dropSql=generateDropTableSql(tableMetadata);
+            String dropSql = generateDropTableSql(tableMetadata);
             stmt.execute(dropSql);
             stmt.close();
         } catch (SQLException e) {
@@ -545,8 +537,8 @@ public class PgTools implements IDbSource , Closeable {
     }
 
     public String generateDropTableSql(TableMetadata tableMetadata) {
-        String schemaName=tableMetadata.getSchema();
-        String tableName=tableMetadata.getTableName();
+        String schemaName = tableMetadata.getSchema();
+        String tableName = tableMetadata.getTableName();
         if (schemaName == null || schemaName.trim().isEmpty()) {
             schemaName = "public";
         }
@@ -574,15 +566,17 @@ public class PgTools implements IDbSource , Closeable {
     public void createTable(TableMetadata tableMetadata, boolean dropIfExists) {
         try {
             if (dropIfExists) {
-               dropTable(tableMetadata);
+                dropTable(tableMetadata);
             }
-            connection.setAutoCommit(true);
-            String sql = createSqlFromMetadata(tableMetadata, tableMetadata.getSchema(), tableMetadata.getTableName());
-            System.out.println(Json.toJson(tableMetadata));
-            System.out.println(sql);
-            Statement stmt = connection.createStatement();
-            stmt.execute(sql);
-            stmt.close();
+            if(!isTableExist(tableMetadata.getSchema(),tableMetadata.getTableName()))
+            {
+                connection.setAutoCommit(true);
+                String sql = createSqlFromMetadata(tableMetadata, tableMetadata.getSchema(), tableMetadata.getTableName());
+                System.out.println(sql);
+                Statement stmt = connection.createStatement();
+                stmt.execute(sql);
+                stmt.close();
+            }
         } catch (SQLException e) {
             throw new RuntimeException("Failed to create table", e);
         }
@@ -612,7 +606,7 @@ public class PgTools implements IDbSource , Closeable {
         String quotedTableName = "\"" + newTableName.replace("\"", "\"\"") + "\"";
         String tableFullName = quotedSchemaName + "." + quotedTableName;
 
-        StringBuilder sql=new StringBuilder();
+        StringBuilder sql = new StringBuilder();
         // Build column definitions
         List<ColumnMetadata> columns = tableMetadata.getColumns();
         //first create sequence
@@ -624,7 +618,7 @@ public class PgTools implements IDbSource , Closeable {
             }
         }
 
-         sql.append("CREATE TABLE " + tableFullName + " (\n");
+        sql.append("CREATE TABLE " + tableFullName + " (\n");
 
         for (int i = 0; i < columns.size(); i++) {
             ColumnMetadata column = columns.get(i);
@@ -686,7 +680,6 @@ public class PgTools implements IDbSource , Closeable {
             sql.append("\nCOMMENT ON COLUMN ").append(tableFullName).append(".").append(columnName)
                     .append(" IS '").append(comment.replace("'", "''")).append("';");
         }
-
 
 
         return sql.toString();
@@ -789,6 +782,7 @@ public class PgTools implements IDbSource , Closeable {
 
         return sqlType.toString();
     }
+
     @Override
     public void close() throws IOException {
         if (connection != null) {
@@ -797,6 +791,77 @@ public class PgTools implements IDbSource , Closeable {
             } catch (SQLException e) {
                 throw new RuntimeException(e);
             }
+        }
+    }
+
+    /**
+     * 判断postgres是否存在数据库
+     *
+     * @param databaseName
+     * @return
+     */
+    public boolean isDatabaseExist(String databaseName) {
+        String query = "SELECT datname FROM pg_database WHERE datname = ?";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(query)) {
+            preparedStatement.setString(1, databaseName);
+            // Execute the query
+            ResultSet resultSet = preparedStatement.executeQuery();
+            // Check if the database exists
+            return resultSet.next();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 创建数据库
+     *
+     * @param dbName
+     * @param owner
+     */
+    public boolean createDatabase(String dbName, String owner) {
+        try (Statement statement = connection.createStatement()) {
+            String sql = "CREATE DATABASE " + dbName;
+            if (Strings.isNotBlank(owner)) {
+                sql += " WITH OWNER = " + owner;
+            }
+            statement.executeUpdate(sql);
+            System.out.println("Database '" + dbName + "' created successfully.");
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    /**
+     * 数据库安装扩展
+     *
+     * @param extension
+     * @return
+     */
+    public boolean installExtension(String extension) {
+        if (Strings.isBlank(extension)) {
+            return false;
+        }
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT extname FROM pg_extension WHERE extname = 'postgis'")) {
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                System.out.println("PostGIS extension is already installed in '" + db + "'.");
+                return true;
+            } else {
+                try (Statement statement = connection.createStatement()) {
+                    statement.executeUpdate("CREATE EXTENSION " + extension);
+                    System.out.println("PostGIS extension added successfully.");
+                    return true;
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
         }
     }
 }
