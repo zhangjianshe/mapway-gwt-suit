@@ -40,6 +40,8 @@ public class TableMetadata implements Serializable, IsSerializable {
     private Long totalCount;
     @Column("file_size")
     private Long fileSize;
+    @Column("indexes")
+    private List<TableIndex> indexes;
 
     public TableMetadata(String db, String schema, String tableName, String comment) {
         this.db = db;
@@ -48,6 +50,7 @@ public class TableMetadata implements Serializable, IsSerializable {
         this.comment = comment;
         this.columns = new ArrayList<>();
         this.primaryKeyColumns = new ArrayList<>();
+        indexes = new ArrayList<>();
     }
     // Helper methods
     public void addColumn(ColumnMetadata column) {

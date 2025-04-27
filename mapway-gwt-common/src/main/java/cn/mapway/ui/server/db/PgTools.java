@@ -1,6 +1,7 @@
 package cn.mapway.ui.server.db;
 
 import cn.mapway.ui.shared.db.ColumnMetadata;
+import cn.mapway.ui.shared.db.TableIndex;
 import cn.mapway.ui.shared.db.TableMetadata;
 import org.nutz.json.Json;
 import org.nutz.lang.*;
@@ -267,6 +268,46 @@ public class PgTools implements IDbSource, Closeable {
                 }
             }
         }
+        //获取表Index
+        String sql = "SELECT\n" +
+                "                    i.relname AS index_name,\n" +
+                "                    idx.indisprimary AS is_primary,\n" +
+                "                    idx.indisunique AS is_unique,\n" +
+                "                    am.amname AS index_type,\n" +
+                "                    array_to_string(array_agg(a.attname), ', ') AS columns,\n" +
+                "                    pg_get_indexdef(idx.indexrelid) AS index_definition\n" +
+                "                FROM\n" +
+                "                    pg_class t\n" +
+                "                    JOIN pg_index idx ON t.oid = idx.indrelid\n" +
+                "                    JOIN pg_class i ON i.oid = idx.indexrelid\n" +
+                "                    JOIN pg_am am ON i.relam = am.oid\n" +
+                "                    JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = ANY(idx.indkey)\n" +
+                "                    JOIN pg_namespace n ON t.relnamespace = n.oid\n" +
+                "                WHERE\n" +
+                "                    t.relname = ?\n" +
+                "                    AND n.nspname = ?\n" +
+                "                    AND t.relkind = 'r'\n" +
+                "                GROUP BY\n" +
+                "                    i.relname, idx.indisprimary, idx.indisunique, am.amname, idx.indexrelid\n" +
+                "                ORDER BY\n" +
+                "                    i.relname";
+
+        try(PreparedStatement pstmt = connection.prepareStatement(sql);){
+            pstmt.setString(1, sourceTableName);
+            pstmt.setString(2, schema);
+            ResultSet rs = pstmt.executeQuery();
+            while (rs.next()) {
+                TableIndex tableIndex=new TableIndex();
+                tableIndex.name = rs.getString("index_name");
+                tableIndex.isUnique = rs.getBoolean("is_unique");
+                tableIndex.isPrimary = rs.getBoolean("is_primary");
+                tableIndex.indexType = rs.getString("index_type");
+                tableIndex.columns = rs.getString("columns");
+                tableIndex.definition = rs.getString("index_definition");
+                tableMetadata.getIndexes().add(tableIndex);
+            }
+        }
+
         long rowCount = getRowCount(tableMetadata);
         return tableMetadata;
     }
@@ -284,6 +325,27 @@ public class PgTools implements IDbSource, Closeable {
             throw new RuntimeException("Failed to get count for table " + seqName, e);
         }
         return 0L;
+    }
+
+    /**
+     * 更新表索引
+     * @param tableMetadata
+     */
+    public void updateTableIndex(TableMetadata tableMetadata) {
+
+        if(!tableMetadata.getIndexes().isEmpty()){
+            TableIndex tableIndex=tableMetadata.getIndexes().get(0);
+            if(!tableIndex.isPrimary){
+                StringBuilder sql=new StringBuilder();
+                sql.append("DROP INDEX IF EXISTS "+tableMetadata.getSchema()+"."+tableIndex.name+";\r\n");
+                sql.append(tableIndex.definition);
+                try(PreparedStatement pstmt = connection.prepareStatement(sql.toString());){
+                    pstmt.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
@@ -396,6 +458,9 @@ public class PgTools implements IDbSource, Closeable {
             }
         }
         connection.commit();
+
+        // update table index
+        updateTableIndex(tableMetadata);
     }
 
     /**
