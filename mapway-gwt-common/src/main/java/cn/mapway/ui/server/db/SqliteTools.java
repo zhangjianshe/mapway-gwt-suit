@@ -385,6 +385,7 @@ public class SqliteTools implements IDbSource , Closeable {
             case "boolean":
                 sqlType.append("INTEGER");
                 break;
+            case "float4":
             case "float8":
             case "double precision":
             case "numeric":
