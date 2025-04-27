@@ -333,6 +333,9 @@ public class PgTools implements IDbSource, Closeable {
             if (column.getTypeName().equalsIgnoreCase("geometry")) {
                 Integer srid = column.getSrid();
                 insertSql.append("ST_GeomFromText(?, ").append(srid != null ? srid : 0).append(")");
+            } else if (column.getTypeName().equalsIgnoreCase("json")
+                    || column.getTypeName().equalsIgnoreCase("jsonb")) {
+                insertSql.append("?::json"); // Explicitly cast to json or jsonb
             } else {
                 insertSql.append("?");
             }
