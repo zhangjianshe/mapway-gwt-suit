@@ -128,29 +128,36 @@ public class PgTools implements IDbSource, Closeable {
         // Fetch column metadata
         // Modified column query to include default value and sequence
         // Fetch column metadata
-        String columnQuery = "SELECT a.attname, t.typname, a.attnotnull,\n" +
-                "           CASE WHEN t.typname = 'varchar' THEN a.atttypmod - 4\n" +
-                "                WHEN t.typname IN ('numeric', 'decimal') THEN ((a.atttypmod - 4) >> 16)\n" +
-                "                ELSE 0 END AS precision,\n" +
-                "           CASE WHEN t.typname IN ('numeric', 'decimal') THEN (a.atttypmod - 4) & 65535\n" +
-                "                ELSE 0 END AS scale,\n" +
-                "           d.description, pg_get_expr(ad.adbin, ad.adrelid) AS default_value,\n" +
-                "           n2.nspname AS seq_schema, s.relname AS seqname, NULL AS seq_value,\n" +
-                "           CASE WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval(%' THEN\n" +
-                "                regexp_replace(pg_get_expr(ad.adbin, ad.adrelid), '.*''(.+)''.*', '\u0001')\n" +
-                "                ELSE NULL END AS derived_seqname\n" +
-                "    FROM pg_catalog.pg_attribute a\n" +
-                "    JOIN pg_catalog.pg_class c ON a.attrelid = c.oid\n" +
-                "    JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid\n" +
-                "    JOIN pg_catalog.pg_type t ON a.atttypid = t.oid\n" +
-                "    LEFT JOIN pg_catalog.pg_description d ON d.objoid = c.oid AND d.objsubid = a.attnum\n" +
-                "    LEFT JOIN pg_catalog.pg_attrdef ad ON ad.adrelid = c.oid AND ad.adnum = a.attnum\n" +
-                "    LEFT JOIN pg_catalog.pg_depend dep ON dep.objid = c.oid AND dep.refobjsubid = a.attnum\n" +
-                "    LEFT JOIN pg_catalog.pg_class s ON s.oid = dep.refobjid AND s.relkind = 'S'\n" +
-                "    LEFT JOIN pg_catalog.pg_namespace n2 ON s.relnamespace = n2.oid\n" +
-                "    WHERE c.relname = ? AND n.nspname = ?\n" +
-                "    AND a.attnum > 0 AND NOT a.attisdropped\n" +
-                "    ORDER BY a.attnum";
+        String columnQuery = "SELECT a.attname,\n" +
+                "       CASE WHEN t.typname = 'varchar' AND a.atttypmod = -1 THEN 'text'\n" +
+                "            ELSE t.typname END AS typname,\n" +
+                "       a.attnotnull,\n" +
+                "       CASE WHEN t.typname = 'varchar' AND a.atttypmod = -1 THEN 0\n" +
+                "            WHEN t.typname = 'varchar' THEN a.atttypmod - 4\n" +
+                "            WHEN t.typname IN ('numeric', 'decimal') THEN ((a.atttypmod - 4) >> 16)\n" +
+                "            ELSE 0 END AS precision,\n" +
+                "       CASE WHEN t.typname IN ('numeric', 'decimal') THEN (a.atttypmod - 4) & 65535\n" +
+                "            ELSE 0 END AS scale,\n" +
+                "       d.description,\n" +
+                "       pg_get_expr(ad.adbin, ad.adrelid) AS default_value,\n" +
+                "       n2.nspname AS seq_schema,\n" +
+                "       s.relname AS seqname,\n" +
+                "       NULL AS seq_value,\n" +
+                "       CASE WHEN pg_get_expr(ad.adbin, ad.adrelid) LIKE 'nextval(%' THEN\n" +
+                "            regexp_replace(pg_get_expr(ad.adbin, ad.adrelid), '.*''(.+)''.*', '\\1')\n" +
+                "            ELSE NULL END AS derived_seqname\n" +
+                "FROM pg_catalog.pg_attribute a\n" +
+                "JOIN pg_catalog.pg_class c ON a.attrelid = c.oid\n" +
+                "JOIN pg_catalog.pg_namespace n ON c.relnamespace = n.oid\n" +
+                "JOIN pg_catalog.pg_type t ON a.atttypid = t.oid\n" +
+                "LEFT JOIN pg_catalog.pg_description d ON d.objoid = c.oid AND d.objsubid = a.attnum\n" +
+                "LEFT JOIN pg_catalog.pg_attrdef ad ON ad.adrelid = c.oid AND ad.adnum = a.attnum\n" +
+                "LEFT JOIN pg_catalog.pg_depend dep ON dep.objid = c.oid AND dep.refobjsubid = a.attnum\n" +
+                "LEFT JOIN pg_catalog.pg_class s ON s.oid = dep.refobjid AND s.relkind = 'S'\n" +
+                "LEFT JOIN pg_catalog.pg_namespace n2 ON s.relnamespace = n2.oid\n" +
+                "WHERE c.relname = ? AND n.nspname = ?\n" +
+                "AND a.attnum > 0 AND NOT a.attisdropped\n" +
+                "ORDER BY a.attnum;";
 
         try (PreparedStatement stmt = connection.prepareStatement(columnQuery)) {
             // Validate inputs
@@ -750,6 +757,7 @@ public class PgTools implements IDbSource, Closeable {
                 case "smallint":
                     sqlType.append("SMALLINT");
                     break;
+                case "float4":
                 case "float8":
                 case "double precision":
                     sqlType.append("DOUBLE PRECISION");
