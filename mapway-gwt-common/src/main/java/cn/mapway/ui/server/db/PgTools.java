@@ -371,7 +371,13 @@ public class PgTools implements IDbSource, Closeable {
                             System.out.println("Inserting row " + index + " of " + length);
                         }
                     } catch (SQLException e) {
-                        System.out.println("ERROR" + tableMetadata.getTableName() + " " + e.getMessage());
+
+                        e.printStackTrace();
+                        try {
+                            System.out.println("ERROR" + tableMetadata.getTableName() + " " + e.getMessage() +Strings.safeToString(rs.getObject(1),""));
+                        } catch (SQLException ex) {
+                        }
+                        insertStatement.toString();
                         throw new RuntimeException(e);
                     }
                 }
