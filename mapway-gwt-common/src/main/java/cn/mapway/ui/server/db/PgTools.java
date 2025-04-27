@@ -411,7 +411,7 @@ public class PgTools implements IDbSource, Closeable {
             case "geometry":
                 String wkt = rs.getString(paramIndex);
                 if (wkt == null || wkt.endsWith("EMPTY") || wkt.contains("Infinity")) {
-                    wkt = column.getGeometryType() + " EMPTY";
+                    wkt = "GEOMETRYCOLLECTION EMPTY";
                 }
                 insertStatement.setString(paramIndex, wkt);
                 break;
