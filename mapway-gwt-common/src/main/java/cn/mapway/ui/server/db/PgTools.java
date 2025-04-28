@@ -3,7 +3,6 @@ package cn.mapway.ui.server.db;
 import cn.mapway.ui.shared.db.ColumnMetadata;
 import cn.mapway.ui.shared.db.TableIndex;
 import cn.mapway.ui.shared.db.TableMetadata;
-import org.nutz.json.Json;
 import org.nutz.lang.*;
 import org.nutz.lang.util.Regex;
 
@@ -292,12 +291,12 @@ public class PgTools implements IDbSource, Closeable {
                 "                ORDER BY\n" +
                 "                    i.relname";
 
-        try(PreparedStatement pstmt = connection.prepareStatement(sql);){
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
             pstmt.setString(1, sourceTableName);
             pstmt.setString(2, schema);
             ResultSet rs = pstmt.executeQuery();
             while (rs.next()) {
-                TableIndex tableIndex=new TableIndex();
+                TableIndex tableIndex = new TableIndex();
                 tableIndex.name = rs.getString("index_name");
                 tableIndex.isUnique = rs.getBoolean("is_unique");
                 tableIndex.isPrimary = rs.getBoolean("is_primary");
@@ -329,18 +328,19 @@ public class PgTools implements IDbSource, Closeable {
 
     /**
      * 更新表索引
+     *
      * @param tableMetadata
      */
     public void updateTableIndex(TableMetadata tableMetadata) {
 
-        if(Lang.isNotEmpty(tableMetadata.getIndexes())){
-            for(TableIndex tableIndex:tableMetadata.getIndexes()){
-                if(!tableIndex.isPrimary){
-                    StringBuilder sql=new StringBuilder();
-                    sql.append("DROP INDEX IF EXISTS "+tableMetadata.getSchema()+"."+tableIndex.name+";");
+        if (Lang.isNotEmpty(tableMetadata.getIndexes())) {
+            for (TableIndex tableIndex : tableMetadata.getIndexes()) {
+                if (!tableIndex.isPrimary) {
+                    StringBuilder sql = new StringBuilder();
+                    sql.append("DROP INDEX IF EXISTS " + tableMetadata.getSchema() + "." + tableIndex.name + ";");
                     sql.append(tableIndex.definition);
-                    System.out.println("process table index sql:"+sql.toString());
-                    try(PreparedStatement pstmt = connection.prepareStatement(sql.toString());){
+                    System.out.println("process table index sql:" + sql);
+                    try (PreparedStatement pstmt = connection.prepareStatement(sql.toString())) {
                         pstmt.executeUpdate();
                         connection.commit();
                     } catch (SQLException e) {
@@ -446,7 +446,7 @@ public class PgTools implements IDbSource, Closeable {
 
                         e.printStackTrace();
                         try {
-                            System.out.println("ERROR" + tableMetadata.getTableName() + " " + e.getMessage() +Strings.safeToString(rs.getObject(1),""));
+                            System.out.println("ERROR" + tableMetadata.getTableName() + " " + e.getMessage() + Strings.safeToString(rs.getObject(1), ""));
                         } catch (SQLException ex) {
                         }
                         insertStatement.toString();
@@ -478,14 +478,15 @@ public class PgTools implements IDbSource, Closeable {
         switch (column.getTypeName().toLowerCase()) {
             case "geometry":
                 String wkt = rs.getString(paramIndex);
-                String temp=wkt.toLowerCase();
+                String temp = "";
+                if (wkt != null) {
+                    temp = wkt.toLowerCase();
+                }
                 if (wkt == null || temp.endsWith("empty") || temp.contains("infinity")) {
-                    if(Strings.isBlank(column.getGeometryType()) || column.getGeometryType().equalsIgnoreCase("geometry"))
-                    {
+                    if (Strings.isBlank(column.getGeometryType()) || column.getGeometryType().equalsIgnoreCase("geometry")) {
                         wkt = "GEOMETRYCOLLECTION EMPTY";
-                    }
-                    else {
-                        wkt = column.getGeometryType()+" EMPTY";
+                    } else {
+                        wkt = column.getGeometryType() + " EMPTY";
                     }
                 }
                 insertStatement.setString(paramIndex, wkt);
@@ -659,8 +660,7 @@ public class PgTools implements IDbSource, Closeable {
             if (dropIfExists) {
                 dropTable(tableMetadata);
             }
-            if(!isTableExist(tableMetadata.getSchema(),tableMetadata.getTableName()))
-            {
+            if (!isTableExist(tableMetadata.getSchema(), tableMetadata.getTableName())) {
                 connection.setAutoCommit(true);
                 String sql = createSqlFromMetadata(tableMetadata, tableMetadata.getSchema(), tableMetadata.getTableName());
                 System.out.println(sql);
