@@ -955,6 +955,13 @@ public class RbacUserService {
                     root.children=ArrayUtils.add(root.children, cloned);
                     root = cloned;
                 } else {
+                    if(Strings.isBlank(childFind.userId))
+                    {
+                        childFind.userId=organization.userId;
+                        childFind.userName=organization.userName;
+                        childFind.userIcon=organization.userIcon;
+                        childFind.userCode=organization.userCode;
+                    }
                     root = childFind;
                 }
             }
