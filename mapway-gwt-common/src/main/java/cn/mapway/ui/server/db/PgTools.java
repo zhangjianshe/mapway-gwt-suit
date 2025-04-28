@@ -478,7 +478,8 @@ public class PgTools implements IDbSource, Closeable {
         switch (column.getTypeName().toLowerCase()) {
             case "geometry":
                 String wkt = rs.getString(paramIndex);
-                if (wkt == null || wkt.endsWith("EMPTY") || wkt.contains("Infinity")) {
+                String temp=wkt.toLowerCase();
+                if (wkt == null || temp.endsWith("empty") || temp.contains("infinity")) {
                     if(Strings.isBlank(column.getGeometryType()) || column.getGeometryType().equalsIgnoreCase("geometry"))
                     {
                         wkt = "GEOMETRYCOLLECTION EMPTY";
