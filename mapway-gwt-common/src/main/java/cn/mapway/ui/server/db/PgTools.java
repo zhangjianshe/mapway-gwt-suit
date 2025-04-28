@@ -333,16 +333,19 @@ public class PgTools implements IDbSource, Closeable {
      */
     public void updateTableIndex(TableMetadata tableMetadata) {
 
-        if(!tableMetadata.getIndexes().isEmpty()){
-            TableIndex tableIndex=tableMetadata.getIndexes().get(0);
-            if(!tableIndex.isPrimary){
-                StringBuilder sql=new StringBuilder();
-                sql.append("DROP INDEX IF EXISTS "+tableMetadata.getSchema()+"."+tableIndex.name+";\r\n");
-                sql.append(tableIndex.definition);
-                try(PreparedStatement pstmt = connection.prepareStatement(sql.toString());){
-                    pstmt.executeUpdate();
-                } catch (SQLException e) {
-                    e.printStackTrace();
+        if(Lang.isNotEmpty(tableMetadata.getIndexes())){
+            for(TableIndex tableIndex:tableMetadata.getIndexes()){
+                if(!tableIndex.isPrimary){
+                    StringBuilder sql=new StringBuilder();
+                    sql.append("DROP INDEX IF EXISTS "+tableMetadata.getSchema()+"."+tableIndex.name+";");
+                    sql.append(tableIndex.definition);
+                    System.out.println("process table index sql:"+sql.toString());
+                    try(PreparedStatement pstmt = connection.prepareStatement(sql.toString());){
+                        pstmt.executeUpdate();
+                        connection.commit();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
@@ -476,7 +479,13 @@ public class PgTools implements IDbSource, Closeable {
             case "geometry":
                 String wkt = rs.getString(paramIndex);
                 if (wkt == null || wkt.endsWith("EMPTY") || wkt.contains("Infinity")) {
-                    wkt = "GEOMETRYCOLLECTION EMPTY";
+                    if(Strings.isBlank(column.getGeometryType()) || column.getGeometryType().equalsIgnoreCase("geometry"))
+                    {
+                        wkt = "GEOMETRYCOLLECTION EMPTY";
+                    }
+                    else {
+                        wkt = column.getGeometryType()+" EMPTY";
+                    }
                 }
                 insertStatement.setString(paramIndex, wkt);
                 break;
