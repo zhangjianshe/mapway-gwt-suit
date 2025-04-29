@@ -408,6 +408,31 @@ public class RbacUserService {
     }
 
     /**
+     * 导入角色信息
+     * @param roles
+     */
+    public void importRoles(List<RbacRoleEntity> roles){
+        if(Lang.isEmpty(roles))
+        {
+            log.warn("没有传入需要更新的系统角色");
+            return;
+        }
+        for(RbacRoleEntity roleEntity:roles)
+        {
+            RbacRoleEntity fetch = rbacRoleDao.fetch(Cnd.where(RbacRoleEntity.FLD_CODE, "=", roleEntity.getCode()));
+            if(fetch==null)
+            {
+                log.info("角色 {} 新建成功",roleEntity.getCode());
+                rbacRoleDao.insert(roleEntity);
+            }
+            else {
+                log.info("角色 {} 已存在",roleEntity.getCode());
+                rbacRoleDao.updateIgnoreNull(roleEntity);
+            }
+        }
+    }
+
+    /**
      * 从代码中分析权限点　并同步到数据库中
      */
     public void importResourcePointFromCode(List<Class<?>> scanPackages, IUserInfo superUser) {
