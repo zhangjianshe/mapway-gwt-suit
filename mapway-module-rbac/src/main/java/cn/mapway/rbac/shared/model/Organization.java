@@ -28,6 +28,7 @@ public class Organization implements Serializable, IsSerializable {
     public Integer rank;
     public Boolean major;//是否为主要组织机构
     public Organization[] children;
+    public String location;//地理位置 (lng,lat,zoom)
 
     public Integer getRank()
     {
@@ -56,6 +57,7 @@ public class Organization implements Serializable, IsSerializable {
         organization.userIcon=userIcon;
         organization.rank=rank;
         organization.major=major;
+        organization.location=location;
         organization.children=new Organization[0];
         return organization;
     }

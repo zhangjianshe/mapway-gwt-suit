@@ -88,7 +88,7 @@ public class RbacOrgFrame extends BaseAbstractModule {
                     if (result.isSuccess()) {
                         orgPanel.init();
                     } else {
-                        msg(result.getMessage());
+                       RbacClient.get().getClientContext().alert(result.getMessage());
                     }
                 }
             });

@@ -76,6 +76,27 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
                 org.setRegionCode(DataCastor.castToString(o));
             }
         });
+        getAttributes().add(new AbstractAttribute("location","初始化位置") {
+            @Override
+            public IEditorMetaData getEditorMetaData() {
+                return new AbstractEditorMetaData() {
+                    @Override
+                    protected void initMetaData() {
+                        setEditorCode("location_editor");
+                    }
+                };
+            }
+
+            @Override
+            public Object getValue() {
+                return org.getLocation();
+            }
+
+            @Override
+            public void setValue(Object value) {
+                org.setLocation(DataCastor.castToString(value));
+            }
+        });
 
         getAttributes().add(new TextBoxAttribute("charge","排序") {
             @Override

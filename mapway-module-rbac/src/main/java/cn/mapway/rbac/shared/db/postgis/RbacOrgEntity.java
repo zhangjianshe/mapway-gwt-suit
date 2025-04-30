@@ -89,6 +89,13 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
    */
   public static final String FLD_REGION_CODE = "region_code";
 
+
+  /**
+   * location
+   * 数据库字段序号:13
+   */
+  public static final String FLD_LOCATION = "location";
+
   /**
    * 数据库表名称:rbac_org
    */
@@ -278,6 +285,21 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   @Comment("排序")
   private Integer rank;
 
+  /**
+   * 初始化位置 lng,lat,zoom
+   * 缺省值:null
+   * 数据类型varchar
+   * 数据库字段长度:255(不允许为空)
+   */
+  @ApiField("初始化位置")
+  @Column("location")
+  @ColDefine(
+          type = org.nutz.dao.entity.annotation.ColType.VARCHAR,
+          width = 255
+  )
+  @Comment("初始化位置")
+  private String location;
+
 
   public String getId() {
     return this.id;
@@ -379,5 +401,12 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   }
   public void setRank(Integer rank) {
     this.rank=rank;
+  }
+
+  public String getLocation() {
+    return this.location;
+  }
+  public void setLocation(String location) {
+    this.location=location;
   }
 }

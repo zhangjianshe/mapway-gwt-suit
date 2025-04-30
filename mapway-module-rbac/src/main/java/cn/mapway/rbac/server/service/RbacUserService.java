@@ -1072,6 +1072,7 @@ public class RbacUserService {
         organization.parentId = org.getParentId();
         organization.rank = org.getRank();
         organization.children = new Organization[0];
+        organization.location=org.getLocation();
         return organization;
     }
 
