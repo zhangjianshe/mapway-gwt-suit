@@ -482,7 +482,7 @@ public class PgTools implements IDbSource, Closeable {
                 if (wkt != null) {
                     temp = wkt.toLowerCase();
                 }
-                if (wkt == null || temp.endsWith("empty") || temp.contains("infinity")) {
+                if (wkt == null || temp.endsWith("empty") || temp.contains("inf")) {
                     if (Strings.isBlank(column.getGeometryType()) || column.getGeometryType().equalsIgnoreCase("geometry")) {
                         wkt = "GEOMETRYCOLLECTION EMPTY";
                     } else {
@@ -530,7 +530,16 @@ public class PgTools implements IDbSource, Closeable {
             case "double precision":
             case "numeric":
             case "decimal":
-                insertStatement.setDouble(paramIndex, rs.getDouble(paramIndex));
+                double rsDouble = rs.getDouble(paramIndex);
+                if(     rsDouble == Double.NaN
+                        || rsDouble == Double.NEGATIVE_INFINITY
+                        || rsDouble == Double.POSITIVE_INFINITY
+                        || rsDouble<=1.7976931348623157E308
+                        || rsDouble>=1.7976931348623157E308){
+                    insertStatement.setDouble(paramIndex,0);
+                    break;
+                }
+                insertStatement.setDouble(paramIndex, rsDouble);
                 break;
             case "bytea":
                 insertStatement.setBytes(paramIndex, rs.getBytes(paramIndex));
@@ -955,5 +964,12 @@ public class PgTools implements IDbSource, Closeable {
         } catch (SQLException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public static void main(String[] args) {
+        String string = "-179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+        Double d = Double.parseDouble(string);
+        System.out.println(d<=1.7976931348623157E308 || d>=1.7976931348623157E308);
+        System.out.println(d);
     }
 }
