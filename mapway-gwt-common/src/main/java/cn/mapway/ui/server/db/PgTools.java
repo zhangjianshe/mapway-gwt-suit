@@ -3,6 +3,7 @@ package cn.mapway.ui.server.db;
 import cn.mapway.ui.shared.db.ColumnMetadata;
 import cn.mapway.ui.shared.db.TableIndex;
 import cn.mapway.ui.shared.db.TableMetadata;
+import lombok.extern.slf4j.Slf4j;
 import org.nutz.lang.*;
 import org.nutz.lang.util.Regex;
 
@@ -20,6 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Pg数据库工具
  */
+@Slf4j
 public class PgTools implements IDbSource, Closeable {
     final Connection connection;
     final String db;
@@ -464,6 +466,74 @@ public class PgTools implements IDbSource, Closeable {
 
         // update table index
         updateTableIndex(tableMetadata);
+
+        // update sequence value
+        updateSequenceValue(tableMetadata);
+    }
+
+    /**
+     *
+     * @param tableMetadata
+     */
+    private void updateSequenceValue(TableMetadata tableMetadata) {
+        List<ColumnMetadata> columns = tableMetadata.getColumns();
+        for (ColumnMetadata column : columns) {
+            if(Strings.isNotBlank(column.getSeqName()))
+            {
+                try {
+                    //如果序列不存在 则创建，否则更新
+                    String createSeqSql = "CREATE SEQUENCE IF NOT EXISTS \"" + tableMetadata.getSchema() + "." + column.getSeqName() + "\" INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;";
+                    log.info("CREATE SEQUENCE {}", createSeqSql);
+                    PreparedStatement createSeqStatement = connection.prepareStatement(createSeqSql);
+                    // Use execute() instead of executeUpdate()
+                    boolean hasResultSet = createSeqStatement.execute();
+                    // Optionally, you can consume the result set if it exists
+                    if (hasResultSet) {
+                        ResultSet resultSet = createSeqStatement.getResultSet();
+                        // You might not need to do anything with the resultSet here
+                        resultSet.close();
+                    }
+                    createSeqStatement.close();
+                    connection.commit();
+
+                    // SELECT setval('"public"."biz_task_id"', 123, false);
+
+                    String updateSeqSql = "SELECT setval('" + tableMetadata.getSchema() + "." + column.getSeqName() + "', " + (column.getSeqValue()+1) + ", false); ";
+                    log.info("UPDATE SEQUENCE {}", updateSeqSql);
+                    PreparedStatement updateSeqStatement = connection.prepareStatement(updateSeqSql);
+                    // Use execute() instead of executeUpdate()
+                     hasResultSet = updateSeqStatement.execute();
+                    // Optionally, you can consume the result set if it exists
+                    if (hasResultSet) {
+                        ResultSet resultSet = updateSeqStatement.getResultSet();
+                        // You might not need to do anything with the resultSet here
+                        resultSet.close();
+                    }
+                    updateSeqStatement.close();
+                    connection.commit();
+
+                    // alter table's field's defaultValue
+                    String alterSeqSql = "ALTER TABLE \"" + tableMetadata.getSchema() + "\".\"" + tableMetadata.getTableName()
+                            + "\" ALTER COLUMN \"" + column.getColumnName()
+                            + "\" SET DEFAULT nextval('" + tableMetadata.getSchema() + "." + column.getSeqName() + "'::regclass);";
+
+                    log.info("ALTER SEQUENCE {}", alterSeqSql);
+                    PreparedStatement alterSeqStatement = connection.prepareStatement(alterSeqSql);
+                    // Use execute() instead of executeUpdate()
+                    hasResultSet = alterSeqStatement.execute();
+                    // Optionally, you can consume the result set if it exists
+                    if (hasResultSet) {
+                        ResultSet resultSet = alterSeqStatement.getResultSet();
+                        // You might not need to do anything with the resultSet here
+                        resultSet.close();
+                    }
+                    alterSeqStatement.close();
+                    connection.commit();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 
     /**
