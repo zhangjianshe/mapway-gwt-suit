@@ -23,7 +23,9 @@ import cn.mapway.ui.shared.CommonConstant;
 import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.nutz.dao.Cnd;
+import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.cri.Exps;
@@ -37,7 +39,10 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
+import java.sql.Connection;
+import java.sql.ResultSet;
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * this service save IUserInfo in the http session.
@@ -674,7 +679,6 @@ public class RbacUserService {
             response.setResources(resources);
             return BizResult.success(response);
         }
-
     }
 
     /**
@@ -1084,5 +1088,123 @@ public class RbacUserService {
         organizationIdMap.clear();
         organizationCodeMap.clear();
         plugin.getServerContext().clearSessionGroup(RbacConstant.SESSION_CACHE_GROUP);
+    }
+
+    /**
+     * 批量添加资源
+     * @param resources
+     */
+    public int addResources(List<RbacResourceEntity> resources){
+        if(resources == null){
+            return 0;
+        }
+        List<RbacResourceEntity> result = resources.stream()
+                .filter((resource) -> checkResource(resource))
+                .collect(Collectors.toList());
+        if(result != null && !result.isEmpty()){
+            Dao dao = rbacResourceDao.getDao();
+            dao.insert(result);
+            return result.size();
+        }
+        return 0;
+    }
+
+    /**
+     * 添加资源
+     * @param resource
+     */
+    public boolean addResource(RbacResourceEntity resource){
+        boolean flag = checkResource(resource);
+        if(!flag){
+            return false;
+        }
+        RbacResourceEntity insert = rbacResourceDao.insert(resource);
+        if(insert!= null){
+            return true;
+        }
+        return false;
+    }
+
+
+    private boolean checkResource(RbacResourceEntity resource){
+        if(resource == null){
+            return false;
+        }
+        if(StringUtils.isEmpty(resource.getResourceCode())){
+            return false;
+        }
+        if(resource.getKind() == null){
+            return false;
+        }
+        RbacResourceEntity fetch = rbacResourceDao.fetch(
+                Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resource.getResourceCode())
+                        .and(RbacResourceEntity.FLD_KIND, "=", resource.getKind())
+        );
+        if(fetch!= null){
+            return false;
+        }
+        return true;
+    }
+
+
+    private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId";
+
+    private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE= "SELECT distinct r.resource_code from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
+
+    /**
+     * 查询用户该资源类型下所有的资源
+     *
+     * @param kind
+     * @return
+     */
+    public BizResult<QueryRoleResourceResponse> queryResourceByKind(String userId, String systemCode, Integer kind) {
+        if(kind == null){
+            return BizResult.error(400, "参数错误");
+        }
+        // 查询用户的角色
+        Sql sql = Sqls.create(SQL_TEMPLATE_QUERY_ROLE);
+        sql.params().set("userId", userId);
+        sql.setEntity(rbacRoleDao.getEntity());
+        sql.setCallback(Sqls.callback.strList());
+        rbacUserCodeRoleDao.getDao().execute(sql);
+        List<String> roleNames = sql.getList(String.class);
+
+        if(roleNames == null || roleNames.isEmpty()){
+            return BizResult.success(new QueryRoleResourceResponse());
+        }
+
+        // 查询角色的资源
+        Sql sql1 = Sqls.create(SQL_TEMPLATE_QUERY_RESOURCE_CODE);
+        sql1.params().set("kind", kind);
+        sql1.params().set("roleList", roleNames);
+        sql1.setCallback(Sqls.callback.strList());
+        rbacRoleDao.getDao().execute(sql1);
+        List<String> resourceCodes = sql1.getList(String.class);
+
+        // 生成结果
+        QueryRoleResourceResponse queryRoleResourceResponse = getQueryRoleResourceResponse(kind, resourceCodes);
+        return BizResult.success(queryRoleResourceResponse);
+    }
+
+    private static QueryRoleResourceResponse getQueryRoleResourceResponse(Integer kind, List<String> resourceCodes) {
+        QueryRoleResourceResponse queryRoleResourceResponse = new QueryRoleResourceResponse();
+        List<RbacResourceEntity> resources = new ArrayList<>();
+        if(resourceCodes != null && !resourceCodes.isEmpty()){
+            for (String resourceCode: resourceCodes) {
+                RbacResourceEntity entity = new RbacResourceEntity();
+                entity.setKind(kind);
+                entity.setResourceCode(resourceCode);
+                resources.add(entity);
+            }
+        }
+        queryRoleResourceResponse.setResources(resources);
+        return queryRoleResourceResponse;
+    }
+
+    public BizResult<QueryRoleResourceResponse> queryResourceByKind(String userId, String systemCode, ResourceKind kind) {
+        if(kind == null){
+            return BizResult.error(400, "参数错误");
+        }
+        return queryResourceByKind(userId, systemCode, kind.getCode());
     }
 }

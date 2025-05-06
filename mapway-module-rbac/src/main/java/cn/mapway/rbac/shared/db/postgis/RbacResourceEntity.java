@@ -16,7 +16,8 @@ import java.io.Serializable;
  */
 @Table(value="rbac_resource")
 @Doc("rbac_resource")
-public class RbacResourceEntity implements Serializable, IsSerializable {
+@PK( {"resource_code", "kind"} )
+  public class RbacResourceEntity implements Serializable, IsSerializable {
   /**
    * name
    * 数据库字段序号:1
