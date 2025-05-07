@@ -37,4 +37,5 @@ public class RbacConstant {
      */
     public static final String USER_PERMISSION_CACHE_KEY_PREFIX = "USER_PERMISSION_";
     public static final String SESSION_CACHE_GROUP = "rbac";
+    
 }

@@ -2,12 +2,11 @@ package cn.mapway.rbac.client.org;
 
 import cn.mapway.rbac.client.RbacClient;
 import cn.mapway.rbac.client.RbacServerProxy;
-import cn.mapway.rbac.client.user.SearchUserPanel;
+import cn.mapway.rbac.client.user.UserOrgList;
 import cn.mapway.rbac.client.user.UserRoleResourcePanel;
 import cn.mapway.rbac.shared.RbacConstant;
 import cn.mapway.rbac.shared.db.postgis.RbacOrgEntity;
 import cn.mapway.rbac.shared.db.postgis.RbacOrgUserEntity;
-import cn.mapway.rbac.shared.db.postgis.RbacUserEntity;
 import cn.mapway.rbac.shared.rpc.DeleteOrgRequest;
 import cn.mapway.rbac.shared.rpc.DeleteOrgResponse;
 import cn.mapway.rbac.shared.rpc.UpdateOrgRequest;
@@ -20,7 +19,6 @@ import cn.mapway.ui.client.mvc.ModuleParameter;
 import cn.mapway.ui.client.mvc.attribute.editor.inspector.ObjectInspector;
 import cn.mapway.ui.client.tools.DataBus;
 import cn.mapway.ui.client.util.StringUtil;
-import cn.mapway.ui.client.widget.dialog.Dialog;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
@@ -51,7 +49,10 @@ public class RbacOrgFrame extends BaseAbstractModule {
     OrgUserListPanel userList;
     @UiField
     UserRoleResourcePanel userRoleResourcePanel;
+    @UiField
+    UserOrgList userOrgList;
     RbacOrgAttrProvider rbacOrgAttrProvider;
+
     public RbacOrgFrame() {
         initWidget(ourUiBinder.createAndBindUi(this));
         rbacOrgAttrProvider = new RbacOrgAttrProvider();
@@ -88,7 +89,7 @@ public class RbacOrgFrame extends BaseAbstractModule {
                     if (result.isSuccess()) {
                         orgPanel.init();
                     } else {
-                       RbacClient.get().getClientContext().alert(result.getMessage());
+                        RbacClient.get().getClientContext().alert(result.getMessage());
                     }
                 }
             });
@@ -116,8 +117,13 @@ public class RbacOrgFrame extends BaseAbstractModule {
     @UiHandler("userList")
     public void uerListCommon(CommonEvent event) {
         if (event.isSelect()) {
+            //选中了一个用户
+            //展示两部分内容
+            // 1.用户的所属角色列表
             RbacOrgUserEntity user = event.getValue();
             userRoleResourcePanel.load(user.getUserCode());
+            // 2.用户所属的机构列表
+            userOrgList.load(user.getUserId(),user.getSystemCode());
         }
     }
 

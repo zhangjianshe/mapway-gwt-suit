@@ -2,7 +2,7 @@
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:org="urn:import:cn.mapway.rbac.client.org"
              xmlns:inspector="urn:import:cn.mapway.ui.client.mvc.attribute.editor.inspector"
-             xmlns:user="urn:import:cn.mapway.rbac.client.user"
+             xmlns:user="urn:import:cn.mapway.rbac.client.user" xmlns:widget="urn:import:cn.mapway.ui.client.widget"
 >
     <g:DockLayoutPanel>
         <g:west size="400">
@@ -18,9 +18,25 @@
             </g:DockLayoutPanel>
         </g:west>
         <g:west size="400">
-            <org:OrgUserListPanel addStyleNames="ai-border-right" ui:field="userList">
-
-            </org:OrgUserListPanel>
+            <g:DockLayoutPanel unit="PCT" addStyleNames="ai-border-right">
+                <g:north size="50">
+                    <org:OrgUserListPanel  ui:field="userList"/>
+                </g:north>
+                <g:center>
+                    <g:DockLayoutPanel addStyleNames="ai-border-right">
+                        <g:north size="40">
+                            <g:HTMLPanel addStyleNames="ai-flex-panel">
+                                <widget:Header>用户所在的组织列表</widget:Header>
+                            </g:HTMLPanel>
+                        </g:north>
+                        <g:center>
+                            <g:ScrollPanel>
+                                <user:UserOrgList ui:field="userOrgList"/>
+                            </g:ScrollPanel>
+                        </g:center>
+                    </g:DockLayoutPanel>
+                </g:center>
+            </g:DockLayoutPanel>
         </g:west>
         <g:center>
             <user:UserRoleResourcePanel ui:field="userRoleResourcePanel"/>
