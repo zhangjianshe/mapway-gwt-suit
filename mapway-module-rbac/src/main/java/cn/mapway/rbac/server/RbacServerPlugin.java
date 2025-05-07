@@ -1,5 +1,7 @@
 package cn.mapway.rbac.server;
 
+import cn.mapway.rbac.server.dao.DbTools;
+import cn.mapway.rbac.server.service.RbacConfigService;
 import cn.mapway.rbac.server.service.RbacUserService;
 import cn.mapway.rbac.shared.db.postgis.*;
 import cn.mapway.server.IServerPlugin;
@@ -12,6 +14,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -24,6 +27,8 @@ public class RbacServerPlugin implements IServerPlugin {
 
     @Resource
     IServerContext serverContext;
+    @Resource
+    RbacConfigService rbacConfigService;
 
     @Override
     public String getName() {
@@ -46,14 +51,24 @@ public class RbacServerPlugin implements IServerPlugin {
         log.info("RbacServerPlugin init");
         Dao dao = iServerContext.getBean(Dao.class);
 
-        // build tables
 
-        for (Class table : getTableClasses()) {
-            dao.create(table, false);
-            Daos.migration(dao, table, true, false, false);
+        String SCHEMA_DATE="2025-05-07";
+        if(!dao.exists(RbacConfigEntity.TBL_RBAC_CONFIG) || rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
+            // build tables
+            for (Class table : getTableClasses()) {
+                dao.create(table, false);
+                Daos.migration(dao, table, true, false, false);
+            }
+            rbacConfigService.saveConfig("SCHEMA_DATE",SCHEMA_DATE);
+            log.info("RBAC模式变更版本{}",SCHEMA_DATE);
         }
-        RbacUserService rbacUserService = iServerContext.getBean(RbacUserService.class);
+        else {
+            log.info("RBAC模式版本{}",SCHEMA_DATE);
+        }
 
+
+
+        RbacUserService rbacUserService = iServerContext.getBean(RbacUserService.class);
         // make sure super user exist
         rbacUserService.sureSuperUser();
 
@@ -65,6 +80,18 @@ public class RbacServerPlugin implements IServerPlugin {
             scanPackages.addAll(scanPackages1);
         }
         rbacUserService.importResourcePointFromCode(scanPackages, iServerContext.getSuperUser());
+
+        //更新数据库
+        String KEY_RBAC_SCHEMA="2025-05-07";
+        if(rbacConfigService.needUpdate("KEY_RBAC_SCHEMA",KEY_RBAC_SCHEMA))
+        {
+            String dropConstrain="alter table public.rbac_resource drop CONSTRAINT rbac_resource_pkey;";
+            String createnew="alter table public.rbac_resource add CONSTRAINT rbac_resource_pkey PRIMARY KEY (\"resource_code\", \"kind\");";
+            DbTools dbTools=new DbTools(dao);
+            dbTools.execute(Arrays.asList(dropConstrain,createnew));
+            log.info("修复RBAC_RESOURCE TABLE {}",KEY_RBAC_SCHEMA);
+            rbacConfigService.saveConfig("KEY_RBAC_SCHEMA",KEY_RBAC_SCHEMA);
+        }
 
     }
 
@@ -85,6 +112,7 @@ public class RbacServerPlugin implements IServerPlugin {
     @Override
     public List<Class> getTableClasses() {
         List<Class> tables = new ArrayList<>();
+        tables.add(RbacConfigEntity.class);
         tables.add(RbacOrgEntity.class);
         tables.add(RbacOrgUserEntity.class);
         tables.add(RbacRoleEntity.class);
