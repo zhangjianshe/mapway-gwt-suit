@@ -52,13 +52,47 @@ public class RbacServerPlugin implements IServerPlugin {
         Dao dao = iServerContext.getBean(Dao.class);
 
 
-        String SCHEMA_DATE="2025-05-07";
-        if(!dao.exists(RbacConfigEntity.TBL_RBAC_CONFIG) || rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
-            // build tables
-            for (Class table : getTableClasses()) {
-                dao.create(table, false);
-                Daos.migration(dao, table, true, false, false);
+        String SCHEMA_DATE="2025-05-09";
+        if(rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
+
+            if(!dao.exists(RbacConfigEntity.class))
+            {
+               dao.create(RbacConfigEntity.class,false);
             }
+
+            if(!dao.exists(RbacOrgEntity.class)){
+                dao.create(RbacOrgEntity.class,false);
+            };
+
+            if(!dao.exists(RbacOrgUserEntity.class)){
+                dao.create(RbacOrgUserEntity.class,false);
+            };
+            if(!dao.exists(RbacRoleEntity.class)){
+                dao.create(RbacRoleEntity.class,false);
+            };
+            if(!dao.exists(RbacRoleResourceEntity.class)){
+                dao.create(RbacRoleResourceEntity.class,false);
+            };
+            if(!dao.exists(RbacUserCodeRoleEntity.class)){
+                dao.create(RbacUserCodeRoleEntity.class,false);
+            };
+            if(!dao.exists(RbacUserEntity.class)){
+                dao.create(RbacUserEntity.class,false);
+            };
+
+
+            if(!dao.exists(RbacResourceEntity.class)){
+                dao.create(RbacResourceEntity.class,false);
+            }
+            else{
+               Daos.migration(dao,RbacResourceEntity.class,true,true,false);
+                String dropConstrain="alter table public.rbac_resource drop CONSTRAINT rbac_resource_pkey;";
+                String createnew="alter table public.rbac_resource add CONSTRAINT rbac_resource_pkey PRIMARY KEY (\"resource_code\", \"kind\");";
+                DbTools dbTools=new DbTools(dao);
+                dbTools.execute(Arrays.asList(dropConstrain,createnew));
+                log.info("修复RBAC_RESOURCE TABLE {}",SCHEMA_DATE);
+            };
+
             rbacConfigService.saveConfig("SCHEMA_DATE",SCHEMA_DATE);
             log.info("RBAC模式变更版本{}",SCHEMA_DATE);
         }
@@ -80,18 +114,6 @@ public class RbacServerPlugin implements IServerPlugin {
             scanPackages.addAll(scanPackages1);
         }
         rbacUserService.importResourcePointFromCode(scanPackages, iServerContext.getSuperUser());
-
-        //更新数据库
-        String KEY_RBAC_SCHEMA="2025-05-07";
-        if(rbacConfigService.needUpdate("KEY_RBAC_SCHEMA",KEY_RBAC_SCHEMA))
-        {
-            String dropConstrain="alter table public.rbac_resource drop CONSTRAINT rbac_resource_pkey;";
-            String createnew="alter table public.rbac_resource add CONSTRAINT rbac_resource_pkey PRIMARY KEY (\"resource_code\", \"kind\");";
-            DbTools dbTools=new DbTools(dao);
-            dbTools.execute(Arrays.asList(dropConstrain,createnew));
-            log.info("修复RBAC_RESOURCE TABLE {}",KEY_RBAC_SCHEMA);
-            rbacConfigService.saveConfig("KEY_RBAC_SCHEMA",KEY_RBAC_SCHEMA);
-        }
 
     }
 
