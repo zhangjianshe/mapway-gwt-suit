@@ -16,6 +16,7 @@ import java.io.Serializable;
  */
 @Table(value="rbac_resource")
 @Doc("rbac_resource")
+@PK( {"resource_code"} )
   public class RbacResourceEntity implements Serializable, IsSerializable {
   /**
    * name
@@ -59,7 +60,7 @@ import java.io.Serializable;
   public static final String TBL_RBAC_RESOURCE = "rbac_resource";
 
   /**
-   * 资源名称
+   * 资源名称 
    * 缺省值:null
    * 数据类型varchar
    * 数据库字段长度:128(允许为空)
