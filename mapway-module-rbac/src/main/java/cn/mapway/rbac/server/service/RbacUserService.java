@@ -1099,9 +1099,9 @@ public class RbacUserService {
             return 0;
         }
         List<RbacResourceEntity> result = resources.stream()
-                .filter((resource) -> checkResource(resource))
+                .filter(this::checkResource)
                 .collect(Collectors.toList());
-        if(result != null && !result.isEmpty()){
+        if(!result.isEmpty()){
             Dao dao = rbacResourceDao.getDao();
             dao.insert(result);
             return result.size();
@@ -1119,10 +1119,7 @@ public class RbacUserService {
             return false;
         }
         RbacResourceEntity insert = rbacResourceDao.insert(resource);
-        if(insert!= null){
-            return true;
-        }
-        return false;
+        return insert != null;
     }
 
 
@@ -1136,20 +1133,19 @@ public class RbacUserService {
         if(resource.getKind() == null){
             return false;
         }
-        RbacResourceEntity fetch = rbacResourceDao.fetch(
-                Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resource.getResourceCode())
-                        .and(RbacResourceEntity.FLD_KIND, "=", resource.getKind())
-        );
-        if(fetch!= null){
+        if(StringUtils.isEmpty(resource.getName())){
             return false;
         }
-        return true;
+        RbacResourceEntity fetch = rbacResourceDao.fetch(
+                Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resource.getResourceCode())
+        );
+        return fetch == null;
     }
 
 
     private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId";
 
-    private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE= "SELECT distinct r.resource_code from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
+    private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE= "SELECT distinct res.name from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
 
     /**
      * 查询用户该资源类型下所有的资源

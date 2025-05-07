@@ -192,4 +192,28 @@ import java.io.Serializable;
   public void setCatalog(String catalog) {
     this.catalog=catalog;
   }
+
+  public static String generateResourceCode(String name, Integer kind) {
+    return name + "!_!" + kind;
+  }
+
+  public String parseNameByResourceCode() {
+    if (this.resourceCode == null) {
+      return null;
+    }
+    return this.resourceCode.split("!_!")[0];
+  }
+
+  public Integer parseKindByResourceCode() {
+    if (this.resourceCode == null) {
+      return null;
+    }
+    String[] split = this.resourceCode.split("!_!");
+    if (split.length != 2) {
+      return null;
+    } else {
+      return Integer.valueOf(split[1]);
+    }
+  }
+
 }
