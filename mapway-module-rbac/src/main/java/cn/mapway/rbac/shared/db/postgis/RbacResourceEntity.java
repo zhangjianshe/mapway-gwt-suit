@@ -16,7 +16,6 @@ import java.io.Serializable;
  */
 @Table(value="rbac_resource")
 @Doc("rbac_resource")
-@PK( {"resource_code", "kind"} )
   public class RbacResourceEntity implements Serializable, IsSerializable {
   /**
    * name
@@ -60,7 +59,7 @@ import java.io.Serializable;
   public static final String TBL_RBAC_RESOURCE = "rbac_resource";
 
   /**
-   * 资源名称 
+   * 资源名称
    * 缺省值:null
    * 数据类型varchar
    * 数据库字段长度:128(允许为空)
@@ -192,4 +191,28 @@ import java.io.Serializable;
   public void setCatalog(String catalog) {
     this.catalog=catalog;
   }
+
+  public static String generateResourceCode(String name, Integer kind) {
+    return name + "!_!" + kind;
+  }
+
+  public String parseNameByResourceCode() {
+    if (this.resourceCode == null) {
+      return null;
+    }
+    return this.resourceCode.split("!_!")[0];
+  }
+
+  public Integer parseKindByResourceCode() {
+    if (this.resourceCode == null) {
+      return null;
+    }
+    String[] split = this.resourceCode.split("!_!");
+    if (split.length != 2) {
+      return null;
+    } else {
+      return Integer.valueOf(split[1]);
+    }
+  }
+
 }
