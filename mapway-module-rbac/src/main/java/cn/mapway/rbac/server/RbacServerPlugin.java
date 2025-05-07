@@ -53,7 +53,7 @@ public class RbacServerPlugin implements IServerPlugin {
 
 
         String SCHEMA_DATE="2025-05-09";
-        if(rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
+        if(!dao.exists(RbacConfigEntity.class) || rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
 
             if(!dao.exists(RbacConfigEntity.class))
             {
