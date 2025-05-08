@@ -1,5 +1,8 @@
 package cn.mapway.rbac.shared;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * 资源类型
  */
@@ -42,5 +45,16 @@ public enum ResourceKind {
             }
         }
         return RESOURCE_KIND_CUSTOM;
+    }
+
+    public static List<ResourceKind> getResourceList() {
+        List<ResourceKind> result = new ArrayList<ResourceKind>();
+
+        for (ResourceKind kind : ResourceKind.values()) {
+            if(kind.code >= RESOURCE_KIND_TOOLBOX.code){
+                result.add(kind);
+            }
+        }
+        return result;
     }
 }
