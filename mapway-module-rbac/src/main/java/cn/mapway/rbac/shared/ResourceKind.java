@@ -57,4 +57,8 @@ public enum ResourceKind {
         }
         return result;
     }
+
+    public String toString() {
+        return "{ 名称: " + name + ", 代码: " + code + "}";
+    }
 }
