@@ -14,7 +14,6 @@ import cn.mapway.rbac.shared.rpc.DeleteResourceRequest;
 import cn.mapway.rbac.shared.rpc.DeleteResourceResponse;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.shared.CommonConstant;
-import jdk.nashorn.internal.objects.annotations.Where;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Cnd;
 import org.nutz.json.Json;
