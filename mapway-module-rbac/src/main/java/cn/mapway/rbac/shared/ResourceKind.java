@@ -13,7 +13,8 @@ public enum ResourceKind {
     RESOURCE_KIND_TOOLBOX(1000,"工具箱" ),
     RESOURCE_KIND_MODEL_TEMPLATE( 1001,"模型模板"),
     RESOURCE_KIND_SAMPLE_SET(1002, "样本集"),
-    RESOURCE_KIND_TRAIN_PROJECT(1003,"训练项目");
+    RESOURCE_KIND_TRAIN_PROJECT(1003,"训练项目"),
+    RESOURCE_KIND_COMPUTE_RESOURCE(1004,"硬件资源");
 
     public final Integer code;
     public final String name;
