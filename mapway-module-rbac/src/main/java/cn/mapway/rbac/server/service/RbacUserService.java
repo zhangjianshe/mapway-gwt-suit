@@ -521,7 +521,10 @@ public class RbacUserService {
                 log.warn("RoleDeclare not exists" + resourceDeclare.roleCode());
                 continue;
             }
-            RbacResourceEntity entity = rbacResourceDao.fetch(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resourceDeclare.code()));
+            RbacResourceEntity entity = rbacResourceDao.fetch(
+                    Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resourceDeclare.code())
+                            .and(RbacResourceEntity.FLD_KIND, "=", resourceDeclare.kind().getCode())
+            );
             if (entity == null) {
                 entity = new RbacResourceEntity();
                 entity.setCatalog(resourceDeclare.catalog());

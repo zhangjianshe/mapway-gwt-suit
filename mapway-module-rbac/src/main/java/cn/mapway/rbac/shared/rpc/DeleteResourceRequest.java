@@ -13,4 +13,5 @@ import java.io.Serializable;
 @Data
 public class DeleteResourceRequest implements Serializable, IsSerializable {
     String resourceCode;
+    Integer kind;
 }

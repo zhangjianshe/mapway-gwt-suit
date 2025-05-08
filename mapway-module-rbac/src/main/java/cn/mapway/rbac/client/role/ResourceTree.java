@@ -217,6 +217,7 @@ public class ResourceTree extends CommonEventComposite {
     public void btnDeleteClick(ClickEvent event) {
         DeleteResourceRequest request = new DeleteResourceRequest();
         request.setResourceCode(selectedResource.getResourceCode());
+        request.setKind(selectedResource.getKind());
         RbacServerProxy.get().deleteResource(request, new AsyncCallback<RpcResult<DeleteResourceResponse>>() {
             @Override
             public void onFailure(Throwable caught) {

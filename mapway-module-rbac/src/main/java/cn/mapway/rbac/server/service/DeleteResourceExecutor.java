@@ -14,6 +14,7 @@ import cn.mapway.rbac.shared.rpc.DeleteResourceRequest;
 import cn.mapway.rbac.shared.rpc.DeleteResourceResponse;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.shared.CommonConstant;
+import jdk.nashorn.internal.objects.annotations.Where;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Cnd;
 import org.nutz.json.Json;
@@ -50,7 +51,9 @@ public class DeleteResourceExecutor extends AbstractBizExecutor<DeleteResourceRe
         }
 
         assertTrue(Strings.isNotBlank(request.getResourceCode()), "Resource code is blank");
-        RbacResourceEntity resource = rbacResourceDao.fetch(request.getResourceCode());
+        Cnd and = Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", request.getResourceCode())
+                .and(RbacResourceEntity.FLD_KIND, "=", request.getKind());
+        RbacResourceEntity resource = rbacResourceDao.fetch(and);
         assertNotNull(resource, "没有该资源");
         ResourceKind kind = ResourceKind.fromCode(resource.getKind());
         assertTrue(kind == ResourceKind.RESOURCE_KIND_CUSTOM, "只能删除自定义资源点");
