@@ -1,7 +1,9 @@
 package cn.mapway.rbac.shared;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * 资源类型
@@ -47,8 +49,8 @@ public enum ResourceKind {
         return RESOURCE_KIND_CUSTOM;
     }
 
-    public static List<ResourceKind> getResourceList() {
-        List<ResourceKind> result = new ArrayList<ResourceKind>();
+    public static Set<ResourceKind> getResourceSet() {
+        Set<ResourceKind> result = new HashSet<>();
 
         for (ResourceKind kind : ResourceKind.values()) {
             if(kind.code >= RESOURCE_KIND_TOOLBOX.code){
