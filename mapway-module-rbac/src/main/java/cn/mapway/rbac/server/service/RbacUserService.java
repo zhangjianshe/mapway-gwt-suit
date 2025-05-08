@@ -1138,6 +1138,7 @@ public class RbacUserService {
         }
         RbacResourceEntity fetch = rbacResourceDao.fetch(
                 Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resource.getResourceCode())
+                        .and(RbacResourceEntity.FLD_KIND, "=", resource.getKind())
         );
         return fetch == null;
     }
@@ -1145,7 +1146,7 @@ public class RbacUserService {
 
     private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId";
 
-    private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE= "SELECT distinct res.name from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
+    private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE= "SELECT distinct res.resource_code from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
 
     /**
      * 查询用户该资源类型下所有的资源
