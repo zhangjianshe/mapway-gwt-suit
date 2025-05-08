@@ -4,6 +4,7 @@ import cn.mapway.biz.core.AbstractBizExecutor;
 import cn.mapway.biz.core.BizContext;
 import cn.mapway.biz.core.BizRequest;
 import cn.mapway.biz.core.BizResult;
+import cn.mapway.rbac.shared.RbacConstant;
 import cn.mapway.rbac.shared.RbacUserOrg;
 import cn.mapway.rbac.shared.rpc.QueryUserOrgRequest;
 import cn.mapway.rbac.shared.rpc.QueryUserOrgResponse;
@@ -33,7 +34,9 @@ public class QueryUserOrgExecutor extends AbstractBizExecutor<QueryUserOrgRespon
         QueryUserOrgRequest request = bizParam.getData();
         log.info("QueryUserOrgExecutor {}", Json.toJson(request, JsonFormat.compact()));
         IUserInfo user = (IUserInfo) context.get(CommonConstant.KEY_LOGIN_USER);
-        if(!user.getId().equals(request.getUserId())) {
+        BizResult<Boolean> assignRole = rbacUserService.isAssignRole(user, "", RbacConstant.ROLE_SYS_MAINTAINER);
+        boolean isAdmin=assignRole.isSuccess() && assignRole.getData();
+        if(!(isAdmin || user.getId().equals(request.getUserId()))) {
             return BizResult.error(500,"没有权限查询用户的组织列表");
         }
         BizResult<List<RbacUserOrg>> listBizResult = rbacUserService.userOrgList(request.getSystemCode(), request.getUserId());
