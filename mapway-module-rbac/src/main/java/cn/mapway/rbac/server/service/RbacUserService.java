@@ -1097,9 +1097,9 @@ public class RbacUserService {
      * 批量添加资源
      * @param resources
      */
-    public int addResources(List<RbacResourceEntity> resources){
+    public List<RbacResourceEntity> addResources(List<RbacResourceEntity> resources){
         if(resources == null){
-            return 0;
+            return new ArrayList<>();
         }
         List<RbacResourceEntity> result = resources.stream()
                 .filter(this::checkResource)
@@ -1107,9 +1107,9 @@ public class RbacUserService {
         if(!result.isEmpty()){
             Dao dao = rbacResourceDao.getDao();
             dao.insert(result);
-            return result.size();
+            return result;
         }
-        return 0;
+        return new ArrayList<>();
     }
 
     /**
@@ -1157,9 +1157,12 @@ public class RbacUserService {
      * @param kind
      * @return
      */
-    public BizResult<QueryRoleResourceResponse> queryResourceByKind(String userId, String systemCode, Integer kind) {
+    public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String userId, Integer kind) {
         if(kind == null){
             return BizResult.error(400, "参数错误");
+        }
+        if(StringUtils.isEmpty(userId)){
+            return BizResult.error(400, "用户ID不能为空");
         }
         // 查询用户的角色
         Sql sql = Sqls.create(SQL_TEMPLATE_QUERY_ROLE);
@@ -1186,6 +1189,24 @@ public class RbacUserService {
         return BizResult.success(queryRoleResourceResponse);
     }
 
+    public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String userId, ResourceKind kind) {
+        if(kind == null){
+            return BizResult.error(400, "参数错误");
+        }
+        return queryUserResourceByKind(userId, kind.getCode());
+    }
+
+    public BizResult<List<RbacResourceEntity>> queryResourceByKind(Integer kind) {
+        if(kind == null){
+            return BizResult.error(400, "参数错误");
+        }
+        List<RbacResourceEntity> query = rbacResourceDao.query(Cnd.where(RbacResourceEntity.FLD_KIND, "=", kind));
+        if(query == null || query.isEmpty()){
+            return BizResult.success(new ArrayList<>());
+        }
+        return BizResult.success(query);
+    }
+
     private static QueryRoleResourceResponse getQueryRoleResourceResponse(Integer kind, List<String> resourceCodes) {
         QueryRoleResourceResponse queryRoleResourceResponse = new QueryRoleResourceResponse();
         List<RbacResourceEntity> resources = new ArrayList<>();
@@ -1201,10 +1222,74 @@ public class RbacUserService {
         return queryRoleResourceResponse;
     }
 
-    public BizResult<QueryRoleResourceResponse> queryResourceByKind(String userId, String systemCode, ResourceKind kind) {
-        if(kind == null){
-            return BizResult.error(400, "参数错误");
+
+    public List<RbacResourceOperation> syncResource(List<RbacResourceEntity> newList, ResourceKind kind) {
+        if(newList == null){
+            throw new NullPointerException(" newList is null");
         }
-        return queryResourceByKind(userId, systemCode, kind.getCode());
+        if(kind == null){
+            throw new NullPointerException(" kind is null");
+        }
+        List<RbacResourceOperation> result = new ArrayList<>();
+        Map<String, RbacResourceEntity> newCache = new HashMap<>();
+        for (RbacResourceEntity resourceEntity : newList) {
+            newCache.put(resourceEntity.getResourceCode(), resourceEntity);
+        }
+        List<RbacResourceEntity> addList = new ArrayList<>();
+        List<RbacResourceEntity> removeList = new ArrayList<>();
+        List<RbacResourceEntity> updateList = new ArrayList<>();
+
+        synchronized (kind.getName()){
+            List<RbacResourceEntity> oldList = rbacResourceDao.query(Cnd.where(RbacResourceEntity.FLD_KIND, "=", kind.code));
+            if(oldList == null){
+                oldList = new ArrayList<>();
+            }
+            for (RbacResourceEntity oldEntity : oldList) {
+                String key = oldEntity.getResourceCode();
+                if(newCache.containsKey(key)){
+                    // 判断是否需要更新
+                    RbacResourceEntity newEntity = newCache.get(key);
+                    if(!oldEntity.equals(newEntity)){
+                        updateList.add(newEntity);
+                    }
+                    // 之后从map中删除
+                    newCache.remove(key);
+                } else {
+                    removeList.add(oldEntity);
+                }
+            }
+            for (String key : newCache.keySet()) {
+                addList.add(newCache.get(key));
+            }
+
+            // 更新数据库
+            // 新增
+            if(!addList.isEmpty()){
+                List<RbacResourceEntity> rbacResourceEntities = addResources(addList);
+                for (RbacResourceEntity rbacResourceEntity : rbacResourceEntities) {
+                    rbacResourceEntity.setResourceCode(null);
+                    result.add(new RbacResourceOperation(rbacResourceEntity, RbacResourceOperation.OPERATION_ADD));
+                }
+            }
+            // 删除
+            if(!removeList.isEmpty()){
+                List<String> deleteKeyList = removeList.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
+                rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
+                for (RbacResourceEntity rbacResourceEntity : removeList) {
+                    rbacResourceEntity.setResourceCode(null);
+                    result.add(new RbacResourceOperation(rbacResourceEntity, RbacResourceOperation.OPERATION_REMOVE));
+                }
+            }
+            // 更新
+            if(!updateList.isEmpty()){
+                for (RbacResourceEntity rbacResourceEntity : updateList) {
+                    rbacResourceDao.update(rbacResourceEntity);
+                    rbacResourceEntity.setResourceCode(null);
+                    result.add(new RbacResourceOperation(rbacResourceEntity, RbacResourceOperation.OPERATION_UPDATE));
+                }
+            }
+        }
+        return result;
     }
+
 }

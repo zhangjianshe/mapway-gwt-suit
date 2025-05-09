@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import org.nutz.dao.entity.annotation.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 /**
  * <b>null.rbac_resource</b>
@@ -16,7 +17,7 @@ import java.io.Serializable;
  */
 @Table(value="rbac_resource")
 @Doc("rbac_resource")
-@PK( {"resourceCode","kind"} )
+@PK( {"resourceCode"} )
   public class RbacResourceEntity implements Serializable, IsSerializable {
   /**
    * name
@@ -214,6 +215,18 @@ import java.io.Serializable;
     } else {
       return Integer.valueOf(split[1]);
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (o == null || getClass() != o.getClass()) return false;
+    RbacResourceEntity that = (RbacResourceEntity) o;
+    return Objects.equals(resourceCode, that.resourceCode)  && Objects.equals(kind, that.kind) && Objects.equals(name, that.name) && Objects.equals(data, that.data) && Objects.equals(summary, that.summary) && Objects.equals(catalog, that.catalog);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, kind, resourceCode, data, summary, catalog);
   }
 
 }
