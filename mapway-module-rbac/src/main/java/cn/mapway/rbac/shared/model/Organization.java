@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import jsinterop.annotations.JsType;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 /**
  * 组织信息
@@ -25,12 +26,12 @@ public class Organization implements Serializable, IsSerializable {
     public String userCode;
     public String userName;
     public String userIcon;
-    public Integer rank;
+    public Number rank;
     public Boolean major;//是否为主要组织机构
-    public Organization[] children;
+    public ArrayList<Organization> children;
     public String location;//地理位置 (lng,lat,zoom)
 
-    public Integer getRank()
+    public final Number getRank()
     {
         return rank;
     }
@@ -38,7 +39,7 @@ public class Organization implements Serializable, IsSerializable {
      * 复制　仅仅复制这一层　不复制子节点
      * @return
      */
-    public Organization clone(){
+    public final Organization clone(){
         Organization organization=new Organization();
         organization.orgId=orgId;
         organization.orgCode=orgCode;
@@ -58,7 +59,7 @@ public class Organization implements Serializable, IsSerializable {
         organization.rank=rank;
         organization.major=major;
         organization.location=location;
-        organization.children=new Organization[0];
+        organization.children=new ArrayList<>();
         return organization;
     }
 }

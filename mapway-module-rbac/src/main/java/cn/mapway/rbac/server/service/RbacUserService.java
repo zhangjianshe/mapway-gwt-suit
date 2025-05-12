@@ -20,9 +20,7 @@ import cn.mapway.spring.tools.UUIDTools;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.shared.CommonConstant;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
@@ -39,8 +37,6 @@ import org.springframework.stereotype.Service;
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.lang.annotation.Annotation;
-import java.sql.Connection;
-import java.sql.ResultSet;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,6 +74,8 @@ import java.util.stream.Collectors;
 public class RbacUserService {
     // global session list
 
+    private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId";
+    private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE = "SELECT distinct res.resource_code from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
     @Resource
     RbacUserDao rbacUserDao;
     @Resource
@@ -99,6 +97,21 @@ public class RbacUserService {
      */
     Map<String, Organization> organizationIdMap = new HashMap<>();
     Map<String, Organization> organizationCodeMap = new HashMap<>();
+
+    private static QueryRoleResourceResponse getQueryRoleResourceResponse(Integer kind, List<String> resourceCodes) {
+        QueryRoleResourceResponse queryRoleResourceResponse = new QueryRoleResourceResponse();
+        List<RbacResourceEntity> resources = new ArrayList<>();
+        if (resourceCodes != null && !resourceCodes.isEmpty()) {
+            for (String resourceCode : resourceCodes) {
+                RbacResourceEntity entity = new RbacResourceEntity();
+                entity.setKind(kind);
+                entity.setResourceCode(resourceCode);
+                resources.add(entity);
+            }
+        }
+        queryRoleResourceResponse.setResources(resources);
+        return queryRoleResourceResponse;
+    }
 
     public BizResult<Boolean> isAssignRole(IUserInfo userInfo, String userCode, String roleCode) {
         return isAssignRole(userInfo.getSystemCode(), userInfo.getId(), userCode, roleCode);
@@ -414,24 +427,21 @@ public class RbacUserService {
 
     /**
      * 导入角色信息
+     *
      * @param roles
      */
-    public void importRoles(List<RbacRoleEntity> roles){
-        if(Lang.isEmpty(roles))
-        {
+    public void importRoles(List<RbacRoleEntity> roles) {
+        if (Lang.isEmpty(roles)) {
             log.warn("没有传入需要更新的系统角色");
             return;
         }
-        for(RbacRoleEntity roleEntity:roles)
-        {
+        for (RbacRoleEntity roleEntity : roles) {
             RbacRoleEntity fetch = rbacRoleDao.fetch(Cnd.where(RbacRoleEntity.FLD_CODE, "=", roleEntity.getCode()));
-            if(fetch==null)
-            {
-                log.info("角色 {} 新建成功",roleEntity.getCode());
+            if (fetch == null) {
+                log.info("角色 {} 新建成功", roleEntity.getCode());
                 rbacRoleDao.insert(roleEntity);
-            }
-            else {
-                log.info("角色 {} 已存在",roleEntity.getCode());
+            } else {
+                log.info("角色 {} 已存在", roleEntity.getCode());
                 rbacRoleDao.updateIgnoreNull(roleEntity);
             }
         }
@@ -791,7 +801,7 @@ public class RbacUserService {
             return userPermissions;
         }
         String cacheKey = getCacheKey(systemCode, userId);
-        Object obj = plugin.getServerContext().getFromSession(RbacConstant.SESSION_CACHE_GROUP,cacheKey);
+        Object obj = plugin.getServerContext().getFromSession(RbacConstant.SESSION_CACHE_GROUP, cacheKey);
         if (obj instanceof UserPermissions) {
             return (UserPermissions) obj;
         }
@@ -828,7 +838,15 @@ public class RbacUserService {
                 copyChild(organization, idMap, organizationsTree);
             }
         }
-        Collections.sort(organizationsTree, Comparator.comparing(Organization::getRank));
+        Collections.sort(organizationsTree, new Comparator<Organization>() {
+            @Override
+            public int compare(Organization o1, Organization o2) {
+                if (o1.rank == null || o2.rank == null) {
+                    return 0;
+                }
+                return o1.rank.intValue() - o2.rank.intValue();
+            }
+        });
         userPermissions.organizations = organizationsTree.toArray(new Organization[0]);
         //查找所有的角色
         List<Role> roles = new ArrayList<>();
@@ -849,17 +867,18 @@ public class RbacUserService {
         }
 
         userPermissions.roles = roles.toArray(new Role[0]);
-        plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP,cacheKey, userPermissions);
+        plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP, cacheKey, userPermissions);
         return userPermissions;
     }
 
     /**
      * 清楚用户权限缓存
+     *
      * @param userInfo
      */
     public void resetUserPermissionsCache(IUserInfo userInfo) {
         String cacheKey = getCacheKey(userInfo.getSystemCode(), userInfo.getId());
-        plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP,cacheKey,null);
+        plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP, cacheKey, null);
     }
 
     private Role fromRoleEntity(RbacRoleEntity roleEntity) {
@@ -884,7 +903,7 @@ public class RbacUserService {
         Organization subRoot = idMap.get(organization.orgId);
 
         Organization targetRoot = null;
-        targetRoot = recursiveFindOrgById(organizationsTree.toArray(new Organization[0]), subRoot.orgId);
+        targetRoot = recursiveFindOrgById(organizationsTree, subRoot.orgId);
         if (targetRoot == null) {
             log.error("copyChild error");
             return;
@@ -900,7 +919,7 @@ public class RbacUserService {
         for (Organization child : subRoot.children) {
             Organization find = null;
             if (targetRoot.children == null) {
-                targetRoot.children = new Organization[0];
+                targetRoot.children = new ArrayList<>();
             }
             for (Organization organization : targetRoot.children) {
                 if (organization.orgId.equals(child.orgId)) {
@@ -910,13 +929,13 @@ public class RbacUserService {
             }
             if (find == null) {
                 find = child.clone();
-                targetRoot.children=ArrayUtils.add(targetRoot.children, find);
+                targetRoot.children.add(find);
             }
             recursiveCopyNode(find, child);
         }
     }
 
-    private Organization recursiveFindOrgById(Organization[] organizations, String orgId) {
+    private Organization recursiveFindOrgById(List<Organization> organizations, String orgId) {
         if (organizations == null) {
             return null;
         }
@@ -968,7 +987,7 @@ public class RbacUserService {
 
             for (int i = 1; i < list.size(); i++) {
                 Organization organization = list.get(i).clone();
-                root.children=ArrayUtils.add(root.children, organization);
+                root.children.add(organization);
                 root = organization;
             }
         } else {
@@ -984,15 +1003,14 @@ public class RbacUserService {
                 }
                 if (childFind == null) {
                     Organization cloned = organization.clone();
-                    root.children=ArrayUtils.add(root.children, cloned);
+                    root.children.add(cloned);
                     root = cloned;
                 } else {
-                    if(Strings.isBlank(childFind.userId))
-                    {
-                        childFind.userId=organization.userId;
-                        childFind.userName=organization.userName;
-                        childFind.userIcon=organization.userIcon;
-                        childFind.userCode=organization.userCode;
+                    if (Strings.isBlank(childFind.userId)) {
+                        childFind.userId = organization.userId;
+                        childFind.userName = organization.userName;
+                        childFind.userIcon = organization.userIcon;
+                        childFind.userCode = organization.userCode;
                     }
                     root = childFind;
                 }
@@ -1002,14 +1020,14 @@ public class RbacUserService {
 
     /**
      * 判断用户是否具有某一个角色 如果没有会出发异常 BizException,全局可以捕获该异常进行处理
+     *
      * @param user
      * @param permission
      */
     public void confirmUserPermission(IUserInfo user, String permission) {
         BizResult<Boolean> assignRole = isAssignRole(user, "", permission);
-        if(assignRole.isFailed() || !assignRole.getData())
-        {
-            throw BizException.get(503,"权限不足("+permission+")");
+        if (assignRole.isFailed() || !assignRole.getData()) {
+            throw BizException.get(503, "权限不足(" + permission + ")");
         }
     }
 
@@ -1045,18 +1063,16 @@ public class RbacUserService {
 
         //构建组织结构树
         for (Organization org : organizationCodeMap.values()) {
-            if(Strings.isBlank(org.parentId))
-            {
+            if (Strings.isBlank(org.parentId)) {
                 continue;
             }
             Organization parent = organizationIdMap.get(org.parentId);
             if (parent != null) {
-                parent.children = ArrayUtils.add(parent.children, org);
+                parent.children.add(org);
             }
         }
         return organizationIdMap;
     }
-
 
     /**
      * 转换数据结构
@@ -1077,9 +1093,9 @@ public class RbacUserService {
         organization.summary = org.getSummary();
         organization.tel = org.getTel();
         organization.parentId = org.getParentId();
-        organization.rank = org.getRank();
-        organization.children = new Organization[0];
-        organization.location=org.getLocation();
+        organization.rank = org.getRank().doubleValue();
+        organization.children = new ArrayList<>();
+        organization.location = org.getLocation();
         return organization;
     }
 
@@ -1095,16 +1111,17 @@ public class RbacUserService {
 
     /**
      * 批量添加资源
+     *
      * @param resources
      */
-    public List<RbacResourceEntity> addResources(List<RbacResourceEntity> resources){
-        if(resources == null){
+    public List<RbacResourceEntity> addResources(List<RbacResourceEntity> resources) {
+        if (resources == null) {
             return new ArrayList<>();
         }
         List<RbacResourceEntity> result = resources.stream()
                 .filter(this::checkResource)
                 .collect(Collectors.toList());
-        if(!result.isEmpty()){
+        if (!result.isEmpty()) {
             Dao dao = rbacResourceDao.getDao();
             dao.insert(result);
             return result;
@@ -1114,29 +1131,29 @@ public class RbacUserService {
 
     /**
      * 添加资源
+     *
      * @param resource
      */
-    public boolean addResource(RbacResourceEntity resource){
+    public boolean addResource(RbacResourceEntity resource) {
         boolean flag = checkResource(resource);
-        if(!flag){
+        if (!flag) {
             return false;
         }
         RbacResourceEntity insert = rbacResourceDao.insert(resource);
         return insert != null;
     }
 
-
-    private boolean checkResource(RbacResourceEntity resource){
-        if(resource == null){
+    private boolean checkResource(RbacResourceEntity resource) {
+        if (resource == null) {
             return false;
         }
-        if(StringUtils.isEmpty(resource.getResourceCode())){
+        if (StringUtils.isEmpty(resource.getResourceCode())) {
             return false;
         }
-        if(resource.getKind() == null){
+        if (resource.getKind() == null) {
             return false;
         }
-        if(StringUtils.isEmpty(resource.getName())){
+        if (StringUtils.isEmpty(resource.getName())) {
             return false;
         }
         RbacResourceEntity fetch = rbacResourceDao.fetch(
@@ -1146,11 +1163,6 @@ public class RbacUserService {
         return fetch == null;
     }
 
-
-    private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId";
-
-    private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE= "SELECT distinct res.resource_code from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
-
     /**
      * 查询用户该资源类型下所有的资源
      *
@@ -1158,10 +1170,10 @@ public class RbacUserService {
      * @return
      */
     public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String userId, Integer kind) {
-        if(kind == null){
+        if (kind == null) {
             return BizResult.error(400, "参数错误");
         }
-        if(StringUtils.isEmpty(userId)){
+        if (StringUtils.isEmpty(userId)) {
             return BizResult.error(400, "用户ID不能为空");
         }
         // 查询用户的角色
@@ -1172,7 +1184,7 @@ public class RbacUserService {
         rbacUserCodeRoleDao.getDao().execute(sql);
         List<String> roleNames = sql.getList(String.class);
 
-        if(roleNames == null || roleNames.isEmpty()){
+        if (roleNames == null || roleNames.isEmpty()) {
             return BizResult.success(new QueryRoleResourceResponse());
         }
 
@@ -1190,44 +1202,28 @@ public class RbacUserService {
     }
 
     public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String userId, ResourceKind kind) {
-        if(kind == null){
+        if (kind == null) {
             return BizResult.error(400, "参数错误");
         }
         return queryUserResourceByKind(userId, kind.getCode());
     }
 
     public BizResult<List<RbacResourceEntity>> queryResourceByKind(Integer kind) {
-        if(kind == null){
+        if (kind == null) {
             return BizResult.error(400, "参数错误");
         }
         List<RbacResourceEntity> query = rbacResourceDao.query(Cnd.where(RbacResourceEntity.FLD_KIND, "=", kind));
-        if(query == null || query.isEmpty()){
+        if (query == null || query.isEmpty()) {
             return BizResult.success(new ArrayList<>());
         }
         return BizResult.success(query);
     }
 
-    private static QueryRoleResourceResponse getQueryRoleResourceResponse(Integer kind, List<String> resourceCodes) {
-        QueryRoleResourceResponse queryRoleResourceResponse = new QueryRoleResourceResponse();
-        List<RbacResourceEntity> resources = new ArrayList<>();
-        if(resourceCodes != null && !resourceCodes.isEmpty()){
-            for (String resourceCode: resourceCodes) {
-                RbacResourceEntity entity = new RbacResourceEntity();
-                entity.setKind(kind);
-                entity.setResourceCode(resourceCode);
-                resources.add(entity);
-            }
-        }
-        queryRoleResourceResponse.setResources(resources);
-        return queryRoleResourceResponse;
-    }
-
-
     public List<RbacResourceOperation> syncResource(List<RbacResourceEntity> newList, ResourceKind kind) {
-        if(newList == null){
+        if (newList == null) {
             throw new NullPointerException(" newList is null");
         }
-        if(kind == null){
+        if (kind == null) {
             throw new NullPointerException(" kind is null");
         }
         List<RbacResourceOperation> result = new ArrayList<>();
@@ -1239,17 +1235,17 @@ public class RbacUserService {
         List<RbacResourceEntity> removeList = new ArrayList<>();
         List<RbacResourceEntity> updateList = new ArrayList<>();
 
-        synchronized (kind.getName()){
+        synchronized (kind.getName()) {
             List<RbacResourceEntity> oldList = rbacResourceDao.query(Cnd.where(RbacResourceEntity.FLD_KIND, "=", kind.code));
-            if(oldList == null){
+            if (oldList == null) {
                 oldList = new ArrayList<>();
             }
             for (RbacResourceEntity oldEntity : oldList) {
                 String key = oldEntity.getResourceCode();
-                if(newCache.containsKey(key)){
+                if (newCache.containsKey(key)) {
                     // 判断是否需要更新
                     RbacResourceEntity newEntity = newCache.get(key);
-                    if(!oldEntity.equals(newEntity)){
+                    if (!oldEntity.equals(newEntity)) {
                         updateList.add(newEntity);
                     }
                     // 之后从map中删除
@@ -1264,7 +1260,7 @@ public class RbacUserService {
 
             // 更新数据库
             // 新增
-            if(!addList.isEmpty()){
+            if (!addList.isEmpty()) {
                 List<RbacResourceEntity> rbacResourceEntities = addResources(addList);
                 for (RbacResourceEntity rbacResourceEntity : rbacResourceEntities) {
                     rbacResourceEntity.setResourceCode(null);
@@ -1272,7 +1268,7 @@ public class RbacUserService {
                 }
             }
             // 删除
-            if(!removeList.isEmpty()){
+            if (!removeList.isEmpty()) {
                 List<String> deleteKeyList = removeList.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
                 rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
                 for (RbacResourceEntity rbacResourceEntity : removeList) {
@@ -1281,7 +1277,7 @@ public class RbacUserService {
                 }
             }
             // 更新
-            if(!updateList.isEmpty()){
+            if (!updateList.isEmpty()) {
                 for (RbacResourceEntity rbacResourceEntity : updateList) {
                     rbacResourceDao.update(rbacResourceEntity);
                     rbacResourceEntity.setResourceCode(null);
