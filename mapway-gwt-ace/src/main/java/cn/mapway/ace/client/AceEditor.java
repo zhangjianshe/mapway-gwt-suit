@@ -90,7 +90,7 @@ public class AceEditor extends Composite implements RequiresResize, HasText, Tak
 		var editor = $wnd.ace.edit(this.@cn.mapway.ace.client.AceEditor::divElement);
 
 
-		editor.getSession().setUseWorker(false);
+		editor.getSession().setUseWorker(true);
 		this.@cn.mapway.ace.client.AceEditor::editor = editor;
 		
 		// Store a reference to the (Java) AceEditor object in the
@@ -604,22 +604,13 @@ public class AceEditor extends Composite implements RequiresResize, HasText, Tak
 	public String getValue() {
 		return this.getText();
 	}
-	
-	/**
-	 * Set whether or not autocomplete is enabled.
-	 * 
-	 * @param b true if autocomplete should be enabled, false if not
-	 */
-	public native void setAutocompleteEnabled(boolean b) /*-{
-		// See: https://github.com/ajaxorg/ace/wiki/How-to-enable-Autocomplete-in-the-Ace-editor
+
+
+	public native void setOptions(EditorOption option)/*-{
 		var editor = this.@cn.mapway.ace.client.AceEditor::editor;
-		if (b) {
-			$wnd.ace.require("ace/ext/language_tools");
-			editor.setOptions({ enableBasicAutocompletion: true });
-		} else {
-			editor.setOptions({ enableBasicAutocompletion: false });
-		}
+        editor.setOptions(option);
 	}-*/;
+
 	
 	
 	/**
