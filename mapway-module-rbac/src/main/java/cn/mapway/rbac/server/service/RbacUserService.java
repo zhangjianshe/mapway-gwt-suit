@@ -844,7 +844,7 @@ public class RbacUserService {
                 if (o1.rank == null || o2.rank == null) {
                     return 0;
                 }
-                return o1.rank.intValue() - o2.rank.intValue();
+                return o2.rank.intValue() - o1.rank.intValue();
             }
         });
         userPermissions.organizations = organizationsTree.toArray(new Organization[0]);
