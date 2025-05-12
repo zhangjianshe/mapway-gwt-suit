@@ -545,22 +545,33 @@ public class PgTools implements IDbSource, Closeable {
      * @param paramIndex
      */
     private void fillColumn(PreparedStatement insertStatement, ResultSet rs, ColumnMetadata column, int paramIndex) throws SQLException {
+        String columnType=column.getTypeName().toLowerCase();
+        if("geometry".equals(columnType))
+        {
+            String wkt = rs.getString(paramIndex);
+            String temp = "";
+            if (wkt != null) {
+                temp = wkt.toLowerCase();
+            }
+            if (wkt == null || temp.endsWith("empty") || temp.contains("inf")) {
+                if (Strings.isBlank(column.getGeometryType()) || column.getGeometryType().equalsIgnoreCase("geometry")) {
+                    wkt = "GEOMETRYCOLLECTION EMPTY";
+                } else {
+                    wkt = column.getGeometryType() + " EMPTY";
+                }
+            }
+            insertStatement.setString(paramIndex, wkt);
+            return;
+        }
+        Object v=rs.getObject(paramIndex);
+        if(v==null)
+        {
+            insertStatement.setObject(paramIndex,null);
+            return;
+        }
         switch (column.getTypeName().toLowerCase()) {
             case "geometry":
-                String wkt = rs.getString(paramIndex);
-                String temp = "";
-                if (wkt != null) {
-                    temp = wkt.toLowerCase();
-                }
-                if (wkt == null || temp.endsWith("empty") || temp.contains("inf")) {
-                    if (Strings.isBlank(column.getGeometryType()) || column.getGeometryType().equalsIgnoreCase("geometry")) {
-                        wkt = "GEOMETRYCOLLECTION EMPTY";
-                    } else {
-                        wkt = column.getGeometryType() + " EMPTY";
-                    }
-                }
-                insertStatement.setString(paramIndex, wkt);
-                break;
+
             case "char":
             case "varchar":
             case "text":
