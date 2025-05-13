@@ -32,6 +32,7 @@ import org.nutz.dao.util.cri.SqlValueRange;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.random.R;
+import org.nutz.trans.Trans;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -53,7 +54,13 @@ import java.util.stream.Collectors;
                 ),
                 @RoleDeclare(
                         name = "系统维护员", code = RbacConstant.ROLE_SYS_MAINTAINER, summary = "系统维护", parentCode = RbacConstant.ROLE_SYS
-                )
+                ),
+                @RoleDeclare(
+                        name = "用户组", code = RbacConstant.USER_GROUP, summary = "用户组"
+                ),
+                @RoleDeclare(
+                        name = "普通用户", code = RbacConstant.ROLE_NORMAL_USER, summary = "普通用户", parentCode = RbacConstant.USER_GROUP
+                ),
         }
 )
 @ResourceDeclares(
@@ -1109,59 +1116,7 @@ public class RbacUserService {
         plugin.getServerContext().clearSessionGroup(RbacConstant.SESSION_CACHE_GROUP);
     }
 
-    /**
-     * 批量添加资源
-     *
-     * @param resources
-     */
-    public List<RbacResourceEntity> addResources(List<RbacResourceEntity> resources) {
-        if (resources == null) {
-            return new ArrayList<>();
-        }
-        List<RbacResourceEntity> result = resources.stream()
-                .filter(this::checkResource)
-                .collect(Collectors.toList());
-        if (!result.isEmpty()) {
-            Dao dao = rbacResourceDao.getDao();
-            dao.insert(result);
-            return result;
-        }
-        return new ArrayList<>();
-    }
 
-    /**
-     * 添加资源
-     *
-     * @param resource
-     */
-    public boolean addResource(RbacResourceEntity resource) {
-        boolean flag = checkResource(resource);
-        if (!flag) {
-            return false;
-        }
-        RbacResourceEntity insert = rbacResourceDao.insert(resource);
-        return insert != null;
-    }
-
-    private boolean checkResource(RbacResourceEntity resource) {
-        if (resource == null) {
-            return false;
-        }
-        if (StringUtils.isEmpty(resource.getResourceCode())) {
-            return false;
-        }
-        if (resource.getKind() == null) {
-            return false;
-        }
-        if (StringUtils.isEmpty(resource.getName())) {
-            return false;
-        }
-        RbacResourceEntity fetch = rbacResourceDao.fetch(
-                Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resource.getResourceCode())
-                        .and(RbacResourceEntity.FLD_KIND, "=", resource.getKind())
-        );
-        return fetch == null;
-    }
 
     /**
      * 查询用户该资源类型下所有的资源
@@ -1206,86 +1161,6 @@ public class RbacUserService {
             return BizResult.error(400, "参数错误");
         }
         return queryUserResourceByKind(userId, kind.getCode());
-    }
-
-    public BizResult<List<RbacResourceEntity>> queryResourceByKind(Integer kind) {
-        if (kind == null) {
-            return BizResult.error(400, "参数错误");
-        }
-        List<RbacResourceEntity> query = rbacResourceDao.query(Cnd.where(RbacResourceEntity.FLD_KIND, "=", kind));
-        if (query == null || query.isEmpty()) {
-            return BizResult.success(new ArrayList<>());
-        }
-        return BizResult.success(query);
-    }
-
-    public List<RbacResourceOperation> syncResource(List<RbacResourceEntity> newList, ResourceKind kind) {
-        if (newList == null) {
-            throw new NullPointerException(" newList is null");
-        }
-        if (kind == null) {
-            throw new NullPointerException(" kind is null");
-        }
-        List<RbacResourceOperation> result = new ArrayList<>();
-        Map<String, RbacResourceEntity> newCache = new HashMap<>();
-        for (RbacResourceEntity resourceEntity : newList) {
-            newCache.put(resourceEntity.getResourceCode(), resourceEntity);
-        }
-        List<RbacResourceEntity> addList = new ArrayList<>();
-        List<RbacResourceEntity> removeList = new ArrayList<>();
-        List<RbacResourceEntity> updateList = new ArrayList<>();
-
-        synchronized (kind.getName()) {
-            List<RbacResourceEntity> oldList = rbacResourceDao.query(Cnd.where(RbacResourceEntity.FLD_KIND, "=", kind.code));
-            if (oldList == null) {
-                oldList = new ArrayList<>();
-            }
-            for (RbacResourceEntity oldEntity : oldList) {
-                String key = oldEntity.getResourceCode();
-                if (newCache.containsKey(key)) {
-                    // 判断是否需要更新
-                    RbacResourceEntity newEntity = newCache.get(key);
-                    if (!oldEntity.equals(newEntity)) {
-                        updateList.add(newEntity);
-                    }
-                    // 之后从map中删除
-                    newCache.remove(key);
-                } else {
-                    removeList.add(oldEntity);
-                }
-            }
-            for (String key : newCache.keySet()) {
-                addList.add(newCache.get(key));
-            }
-
-            // 更新数据库
-            // 新增
-            if (!addList.isEmpty()) {
-                List<RbacResourceEntity> rbacResourceEntities = addResources(addList);
-                for (RbacResourceEntity rbacResourceEntity : rbacResourceEntities) {
-                    rbacResourceEntity.setResourceCode(null);
-                    result.add(new RbacResourceOperation(rbacResourceEntity, RbacResourceOperation.OPERATION_ADD));
-                }
-            }
-            // 删除
-            if (!removeList.isEmpty()) {
-                List<String> deleteKeyList = removeList.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
-                rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
-                for (RbacResourceEntity rbacResourceEntity : removeList) {
-                    rbacResourceEntity.setResourceCode(null);
-                    result.add(new RbacResourceOperation(rbacResourceEntity, RbacResourceOperation.OPERATION_REMOVE));
-                }
-            }
-            // 更新
-            if (!updateList.isEmpty()) {
-                for (RbacResourceEntity rbacResourceEntity : updateList) {
-                    rbacResourceDao.update(rbacResourceEntity);
-                    rbacResourceEntity.setResourceCode(null);
-                    result.add(new RbacResourceOperation(rbacResourceEntity, RbacResourceOperation.OPERATION_UPDATE));
-                }
-            }
-        }
-        return result;
     }
 
 }
