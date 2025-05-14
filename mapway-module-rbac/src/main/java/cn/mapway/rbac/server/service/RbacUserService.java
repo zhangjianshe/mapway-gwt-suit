@@ -619,6 +619,22 @@ public class RbacUserService {
             orgEntity.setLink("https://cangling.cn");
             rbacOrgDao.insert(orgEntity);
         }
+        RbacOrgEntity orgDefaultEntity = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", RbacConstant.DEFAULT_ORG_CODE));
+        if (orgDefaultEntity == null) {
+            orgDefaultEntity = new RbacOrgEntity();
+            orgDefaultEntity.setCode(RbacConstant.DEFAULT_ORG_CODE);
+            orgDefaultEntity.setName("通用组");
+            orgDefaultEntity.setSummary("通用组,用户登陆后会默认进入通用组");
+            orgDefaultEntity.setAddress("中科院");
+            orgDefaultEntity.setIcon(Fonts.CANGLING_TEXT);
+            orgDefaultEntity.setCharger("cangling");
+            orgDefaultEntity.setEmail("admin@cangling.cn");
+            orgDefaultEntity.setId(UUIDTools.uuid());
+            orgDefaultEntity.setRank(999);//缺省该组织排在最后, 排在SYSTEM_MANAGER_ORG_CODE 之前
+            orgDefaultEntity.setLink("https://cangling.cn");
+            rbacOrgDao.insert(orgDefaultEntity);
+        }
+
         //check superUser
         RbacOrgUserEntity orgUserEntity = rbacOrgUserDao.fetch(Cnd.where(RbacOrgUserEntity.FLD_ORG_CODE, "=", RbacConstant.SYSTEM_MANAGER_ORG_CODE)
                 .and(RbacOrgUserEntity.FLD_USER_ID, "=", superUser.getId()));
@@ -1156,11 +1172,39 @@ public class RbacUserService {
         return BizResult.success(queryRoleResourceResponse);
     }
 
+
+
     public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String userId, ResourceKind kind) {
         if (kind == null) {
             return BizResult.error(400, "参数错误");
         }
         return queryUserResourceByKind(userId, kind.getCode());
+    }
+
+    public BizResult<UpdateOrgUserResponse> addOrgUser(IUserInfo user, String orgCode) {
+        if(user == null){
+            return BizResult.error(400, "用户信息不能为空");
+        }
+        if(StringUtils.isEmpty(orgCode)){
+            return BizResult.error(400, "组织代码不能为空");
+        }
+        RbacOrgEntity fetch = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", orgCode));
+        if(fetch == null){
+            return BizResult.error(400, "组织代码不存在");
+        }
+        RbacOrgUserEntity entity = new RbacOrgUserEntity();
+        entity.setUserId(user.getId());
+        entity.setUserCode(UUIDTools.uuid());
+        entity.setOrgCode(orgCode);
+        entity.setCreateTime(new Date());
+        entity.setAliasName(user.getUserName());
+        entity.setAvatar(user.getAvatar());
+        entity.setSystemCode(user.getSystemCode());
+        entity.setMajor(false);
+        rbacOrgUserDao.insert(entity);
+        UpdateOrgUserResponse updateOrgUserResponse = new UpdateOrgUserResponse();
+        updateOrgUserResponse.setOrgUser(entity);
+        return BizResult.success(updateOrgUserResponse);
     }
 
 }

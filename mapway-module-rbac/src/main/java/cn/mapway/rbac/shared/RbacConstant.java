@@ -23,6 +23,8 @@ public class RbacConstant {
     //　　系统管理组织机构
     public static final String SYSTEM_MANAGER_ORG_CODE = "RBAC_ORG_SYSTEM";
 
+    public static final String DEFAULT_ORG_CODE = "RBAC_ORG_DEFAULT";
+
     //  系统角色
     public static final String ROLE_SYS = "ROLE_SYS";
     public static final String ROLE_SYS_MAINTAINER = "ROLE_SYS_MAINTAINER";

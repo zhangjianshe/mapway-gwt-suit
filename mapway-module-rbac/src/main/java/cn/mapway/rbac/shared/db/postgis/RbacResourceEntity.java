@@ -217,6 +217,18 @@ import java.util.Objects;
     }
   }
 
+  public String parseContentByResourceCode() {
+    if (this.resourceCode == null) {
+      return null;
+    }
+    String[] split = this.resourceCode.split("!_!");
+    if (split.length != 2) {
+      return null;
+    } else {
+      return split[0];
+    }
+  }
+
   @Override
   public boolean equals(Object o) {
     if (o == null || getClass() != o.getClass()) return false;

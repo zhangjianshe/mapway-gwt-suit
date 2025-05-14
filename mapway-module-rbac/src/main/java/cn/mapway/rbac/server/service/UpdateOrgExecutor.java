@@ -13,6 +13,7 @@ import cn.mapway.spring.tools.UUIDTools;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.shared.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
+import org.nutz.dao.Cnd;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
 import org.nutz.lang.Strings;
@@ -43,12 +44,15 @@ public class UpdateOrgExecutor extends AbstractBizExecutor<UpdateOrgResponse, Up
         if(assignResource.isFailed()){
             return assignResource.asBizResult();
         }
+        // 组织代码不能重复
 
         RbacOrgEntity org = request.getOrg();
         assertNotNull(org, "没有组织机构");
         if (Strings.isBlank(org.getId())) {
             assertTrue(Strings.isNotBlank(org.getCode()), "组织机构编码不能为空");
             assertTrue(Strings.isNotBlank(org.getName()), "组织机构名称不能为空");
+            int count = rbacOrgDao.count(Cnd.where(RbacOrgEntity.FLD_CODE, "=", org.getCode()));
+            assertTrue(count == 0, "组织机构编码重复");
             org.setId(UUIDTools.uuid());
             rbacOrgDao.insert(org);
         } else {
