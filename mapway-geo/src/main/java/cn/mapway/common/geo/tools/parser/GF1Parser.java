@@ -25,8 +25,8 @@ public class GF1Parser implements ISatelliteExtractor {
         if (imageInfo == null) return false;
 
         String majorName = Files.getMajorName(fileName);
-        if (!majorName.matches("^[Gg][Ff]1[BCD]?_")) {
-            log.warn("{} is not a GF1 file", fileName);
+        if (!majorName.matches("^[Gg][Ff]")) {
+            log.warn("{} is not a GF file", fileName);
             return false;
         }
         String metaFileName = Files.getParent(fileName) + Files.getMajorName(fileName) + ".meta.xml";
@@ -58,8 +58,8 @@ public class GF1Parser implements ISatelliteExtractor {
         if (segments.length > 7) {
             imageInfo.setSatellite(segments[0]);
             imageInfo.setSensor(segments[1]);
-            imageInfo.setCaptureTime(Times.D(segments[3]));
-            imageInfo.setLevel(segments[7]);
+            imageInfo.setCaptureTime(Times.D(segments[4]));
+            imageInfo.setLevel(segments[5]);
             return true;
         }
         return false;
