@@ -127,7 +127,8 @@ import java.util.Objects;
   @ApiField("资源说明")
   @Column("summary")
   @ColDefine(
-      type = org.nutz.dao.entity.annotation.ColType.VARCHAR
+      type = org.nutz.dao.entity.annotation.ColType.VARCHAR,
+          width =1024
   )
   @Comment("资源说明")
   private String summary;
