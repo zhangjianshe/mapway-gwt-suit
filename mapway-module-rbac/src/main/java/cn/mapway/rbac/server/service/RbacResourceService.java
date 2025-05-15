@@ -125,6 +125,34 @@ public class RbacResourceService {
     }
 
 
+    public boolean updateResource(RbacResourceEntity entity) {
+        boolean checkFlag = checkRemoveResource(entity);
+        if (!checkFlag) {
+            return false;
+        }
+        rbacResourceDao.update(entity);
+        return true;
+    }
+
+    public int updateResources(List<RbacResourceEntity> resources) {
+        if (resources == null || resources.isEmpty()) {
+            return 0;
+        }
+        List<RbacResourceEntity> updateList = resources.stream()
+                .filter(this::checkRemoveResource)
+                .collect(Collectors.toList());
+        if(updateList.isEmpty()) {
+            return 0;
+        }
+        int updateCount = 0;
+        for (RbacResourceEntity resource : updateList) {
+            if(rbacResourceDao.update(resource) > 0){
+                updateCount ++;
+            }
+        }
+        return updateCount;
+    }
+
     public boolean checkRemoveResource(RbacResourceEntity resource) {
         if(resource == null){
             return false;
@@ -139,7 +167,6 @@ public class RbacResourceService {
         }
         return true;
     }
-
 
     public List<RbacResourceOperation> syncResource(List<RbacResourceEntity> newList, ResourceKind kind) {
         if (newList == null) {
