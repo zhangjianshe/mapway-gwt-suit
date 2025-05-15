@@ -138,27 +138,11 @@ public class RbacUserService {
                 .and(RbacOrgUserEntity.FLD_SYSTEM_CODE, "=", systemCode));
         List<RbacUserOrg> list = new ArrayList<>();
         for (RbacOrgUserEntity user : users) {
-            RbacOrgEntity org = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", user.getOrgCode()));
-            if (org == null) {
+            RbacUserOrg userOrg = orgUserEntity2UserOrg(user);
+            if(userOrg == null){
                 log.error("用户所属组织不存在" + user.getOrgCode());
                 continue;
             }
-            RbacUserOrg userOrg = new RbacUserOrg();
-            userOrg.systemCode = systemCode;
-            userOrg.orgId = org.getId();
-            userOrg.parentId = org.getParentId();
-            userOrg.orgName = org.getName();
-            userOrg.orgIcon = org.getIcon();
-            userOrg.summary = org.getSummary();
-            userOrg.link = org.getLink();
-            userOrg.charger = org.getCharger();
-            userOrg.email = org.getEmail();
-            userOrg.tel = org.getTel();
-            userOrg.regionCode = org.getRegionCode();
-            userOrg.userId = user.getUserId();
-            userOrg.userCode = user.getUserCode();
-            userOrg.userName = user.getAliasName();
-            userOrg.userIcon = user.getAvatar();
             list.add(userOrg);
         }
 
@@ -344,6 +328,67 @@ public class RbacUserService {
             } else {
                 return BizResult.success(false);
             }
+        }
+    }
+
+    public boolean isAssignOrg(String systemCode, String userId, String orgCode) {
+        return rbacOrgUserDao.count(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
+                .and(RbacOrgUserEntity.FLD_ORG_CODE, "=", orgCode)
+                .and(RbacOrgUserEntity.FLD_SYSTEM_CODE, "=", systemCode)) > 0;
+    }
+
+    /**
+     * 根据userid查询用户的组织人员 ，
+     * @implSpec 注意! 有可能返回空
+     * @param systemCode 系统code
+     * @param userId 用户id
+     * @param orgCode 组织code
+     * @return RbacUserOrg
+     */
+    public RbacUserOrg queryOrgUser(String systemCode, String userId, String orgCode) {
+        List<RbacOrgUserEntity> query = rbacOrgUserDao.query(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
+                .and(RbacOrgUserEntity.FLD_ORG_CODE, "=", orgCode)
+                .and(RbacOrgUserEntity.FLD_SYSTEM_CODE, "=", systemCode));
+        if (query == null || query.size() == 0) {
+            return null;
+        } else {
+            RbacOrgUserEntity user = query.get(0);
+            return orgUserEntity2UserOrg(user);
+        }
+    }
+
+    /**
+     * RbacorgUserEntity 向 RbacUserOrg 转换方法
+     *
+     * @implSpec 注意! 有可能返回空
+     * @param user RbacOrgUserEntity
+     * @return RbacUserOrg
+     */
+    private RbacUserOrg orgUserEntity2UserOrg(RbacOrgUserEntity user) {
+        if(user == null){
+            return null;
+        }
+        RbacOrgEntity org = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", user.getOrgCode()));
+        if(org == null){
+            return null;
+        } else {
+            RbacUserOrg userOrg = new RbacUserOrg();
+            userOrg.systemCode = user.getSystemCode();
+            userOrg.orgId = org.getId();
+            userOrg.parentId = org.getParentId();
+            userOrg.orgName = org.getName();
+            userOrg.orgIcon = org.getIcon();
+            userOrg.summary = org.getSummary();
+            userOrg.link = org.getLink();
+            userOrg.charger = org.getCharger();
+            userOrg.email = org.getEmail();
+            userOrg.tel = org.getTel();
+            userOrg.regionCode = org.getRegionCode();
+            userOrg.userId = user.getUserId();
+            userOrg.userCode = user.getUserCode();
+            userOrg.userName = user.getAliasName();
+            userOrg.userIcon = user.getAvatar();
+            return userOrg;
         }
     }
 
