@@ -18,7 +18,7 @@
             </g:HTMLPanel>
         </g:north>
         <g:east size="300">
-            <inspector:ObjectInspector labelWidth="80" addStyleNames="ai-border-left" vertical="true" ui:field="objectInspector"/>
+            <inspector:ObjectInspector  labelWidth="80" addStyleNames="ai-border-left" vertical="true" ui:field="objectInspector"/>
         </g:east>
         <g:center>
             <g:ScrollPanel>

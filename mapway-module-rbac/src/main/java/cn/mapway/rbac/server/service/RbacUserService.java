@@ -61,6 +61,9 @@ import java.util.stream.Collectors;
                 @RoleDeclare(
                         name = "普通用户", code = RbacConstant.ROLE_NORMAL_USER, summary = "普通用户", parentCode = RbacConstant.USER_GROUP
                 ),
+                @RoleDeclare(
+                        name = "前端", code = RbacConstant.ROLE_FRONT_END, summary = "前端"
+                ),
         }
 )
 @ResourceDeclares(
@@ -81,8 +84,9 @@ import java.util.stream.Collectors;
 public class RbacUserService {
     // global session list
 
-    private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId";
+    private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId and u.system_code = @systemCode";
     private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE = "SELECT distinct res.resource_code from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
+    private static final String SQL_TEMPLATE_QUERY_ALL_RESOURCE_CODE = "SELECT distinct res.resource_code, kind from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where r.role_code in (@roleList)";
     @Resource
     RbacUserDao rbacUserDao;
     @Resource
@@ -935,6 +939,19 @@ public class RbacUserService {
         }
 
         userPermissions.roles = roles.toArray(new Role[0]);
+        BizResult<QueryRoleResourceResponse> roleResourceResponse = queryUserResourceByKind(systemCode, userId, ResourceKind.RESOURCE_KIND_FRONT_END_COMPONENT);
+        if(roleResourceResponse.isSuccess()) {
+            QueryRoleResourceResponse data = roleResourceResponse.getData();
+            List<RbacResourceEntity> resources = data.getResources();
+            userPermissions.resources = resources.stream().map((resourceEntity) -> {
+                Res res = new Res();
+                res.resourceCode = resourceEntity.getResourceCode();
+                res.kind = resourceEntity.getKind();
+                return res;
+            }).toArray(Res[]::new);
+        } else {
+            userPermissions.resources = new Res[0];
+        }
         plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP, cacheKey, userPermissions);
         return userPermissions;
     }
@@ -1179,13 +1196,42 @@ public class RbacUserService {
 
 
 
+    private List<RbacResourceEntity> queryAllUserResource(String systemCode, String userId) {
+        if(StringUtils.isEmpty(systemCode)){
+            return new ArrayList<>();
+        }
+        if (StringUtils.isEmpty(userId)) {
+            return new ArrayList<>();
+        }
+        // 查询用户的角色
+        Sql sql = Sqls.create(SQL_TEMPLATE_QUERY_ROLE);
+        sql.params().set("userId", userId);
+        sql.params().set("systemCode", systemCode);
+        sql.setEntity(rbacRoleDao.getEntity());
+        sql.setCallback(Sqls.callback.strList());
+        rbacUserCodeRoleDao.getDao().execute(sql);
+        List<String> roleNames = sql.getList(String.class);
+        if (roleNames == null || roleNames.isEmpty()) {
+            return new ArrayList<>();
+        }
+        // 查询角色的资源
+        Sql sql1 = Sqls.create(SQL_TEMPLATE_QUERY_ALL_RESOURCE_CODE);
+        sql1.params().set("roleList", roleNames);
+        sql1.setCallback(Sqls.callback.entity());
+        rbacRoleDao.getDao().execute(sql1);
+        return sql1.getList(RbacResourceEntity.class);
+    }
+
     /**
      * 查询用户该资源类型下所有的资源
      *
      * @param kind
      * @return
      */
-    public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String userId, Integer kind) {
+    public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String systemCode, String userId, Integer kind) {
+        if(StringUtils.isEmpty(systemCode)){
+            return BizResult.error(400, "系统代码不能为空");
+        }
         if (kind == null) {
             return BizResult.error(400, "参数错误");
         }
@@ -1195,6 +1241,7 @@ public class RbacUserService {
         // 查询用户的角色
         Sql sql = Sqls.create(SQL_TEMPLATE_QUERY_ROLE);
         sql.params().set("userId", userId);
+        sql.params().set("systemCode", systemCode);
         sql.setEntity(rbacRoleDao.getEntity());
         sql.setCallback(Sqls.callback.strList());
         rbacUserCodeRoleDao.getDao().execute(sql);
@@ -1219,11 +1266,11 @@ public class RbacUserService {
 
 
 
-    public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String userId, ResourceKind kind) {
+    public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String systemCode, String userId, ResourceKind kind) {
         if (kind == null) {
             return BizResult.error(400, "参数错误");
         }
-        return queryUserResourceByKind(userId, kind.getCode());
+        return queryUserResourceByKind(systemCode, userId, kind.getCode());
     }
 
     public BizResult<UpdateOrgUserResponse> addOrgUser(IUserInfo user, String orgCode) {

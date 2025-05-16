@@ -29,4 +29,12 @@ public class UserPermissions implements Serializable, IsSerializable {
      * 每个角色下自然会有一些资源，写到这里感觉纯属多余,留着吧。
      */
     public Role[] roles;
+
+    /**
+     * 用户拥有的资源列表
+     * 这个列表是扁平化的，也就是说　用户拥有的资源是一个列表，而不是一个树状结构
+     */
+    public Res[] resources;
+
+
 }

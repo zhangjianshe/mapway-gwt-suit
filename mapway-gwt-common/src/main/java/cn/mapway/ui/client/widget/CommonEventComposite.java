@@ -30,11 +30,9 @@ import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.Random;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.dom.DomGlobal;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * CommonEventComposite
@@ -43,7 +41,7 @@ import java.util.Set;
  *
  * @author zhangjianshe@gmail.com
  */
-public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IAttributeInit, IEventHandler, IProvideSize, IAttributesProvider, IPageTip {
+public class CommonEventComposite extends RbacComposite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IAttributeInit, IEventHandler, IProvideSize, IAttributesProvider, IPageTip {
     public final static String TRUE = "true";
     private static final String ATTR_TIP = "tip";
     //外部提供一个属性提供器
@@ -55,7 +53,6 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
     String componentName = "";
     HandlerRegistration oldHandler;
     private String _id;
-
     public CommonEventComposite() {
         attributeProvider = null;
         _id = randomId();
@@ -158,7 +155,20 @@ public class CommonEventComposite extends Composite implements ISelectable, IErr
         if (handler == null) {
             return null;
         }
-        oldHandler = addHandler(handler, CommonEvent.TYPE);
+        CommonEventHandler proxy= new CommonEventHandler() {
+
+            @Override
+            public void onCommonEvent(CommonEvent event) {
+                boolean assign = isAssign(event.getType());
+                if (assign) {
+                    handler.onCommonEvent(event);
+                } else {
+                    DomGlobal.console.warn("没有权限");
+                }
+            }
+        };
+
+        oldHandler = addHandler(proxy, CommonEvent.TYPE);
         return oldHandler;
     }
 
