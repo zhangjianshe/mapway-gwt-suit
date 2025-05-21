@@ -2,7 +2,7 @@ package cn.mapway.rbac.client.org;
 
 import cn.mapway.rbac.client.RbacClient;
 import cn.mapway.rbac.client.RbacServerProxy;
-import cn.mapway.rbac.client.user.UserOrgList;
+import cn.mapway.rbac.client.user.UserOrgListPanel;
 import cn.mapway.rbac.client.user.UserRoleResourcePanel;
 import cn.mapway.rbac.shared.RbacConstant;
 import cn.mapway.rbac.shared.db.postgis.RbacOrgEntity;
@@ -50,7 +50,7 @@ public class RbacOrgFrame extends BaseAbstractModule {
     @UiField
     UserRoleResourcePanel userRoleResourcePanel;
     @UiField
-    UserOrgList userOrgList;
+    UserOrgListPanel userOrgList;
     RbacOrgAttrProvider rbacOrgAttrProvider;
 
     public RbacOrgFrame() {

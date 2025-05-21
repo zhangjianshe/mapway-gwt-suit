@@ -149,7 +149,7 @@ public class RbacUserService {
             }
             list.add(userOrg);
         }
-
+        Collections.sort(list, Comparator.comparing(RbacUserOrg::getOrgRank));
         return BizResult.success(list);
     }
 
@@ -392,6 +392,8 @@ public class RbacUserService {
             userOrg.userCode = user.getUserCode();
             userOrg.userName = user.getAliasName();
             userOrg.userIcon = user.getAvatar();
+            userOrg.major = user.getMajor();
+            userOrg.orgRank = org.getRank();
             return userOrg;
         }
     }

@@ -31,7 +31,7 @@
                         </g:north>
                         <g:center>
                             <g:ScrollPanel>
-                                <user:UserOrgList ui:field="userOrgList"/>
+                                <user:UserOrgListPanel width="100%" ui:field="userOrgList"/>
                             </g:ScrollPanel>
                         </g:center>
                     </g:DockLayoutPanel>

@@ -107,11 +107,11 @@
     padding: 0 4px;
 }
 
-.iti-default:HOVER {
+.iti-default[selectable="true"]:HOVER {
     background-color: var(--color-background-hover);
 }
 
-.iti-default[select="true"] {
+.iti-default[selectable="true"][select="true"] {
     background-color: var(--color-background-selected);
 }
 

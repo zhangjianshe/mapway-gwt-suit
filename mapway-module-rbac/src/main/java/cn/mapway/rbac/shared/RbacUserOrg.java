@@ -4,6 +4,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 
 import java.io.Serializable;
 
+
 public class RbacUserOrg implements Serializable, IsSerializable {
     public String systemCode;
     public String orgId;
@@ -20,4 +21,10 @@ public class RbacUserOrg implements Serializable, IsSerializable {
     public String userCode;
     public String userName;
     public String userIcon;
+    public Boolean major;
+    public Integer orgRank;
+    public Integer getOrgRank()
+    {
+        return orgRank;
+    }
 }

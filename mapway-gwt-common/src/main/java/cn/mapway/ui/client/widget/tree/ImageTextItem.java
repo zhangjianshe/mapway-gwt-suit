@@ -92,21 +92,40 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     boolean enabled = true;
     private String storageKey = "";
     private Object data;
+    boolean selectable=true;
     private final DoubleClickHandler itemDoubleClicked = event ->
     {
-        event.stopPropagation();
-        event.preventDefault();
-        fireEvent(CommonEvent.doubleClickEvent(getData()));
+        if(selectable) {
+            event.stopPropagation();
+            event.preventDefault();
+            fireEvent(CommonEvent.doubleClickEvent(getData()));
+        }
     };
     private final ClickHandler itemClicked = event -> {
-        int button = event.getNativeButton();
-        if (button == NativeEvent.BUTTON_LEFT) {
-            fireEvent(CommonEvent.selectEvent(getData()));
+        if(selectable) {
+            int button = event.getNativeButton();
+            if (button == NativeEvent.BUTTON_LEFT) {
+                fireEvent(CommonEvent.selectEvent(getData()));
+            }
         }
     };
 
+    /**
+     * 设置该条目是否可以背选择
+     * @param selectable
+     */
+    public void setSelectable(boolean selectable) {
+        this.selectable = selectable;
+        if(selectable){
+            root.getElement().setAttribute("selectable","true");
+        }
+        else {
+            root.getElement().removeAttribute("selectable");
+        }
+    }
     public ImageTextItem() {
         this("", "");
+        setSelectable(true);
     }
 
     public ImageTextItem(ImageResource resource, String text) {
