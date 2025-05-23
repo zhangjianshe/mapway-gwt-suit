@@ -4,6 +4,7 @@ package cn.mapway.ui.client.mvc.attribute.editor.inspector;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.AttributeValue;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
+import cn.mapway.ui.client.mvc.attribute.IAttributeGroup;
 import cn.mapway.ui.client.mvc.attribute.IAttributePropertyChangeCallback;
 import cn.mapway.ui.client.mvc.attribute.editor.IAttributeEditor;
 import cn.mapway.ui.client.mvc.attribute.editor.proxy.AttributeItemEditorProxy;
@@ -29,7 +30,7 @@ import java.util.List;
  *
  * @author zhang
  */
-public class AttributeGroup extends CommonEventComposite implements IAttributePropertyChangeCallback {
+public class AttributeGroup extends CommonEventComposite implements IAttributePropertyChangeCallback, IAttributeGroup {
     private static final AttributeGroupUiBinder ourUiBinder = GWT.create(AttributeGroupUiBinder.class);
     private final CommonEventHandler itemEditorProxyHandler = commonEvent -> fireEvent(commonEvent);
     @UiField
@@ -64,6 +65,9 @@ public class AttributeGroup extends CommonEventComposite implements IAttributePr
 
     public void setGroupName(String group) {
         lbGroupName.setText(group);
+    }
+    public String getGroupName() {
+        return lbGroupName.getText();
     }
 
     /**
@@ -199,6 +203,18 @@ public class AttributeGroup extends CommonEventComposite implements IAttributePr
         updateUI();
 
         //TODO 可以添加其他属性peroperty的变化改变
+    }
+
+    @Override
+    public void setExpand(boolean open) {
+        if (open) {
+            lbExpand.setIconUnicode(Fonts.DOWN);
+            slot.setVisible(true);
+        }
+        else {
+            lbExpand.setIconUnicode(Fonts.RIGHT);
+            slot.setVisible(false);
+        }
     }
 
 

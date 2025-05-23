@@ -75,4 +75,13 @@ public interface IAttributesProvider extends IAttributeValuesUpdator, HasAttribu
      * @return
      */
     List<String> isValidate();
+
+    /**
+     * 检查分组是否默认展开
+     * @param groupName
+     * @return
+     */
+    default boolean isGroupInitExpand(String groupName){
+        return true;
+    };
 }

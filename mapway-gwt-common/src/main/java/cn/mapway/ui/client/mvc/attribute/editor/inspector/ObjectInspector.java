@@ -181,6 +181,10 @@ public class ObjectInspector extends CommonEventComposite implements IData<IAttr
 
         for (AttributeGroup group : groups.values()) {
             group.updateUI();
+            //初始化分组的显示和隐藏
+            if(!data.isGroupInitExpand(group.getGroupName())){
+                group.setExpand(false);
+            }
         }
 
         if (data.getAttributes().size() == 0) {

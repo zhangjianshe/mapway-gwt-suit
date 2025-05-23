@@ -10,10 +10,7 @@ import com.google.gwt.event.shared.GwtEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.event.shared.SimpleEventBus;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * AbstractAttributeProvider
@@ -26,6 +23,8 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
     List<IAttribute> attributes;
     Set<IAttributeReadyCallback> callbacks;
     String title;
+    Map<String, Boolean> groupInitExpand;
+    boolean initExpand = true;
 
     public AbstractAttributesProvider() {
         this("");
@@ -36,6 +35,7 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
         eventBus = new SimpleEventBus();
         attributes = new ArrayList<IAttribute>();
         callbacks = new HashSet<>();
+        groupInitExpand = new HashMap<>();
     }
 
 
@@ -103,7 +103,7 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
             } else {
                 editCode = attribute.getEditorMetaData().getEditorCode();
             }
-            AttributeValue attributeValue=new AttributeValue();
+            AttributeValue attributeValue = new AttributeValue();
             attributeValue.setEditCode(editCode);
             attributeValue.setName(attribute.getName());
             attributeValue.setAltName(attribute.getAltName());
@@ -204,6 +204,33 @@ public abstract class AbstractAttributesProvider implements IAttributesProvider,
             }
         }
         return null;
+    }
+
+    /**
+     * 设置属性组初始化展开
+     * @param groupName
+     * @param expand
+     */
+    public void setGroupInitExpand(String groupName, boolean expand) {
+        if (groupName == null || groupName.length() == 0) {
+            groupInitExpand.clear();
+            initExpand = expand;
+        } else {
+            groupInitExpand.put(groupName, expand);
+        }
+    }
+
+    /**
+     * 判断属性组的初始化展开状态
+     * @param groupName
+     * @return
+     */
+    @Override
+    public boolean isGroupInitExpand(String groupName) {
+        if (groupName == null || groupName.length() == 0) {
+            return initExpand;
+        }
+        return groupInitExpand.getOrDefault(groupName,true);
     }
 
     @Override
