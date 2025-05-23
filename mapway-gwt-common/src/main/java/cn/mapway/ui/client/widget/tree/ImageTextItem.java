@@ -92,7 +92,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     boolean enabled = true;
     private String storageKey = "";
     private Object data;
-    boolean selectable=true;
+    boolean selectable;
     private final DoubleClickHandler itemDoubleClicked = event ->
     {
         if(selectable) {
@@ -125,7 +125,6 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     }
     public ImageTextItem() {
         this("", "");
-        setSelectable(true);
     }
 
     public ImageTextItem(ImageResource resource, String text) {
@@ -134,6 +133,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         children = new ArrayList<>();
         setValue(resource, text);
         installEvent();
+        setSelectable(true);
     }
     public ImageTextItem(Image resource, String text) {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -141,6 +141,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         children = new ArrayList<>();
         setValue(resource, text);
         installEvent();
+        setSelectable(true);
     }
 
     /**
@@ -155,6 +156,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         children = new ArrayList<>();
         setValue(fontIconUnicode, text);
         installEvent();
+        setSelectable(true);
     }
 
     private void installEvent() {
@@ -166,6 +168,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
             event.preventDefault();
         }, ContextMenuEvent.getType());
         check.addValueChangeHandler(checkHandler);
+
     }
 
     /**
