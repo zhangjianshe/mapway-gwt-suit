@@ -142,6 +142,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int SWITCH_ORG = 129;//组织切换
 
     public final static int CHANGE_CRS = 130;//设置 tif或shp的坐标系
+    public final static int SAVED = 131;//已保存事件
 
 
 
@@ -164,6 +165,12 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent savedEvent(Object data) {
+        return new CommonEvent(SAVED, data);
+    }
+    public  boolean isSaved() {
+        return SAVED==this.type;
     }
     public static CommonEvent switchOrg(Object data) {
         return new CommonEvent(SWITCH_ORG, data);
