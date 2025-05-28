@@ -16,7 +16,16 @@ public class Fonts {
         }
     }
 
-    	public final static String SHANGCHUANJIEXIQUYU = "e948";
+    	public final static String SHUAZI = "e7a7";
+	public final static String JIETU = "e7a6";
+	public final static String MEASURE = "e7a5";
+	public final static String FENXI = "e7a4";
+	public final static String HOME = "e7a3";
+	public final static String JUANLIAN = "e7a1";
+	public final static String DRAW = "e7a2";
+	public final static String LAYER = "e603";
+	public final static String LOCATION_SEARCH = "e605";
+	public final static String SHANGCHUANJIEXIQUYU = "e948";
 	public final static String JUXING = "e93d";
 	public final static String TONGYONGBIANHUA = "e942";
 	public final static String FANGWUJIANZHUQU = "e94a";
@@ -476,7 +485,16 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("SHANGCHUANJIEXIQUYU", Fonts.SHANGCHUANJIEXIQUYU);
+			unicodes.put("SHUAZI", Fonts.SHUAZI);
+	unicodes.put("JIETU", Fonts.JIETU);
+	unicodes.put("MEASURE", Fonts.MEASURE);
+	unicodes.put("FENXI", Fonts.FENXI);
+	unicodes.put("HOME", Fonts.HOME);
+	unicodes.put("JUANLIAN", Fonts.JUANLIAN);
+	unicodes.put("DRAW", Fonts.DRAW);
+	unicodes.put("LAYER", Fonts.LAYER);
+	unicodes.put("LOCATION_SEARCH", Fonts.LOCATION_SEARCH);
+	unicodes.put("SHANGCHUANJIEXIQUYU", Fonts.SHANGCHUANJIEXIQUYU);
 	unicodes.put("JUXING", Fonts.JUXING);
 	unicodes.put("TONGYONGBIANHUA", Fonts.TONGYONGBIANHUA);
 	unicodes.put("FANGWUJIANZHUQU", Fonts.FANGWUJIANZHUQU);
