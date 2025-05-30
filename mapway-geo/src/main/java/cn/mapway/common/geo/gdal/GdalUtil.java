@@ -54,7 +54,7 @@ public class GdalUtil {
             // gdal.SetConfigOption("SHAPE_RESTORE_SHX", "YES");
             gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
             gdal.SetConfigOption("SHAPE_ENCODING", "");
-            log.info("GDAL Java 工具初始化");
+            log.info("GDAL Java 工具初始化 - version {}", gdal.VersionInfo("VERSION_NUM"));
         } else {
             log.warn("本地GDAL动态链接库不存在");
         }

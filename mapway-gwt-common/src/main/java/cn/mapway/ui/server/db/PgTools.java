@@ -382,16 +382,17 @@ public class PgTools implements IDbSource, Closeable {
      * 从数据源中恢复数据
      *
      * @param dbSource
-     * @param tableMetadata
+     * @param sourceMetadata 原表元数据
+     * @param targetMetadata 目标表元数据
      * @param handler
      * @throws SQLException
      */
-    public void restore(IDbSource dbSource, TableMetadata tableMetadata, IProgressHandler handler) throws SQLException {
-        String pgTableName = tableMetadata.getSchema() + "." + tableMetadata.getTableName();
-        List<ColumnMetadata> columns = tableMetadata.getColumns();
+    public void restore(IDbSource dbSource, TableMetadata sourceMetadata,TableMetadata targetMetadata, IProgressHandler handler) throws SQLException {
+        String pgTableName = targetMetadata.getSchema() + "." + targetMetadata.getTableName();
+        List<ColumnMetadata> columns = targetMetadata.getColumns();
 
         //需不需要创建表
-        createTable(tableMetadata, false);
+        createTable(targetMetadata, false);
 
         //插入记录对应的SQL statement
         StringBuilder insertSql = new StringBuilder("INSERT INTO ").append(pgTableName).append(" (");
@@ -422,7 +423,7 @@ public class PgTools implements IDbSource, Closeable {
         try (
                 PreparedStatement insertStatement = connection.prepareStatement(insertSql.toString())
         ) {
-            dbSource.eachRow(tableMetadata, new Each<ResultSet>() {
+            dbSource.eachRow(sourceMetadata, new Each<ResultSet>() {
                 @Override
                 public void invoke(int index, ResultSet rs, int length) throws ExitLoop, ContinueLoop, LoopException {
                     try {
@@ -448,7 +449,7 @@ public class PgTools implements IDbSource, Closeable {
 
                         e.printStackTrace();
                         try {
-                            System.out.println("ERROR" + tableMetadata.getTableName() + " " + e.getMessage() + Strings.safeToString(rs.getObject(1), ""));
+                            System.out.println("ERROR" + sourceMetadata.getTableName() + " " + e.getMessage() + Strings.safeToString(rs.getObject(1), ""));
                         } catch (SQLException ex) {
                         }
                         insertStatement.toString();
@@ -465,10 +466,10 @@ public class PgTools implements IDbSource, Closeable {
         connection.commit();
 
         // update table index
-        updateTableIndex(tableMetadata);
+        updateTableIndex(targetMetadata);
 
         // update sequence value
-        updateSequenceValue(tableMetadata);
+        updateSequenceValue(targetMetadata);
     }
 
     /**
