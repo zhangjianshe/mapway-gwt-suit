@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String ORG_INFO = "e7a8";
+    	public final static String PRODUCT_CHART = "e7aa";
+	public final static String ORG_INFO = "e7a8";
 	public final static String ORG_TREE = "e7a9";
 	public final static String SHUAZI = "e7a7";
 	public final static String JIETU = "e7a6";
@@ -487,7 +488,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("ORG_INFO", Fonts.ORG_INFO);
+			unicodes.put("PRODUCT_CHART", Fonts.PRODUCT_CHART);
+	unicodes.put("ORG_INFO", Fonts.ORG_INFO);
 	unicodes.put("ORG_TREE", Fonts.ORG_TREE);
 	unicodes.put("SHUAZI", Fonts.SHUAZI);
 	unicodes.put("JIETU", Fonts.JIETU);
