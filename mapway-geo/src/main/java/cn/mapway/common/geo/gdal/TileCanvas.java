@@ -73,6 +73,14 @@ public class TileCanvas {
         return p;
     }
 
+    /**
+     *
+     * @param colorRgba rgba(255,0,0,0.2)
+     * @return
+     */
+    Color colorFromRgba(String colorRgba) {
+       return Colors.as(colorRgba);
+    }
     Color colorFromString(double opacity, String color) {
 
         //color #RRGGBB  转换为 #AARRGGBB
@@ -102,8 +110,8 @@ public class TileCanvas {
 
         FillStyle fillStyle = styleLayer.fillStyle;
         BorderStyle borderStyle = styleLayer.borderStyle;
-        Color fillColor = colorFromString(fillStyle.opacity, fillStyle.color);
-        Color borderColor = colorFromString(borderStyle.opacity, borderStyle.color);
+        Color fillColor = colorFromRgba( fillStyle.color);
+        Color borderColor = colorFromRgba( borderStyle.color);
         Stroke stroke = null;
         if (borderStyle.width > 0) {
             stroke = new BasicStroke(borderStyle.width);
@@ -120,10 +128,8 @@ public class TileCanvas {
             if (lines.getCount() == 1) {
                 Polygon polygon = toPolygon(lines.getLine(0));
                 //先填充
-                if (fillStyle.opacity > 0) {
-                    graphics.setColor(fillColor);
-                    graphics.fillPolygon(polygon);
-                }
+                graphics.setColor(fillColor);
+                graphics.fillPolygon(polygon);
                 //再画边框
                 if (borderStyle.width > 0) {
                     graphics.setColor(borderColor);
@@ -145,10 +151,8 @@ public class TileCanvas {
                         }
                     }
                     //先填充
-                    if (fillStyle.opacity > 0) {
-                        graphics.setColor(fillColor);
-                        graphics.fill(geoobj);
-                    }
+                    graphics.setColor(fillColor);
+                    graphics.fill(geoobj);
                     //再画边框
                     if (borderStyle.width > 0) {
                         graphics.setColor(borderColor);
