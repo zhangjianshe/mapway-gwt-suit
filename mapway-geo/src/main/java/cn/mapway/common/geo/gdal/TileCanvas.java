@@ -107,7 +107,6 @@ public class TileCanvas {
             styleLayer = mapStyle.styles[0];
         }
 
-
         FillStyle fillStyle = styleLayer.fillStyle;
         BorderStyle borderStyle = styleLayer.borderStyle;
         Color fillColor = colorFromRgba( fillStyle.color);
