@@ -8,6 +8,7 @@ import org.nutz.lang.*;
 import org.nutz.lang.util.Regex;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,6 +21,10 @@ import java.util.stream.Collectors;
 
 /**
  * Pg数据库工具
+ * --------------------------
+ * 该工具可以将一数据库表的元数据和数据导出到一个SQLITE中
+ * 也可以从Sqlite中恢复表
+ * SQLite文件包含了数据表的定义和数据
  */
 @Slf4j
 public class PgTools implements IDbSource, Closeable {
@@ -30,6 +35,61 @@ public class PgTools implements IDbSource, Closeable {
         this.connection = connection;
         this.db = db;
     }
+
+
+    /**
+     * 备份一张表到sqlite中
+     * @param tableName
+     * @param sqliteFile
+     * @throws Exception
+     */
+    public void backupToSqlite(String schema,String tableName,String sqliteFile,IProgressHandler handler) throws Exception {
+
+        File file = new File(sqliteFile);
+        if(file.exists())
+        {
+            file.delete();
+        }
+        if(!isTableExist(schema,tableName)) {
+            throw new RuntimeException("表不存在");
+        }
+        SqliteTools sqliteTools = SqliteTools.create(sqliteFile);
+        TableMetadata tableMetadata = fetchTableMetadata(schema, tableName);
+        sqliteTools.createMetaTable(tableMetadata);
+
+        sqliteTools.createTable(tableMetadata, true);
+        sqliteTools.restore(this,tableMetadata,handler);
+        sqliteTools.close();
+    }
+
+    /**
+     * 从sqlite中恢复一张表
+     * @param schema
+     * @param tableName
+     * @param sqliteFile
+     * @param handler
+     * @throws Exception
+     */
+    public void restoreFromSqlite(String schema,String tableName,String sqliteFile, IProgressHandler handler) throws Exception {
+        File file = new File(sqliteFile);
+        if(!file.exists())
+        {
+            throw new RuntimeException("文件不存在"+sqliteFile);
+        }
+        SqliteTools sqliteTools = SqliteTools.create(sqliteFile);
+        TableMetadata tableMetadata = sqliteTools.readMetaData();
+        if(tableMetadata == null)
+        {
+            throw new RuntimeException("文件"+sqliteFile+"不是一个合法的数据表备份文件");
+        }
+        sqliteTools.close();
+        if(!sqliteTools.isTableExist(tableMetadata.getTableName()))
+        {
+            throw new RuntimeException("文件"+sqliteFile+"不是一个合法的数据表备份文件,数据表不存在");
+        }
+        restore(sqliteTools,tableMetadata,tableMetadata,handler);
+    }
+
 
     public static PgTools create(String host, String port, String db, String userName, String password) throws SQLException {
         String url = "jdbc:postgresql://" + host + ":" + port + "/" + db + "?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai";
@@ -74,9 +134,8 @@ public class PgTools implements IDbSource, Closeable {
      * @return 表的元数据
      * @throws SQLException
      */
-    public TableMetadata fetchTableMetadata(String sourceTableName) throws SQLException {
+    public TableMetadata fetchTableMetadata(String schema,String sourceTableName) throws SQLException {
         // Parse schema and table name
-        String schema = "public";
         String[] tableParts = sourceTableName.split("\\.");
         if (tableParts.length == 2) {
             schema = tableParts[0];

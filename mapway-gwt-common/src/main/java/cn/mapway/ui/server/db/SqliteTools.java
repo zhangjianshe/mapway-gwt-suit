@@ -3,6 +3,8 @@ package cn.mapway.ui.server.db;
 import cn.mapway.ui.shared.db.ColumnMetadata;
 import cn.mapway.ui.shared.db.TableMetadata;
 import lombok.extern.slf4j.Slf4j;
+import org.nutz.dao.util.Daos;
+import org.nutz.json.Json;
 import org.nutz.lang.ContinueLoop;
 import org.nutz.lang.Each;
 import org.nutz.lang.ExitLoop;
@@ -27,11 +29,51 @@ public class SqliteTools implements IDbSource , Closeable {
         this.connection = connection;
     }
 
+
+
     public static SqliteTools create(String dbPath) throws SQLException {
         String url = "jdbc:sqlite:" + dbPath;
         Connection connection = DriverManager.getConnection(url);
         return new SqliteTools(connection);
     }
+    
+
+    public TableMetadata readMetaData()
+    {
+        String sql = "SELECT * FROM backup_meta where id=0";
+        TableMetadata metadata = null;
+        try (Statement stmt = connection.createStatement()){
+            ResultSet rs = stmt.executeQuery(sql);
+            if (rs.next()) {
+                String body = rs.getString("body");
+                metadata = Json.fromJson(TableMetadata.class, body);
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to read meta data", e);
+        }
+        return metadata;
+    }
+
+    public void createMetaTable(TableMetadata metadata)
+    {
+        String sql = "CREATE TABLE IF NOT EXISTS backup_meta (id INTEGER PRIMARY KEY, body TEXT)";
+        try (Statement stmt = connection.createStatement()){
+            stmt.execute(sql);
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to create meta table", e);
+        }
+
+        String insertSql = "INSERT INTO backup_meta (id, body) VALUES (?, ?)";
+        try (PreparedStatement stmt = connection.prepareStatement(insertSql)){
+            stmt.setInt(1, 0);
+            stmt.setString(2, Json.toJson(metadata));
+            stmt.execute();
+        } catch (SQLException e) {
+            throw new RuntimeException("Failed to insert meta data", e);
+        }
+    }
+
+
 
     public List<String> listTable(String schema) {
         List<String> list = new ArrayList<>();
