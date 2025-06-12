@@ -82,7 +82,7 @@ public class PgTools implements IDbSource, Closeable {
         {
             throw new RuntimeException("文件"+sqliteFile+"不是一个合法的数据表备份文件");
         }
-        sqliteTools.close();
+
         if(!sqliteTools.isTableExist(tableMetadata.getTableName()))
         {
             throw new RuntimeException("文件"+sqliteFile+"不是一个合法的数据表备份文件,数据表不存在");
@@ -671,16 +671,30 @@ public class PgTools implements IDbSource, Closeable {
             case "double precision":
             case "numeric":
             case "decimal":
-                double rsDouble = rs.getDouble(paramIndex);
+                Double rsDouble = rs.getDouble(paramIndex);
                 if(     rsDouble == Double.NaN
                         || rsDouble == Double.NEGATIVE_INFINITY
                         || rsDouble == Double.POSITIVE_INFINITY
-                        || rsDouble<=1.7976931348623157E308
+                        || rsDouble<=-1.7976931348623157E308
                         || rsDouble>=1.7976931348623157E308){
                     insertStatement.setDouble(paramIndex,0);
                     break;
                 }
-                insertStatement.setDouble(paramIndex, rsDouble);
+                if(column.getScale()==0)
+                {
+
+
+                    if(column.getPrecision()<=10)
+                    {
+                        insertStatement.setInt(paramIndex,  rsDouble.intValue());
+                    }
+                    else {
+                        insertStatement.setLong(paramIndex, rsDouble.longValue());
+                    }
+                }
+                else {
+                    insertStatement.setDouble(paramIndex, rsDouble);
+                }
                 break;
             case "bytea":
                 insertStatement.setBytes(paramIndex, rs.getBytes(paramIndex));
@@ -854,7 +868,7 @@ public class PgTools implements IDbSource, Closeable {
         // Add sequence definitions (if applicable)
         for (ColumnMetadata column : columns) {
             if (column.getSeqName() != null) {
-                sql.append("\nCREATE SEQUENCE ").append(quotedSchemaName).append(".\"").append(column.getSeqName()).append("\"")
+                sql.append("\nCREATE SEQUENCE IF NOT EXISTS ").append(quotedSchemaName).append(".\"").append(column.getSeqName()).append("\"")
                         .append(" START WITH ").append(column.getSeqValue() != null ? column.getSeqValue() : 1).append(";");
             }
         }
@@ -900,7 +914,7 @@ public class PgTools implements IDbSource, Closeable {
         // Add table comment
         String tableComment = tableMetadata.getComment() != null && !tableMetadata.getComment().trim().isEmpty()
                 ? tableMetadata.getComment()
-                : "Table generated on " + new java.util.Date();
+                : "";
         sql.append("\n\nCOMMENT ON TABLE ").append(tableFullName)
                 .append(" IS '").append(tableComment.replace("'", "''")).append("';");
 
@@ -989,8 +1003,19 @@ public class PgTools implements IDbSource, Closeable {
                     break;
                 case "numeric":
                 case "decimal":
-                    sqlType.append("NUMERIC")
-                            .append(precision > 0 ? "(" + precision + "," + scale + ")" : "(10,2)");
+                    if(scale==0)
+                    {
+                        if(precision<=10) {
+                            sqlType.append("INTEGER");
+                        }
+                        else {
+                            sqlType.append("BIGINT");
+                        }
+                    }
+                    else {
+                        sqlType.append("NUMERIC")
+                                .append(precision > 0 ? "(" + precision + "," + scale + ")" : "(10,2)");
+                    }
                     break;
                 case "date":
                     sqlType.append("DATE");

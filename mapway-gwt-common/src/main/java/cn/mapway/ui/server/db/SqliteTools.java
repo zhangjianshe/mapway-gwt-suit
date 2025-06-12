@@ -36,7 +36,7 @@ public class SqliteTools implements IDbSource , Closeable {
         Connection connection = DriverManager.getConnection(url);
         return new SqliteTools(connection);
     }
-    
+
 
     public TableMetadata readMetaData()
     {
@@ -263,6 +263,7 @@ public class SqliteTools implements IDbSource , Closeable {
             ResultSet tables = metaData.getTables(null, "", tableName, null);
             return tables.next();
         } catch (SQLException e) {
+            e.printStackTrace();
             throw new RuntimeException("Failed to check table existence", e);
         }
     }
