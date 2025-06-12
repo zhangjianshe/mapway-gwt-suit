@@ -542,7 +542,7 @@ public class PgTools implements IDbSource, Closeable {
             {
                 try {
                     //如果序列不存在 则创建，否则更新
-                    String createSeqSql = "CREATE SEQUENCE IF NOT EXISTS \"" + tableMetadata.getSchema() + "." + column.getSeqName() + "\" INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;";
+                    String createSeqSql = "CREATE SEQUENCE IF NOT EXISTS \"" + tableMetadata.getSchema() + "\".\"" + column.getSeqName() + "\" INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;";
                     log.info("CREATE SEQUENCE {}", createSeqSql);
                     PreparedStatement createSeqStatement = connection.prepareStatement(createSeqSql);
                     // Use execute() instead of executeUpdate()
@@ -558,7 +558,7 @@ public class PgTools implements IDbSource, Closeable {
 
                     // SELECT setval('"public"."biz_task_id"', 123, false);
 
-                    String updateSeqSql = "SELECT setval('" + tableMetadata.getSchema() + "." + column.getSeqName() + "', " + (column.getSeqValue()+1) + ", false); ";
+                    String updateSeqSql = "SELECT setval('\"" + tableMetadata.getSchema() + "\".\"" + column.getSeqName() + "\"', " + (column.getSeqValue()+1) + ", false); ";
                     log.info("UPDATE SEQUENCE {}", updateSeqSql);
                     PreparedStatement updateSeqStatement = connection.prepareStatement(updateSeqSql);
                     // Use execute() instead of executeUpdate()
@@ -575,7 +575,7 @@ public class PgTools implements IDbSource, Closeable {
                     // alter table's field's defaultValue
                     String alterSeqSql = "ALTER TABLE \"" + tableMetadata.getSchema() + "\".\"" + tableMetadata.getTableName()
                             + "\" ALTER COLUMN \"" + column.getColumnName()
-                            + "\" SET DEFAULT nextval('" + tableMetadata.getSchema() + "." + column.getSeqName() + "'::regclass);";
+                            + "\" SET DEFAULT nextval('\"" + tableMetadata.getSchema() + "\".\"" + column.getSeqName() + "\"');";
 
                     log.info("ALTER SEQUENCE {}", alterSeqSql);
                     PreparedStatement alterSeqStatement = connection.prepareStatement(alterSeqSql);
