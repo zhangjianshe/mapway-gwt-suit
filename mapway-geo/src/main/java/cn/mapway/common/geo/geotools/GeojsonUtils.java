@@ -2,6 +2,7 @@ package cn.mapway.common.geo.geotools;
 
 import org.apache.commons.io.FileUtils;
 import org.geotools.data.collection.ListFeatureCollection;
+import org.geotools.data.simple.SimpleFeatureSource;
 import org.geotools.feature.FeatureCollection;
 import org.geotools.feature.FeatureIterator;
 import org.geotools.geojson.feature.FeatureJSON;
@@ -154,7 +155,8 @@ public class GeojsonUtils {
             gjson.write((Geometry) obj, output);
         } else if (obj instanceof Feature
                 || obj instanceof FeatureCollection
-                || obj instanceof CoordinateReferenceSystem) {
+                || obj instanceof CoordinateReferenceSystem
+                || obj instanceof SimpleFeatureSource) {
 
             if (obj instanceof SimpleFeature) {
                 fjson.writeFeature((SimpleFeature) obj, output);

@@ -500,9 +500,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         if (b) {
             root.getElement().removeAttribute(UIConstants.DISABLED);
             lbText.getElement().removeAttribute(UIConstants.DISABLED);
+            root.getElement().removeClassName(style.disabledDiv());
+            lbText.getElement().removeClassName(style.disabledDiv());
         } else {
             root.getElement().setAttribute(UIConstants.DISABLED, "true");
             lbText.getElement().setAttribute(UIConstants.DISABLED, "true");
+            root.getElement().addClassName(style.disabledDiv());
+            lbText.getElement().addClassName(style.disabledDiv());
         }
     }
 
@@ -738,6 +742,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         String ic();
 
         String barAnimation();
+
+        String disabledDiv();
     }
 
     interface ImageTextItemUiBinder extends UiBinder<VerticalPanel, ImageTextItem> {

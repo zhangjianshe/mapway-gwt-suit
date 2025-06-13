@@ -1,14 +1,20 @@
 package cn.mapway.ui.client.widget;
 
 import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
+import cn.mapway.ui.shared.HasCommonHandlers;
+import com.google.gwt.event.shared.GwtEvent;
+import com.google.gwt.event.shared.HandlerRegistration;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.DomGlobal;
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class RbacComposite extends Composite implements ICheckRole {
+public class RbacComposite extends Widget implements ICheckRole, HasCommonHandlers {
 
     protected Map<Integer,String> roleRules = new HashMap<>();
 
@@ -42,11 +48,12 @@ public class RbacComposite extends Composite implements ICheckRole {
         } else {
             DomGlobal.console.warn("rule syntax error",role,": <id>:<role>");
         }
-
+        fireEvent(CommonEvent.rbacPermissionChangeEvent(null));
     }
 
     public void setAllRole(String role) {
         roleRules.put(ALL_TYPE,role);
+        fireEvent(CommonEvent.rbacPermissionChangeEvent(null));
     }
 
     public void setResource(String resource) {
@@ -73,10 +80,12 @@ public class RbacComposite extends Composite implements ICheckRole {
         } else {
             DomGlobal.console.warn("rule syntax error",resource,": <id>:<resource>");
         }
+        fireEvent(CommonEvent.rbacPermissionChangeEvent(null));
     }
 
     public void setAllResource(String resource) {
         resourceRules.put(ALL_TYPE,resource);
+        fireEvent(CommonEvent.rbacPermissionChangeEvent(null));
     }
 
 
@@ -111,6 +120,11 @@ public class RbacComposite extends Composite implements ICheckRole {
             }
         }
         return false;
+    }
+
+    @Override
+    public HandlerRegistration addCommonHandler(CommonEventHandler handler) {
+        return addHandler(handler, CommonEvent.TYPE);
     }
 
 }

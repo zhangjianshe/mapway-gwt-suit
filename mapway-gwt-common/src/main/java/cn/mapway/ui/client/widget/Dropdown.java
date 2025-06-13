@@ -172,6 +172,16 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         return item;
     }
 
+    public ImageTextItem addItem(String iconFontUnicode, String name, Object value, boolean enabled) {
+        ImageTextItem item = new ImageTextItem(iconFontUnicode, name);
+        item.setStyleName("dropdown-item");
+        item.setData(value);
+        item.addCommonHandler(itemClicked);
+        item.setEnabled(enabled);
+        upPanel.add(item);
+        return item;
+    }
+
     public void clear() {
         upPanel.clear();
         content.setText("");

@@ -41,7 +41,7 @@ import java.util.*;
  *
  * @author zhangjianshe@gmail.com
  */
-public class CommonEventComposite extends RbacComposite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IAttributeInit, IEventHandler, IProvideSize, IAttributesProvider, IPageTip {
+public class CommonEventComposite extends Composite implements ISelectable, IErrorMessage, IEnabled, HasCommonHandlers, Id, IAttributeInit, IEventHandler, IProvideSize, IAttributesProvider, IPageTip {
     public final static String TRUE = "true";
     private static final String ATTR_TIP = "tip";
     //外部提供一个属性提供器
@@ -53,10 +53,12 @@ public class CommonEventComposite extends RbacComposite implements ISelectable, 
     String componentName = "";
     HandlerRegistration oldHandler;
     private String _id;
+    RbacComposite rbacComposite = null;
     public CommonEventComposite() {
         attributeProvider = null;
         _id = randomId();
         callbacks = new HashSet<>();
+        rbacComposite = new RbacComposite();
     }
 
     public static void setElementSelect(com.google.gwt.dom.client.Element element, boolean select) {
@@ -490,4 +492,37 @@ public class CommonEventComposite extends RbacComposite implements ISelectable, 
         }
         fireMessage(MessageObject.info(0, message));
     }
+
+
+    /**
+     * 将RbacComposite 变为组合式的组件
+     * start
+     */
+    public void setRole(String role) {
+        rbacComposite.setRole(role);
+    }
+
+    public void setResource(String resource) {
+        rbacComposite.setResource(resource);
+    }
+
+    public void setAllRole(String role) {
+        rbacComposite.setAllRole(role);
+    }
+
+    public void setAllResource(String resource) {
+        rbacComposite.setAllResource(resource);
+    }
+
+    public static void setUserRoleProvider(IUserRoleProvider provider) {
+        RbacComposite.setUserRoleProvider(provider);
+    }
+
+    public boolean isAssign(int type) {
+        return rbacComposite.isAssign(type);
+    }
+    /**
+     * 将RbacComposite 变为组合式的组件
+     * end
+     */
 }
