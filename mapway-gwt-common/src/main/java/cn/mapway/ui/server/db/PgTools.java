@@ -8,6 +8,7 @@ import org.nutz.lang.*;
 import org.nutz.lang.util.Regex;
 
 import java.io.Closeable;
+import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.ArrayList;
@@ -20,6 +21,10 @@ import java.util.stream.Collectors;
 
 /**
  * Pg数据库工具
+ * --------------------------
+ * 该工具可以将一数据库表的元数据和数据导出到一个SQLITE中
+ * 也可以从Sqlite中恢复表
+ * SQLite文件包含了数据表的定义和数据
  */
 @Slf4j
 public class PgTools implements IDbSource, Closeable {
@@ -30,6 +35,61 @@ public class PgTools implements IDbSource, Closeable {
         this.connection = connection;
         this.db = db;
     }
+
+
+    /**
+     * 备份一张表到sqlite中
+     * @param tableName
+     * @param sqliteFile
+     * @throws Exception
+     */
+    public void backupToSqlite(String schema,String tableName,String sqliteFile,IProgressHandler handler) throws Exception {
+
+        File file = new File(sqliteFile);
+        if(file.exists())
+        {
+            file.delete();
+        }
+        if(!isTableExist(schema,tableName)) {
+            throw new RuntimeException("表不存在");
+        }
+        SqliteTools sqliteTools = SqliteTools.create(sqliteFile);
+        TableMetadata tableMetadata = fetchTableMetadata(schema, tableName);
+        sqliteTools.createMetaTable(tableMetadata);
+
+        sqliteTools.createTable(tableMetadata, true);
+        sqliteTools.restore(this,tableMetadata,handler);
+        sqliteTools.close();
+    }
+
+    /**
+     * 从sqlite中恢复一张表
+     * @param schema
+     * @param tableName
+     * @param sqliteFile
+     * @param handler
+     * @throws Exception
+     */
+    public void restoreFromSqlite(String schema,String tableName,String sqliteFile, IProgressHandler handler) throws Exception {
+        File file = new File(sqliteFile);
+        if(!file.exists())
+        {
+            throw new RuntimeException("文件不存在"+sqliteFile);
+        }
+        SqliteTools sqliteTools = SqliteTools.create(sqliteFile);
+        TableMetadata tableMetadata = sqliteTools.readMetaData();
+        if(tableMetadata == null)
+        {
+            throw new RuntimeException("文件"+sqliteFile+"不是一个合法的数据表备份文件");
+        }
+
+        if(!sqliteTools.isTableExist(tableMetadata.getTableName()))
+        {
+            throw new RuntimeException("文件"+sqliteFile+"不是一个合法的数据表备份文件,数据表不存在");
+        }
+        restore(sqliteTools,tableMetadata,tableMetadata,handler);
+    }
+
 
     public static PgTools create(String host, String port, String db, String userName, String password) throws SQLException {
         String url = "jdbc:postgresql://" + host + ":" + port + "/" + db + "?useUnicode=true&characterEncoding=utf8&zeroDateTimeBehavior=convertToNull&useSSL=false&serverTimezone=Asia/Shanghai";
@@ -74,9 +134,8 @@ public class PgTools implements IDbSource, Closeable {
      * @return 表的元数据
      * @throws SQLException
      */
-    public TableMetadata fetchTableMetadata(String sourceTableName) throws SQLException {
+    public TableMetadata fetchTableMetadata(String schema,String sourceTableName) throws SQLException {
         // Parse schema and table name
-        String schema = "public";
         String[] tableParts = sourceTableName.split("\\.");
         if (tableParts.length == 2) {
             schema = tableParts[0];
@@ -483,7 +542,7 @@ public class PgTools implements IDbSource, Closeable {
             {
                 try {
                     //如果序列不存在 则创建，否则更新
-                    String createSeqSql = "CREATE SEQUENCE IF NOT EXISTS \"" + tableMetadata.getSchema() + "." + column.getSeqName() + "\" INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;";
+                    String createSeqSql = "CREATE SEQUENCE IF NOT EXISTS \"" + tableMetadata.getSchema() + "\".\"" + column.getSeqName() + "\" INCREMENT 1 MINVALUE 1 MAXVALUE 9223372036854775807 CACHE 1;";
                     log.info("CREATE SEQUENCE {}", createSeqSql);
                     PreparedStatement createSeqStatement = connection.prepareStatement(createSeqSql);
                     // Use execute() instead of executeUpdate()
@@ -499,7 +558,7 @@ public class PgTools implements IDbSource, Closeable {
 
                     // SELECT setval('"public"."biz_task_id"', 123, false);
 
-                    String updateSeqSql = "SELECT setval('" + tableMetadata.getSchema() + "." + column.getSeqName() + "', " + (column.getSeqValue()+1) + ", false); ";
+                    String updateSeqSql = "SELECT setval('\"" + tableMetadata.getSchema() + "\".\"" + column.getSeqName() + "\"', " + (column.getSeqValue()+1) + ", false); ";
                     log.info("UPDATE SEQUENCE {}", updateSeqSql);
                     PreparedStatement updateSeqStatement = connection.prepareStatement(updateSeqSql);
                     // Use execute() instead of executeUpdate()
@@ -516,7 +575,7 @@ public class PgTools implements IDbSource, Closeable {
                     // alter table's field's defaultValue
                     String alterSeqSql = "ALTER TABLE \"" + tableMetadata.getSchema() + "\".\"" + tableMetadata.getTableName()
                             + "\" ALTER COLUMN \"" + column.getColumnName()
-                            + "\" SET DEFAULT nextval('" + tableMetadata.getSchema() + "." + column.getSeqName() + "'::regclass);";
+                            + "\" SET DEFAULT nextval('\"" + tableMetadata.getSchema() + "\".\"" + column.getSeqName() + "\"');";
 
                     log.info("ALTER SEQUENCE {}", alterSeqSql);
                     PreparedStatement alterSeqStatement = connection.prepareStatement(alterSeqSql);
@@ -612,16 +671,30 @@ public class PgTools implements IDbSource, Closeable {
             case "double precision":
             case "numeric":
             case "decimal":
-                double rsDouble = rs.getDouble(paramIndex);
+                Double rsDouble = rs.getDouble(paramIndex);
                 if(     rsDouble == Double.NaN
                         || rsDouble == Double.NEGATIVE_INFINITY
                         || rsDouble == Double.POSITIVE_INFINITY
-                        || rsDouble<=1.7976931348623157E308
+                        || rsDouble<=-1.7976931348623157E308
                         || rsDouble>=1.7976931348623157E308){
                     insertStatement.setDouble(paramIndex,0);
                     break;
                 }
-                insertStatement.setDouble(paramIndex, rsDouble);
+                if(column.getScale()==0)
+                {
+
+
+                    if(column.getPrecision()<=10)
+                    {
+                        insertStatement.setInt(paramIndex,  rsDouble.intValue());
+                    }
+                    else {
+                        insertStatement.setLong(paramIndex, rsDouble.longValue());
+                    }
+                }
+                else {
+                    insertStatement.setDouble(paramIndex, rsDouble);
+                }
                 break;
             case "bytea":
                 insertStatement.setBytes(paramIndex, rs.getBytes(paramIndex));
@@ -795,7 +868,7 @@ public class PgTools implements IDbSource, Closeable {
         // Add sequence definitions (if applicable)
         for (ColumnMetadata column : columns) {
             if (column.getSeqName() != null) {
-                sql.append("\nCREATE SEQUENCE ").append(quotedSchemaName).append(".\"").append(column.getSeqName()).append("\"")
+                sql.append("\nCREATE SEQUENCE IF NOT EXISTS ").append(quotedSchemaName).append(".\"").append(column.getSeqName()).append("\"")
                         .append(" START WITH ").append(column.getSeqValue() != null ? column.getSeqValue() : 1).append(";");
             }
         }
@@ -841,7 +914,7 @@ public class PgTools implements IDbSource, Closeable {
         // Add table comment
         String tableComment = tableMetadata.getComment() != null && !tableMetadata.getComment().trim().isEmpty()
                 ? tableMetadata.getComment()
-                : "Table generated on " + new java.util.Date();
+                : "";
         sql.append("\n\nCOMMENT ON TABLE ").append(tableFullName)
                 .append(" IS '").append(tableComment.replace("'", "''")).append("';");
 
@@ -930,8 +1003,19 @@ public class PgTools implements IDbSource, Closeable {
                     break;
                 case "numeric":
                 case "decimal":
-                    sqlType.append("NUMERIC")
-                            .append(precision > 0 ? "(" + precision + "," + scale + ")" : "(10,2)");
+                    if(scale==0)
+                    {
+                        if(precision<=10) {
+                            sqlType.append("INTEGER");
+                        }
+                        else {
+                            sqlType.append("BIGINT");
+                        }
+                    }
+                    else {
+                        sqlType.append("NUMERIC")
+                                .append(precision > 0 ? "(" + precision + "," + scale + ")" : "(10,2)");
+                    }
                     break;
                 case "date":
                     sqlType.append("DATE");
