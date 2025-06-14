@@ -495,18 +495,22 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         }
     }
 
+    /**
+     * 设置Enable 为 flase 文本颜色变灰　不可以选择
+     * @param b
+     */
     public void setEnabled(boolean b) {
         enabled = b;
         if (b) {
             root.getElement().removeAttribute(UIConstants.DISABLED);
             lbText.getElement().removeAttribute(UIConstants.DISABLED);
-            root.getElement().removeClassName(style.disabledDiv());
-            lbText.getElement().removeClassName(style.disabledDiv());
+            lbText.removeStyleName(style.disabledDiv());
+            setSelectable(true);
         } else {
             root.getElement().setAttribute(UIConstants.DISABLED, "true");
             lbText.getElement().setAttribute(UIConstants.DISABLED, "true");
-            root.getElement().addClassName(style.disabledDiv());
-            lbText.getElement().addClassName(style.disabledDiv());
+            setSelectable(false);
+            lbText.addStyleName(style.disabledDiv());
         }
     }
 

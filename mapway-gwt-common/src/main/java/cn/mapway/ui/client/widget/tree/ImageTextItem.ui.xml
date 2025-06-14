@@ -43,7 +43,6 @@
         }
 
         .disabledDiv {
-            pointer-events: none;   /* 禁止鼠标事件（点击、悬停等） */
             user-select: none;      /* 禁止文本选择 */
             opacity: 0.6;           /* 视觉置灰效果 */
             cursor: not-allowed;    /* 禁用鼠标指针 */
