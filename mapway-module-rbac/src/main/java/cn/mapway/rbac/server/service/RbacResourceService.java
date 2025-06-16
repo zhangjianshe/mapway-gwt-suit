@@ -219,7 +219,10 @@ public class RbacResourceService {
             // 删除
             if (!removeList.isEmpty()) {
                 List<String> deleteKeyList = removeList.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
-                rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
+                Trans.exec(() -> {
+                    rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
+                    rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
+                });
                 for (RbacResourceEntity rbacResourceEntity : removeList) {
                     rbacResourceEntity.setResourceCode(null);
                     result.add(new RbacResourceOperation(rbacResourceEntity, RbacResourceOperation.OPERATION_REMOVE));
@@ -236,5 +239,39 @@ public class RbacResourceService {
         }
         return result;
     }
+
+    public Integer assignResourceKeyToRole(List<String> resourceKeys, String roleKey) {
+        if (resourceKeys == null || resourceKeys.isEmpty() || StringUtils.isEmpty(roleKey)) {
+            return 0;
+        }
+        // 检查资源是否存在
+        List<RbacRoleResourceEntity> resourceList = rbacRoleResourceDao.query(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "in", resourceKeys));
+        // 去重
+        if(resourceList == null){
+            resourceList = new ArrayList<>();
+        }
+        for (RbacRoleResourceEntity resourceEntity : resourceList) {
+            String resourceCode = resourceEntity.getResourceCode();
+            resourceKeys.remove(resourceCode);
+        }
+        resourceList = new ArrayList<>();
+        for (String resourceKey : resourceKeys) {
+            RbacRoleResourceEntity resourceEntity = new RbacRoleResourceEntity();
+            resourceEntity.setResourceCode(resourceKey);
+            resourceEntity.setRoleCode(roleKey);
+            resourceList.add(resourceEntity);
+        }
+        rbacRoleResourceDao.getDao().insert(resourceList);
+        return resourceList.size();
+    }
+
+    public Integer assignResourceToRole(List<RbacResourceEntity> resources, String roleKey) {
+        if (resources == null || resources.isEmpty() || StringUtils.isEmpty(roleKey)) {
+            return 0;
+        }
+        List<String> resourceKeys = resources.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
+        return assignResourceKeyToRole(resourceKeys, roleKey);
+    }
+
 
 }

@@ -251,6 +251,10 @@ public class FontIcon<T> extends Label implements IData<T>, IEnabled, ISelectabl
         showOrHide();
     }
 
+    public void setAdminExempt(boolean adminExempt) {
+        rbacComposite.setAdminExempt(adminExempt);
+    }
+
     /**
      * 将RbacComposite 变为组合式的组件
      * end

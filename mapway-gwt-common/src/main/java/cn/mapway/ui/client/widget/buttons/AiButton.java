@@ -5,6 +5,10 @@ import cn.mapway.ui.client.mvc.window.ISelectable;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.CommonEventComposite;
+import cn.mapway.ui.client.widget.ICheckRole;
+import cn.mapway.ui.client.widget.IUserRoleProvider;
+import cn.mapway.ui.client.widget.RbacComposite;
+import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
@@ -37,6 +41,10 @@ public class AiButton extends Button implements IData, ISelectable {
 
     private String size;
 
+    RbacComposite rbacComposite = null;
+
+    private boolean visibleFlag = true;
+
     public AiButton(String te) {
         String html = getHtml(te);
         setHTML(html);
@@ -47,6 +55,13 @@ public class AiButton extends Button implements IData, ISelectable {
         String html = getHtml(null);
         setHTML(html);
         installEvent();
+        rbacComposite = new RbacComposite();
+        rbacComposite.addCommonHandler((e)->{
+            if (e.getType() == CommonEvent.RBAC_PERMISSION_CHANGE) {
+                // 权限发生变化 自定义处理
+                showOrHide();
+            }
+        });
     }
 
     private void installEvent() {
@@ -197,5 +212,58 @@ public class AiButton extends Button implements IData, ISelectable {
         }
         addStyleName("ai-button--" + size);
     }
+
+
+    /**
+     * 将RbacComposite 变为组合式的组件
+     * start
+     */
+    public void setRole(String role) {
+        rbacComposite.setRole(role);
+    }
+
+    public void setResource(String resource) {
+        rbacComposite.setResource(resource);
+    }
+
+    public void setAllRole(String role) {
+        rbacComposite.setAllRole(role);
+    }
+
+    public void setAllResource(String resource) {
+        rbacComposite.setAllResource(resource);
+    }
+
+    public static void setUserRoleProvider(IUserRoleProvider provider) {
+        RbacComposite.setUserRoleProvider(provider);
+    }
+
+    public boolean isAssign(int type) {
+        return rbacComposite.isAssign(type);
+    }
+
+    public void showOrHide() {
+        if(visibleFlag){
+            boolean assign = isAssign(ICheckRole.ALL_TYPE);
+            if(!assign){
+                setVisible(this.getElement(), assign);
+            }
+        }
+    }
+
+    public void setVisible(boolean visible) {
+        setVisible(this.getElement(), visible);
+        this.visibleFlag = visible;
+        showOrHide();
+    }
+
+    public void setAdminExempt(boolean adminExempt) {
+        rbacComposite.setAdminExempt(adminExempt);
+    }
+
+    /**
+     * 将RbacComposite 变为组合式的组件
+     * end
+     */
 
 }

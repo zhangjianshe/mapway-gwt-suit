@@ -22,6 +22,7 @@ public class RbacComposite extends Widget implements ICheckRole, HasCommonHandle
 
     private static IUserRoleProvider userRoleProvider;
 
+    private boolean isAdminExempt = true;
 
     @Override
     public void setRole(String role) {
@@ -107,7 +108,7 @@ public class RbacComposite extends Widget implements ICheckRole, HasCommonHandle
         String role = StringUtil.isBlank(roleRules.get(ALL_TYPE)) ? roleRules.get(type): roleRules.get(ALL_TYPE);
         if(!StringUtil.isBlank(role)){
             // 设置了角色要求
-            if(userRoleProvider.isAssignRole(role)){
+            if(userRoleProvider.isAssignRoleWithAdminExempt(role, isAdminExempt)){
                 return true;
             }
         }
@@ -115,11 +116,15 @@ public class RbacComposite extends Widget implements ICheckRole, HasCommonHandle
         String resource = StringUtil.isBlank(resourceRules.get(ALL_TYPE)) ? resourceRules.get(type): resourceRules.get(ALL_TYPE);
         if(!StringUtil.isBlank(resource)){
             // 设置了资源要求
-            if(userRoleProvider.isAssignResource(resource)){
+            if(userRoleProvider.isAssignResourceWithAdminExempt(resource, isAdminExempt)){
                 return true;
             }
         }
         return false;
+    }
+
+    public void setAdminExempt(boolean adminExempt) {
+        isAdminExempt = adminExempt;
     }
 
     @Override
