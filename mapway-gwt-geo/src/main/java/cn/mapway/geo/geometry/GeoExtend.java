@@ -75,6 +75,18 @@ public class GeoExtend implements Serializable, IsSerializable {
         }
     }
 
+    /**
+     * 扩展经纬度范围
+     * @param dlng
+     * @param dlat
+     */
+    public void expand(double dlng,double dlat){
+        minLng -= dlng;
+        maxLng += dlng;
+        minLat -= dlat;
+        maxLat += dlat;
+    }
+
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("[").append(minLng).append(" ").append(minLat).append(",").append(maxLng).append(" ").append(maxLat).append("]");
@@ -101,6 +113,46 @@ public class GeoExtend implements Serializable, IsSerializable {
         line.add(minLng, minLat);
         polygon.getLines().add(line);
         return polygon;
+    }
+
+    public String toWKT(GeometryType type)
+    {
+        StringBuilder sb = new StringBuilder();
+        if(type==GeometryType.GT_MULTI_POLYGON) {
+            sb.append("MULTIPOLYGON (((");
+        }
+        else if(type==GeometryType.GT_POLYGON) {
+            sb.append("POLYGON ((");
+        }
+        else {
+            sb.append("POLYGON EMPTY");
+        }
+        sb.append(minLng);
+        sb.append(" ");
+        sb.append(minLat);
+        sb.append(" , ");
+        sb.append(maxLng);
+        sb.append(" ");
+        sb.append(minLat);
+        sb.append(" , ");
+        sb.append(maxLng);
+        sb.append(" ");
+        sb.append(maxLat);
+        sb.append(" , ");
+        sb.append(minLng);
+        sb.append(" ");
+        sb.append(maxLat);
+        sb.append(" , ");
+        sb.append(minLng);
+        sb.append(" ");
+        sb.append(minLat);
+        if(type==GeometryType.GT_MULTI_POLYGON) {
+            sb.append(")))");
+        }
+        else if(type==GeometryType.GT_POLYGON){
+            sb.append("))");
+        }
+        return sb.toString();
     }
 
 }

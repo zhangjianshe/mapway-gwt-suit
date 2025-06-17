@@ -682,8 +682,6 @@ public class PgTools implements IDbSource, Closeable {
                 }
                 if(column.getScale()==0)
                 {
-
-
                     if(column.getPrecision()<=10)
                     {
                         insertStatement.setInt(paramIndex,  rsDouble.intValue());
