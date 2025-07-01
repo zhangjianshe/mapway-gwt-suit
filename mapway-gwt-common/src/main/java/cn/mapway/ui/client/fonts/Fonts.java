@@ -16,7 +16,12 @@ public class Fonts {
         }
     }
 
-    	public final static String REGION = "e7ab";
+    	public final static String CAISHA = "e7ac";
+	public final static String JIANSHE = "e7ad";
+	public final static String HEDAO = "e7ae";
+	public final static String YANGZHI = "e7af";
+	public final static String LINDI2 = "e7b0";
+	public final static String REGION = "e7ab";
 	public final static String PRODUCT_CHART = "e7aa";
 	public final static String ORG_INFO = "e7a8";
 	public final static String ORG_TREE = "e7a9";
@@ -489,7 +494,12 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("REGION", Fonts.REGION);
+			unicodes.put("CAISHA", Fonts.CAISHA);
+	unicodes.put("JIANSHE", Fonts.JIANSHE);
+	unicodes.put("HEDAO", Fonts.HEDAO);
+	unicodes.put("YANGZHI", Fonts.YANGZHI);
+	unicodes.put("LINDI2", Fonts.LINDI2);
+	unicodes.put("REGION", Fonts.REGION);
 	unicodes.put("PRODUCT_CHART", Fonts.PRODUCT_CHART);
 	unicodes.put("ORG_INFO", Fonts.ORG_INFO);
 	unicodes.put("ORG_TREE", Fonts.ORG_TREE);
