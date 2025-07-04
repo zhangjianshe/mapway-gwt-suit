@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc;
 
+import jsinterop.annotations.JsConstructor;
 import jsinterop.annotations.JsType;
 
 /**
@@ -9,6 +10,7 @@ import jsinterop.annotations.JsType;
 public class Size {
     public double x;
     public double y;
+    @JsConstructor
     public Size(){
         x=0;
         y=0;
