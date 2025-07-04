@@ -15,5 +15,5 @@ public class GeoConstant {
 
     //支持的图像格式
     public static final String SUPPORT_FILE_FORMATS = "tiff|tif|dat|bsq|img|shp";
-    public static final String SUPPORT_MAP_FORMATS = "tiff|tif|dat|bsq|img|jp2";
+    public static final String SUPPORT_MAP_FORMATS = "tiff|tif|dat|bsq|img|jp2|vrt";
 }

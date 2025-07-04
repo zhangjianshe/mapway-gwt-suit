@@ -180,7 +180,8 @@ public class TileCanvas {
             transform(pt0);
             if (pt0.getX() > 0) {
                 graphics.setColor(fillColor);
-                graphics.fillArc((int) (pt0.x - 5), (int) (pt0.y - 5), 10, 10, 0, 360);
+                int width=borderStyle.width;
+                graphics.fillArc((int) (pt0.x - width), (int) (pt0.y - width), borderStyle.width*2, borderStyle.width*2, 0, 360);
             }
         }
     }
