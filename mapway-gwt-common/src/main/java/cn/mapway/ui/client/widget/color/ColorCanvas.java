@@ -29,7 +29,7 @@ import jsinterop.base.Js;
 public class ColorCanvas extends CanvasWidget implements RequiresResize, HasCommonHandlers {
     double hue=-1;
     ColorData colorData = new ColorData();
-    Size colorPosition = new Size();
+    Size colorPosition = new Size(0,0);
     elemental2.dom.ImageData imageData;
     boolean mouseDown = false;
 

@@ -1,6 +1,7 @@
 package cn.mapway.ui.client.mvc;
 
 import jsinterop.annotations.JsConstructor;
+import jsinterop.annotations.JsMethod; // Import JsMethod for renaming
 import jsinterop.annotations.JsType;
 
 /**
@@ -10,21 +11,37 @@ import jsinterop.annotations.JsType;
 public class Size {
     public double x;
     public double y;
-    @JsConstructor
-    public Size(){
-        x=0;
-        y=0;
+
+    // The no-argument constructor will now explicitly call the JsConstructor.
+    // We are no longer making this one the JsConstructor.
+    protected Size(){
+        this(0, 0);
     }
+    @JsConstructor
+    public Size(double x, double y){
+        this.x=x;
+        this.y=y;
+    }
+    // Renamed for clarity and to avoid JavaScript name collision
+    @JsMethod(name = "distanceToXY")
     public double distanceTo(double tx, double ty) {
         return Math.sqrt((tx - x) * (tx - x) + (ty - y) * (ty - y));
     }
+
+    // Renamed for clarity and to avoid JavaScript name collision
+    @JsMethod(name = "distanceToOtherSize")
     public double distanceTo(Size target){
         return distanceTo(target.x, target.y);
     }
-    public Size(double x, double y) {
-        this.x = x;
-        this.y = y;
+
+    // This is now the ONLY JsConstructor
+    public static Size create(double x, double y) {
+        Size size = new Size();
+        size.x = x;
+        size.y = y;
+        return size;
     }
+
     public String toString() {
         return "Size{" +
                 "x=" + x +
@@ -33,13 +50,13 @@ public class Size {
     }
 
     /**
-     *  SVG representation
-     *  points="50,0 21,90 98,35 2,35 79,90"
-     *  x,y format
+     * SVG representation
+     * points="50,0 21,90 98,35 2,35 79,90"
+     * x,y format
      * @return
      */
     public String toSVGString() {
-         return x+","+y;
+        return x+","+y;
     }
 
     public Size offset(double offsetX, double offsetY) {
@@ -78,7 +95,7 @@ public class Size {
         return this;
     }
     public Size clone(){
-        return new Size(x, y);
+        return create(x, y);
     }
     public Size copyTo(Size dest)
     {
