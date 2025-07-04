@@ -1,8 +1,11 @@
 package cn.mapway.ui.client.mvc;
 
+import jsinterop.annotations.JsType;
+
 /**
- * Size
+ * Size 该size可以被javascript使用
  */
+@JsType
 public class Size {
     public double x;
     public double y;
