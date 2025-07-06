@@ -2,27 +2,29 @@
 <project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <artifactId>mapway-gwt-suit</artifactId>
         <groupId>cn.mapway</groupId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
-    <modelVersion>4.0.0</modelVersion>
 
     <artifactId>mapway-geo</artifactId>
-
+    <packaging>jar</packaging>
+    <name>Mapway Geo</name>
+    <description>Core geospatial utilities and integrations for Mapway projects, including GDAL, GeoTools, and PostGIS
+        support.
+    </description>
+    <url>${project.parent.url}</url>
     <properties>
         <maven.compiler.source>8</maven.compiler.source>
         <maven.compiler.target>8</maven.compiler.target>
-        <lombok.version>1.18.22</lombok.version>
-        <mapway.gwt.suit.version>1.0.0</mapway.gwt.suit.version>
-        <postgis-version>42.2.23</postgis-version>
-        <spring-boot.version>2.3.12.RELEASE</spring-boot.version>
-        <geotools.version>26.0</geotools.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.plugin.validation>VERBOSE</maven.plugin.validation>
     </properties>
+
     <repositories>
         <repository>
             <id>osgeo</id>
@@ -36,12 +38,13 @@
             </releases>
         </repository>
     </repositories>
+
     <dependencies>
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <optional>true</optional>
             <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.gdal</groupId>
@@ -123,7 +126,6 @@
             <artifactId>gt-geotiff</artifactId>
             <version>${geotools.version}</version>
         </dependency>
-        <!-- webp -->
         <dependency>
             <groupId>net.coobird</groupId>
             <artifactId>thumbnailator</artifactId>
@@ -134,17 +136,24 @@
             <artifactId>webp-imageio</artifactId>
             <version>0.1.6</version>
         </dependency>
-        <!-- commons-lang3版本过低会导致 geotools报错 -->
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.11</version>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>org.opencv</groupId>-->
-<!--            <artifactId>opencv</artifactId>-->
-<!--            <version>4.2.0</version>-->
-<!--        </dependency>-->
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

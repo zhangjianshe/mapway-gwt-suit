@@ -1,26 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://maven.apache.org/POM/4.0.0"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
         <artifactId>mapway-gwt-suit</artifactId>
         <groupId>cn.mapway</groupId>
         <version>1.0.0</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <properties>
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
-        <gwt.version>2.10.0</gwt.version>
-        <nutz.version>1.r.68.v20201205</nutz.version>
-
-        <slfj-api.version>1.7.33</slfj-api.version>
-        <elementalVersion>1.2.1</elementalVersion>
-
     </properties>
 
     <artifactId>mapway-gwt-geo</artifactId>
-    <version>${project.parent.version}</version>
     <packaging>gwt-lib</packaging>
     <dependencies>
         <dependency>
@@ -64,7 +58,7 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-            <version>1.18.22</version>
+            <version>${lombok.version}</version>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
@@ -79,7 +73,7 @@
             <plugin>
                 <groupId>net.ltgt.gwt.maven</groupId>
                 <artifactId>gwt-maven-plugin</artifactId>
-                <version>1.0.0</version>
+                <version>${gwt-maven-plugin.version}</version>
                 <extensions>true</extensions>
                 <configuration>
                     <moduleName>cn.mapway.geo.MapwayGeo</moduleName>
