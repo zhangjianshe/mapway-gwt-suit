@@ -84,21 +84,6 @@
             <version>${lombok.version}</version>
             <scope>provided</scope> <!-- Lombok is compile-time only -->
         </dependency>
-        <!-- Your original POM did not include Nutz or SLF4J API here.
-             If they are truly not used, then omit them. If they are used for logging
-             or code generation, include with 'provided' scope. -->
-        <!-- <dependency>
-            <groupId>org.nutz</groupId>
-            <artifactId>nutz</artifactId>
-            <version>${nutz.version}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slfj-api.version}</version>
-            <scope>provided</scope>
-        </dependency> -->
     </dependencies>
     <build>
         <plugins>

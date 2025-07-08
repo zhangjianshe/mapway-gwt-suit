@@ -5,6 +5,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -15,4 +16,7 @@ import java.util.List;
 @Data
 public class QueryRoleResourceResponse implements Serializable, IsSerializable {
      List<RbacResourceEntity> resources;
+     public QueryRoleResourceResponse() {
+          resources=new ArrayList<>();
+     }
 }
