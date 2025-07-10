@@ -1,6 +1,5 @@
 package cn.mapway.rbac.server.code;
 
-import com.google.common.io.Resources;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
@@ -192,7 +191,7 @@ public class SourceTools {
      */
     private String readTemplate(String resourceName) {
         try {
-            URL url = Resources.getResource(resourceName);
+            URL url = this.getClass().getClassLoader().getResource(resourceName);
             return Streams.readAndClose(Streams.utf8r(url.openStream()));
         } catch (IOException e) {
             e.printStackTrace();
