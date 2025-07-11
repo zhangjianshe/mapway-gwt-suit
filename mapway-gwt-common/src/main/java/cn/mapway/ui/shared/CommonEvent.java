@@ -144,6 +144,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int CHANGE_CRS = 130;//设置 tif或shp的坐标系
     public final static int SAVED = 131;//已保存事件
     public final static int RBAC_PERMISSION_CHANGE = 132; // RBAC权限变更事件
+    public final static int LABEL = 133; // 标签
 
 
 
@@ -166,6 +167,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent labelEvent(Object data) {
+        return new CommonEvent(LABEL, data);
     }
     public static CommonEvent savedEvent(Object data) {
         return new CommonEvent(SAVED, data);
@@ -1163,6 +1167,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isChangeCrs() {
         return CHANGE_CRS == this.type;
+    }
+    public boolean isLabel() {
+        return LABEL == this.type;
     }
 
     public static CommonEvent rbacPermissionChangeEvent(Object data) {
