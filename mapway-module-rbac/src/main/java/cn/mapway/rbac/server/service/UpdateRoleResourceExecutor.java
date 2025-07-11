@@ -75,6 +75,7 @@ public class UpdateRoleResourceExecutor extends AbstractBizExecutor<UpdateRoleRe
             entity.setRoleCode(request.getRoleCode());
             entity.setResourceCode(request.getResourceCode());
             rbacRoleResourceDao.insert(entity);
+            rbacUserService.resetGroupCache();
         }
         return BizResult.success(new UpdateRoleResourceResponse());
     }

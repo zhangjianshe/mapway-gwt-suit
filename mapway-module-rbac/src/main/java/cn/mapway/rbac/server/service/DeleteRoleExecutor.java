@@ -58,8 +58,11 @@ public class DeleteRoleExecutor extends AbstractBizExecutor<DeleteRoleResponse, 
         Trans.exec(new Atom() {
             @Override
             public void run() {
-                rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", request.getRoleCode()));
+                int deleteNum = rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", request.getRoleCode()));
                 rbacRoleDao.clear(Cnd.where(RbacRoleEntity.FLD_CODE, "=", request.getRoleCode()));
+                if (deleteNum > 0) {
+                    rbacUserService.resetGroupCache();
+                }
             }
         });
         return BizResult.success(new DeleteRoleResponse());

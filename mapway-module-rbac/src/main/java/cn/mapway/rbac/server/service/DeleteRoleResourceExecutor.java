@@ -48,7 +48,10 @@ public class DeleteRoleResourceExecutor extends AbstractBizExecutor<DeleteRoleRe
         assertTrue(Strings.isNotBlank(request.getRoleCode()), "Role code is blank");
         Cnd where = Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", request.getRoleCode())
                 .and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", request.getResourceCode());
-        rbacRoleResourceDao.clear(where);
+        int deleteNum = rbacRoleResourceDao.clear(where);
+        if (deleteNum > 0) {
+            rbacUserService.resetGroupCache();
+        }
         return BizResult.success(new DeleteRoleResourceResponse());
     }
 }
