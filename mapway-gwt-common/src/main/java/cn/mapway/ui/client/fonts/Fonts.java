@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String CAISHA = "e7ac";
+    	public final static String DATASET = "e7b1";
+	public final static String CAISHA = "e7ac";
 	public final static String JIANSHE = "e7ad";
 	public final static String HEDAO = "e7ae";
 	public final static String YANGZHI = "e7af";
@@ -494,7 +495,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("CAISHA", Fonts.CAISHA);
+			unicodes.put("DATASET", Fonts.DATASET);
+	unicodes.put("CAISHA", Fonts.CAISHA);
 	unicodes.put("JIANSHE", Fonts.JIANSHE);
 	unicodes.put("HEDAO", Fonts.HEDAO);
 	unicodes.put("YANGZHI", Fonts.YANGZHI);
