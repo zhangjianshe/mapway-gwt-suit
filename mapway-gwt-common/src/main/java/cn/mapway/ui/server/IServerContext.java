@@ -30,6 +30,12 @@ public interface IServerContext {
     void putToSession(String group,String key, Object value);
 
     /**
+     * 清楚group 下所有的东西
+     * @param group
+     */
+    void clearToSession(String group);
+
+    /**
      * 从缓存中获取
      * @param key
      * @return

@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
+import org.nutz.json.Json;
 import org.nutz.trans.Trans;
 import org.springframework.stereotype.Service;
 
@@ -28,7 +29,8 @@ public class RbacResourceService {
     RbacResourceDao rbacResourceDao;
     @Resource
     RbacRoleResourceDao rbacRoleResourceDao;
-
+    @Resource
+    RbacUserService rbacUserService;
     /**
      * 添加资源
      *
@@ -96,7 +98,10 @@ public class RbacResourceService {
         }
         Trans.exec(() -> {
             rbacResourceDao.delete(resource.getResourceCode());
-            rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resource.getResourceCode()));
+            int deleteNum = rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resource.getResourceCode()));
+            if (deleteNum > 0) {
+                rbacUserService.resetGroupCache();
+            }
         });
         return true;
     }
@@ -119,7 +124,10 @@ public class RbacResourceService {
         }
         Trans.exec(() -> {
             rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "in", deleteList));
-            rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "in", deleteList));
+            int deleteNum = rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "in", deleteList));
+            if (deleteNum > 0) {
+                rbacUserService.resetGroupCache();
+            }
         });
         return deleteList.size();
     }
@@ -221,7 +229,10 @@ public class RbacResourceService {
                 List<String> deleteKeyList = removeList.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
                 Trans.exec(() -> {
                     rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
-                    rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
+                    int deleteNum = rbacRoleResourceDao.clear(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "in", deleteKeyList));
+                    if (deleteNum > 0) {
+                        rbacUserService.resetGroupCache();
+                    }
                 });
                 for (RbacResourceEntity rbacResourceEntity : removeList) {
                     rbacResourceEntity.setResourceCode(null);
@@ -262,6 +273,7 @@ public class RbacResourceService {
             resourceList.add(resourceEntity);
         }
         rbacRoleResourceDao.getDao().insert(resourceList);
+        rbacUserService.resetGroupCache();
         return resourceList.size();
     }
 
@@ -269,7 +281,10 @@ public class RbacResourceService {
         if (resources == null || resources.isEmpty() || StringUtils.isEmpty(roleKey)) {
             return 0;
         }
-        List<String> resourceKeys = resources.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
+        log.info(Json.toJson( resources));
+
+        List<String> resourceKeys = resources.stream().filter(resourceEntity -> resourceEntity.getResourceCode() != null)
+                .map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
         return assignResourceKeyToRole(resourceKeys, roleKey);
     }
 

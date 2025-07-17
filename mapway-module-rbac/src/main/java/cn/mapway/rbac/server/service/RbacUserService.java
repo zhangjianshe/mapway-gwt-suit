@@ -648,6 +648,7 @@ public class RbacUserService {
             rbacRoleResourceEntity.setResourceCode(resourceDeclare.code());
             try {
                 rbacRoleResourceDao.insert(rbacRoleResourceEntity);
+                resetGroupCache();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -967,6 +968,23 @@ public class RbacUserService {
         String cacheKey = getCacheKey(userInfo.getSystemCode(), userInfo.getId());
         plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP, cacheKey, null);
     }
+
+    /**
+     * 清楚用户权限缓存
+     *
+     * @param systemCode
+     * @param id
+     */
+    public void resetUserPermissionsCache(String systemCode, String id) {
+        String cacheKey = getCacheKey(systemCode, id);
+        plugin.getServerContext().putToSession(RbacConstant.SESSION_CACHE_GROUP, cacheKey, null);
+    }
+
+    public void resetGroupCache() {
+        plugin.getServerContext().clearToSession(RbacConstant.SESSION_CACHE_GROUP);
+    }
+
+
 
     private Role fromRoleEntity(RbacRoleEntity roleEntity) {
         Role role = new Role();
