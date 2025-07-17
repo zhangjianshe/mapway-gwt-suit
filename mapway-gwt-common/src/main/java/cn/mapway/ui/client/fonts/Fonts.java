@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String DATASET = "e7b1";
+    	public final static String LOGIN_KEY = "e7b2";
+	public final static String DATASET = "e7b1";
 	public final static String CAISHA = "e7ac";
 	public final static String JIANSHE = "e7ad";
 	public final static String HEDAO = "e7ae";
@@ -495,7 +496,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("DATASET", Fonts.DATASET);
+			unicodes.put("LOGIN_KEY", Fonts.LOGIN_KEY);
+	unicodes.put("DATASET", Fonts.DATASET);
 	unicodes.put("CAISHA", Fonts.CAISHA);
 	unicodes.put("JIANSHE", Fonts.JIANSHE);
 	unicodes.put("HEDAO", Fonts.HEDAO);
