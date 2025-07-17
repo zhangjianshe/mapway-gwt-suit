@@ -10,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
+import org.nutz.json.Json;
 import org.nutz.trans.Trans;
 import org.springframework.stereotype.Service;
 
@@ -280,7 +281,10 @@ public class RbacResourceService {
         if (resources == null || resources.isEmpty() || StringUtils.isEmpty(roleKey)) {
             return 0;
         }
-        List<String> resourceKeys = resources.stream().map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
+        log.info(Json.toJson( resources));
+
+        List<String> resourceKeys = resources.stream().filter(resourceEntity -> resourceEntity.getResourceCode() != null)
+                .map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
         return assignResourceKeyToRole(resourceKeys, roleKey);
     }
 
