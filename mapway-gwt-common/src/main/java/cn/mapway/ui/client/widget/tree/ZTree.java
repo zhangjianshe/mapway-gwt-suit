@@ -321,6 +321,23 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     }
 
     /**
+     * 添加子节点
+     *
+     * @param item
+     */
+    public void appendChild(ImageTextItem item) {
+        if (itemStyleName != null && itemStyleName.length() > 0) {
+            item.setStyleName(itemStyleName);
+        }
+        item.setParentItem(null);
+        item.setLevel(0);
+        item.setStorageKey(storagePrefix + "/" + item.getText());
+        item.enableCheck(enabledChecked);
+        add(item);
+        item.addCommonHandler(itemClicked);
+    }
+
+    /**
      * 根据本地存储 展开响应的节点
      */
     public void resetLayout() {

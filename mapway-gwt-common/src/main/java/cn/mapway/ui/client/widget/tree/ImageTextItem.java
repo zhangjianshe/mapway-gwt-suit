@@ -236,7 +236,20 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     public ImageTextItem appendWidget(Widget widget) {
         return appendWidget(widget, 26);
     }
-
+    public ImageTextItem appendChild(ImageTextItem item) {
+        item.setStyleName(root.getStyleName());
+        item.setStorageKey(storageKey + "/" + item.getText());
+        item.setParentItem(this);
+        if (this.children.size() == 0) {
+            openClose.setIconUnicode(Fonts.DOWN);
+            openClose.setVisible(true);
+        }
+        item.enableCheck(check.isVisible());
+        childrenPanel.add(item);
+        item.setLevel(getLevel() + 1);
+        children.add(item);
+        return item;
+    }
     public ImageTextItem addChild(String text, String unicode) {
         ImageTextItem item = new ImageTextItem(unicode, text);
         item.setStyleName(root.getStyleName());

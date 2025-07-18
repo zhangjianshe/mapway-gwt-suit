@@ -94,6 +94,9 @@ public class ObjectInspector extends CommonEventComposite implements IData<IAttr
 
     @Override
     public void setData(IAttributesProvider obj) {
+        if(obj == null) {
+            lbName.setText("没有属性提供器");
+        }
         if(Objects.equals(data, obj)) {
             return;
         }
@@ -112,6 +115,8 @@ public class ObjectInspector extends CommonEventComposite implements IData<IAttr
         //同步加载属性
         toUI();
         updateValue(this.values);
+
+
     }
 
     /**
