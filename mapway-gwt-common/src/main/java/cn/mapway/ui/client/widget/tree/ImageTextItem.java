@@ -669,6 +669,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
         rightWidgets.clear();
     }
 
+    public Widget getRightWidget(int index) {
+            if(index>=0 && index<rightWidgets.size()){
+                return rightWidgets.get(index);
+            }
+            return null;
+    }
+
     /**
      * 设置一项的操作进度 如果为 null 或者不在 [0,100] 之间 就清楚进度信息
      *

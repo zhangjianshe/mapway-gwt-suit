@@ -94,6 +94,9 @@ public class ObjectInspector extends CommonEventComposite implements IData<IAttr
 
     @Override
     public void setData(IAttributesProvider obj) {
+        if(Objects.equals(data, obj)) {
+            return;
+        }
         if (data != null) {
             data.removeAttributeReadyCallback(this);
         }

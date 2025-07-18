@@ -271,22 +271,26 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             for (int i = 0; i < getWidgetCount(); i++) {
                 Widget widget = getWidget(i);
                 if (widget instanceof ImageTextItem) {
-                    ImageTextItem item = (ImageTextItem) widget;
-                    if (!eachElement.each(item)) {
+                    if (!eachItem((ImageTextItem) widget, eachElement)) {
                         return false;
                     }
                 }
             }
+            return true;
         } else {
-            for (int i = 0; i < parent.getChildren().size(); i++) {
-                Widget widget = parent.getChildren().get(i);
-                ImageTextItem item = (ImageTextItem) widget;
-                if (!eachElement.each(item)) {
+            if(!eachElement.each(parent)){
+                return false;
+            }
+            if (parent.getChildren() == null || parent.getChildren().isEmpty()) {
+                return true;
+            }
+            for (ImageTextItem item : parent.getChildren()) {
+                if (!eachItem(item, eachElement)) {
                     return false;
                 }
             }
+            return true;
         }
-        return true;
     }
 
     public void setMessage(String message, int height) {

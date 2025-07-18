@@ -1,21 +1,22 @@
 package cn.mapway.ui.client.mvc.attribute.editor.inspector;
 
+import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.BaseAbstractModule;
 import cn.mapway.ui.client.mvc.ModuleInfo;
-import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.event.EventInfo;
 import cn.mapway.ui.client.tools.IData;
+import cn.mapway.ui.client.util.IEachElement;
 import cn.mapway.ui.client.util.StringUtil;
-import cn.mapway.ui.client.widget.AiFlexTable;
-import cn.mapway.ui.client.widget.AiLabel;
 import cn.mapway.ui.client.widget.CommonEventComposite;
-import cn.mapway.ui.client.widget.Header;
+import cn.mapway.ui.client.widget.tree.ImageTextItem;
+import cn.mapway.ui.client.widget.tree.ZTree;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.HTMLTable;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.Widget;
 
 import java.util.List;
@@ -25,35 +26,13 @@ import java.util.List;
  */
 public class EventsInspector extends CommonEventComposite implements IData<String> {
     private static final EventsInspectorUiBinder ourUiBinder = GWT.create(EventsInspectorUiBinder.class);
-    @UiField
-    AiFlexTable eventTable;
     List<EventInfo> eventInfos;
+    @UiField
+    ZTree eventTree;
     private String moduleCode;
 
     public EventsInspector() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        eventTable.addDoubleClickHandler(event -> {
-            Size cellForDoubleClickEvent = eventTable.getCellForDoubleClickEvent(event);
-            int row = cellForDoubleClickEvent.getYAsInt();
-            if (row > 0) {
-                Widget widget = eventTable.getWidget(row, 1);
-                if (widget instanceof AiLabel) {
-                    AiLabel label = (AiLabel) widget;
-                    fireEvent(CommonEvent.selectEvent(label.getData()));
-                }
-            }
-        });
-        eventTable.addClickHandler((event) -> {
-            HTMLTable.Cell cell = eventTable.getCellForEvent(event);
-            int row = cell.getRowIndex();
-            if (row > 0) {
-                Widget widget = eventTable.getWidget(row, 1);
-                if (widget instanceof AiLabel) {
-                    AiLabel label = (AiLabel) widget;
-                    fireEvent(CommonEvent.selectEvent(label.getData()));
-                }
-            }
-        });
     }
 
     /**
@@ -72,7 +51,7 @@ public class EventsInspector extends CommonEventComposite implements IData<Strin
         this.moduleCode = moduleCode;
         ModuleInfo moduleInfo = BaseAbstractModule.getModuleFactory().findModuleInfo(moduleCode);
         if (moduleInfo == null) {
-            eventTable.removeAllRows();
+            eventTree.clear();
             return;
         }
         eventInfos = moduleInfo.getEvents();
@@ -80,36 +59,48 @@ public class EventsInspector extends CommonEventComposite implements IData<Strin
     }
 
     public void updateUIState(String script) {
+        // clear all event status
         if (StringUtil.isBlank(script)) {
+            eventTree.eachItem(null, item -> {
+                Widget rightWidget = item.getRightWidget(0);
+                rightWidget.removeStyleName("ai-header");
+                return true;
+            });
             return;
         }
 
-        for (int i = 1; i < eventTable.getRowCount(); i++) {
-            AiLabel label = (AiLabel) eventTable.getWidget(i, 1);
-            String code = label.getText();
-            if (script.contains(code)) {
-                label.addStyleName("ai-bold");
-            } else {
-                label.removeStyleName("ai-bold");
+        eventTree.eachItem(null, new IEachElement<ImageTextItem>() {
+            @Override
+            public boolean each(ImageTextItem item) {
+                EventInfo eventInfo = (EventInfo) item.getData();
+                if (script.contains(eventInfo.code)) {
+                    Widget rightWidget = item.getRightWidget(0);
+                    rightWidget.addStyleName("ai-header");
+                }
+                return true;
             }
-        }
+        });
     }
 
     private void toUI() {
 
-        eventTable.removeAllRows();
+        eventTree.clear();
 
-        int row = 0;
-        int col = 0;
-        eventTable.setWidget(row, col++, new Header("名称"));
-        eventTable.setWidget(row, col++, new Header("代码"));
         for (EventInfo eventInfo : eventInfos) {
-            row++;
-            col = 0;
-            eventTable.setWidget(row, col++, new AiLabel(eventInfo.name));
-            AiLabel aiLabel = new AiLabel(eventInfo.code);
-            aiLabel.setData(eventInfo);
-            eventTable.setWidget(row, col++, aiLabel);
+            ImageTextItem item = eventTree.addFontIconItem(null, eventInfo.name, Fonts.THUNDER);
+            item.setData(eventInfo);
+            item.appendWidget(new Label(eventInfo.code), null);
+        }
+    }
+
+    @UiHandler("eventTree")
+    public void eventTreeCommon(CommonEvent event) {
+        if (event.isSelect()) {
+
+        } else if (event.isDoubleClick()) {
+            ImageTextItem item = event.getValue();
+            EventInfo eventInfo = (EventInfo) item.getData();
+            fireEvent(CommonEvent.selectEvent(eventInfo));
         }
     }
 
