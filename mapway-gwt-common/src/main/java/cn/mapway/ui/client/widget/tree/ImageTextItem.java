@@ -93,6 +93,13 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     private String storageKey = "";
     private Object data;
     boolean selectable;
+    String tag;
+    public String getTag() {
+        return tag;
+    }
+    public void setTag(String tag) {
+        this.tag = tag;
+    }
     private final DoubleClickHandler itemDoubleClicked = event ->
     {
         if(selectable) {
