@@ -22,6 +22,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.Label;
 
 import java.util.List;
 
@@ -74,6 +75,7 @@ public class UserRoleResourcePanel extends CommonEventComposite {
         roleList.clear();
         for (RbacRoleEntity role : roles) {
             ImageTextItem item = roleList.addItem(null, role.getName(), null);
+            item.appendWidget(new Label(role.getCode()),null);
             item.setData(role);
         }
     }
