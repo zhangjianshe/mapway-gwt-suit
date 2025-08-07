@@ -96,6 +96,11 @@ public class ImageInfo implements Serializable, IsSerializable {
     Date captureTime;
 
     /**
+     * 云量信息
+     */
+    Double cloud;
+
+    /**
      * 数据产品的Level
      */
     String level;
