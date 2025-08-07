@@ -34,14 +34,15 @@ import org.nutz.lang.random.R;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 
 import static cn.mapway.geo.shared.GeoConstant.*;
 import static org.gdal.ogr.ogrConstants.wkbLinearRing;
@@ -140,10 +141,10 @@ public class TiffTools {
         });
         System.out.println("INFO image extend " + md5File.getBox().toString());
         System.out.println("INFO image size " + md5File.width + " " + md5File.height);
-        md5File.getBandInfos().get(0).enableGamma=false;
-        ColorTable colorTable=new ColorTable();
+        md5File.getBandInfos().get(0).enableGamma = false;
+        ColorTable colorTable = new ColorTable();
         colorTable.setDefaultTable(true);
-        md5File.getBandInfos().get(0).enableGamma=true;
+        md5File.getBandInfos().get(0).enableGamma = true;
         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, colorTable);
         if (bytes == null) {
             System.out.println("gen error");
@@ -161,6 +162,43 @@ public class TiffTools {
         }
         return srfwgs84;
     }
+
+    public static byte[] generateImagePreview(ImageInfo imageInfo, int targetWidth,ColorTable colorTable) {
+        Dataset dataset = null;
+        try {
+            dataset = gdal.Open(imageInfo.location, gdalconstConstants.GA_ReadOnly);
+            int rasterWidth = dataset.getRasterXSize();
+            int rasterHeight = dataset.getRasterYSize();
+            int targetHeight = (int) Math.ceil((double) (rasterHeight * targetWidth) / (double) rasterWidth);
+            Rect source = new Rect(0.0F, 0.0F, rasterWidth, rasterHeight);
+            Rect target = new Rect(0.0F, 0.0F, targetWidth, targetHeight);
+            Dataset previewDataset = getMemoryDriver().Create("", targetWidth, targetHeight, 4, gdalconstConstants.GDT_Byte);
+            List<BandData> sourceBandList = new ArrayList();
+            List<Band> targetBandList = new ArrayList();
+            targetBandList.add(previewDataset.GetRasterBand(1));
+            targetBandList.add(previewDataset.GetRasterBand(2));
+            targetBandList.add(previewDataset.GetRasterBand(3));
+            processBandInfo(sourceBandList, imageInfo.bandInfos, imageInfo.chanelData, dataset);
+            BaseTileExtractor extractor = new BaseTileExtractor();
+            extractor.setColorTable(colorTable);
+            byte[] transparentBand = extractor.getBand(dataset.GetRasterCount() == 1, new Size(targetWidth, targetHeight), source, target, sourceBandList, targetBandList);
+            previewDataset.GetRasterBand(4).WriteRaster(0, 0, targetWidth, targetHeight, transparentBand);
+            previewDataset.FlushCache();
+            String tempPath="/var/ibcache/preview/temp";
+            Files.createDirIfNoExists(tempPath);
+            String targetFileName= tempPath+"/"+R.UU16()+".png";
+            Dataset targetDataset = getPngDriver().CreateCopy(targetFileName, previewDataset);
+            targetDataset.FlushCache();
+            dataset.Close();
+            byte[] image = Files.readBytes(targetFileName);
+            Files.deleteFile(new File(targetFileName));
+            return image;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
 
     public static synchronized SpatialReference getWebMercatorReference() {
         if (srfwebMercator == null) {
@@ -246,7 +284,7 @@ public class TiffTools {
                 pixelCoord.x < 0 || pixelCoord.x >= rasterXSize
                         || pixelCoord.y < 0 || pixelCoord.y >= rasterYSize
         ) {
-            log.warn("location is out of image extends {} {}",lat,lng);
+            log.warn("location is out of image extends {} {}", lat, lng);
             for (int i = 0; i < rasterCount; i++) {
                 data.add(0.0);
             }
@@ -970,7 +1008,7 @@ public class TiffTools {
             memoryDataset.FlushCache();
             Dataset translated = gdal.Translate(targetPngFileName, memoryDataset, null);
             stopwatch.stop();
-            if(translated!=null) {
+            if (translated != null) {
                 translated.delete();
             }
             //  log.info("extract Tile {} ({} {} {})  用时{}毫秒", imageInfo.location, tileX, tileY, zoom, stopwatch.getDuration());
