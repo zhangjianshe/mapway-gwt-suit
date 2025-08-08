@@ -137,6 +137,11 @@ public class TiffTools {
             public boolean write(String sha256, byte[] image) {
                 return true;
             }
+
+            @Override
+            public boolean resetCache(String sha256) {
+                return false;
+            }
         });
         System.out.println("INFO image extend " + md5File.getBox().toString());
         System.out.println("INFO image size " + md5File.width + " " + md5File.height);

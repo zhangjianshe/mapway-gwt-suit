@@ -10,4 +10,11 @@ public interface IImagePreviewProvider {
     byte[] read(String sha256);
 
     boolean write(String sha256, byte[] image);
+
+    /**
+     * 清空目标缓存
+     * @param sha256
+     * @return
+     */
+    boolean resetCache(String sha256);
 }

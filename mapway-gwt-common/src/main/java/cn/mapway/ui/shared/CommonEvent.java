@@ -145,6 +145,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int SAVED = 131;//已保存事件
     public final static int RBAC_PERMISSION_CHANGE = 132; // RBAC权限变更事件
     public final static int LABEL = 133; // 标签
+    public final static int CREATE_FOLDER = 134; // 标签
 
 
 
@@ -201,6 +202,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public static CommonEvent createFileEvent(Object data) {
         return new CommonEvent(CREATE_FILE, data);
+    }
+    public static CommonEvent createFolderEvent(Object data) {
+        return new CommonEvent(CREATE_FOLDER, data);
     }
     public static CommonEvent favoriteEvent(Object data) {
         return new CommonEvent(FAVORITE, data);
@@ -835,6 +839,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isSave() {
         return SAVE == this.type;
+    }
+    public boolean isCreateFolder() {
+        return CREATE_FOLDER == this.type;
     }
 
     public boolean isDoubleClick() {
