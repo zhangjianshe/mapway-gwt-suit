@@ -34,7 +34,6 @@ import org.nutz.lang.random.R;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.referencing.operation.MathTransform;
 
-import javax.imageio.ImageIO;
 import java.awt.*;
 import java.io.File;
 import java.io.IOException;
@@ -163,7 +162,7 @@ public class TiffTools {
         return srfwgs84;
     }
 
-    public static byte[] generateImagePreview(ImageInfo imageInfo, int targetWidth,ColorTable colorTable) {
+    public static byte[] generateImagePreview(ImageInfo imageInfo, int targetWidth, ColorTable colorTable) {
         Dataset dataset = null;
         try {
             dataset = gdal.Open(imageInfo.location, gdalconstConstants.GA_ReadOnly);
@@ -183,12 +182,12 @@ public class TiffTools {
             BaseTileExtractor extractor = new BaseTileExtractor();
             extractor.setColorTable(colorTable);
             byte[] transparentBand = extractor.getBand(dataset.GetRasterCount() == 1,
-                    new Size(targetWidth, targetHeight), target,source, sourceBandList, targetBandList);
+                    new Size(targetWidth, targetHeight), target, source, sourceBandList, targetBandList);
             previewDataset.GetRasterBand(4).WriteRaster(0, 0, targetWidth, targetHeight, transparentBand);
             previewDataset.FlushCache();
-            String tempPath="/var/ibcache/preview/temp";
+            String tempPath = "/var/ibcache/preview/temp";
             Files.createDirIfNoExists(tempPath);
-            String targetFileName= tempPath+"/"+R.UU16()+".png";
+            String targetFileName = tempPath + "/" + R.UU16() + ".png";
             Dataset targetDataset = getPngDriver().CreateCopy(targetFileName, previewDataset);
             targetDataset.FlushCache();
             dataset.Close();
@@ -765,7 +764,7 @@ public class TiffTools {
     }
 
     /**
-     * 提取出 REG通道信息
+     * 提取出 RGB通道信息
      *
      * @param sourceBandList
      * @param bandInfos
@@ -774,22 +773,42 @@ public class TiffTools {
      */
     private static void processBandInfo(List<BandData> sourceBandList,
                                         List<BandInfo> bandInfos, ChanelData chanelData, Dataset dataset) {
+        //原始影像的波段数
         int bandCount = dataset.GetRasterCount();
+
         if (chanelData.redChanel > bandCount || chanelData.redChanel < 1) {
             chanelData.redChanel = 1;
         }
-        BandInfo redBandInfo = null;
         for (int i = 0; i < bandInfos.size(); i++) {
             BandInfo bandInfo = bandInfos.get(i);
-            if (bandInfo.index + 1 == chanelData.redChanel) {
-                redBandInfo = bandInfo;
+            if (bandInfos.get(i).index + 1 == chanelData.redChanel) {
+                sourceBandList.add(new BandData(dataset.GetRasterBand(chanelData.redChanel), bandInfo));
                 break;
             }
         }
-        if (redBandInfo != null) {
-            BandData bandData = new BandData(dataset.GetRasterBand(chanelData.redChanel), redBandInfo);
-            sourceBandList.add(bandData);
+
+        if (chanelData.greenChanel > bandCount || chanelData.greenChanel < 1) {
+            chanelData.greenChanel = 1;
         }
+        for (int i = 0; i < bandInfos.size(); i++) {
+            BandInfo bandInfo = bandInfos.get(i);
+            if (bandInfos.get(i).index + 1 == chanelData.greenChanel) {
+                sourceBandList.add(new BandData(dataset.GetRasterBand(chanelData.greenChanel), bandInfo));
+                break;
+            }
+        }
+
+        if (chanelData.blueChanel > bandCount || chanelData.blueChanel < 1) {
+            chanelData.blueChanel = 1;
+        }
+        for (int i = 0; i < bandInfos.size(); i++) {
+            BandInfo bandInfo = bandInfos.get(i);
+            if (bandInfos.get(i).index + 1 == chanelData.blueChanel) {
+                sourceBandList.add(new BandData(dataset.GetRasterBand(chanelData.blueChanel), bandInfo));
+                break;
+            }
+        }
+
     }
 
     private void printDataType() {
