@@ -172,7 +172,8 @@ public class TiffTools {
             int targetHeight = (int) Math.ceil((double) (rasterHeight * targetWidth) / (double) rasterWidth);
             Rect source = new Rect(0.0F, 0.0F, rasterWidth, rasterHeight);
             Rect target = new Rect(0.0F, 0.0F, targetWidth, targetHeight);
-            Dataset previewDataset = getMemoryDriver().Create("", targetWidth, targetHeight, 4, gdalconstConstants.GDT_Byte);
+            Dataset previewDataset = getMemoryDriver().Create("", targetWidth, targetHeight,
+                    4, gdalconstConstants.GDT_Byte);
             List<BandData> sourceBandList = new ArrayList();
             List<Band> targetBandList = new ArrayList();
             targetBandList.add(previewDataset.GetRasterBand(1));
@@ -181,7 +182,8 @@ public class TiffTools {
             processBandInfo(sourceBandList, imageInfo.bandInfos, imageInfo.chanelData, dataset);
             BaseTileExtractor extractor = new BaseTileExtractor();
             extractor.setColorTable(colorTable);
-            byte[] transparentBand = extractor.getBand(dataset.GetRasterCount() == 1, new Size(targetWidth, targetHeight), source, target, sourceBandList, targetBandList);
+            byte[] transparentBand = extractor.getBand(dataset.GetRasterCount() == 1,
+                    new Size(targetWidth, targetHeight), target,source, sourceBandList, targetBandList);
             previewDataset.GetRasterBand(4).WriteRaster(0, 0, targetWidth, targetHeight, transparentBand);
             previewDataset.FlushCache();
             String tempPath="/var/ibcache/preview/temp";
