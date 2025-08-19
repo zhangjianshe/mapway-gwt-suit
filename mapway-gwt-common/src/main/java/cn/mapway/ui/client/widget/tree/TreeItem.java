@@ -64,6 +64,9 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
     String openIcon;
     @Setter
     String closeIcon;
+    @Setter
+    @Getter
+    String id;
     HandlerRegistration downHandlerRegistration = null;
     private Object data;
     private boolean isDir = false;
@@ -73,6 +76,7 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
     }
 
     public TreeItem(String openIcon, String closeIcon) {
+        randomId();
         this.openIcon = openIcon;
         this.closeIcon = closeIcon;
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -86,6 +90,20 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
                 }
             }
         });
+    }
+
+    /**
+     * 随机设定一个值
+     */
+    public void randomId() {
+        setId(StringUtil.randomString(6));
+    }
+
+    public boolean equals(Object obj) {
+        if (obj instanceof TreeItem) {
+            return this.getId().equals(((TreeItem) obj).getId());
+        }
+        return false;
     }
 
     public List<TreeItem> getChildren() {
@@ -148,6 +166,18 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
         item.setText(text);
         item.setParentItem(this);
         return item;
+    }
+
+    /**
+     * 重新加载所有的items 为子节点
+     *
+     * @param items
+     */
+    public void reorderChildren(List<TreeItem> items) {
+        childrenPanel.clear();
+        for (TreeItem item : items) {
+            childrenPanel.add(item);
+        }
     }
 
     public void setIsDir(boolean isDir) {

@@ -28,6 +28,14 @@ public class Tree extends Composite implements HasCommonHandlers {
     private static final TreeUiBinder ourUiBinder = GWT.create(TreeUiBinder.class);
     private final CloseHandler<Object> closeHandler = event -> fireEvent(CommonEvent.closeEvent(event.getSource()));
     private final OpenHandler<Object> openHandler = event -> fireEvent(CommonEvent.openEvent(event.getSource()));
+    private final CommonEventHandler handler = new CommonEventHandler() {
+        @Override
+        public void onCommonEvent(CommonEvent event) {
+            if (event.isMenu()) {
+                fireEvent(event);
+            }
+        }
+    };
     @Setter
     String openIcon;
     @Setter
@@ -50,29 +58,13 @@ public class Tree extends Composite implements HasCommonHandlers {
     };
     @UiField
     HTMLPanel root;
-    HandlerRegistration rightMenuHandlerRegistration;
     boolean enableContextMenu = false;
     private String itemStyle = "";
-    private final CommonEventHandler handler = new CommonEventHandler() {
-        @Override
-        public void onCommonEvent(CommonEvent event) {
-            if (event.isMenu()) {
-                fireEvent(event);
-            }
-        }
-    };
 
-
-    public List<TreeItem> getChildren() {
-        List<TreeItem> children = new ArrayList<>(root.getWidgetCount());
-        for (int i = 0; i < root.getWidgetCount(); i++) {
-            children.add((TreeItem) root.getWidget(i));
-        }
-        return children;
-    }
     public Tree() {
         this(Fonts.toHtmlEntity(Fonts.DOWN), Fonts.toHtmlEntity(Fonts.RIGHT));
     }
+
     public Tree(String openIcon, String closeIcon) {
         this.openIcon = openIcon;
         this.closeIcon = closeIcon;
@@ -84,6 +76,26 @@ public class Tree extends Composite implements HasCommonHandlers {
             event.stopPropagation();
             event.preventDefault();
         }, ContextMenuEvent.getType());
+    }
+
+    /**
+     * 重新加载所有的items 为子节点
+     *
+     * @param items
+     */
+    public void reorderChildren(List<TreeItem> items) {
+        root.clear();
+        for (TreeItem item : items) {
+            root.add(item);
+        }
+    }
+
+    public List<TreeItem> getChildren() {
+        List<TreeItem> children = new ArrayList<>(root.getWidgetCount());
+        for (int i = 0; i < root.getWidgetCount(); i++) {
+            children.add((TreeItem) root.getWidget(i));
+        }
+        return children;
     }
 
     /**
