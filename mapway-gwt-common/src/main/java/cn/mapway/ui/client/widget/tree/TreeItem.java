@@ -231,7 +231,13 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
     }
 
     public void setImageUrl(String iconUrl) {
-        icon.setHTML("<img src=\"" + iconUrl + "\" width=\"100%\" height=\"100%\" />");
+        if (StringUtil.isNotBlank(iconUrl)) {
+            icon.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+            icon.setHTML("<img src=\"" + iconUrl + "\" width=\"100%\" height=\"100%\" />");
+        } else {
+            icon.getElement().getStyle().setDisplay(Style.Display.NONE);
+        }
+
     }
 
     public void addStyleName(String styleName) {

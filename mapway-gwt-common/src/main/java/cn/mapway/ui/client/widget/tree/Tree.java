@@ -18,6 +18,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -58,6 +59,8 @@ public class Tree extends Composite implements HasCommonHandlers {
     };
     @UiField
     HTMLPanel root;
+    @UiField
+    HTMLPanel lbMessage;
     boolean enableContextMenu = false;
     private String itemStyle = "";
 
@@ -78,6 +81,18 @@ public class Tree extends Composite implements HasCommonHandlers {
         }, ContextMenuEvent.getType());
     }
 
+
+
+    public void setMessage(String message,Integer height) {
+        if(height != null && height > 0) {
+            lbMessage.setVisible(true);
+            lbMessage.add(new Label(message));
+            lbMessage.setHeight(height+"px");
+        }
+        else {
+            lbMessage.setVisible(false);
+        }
+    }
     /**
      * 重新加载所有的items 为子节点
      *
@@ -138,9 +153,7 @@ public class Tree extends Composite implements HasCommonHandlers {
 
     public TreeItem addImageItem(TreeItem parent, String text, String image) {
         TreeItem item = addItem(parent, text);
-        if (StringUtil.isNotBlank(image)) {
-            item.setImageUrl(image);
-        }
+        item.setImageUrl(image);
         return item;
     }
 
