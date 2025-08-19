@@ -16,7 +16,10 @@ public class Fonts {
         }
     }
 
-    	public final static String LOGIN_KEY = "e7b2";
+    	public final static String FOLDER_CREATE = "e7b4";
+	public final static String FILE_CREATE = "e7b5";
+	public final static String FOLDER_OPEN = "e7b3";
+	public final static String LOGIN_KEY = "e7b2";
 	public final static String DATASET = "e7b1";
 	public final static String CAISHA = "e7ac";
 	public final static String JIANSHE = "e7ad";
@@ -496,7 +499,10 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("LOGIN_KEY", Fonts.LOGIN_KEY);
+			unicodes.put("FOLDER_CREATE", Fonts.FOLDER_CREATE);
+	unicodes.put("FILE_CREATE", Fonts.FILE_CREATE);
+	unicodes.put("FOLDER_OPEN", Fonts.FOLDER_OPEN);
+	unicodes.put("LOGIN_KEY", Fonts.LOGIN_KEY);
 	unicodes.put("DATASET", Fonts.DATASET);
 	unicodes.put("CAISHA", Fonts.CAISHA);
 	unicodes.put("JIANSHE", Fonts.JIANSHE);

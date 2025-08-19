@@ -1,0 +1,64 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style>
+        .box {
+            display: flex;
+            align-items: center;
+            height: 36px;
+            justify-content: space-between;
+        }
+
+        .navi {
+            align-self: center;
+            flex-shrink: 0;
+            font-size: 22px;
+            justify-self: flex-end;
+            cursor: default;
+            user-select: none;
+            text-align: right;
+        }
+
+        .children {
+            display: none;
+        }
+
+        .text {
+            flex-grow: 1;
+            flex-shrink: 1;
+            cursor: default;
+            user-select: none;
+            text-wrap: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+        }
+
+        .right {
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            text-align: right;
+            padding: 0 2px;
+        }
+        .icon{
+            display: none;
+            width: 22px;
+            align-self: center;
+            justify-self: center;
+            font-size: 22px;
+            cursor: default;
+            user-select: none;
+        }
+    </ui:style>
+    <g:HTMLPanel >
+        <g:HTMLPanel styleName="{style.box}" ui:field="root">
+            <g:HTML addStyleNames="{style.navi}" ui:field="navi"/>
+            <g:HTML addStyleNames="{style.icon}" ui:field="icon"/>
+            <g:HTML addStyleNames="{style.text} text" ui:field="lbText"/>
+            <g:HTMLPanel addStyleNames="{style.right}" ui:field="rightWidget"/>
+        </g:HTMLPanel>
+        <g:HTMLPanel ui:field="childrenPanel" styleName="{style.children}">
+
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

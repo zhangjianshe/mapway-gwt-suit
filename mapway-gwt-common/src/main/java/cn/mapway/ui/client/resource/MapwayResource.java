@@ -2,6 +2,7 @@ package cn.mapway.ui.client.resource;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.resources.client.ClientBundle;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.resources.client.ImageResource;
 
 /**
@@ -9,6 +10,10 @@ import com.google.gwt.resources.client.ImageResource;
  */
 public interface MapwayResource extends ClientBundle {
     MapwayResource INSTANCE = GWT.create(MapwayResource.class);
+
+    @CssResource.NotStrict
+    @Source("mapway.css")
+    MapWayCss css();
 
     @Source({"image/default.png"})
     ImageResource defaultImage();

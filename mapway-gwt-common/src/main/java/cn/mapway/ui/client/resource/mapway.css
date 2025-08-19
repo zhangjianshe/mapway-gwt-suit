@@ -1,0 +1,23 @@
+@eval BK_HOVER "var(--color-background-hover)";
+@eval BK_SELECT "var(--color-background-selected)";
+@external .text;
+.text{
+
+}
+@external .ai-tree-item;
+.ai-tree-item{
+
+}
+.ai-tree-item[isdir="true"] > .text{
+    font-weight: bold;
+}
+.ai-tree-item[select="true"]{
+    background-color: BK_SELECT;
+}
+.ai-tree-item:HOVER{
+    background-color: BK_HOVER;
+}
+.ai-tree-item[select="true"] > .text{
+    font-weight:bold;
+    font-style: italic;
+}
