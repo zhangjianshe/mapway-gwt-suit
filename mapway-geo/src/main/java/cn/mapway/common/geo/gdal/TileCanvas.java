@@ -136,10 +136,10 @@ public class TileCanvas {
                     graphics.drawPolygon(polygon);
                 }
             } else {
-                if (lines.getCount() > 30) {
-                    log.warn("drawFeature lines.getCount()>30");
-                    log.warn("多变嵌套太多,不支持");
-                } else {
+//                if (lines.getCount() > 30) {
+//                    log.warn("drawFeature lines.getCount()>30");
+//                    log.warn("多变嵌套太多,不支持");
+//                } else {
                     for (int i = 0; i < lines.getCount(); i++) {
                         if (i == 0) {
                             Polygon polygon = toPolygon(lines.getLine(0));
@@ -158,7 +158,7 @@ public class TileCanvas {
                         graphics.setStroke(stroke);
                         graphics.draw(geoobj);
                     }
-                }
+//                }
             }
         } else if (geometry instanceof Line) {
             Line line = (Line) geometry;

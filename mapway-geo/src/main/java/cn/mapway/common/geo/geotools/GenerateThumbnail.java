@@ -304,7 +304,7 @@ public class GenerateThumbnail {
                 floats[i] = (float) data[i];
             }
             return stretch(floats, min, max);
-        } else if(dataType == gdalconst.GDT_Int16 || dataType == gdalconst.GDT_UInt16){
+        } else if(dataType == gdalconst.GDT_Int32 || dataType == gdalconst.GDT_UInt32){
             int[] data = new int[band.getXSize() * band.getYSize()];
             band.ReadRaster(0, 0, band.getXSize(), band.getYSize(), dataType, data);
             // int[] 转换为 float[]
