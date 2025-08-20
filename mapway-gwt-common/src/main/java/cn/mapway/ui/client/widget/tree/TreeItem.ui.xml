@@ -42,9 +42,9 @@
         }
         .icon{
             display: none;
-            width: 22px;
+            width: 26px;
             align-self: center;
-            justify-self: center;
+            justify-self: flex-start;
             font-size: 22px;
             cursor: default;
             user-select: none;

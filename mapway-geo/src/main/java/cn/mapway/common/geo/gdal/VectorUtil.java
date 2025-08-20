@@ -12,6 +12,7 @@ import org.nutz.lang.Each;
 import org.nutz.lang.Files;
 import org.nutz.lang.Strings;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -22,7 +23,7 @@ import java.util.Map;
 import static org.gdal.ogr.ogrConstants.*;
 
 @Slf4j
-public abstract class VectorUtil {
+public abstract class VectorUtil implements Closeable {
     protected static SpatialReference srcWgs84;
     protected static SpatialReference srcWebMercator;
     static Map<Integer, String> typeMapper;
@@ -442,7 +443,10 @@ public abstract class VectorUtil {
     }
 
     public void close() {
-        // do nothing
+        if(source!=null) {
+            source.Close();
+            source = null;
+        }
     }
 
     public Attrs createAttrs() {
