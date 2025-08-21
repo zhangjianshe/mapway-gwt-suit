@@ -260,7 +260,7 @@ public class BaseTileExtractor {
         source.position(0);
 
 
-        if (dt == GDT_Byte) {
+        if (dt == GDT_Byte || dt==GDT_Int8) {
             // read image data
             sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight, targetWidth, targetHeight, GDT_Byte, source);
             source.order(ByteOrder.nativeOrder());
@@ -727,7 +727,7 @@ public class BaseTileExtractor {
 
                     int tilePosition = (targetRect.getYAsInt() + row) * canvasSize.getXAsInt() + targetRect.getXAsInt() + col;
                     double pixelValue = 0;
-                    if (dt == GDT_Byte) {
+                    if (dt == GDT_Byte || dt==GDT_Int8) {
                         pixelValue = ((int) sourceData.get(location)) & 0xFF;
 
                     } else if (dt == GDT_Int16) {
@@ -953,7 +953,7 @@ public class BaseTileExtractor {
                 for (int x = 0; x < target.getWidthAsInt(); x++) {
                     int targePos = (target.getYAsInt() + y) * width + (target.getXAsInt() + x);
                     int sourcePos = (x + y * source.getWidthAsInt());
-                    if (dataType == GDT_Byte) {
+                    if (dataType == GDT_Byte || dataType==GDT_Int8) {
                         byte b = buffer.get(sourcePos);
                         float v = (int) b & 0xFF;
                         outputFloatBuffer.put(targePos, v);
@@ -1030,7 +1030,7 @@ public class BaseTileExtractor {
             for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
                 int location = row * targetRect.getWidthAsInt() + col;
                 double pixelValue = 0;
-                if (dt == GDT_Byte) {
+                if (dt == GDT_Byte || dt==GDT_Int8) {
                     pixelValue = sourceData.get(location) & 0xFF;
                 } else if (dt == GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
                     pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;
@@ -1056,7 +1056,7 @@ public class BaseTileExtractor {
             for (int col = 0; col < targetRect.getWidthAsInt(); col++) {
                 int location = row * targetRect.getWidthAsInt() + col;
                 double pixelValue = 0;
-                if (dt == GDT_Byte) {
+                if (dt == GDT_Byte || dt==GDT_Int8) {
                     pixelValue = sourceData.get(location) & 0xFF;
                 } else if (dt == GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
                     pixelValue = sourceData.asShortBuffer().get(location) & 0xFFFF;

@@ -8,6 +8,7 @@ package cn.mapway.geo.client.raster;
 public class ImageTools {
     /**
      * 18:14:27.269 [main] INFO cn.imagebot.geo.tools.TiffTools -  GDT_Unknown 0
+     * 18:14:27.275 [main] INFO cn.imagebot.geo.tools.TiffTools -  GDT_Int8 14
      * 18:14:27.275 [main] INFO cn.imagebot.geo.tools.TiffTools -  GDT_Byte 1
      * 18:14:27.275 [main] INFO cn.imagebot.geo.tools.TiffTools -  GDT_UInt16 2
      * 18:14:27.275 [main] INFO cn.imagebot.geo.tools.TiffTools -  GDT_Int16 3
@@ -50,6 +51,8 @@ public class ImageTools {
                 return "32bit 浮点复数";
             case 11:
                 return "64bit 浮点复数";
+            case 14:
+                return "8bit 有符号";
             default:
                 return "不知道";
         }

@@ -28,7 +28,9 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class TreeItem extends Composite implements IData<Object>, HasOpenHandlers<Object>, HasCloseHandlers<Object>, HasCommonHandlers {
     private static final TreeItemUiBinder ourUiBinder = GWT.create(TreeItemUiBinder.class);
@@ -68,6 +70,7 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
     @Getter
     String id;
     HandlerRegistration downHandlerRegistration = null;
+    Map<String, Object> attrs = new HashMap<String, Object>();
     private Object data;
     private boolean isDir = false;
 
@@ -156,11 +159,7 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
     protected TreeItem addItem(String text) {
         TreeItem item = new TreeItem();
         childrenPanel.add(item);
-        if (open) {
-            navi.getElement().setInnerHTML(openIcon);
-        } else {
-            navi.getElement().setInnerHTML(closeIcon);
-        }
+
         item.setLevel(level + 1);
         setIsDir(true);
         item.setText(text);
@@ -184,9 +183,17 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
         this.isDir = isDir;
         if (isDir) {
             root.getElement().setAttribute("isdir", "true");
+            childrenPanel.getElement().getStyle().setDisplay(Style.Display.BLOCK);
+            if (open) {
+                navi.getElement().setInnerHTML(openIcon);
+            } else {
+                navi.getElement().setInnerHTML(closeIcon);
+            }
         } else {
             root.getElement().removeAttribute("isdir");
+            childrenPanel.getElement().getStyle().setDisplay(Style.Display.NONE);
         }
+
         setLevel(level);
     }
 
@@ -230,6 +237,14 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
         icon.getElement().getStyle().setColor(color);
     }
 
+    public void setAttr(String key, Object value) {
+        attrs.put(key, value);
+    }
+
+    public Object getAttr(String key) {
+        return attrs.get(key);
+    }
+
     public void setImageUrl(String iconUrl) {
         if (StringUtil.isNotBlank(iconUrl)) {
             icon.getElement().getStyle().setDisplay(Style.Display.BLOCK);
@@ -255,6 +270,13 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
                 return;
             }
         }
+    }
+
+    public Widget getRightWidget(int index) {
+        if (index < 0 && index >= childrenPanel.getWidgetCount()) {
+            return null;
+        }
+        return childrenPanel.getWidget(index);
     }
 
     public void appendRightWidget(Widget widget) {

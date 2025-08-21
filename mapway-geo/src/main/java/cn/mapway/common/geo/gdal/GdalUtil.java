@@ -19,6 +19,7 @@ public class GdalUtil {
         GdalUtil.init();
         int GDT_Unknown = gdalconstJNI.GDT_Unknown_get();
         int GDT_Byte = gdalconstJNI.GDT_Byte_get();
+        int GDT_Int8 = gdalconstJNI.GDT_Int8_get();
         int GDT_UInt16 = gdalconstJNI.GDT_UInt16_get();
         int GDT_Int16 = gdalconstJNI.GDT_Int16_get();
         int GDT_UInt32 = gdalconstJNI.GDT_UInt32_get();
@@ -31,6 +32,7 @@ public class GdalUtil {
         int GDT_CFloat64 = gdalconstJNI.GDT_CFloat64_get();
 
         System.out.println("GDT_Byte:"+ GDT_Byte);
+        System.out.println("GDT_Int8:"+ GDT_Int8);
         System.out.println("GDT_UInt16:"+ GDT_UInt16);
         System.out.println("GDT_Int16:"+ GDT_Int16);
         System.out.println("GDT_UInt32:"+ GDT_UInt32);
