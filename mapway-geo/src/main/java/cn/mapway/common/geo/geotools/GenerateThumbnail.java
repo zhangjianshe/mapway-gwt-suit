@@ -241,43 +241,49 @@ public class GenerateThumbnail {
 
     public static BufferedImage readImage(String imageUrl){
         Dataset open = gdal.Open(imageUrl, gdalconst.GA_ReadOnly);
-        int rasterCount = open.getRasterCount();
-        BufferedImage bufferedImage = new BufferedImage(open.getRasterXSize(), open.getRasterYSize(), BufferedImage.TYPE_3BYTE_BGR);
-        if(rasterCount >=3 ){
-            // 取前三个波段
-            int rasterXSize = open.getRasterXSize();
-            int rasterYSize = open.getRasterYSize();
-            byte[] bytes = readPixelValues(open.GetRasterBand(1), 0.01, 0.99);
-            byte[] bytes1 = readPixelValues(open.GetRasterBand(2), 0.01, 0.99);
-            byte[] bytes2 = readPixelValues(open.GetRasterBand(3), 0.01, 0.99);
-            for(int x = 0; x < rasterXSize; x++){
-                for(int y = 0; y < rasterYSize; y++){
-                    byte r = bytes[x + y * rasterXSize];
-                    byte g = bytes1[x + y * rasterXSize];
-                    byte b = bytes2[x + y * rasterXSize];
-                    int value = ((255 & 0xFF) << 24) |
-                            ((r & 0xFF) << 16) |
-                            ((g & 0xFF) << 8)  |
-                            ((b & 0xFF) << 0);
-                    bufferedImage.setRGB(x, y, value);
+        try{
+            int rasterCount = open.getRasterCount();
+            BufferedImage bufferedImage = new BufferedImage(open.getRasterXSize(), open.getRasterYSize(), BufferedImage.TYPE_3BYTE_BGR);
+            if(rasterCount >=3 ){
+                // 取前三个波段
+                int rasterXSize = open.getRasterXSize();
+                int rasterYSize = open.getRasterYSize();
+                byte[] bytes = readPixelValues(open.GetRasterBand(1), 0.01, 0.99);
+                byte[] bytes1 = readPixelValues(open.GetRasterBand(2), 0.01, 0.99);
+                byte[] bytes2 = readPixelValues(open.GetRasterBand(3), 0.01, 0.99);
+                for(int x = 0; x < rasterXSize; x++){
+                    for(int y = 0; y < rasterYSize; y++){
+                        byte r = bytes[x + y * rasterXSize];
+                        byte g = bytes1[x + y * rasterXSize];
+                        byte b = bytes2[x + y * rasterXSize];
+                        int value = ((255 & 0xFF) << 24) |
+                                ((r & 0xFF) << 16) |
+                                ((g & 0xFF) << 8)  |
+                                ((b & 0xFF) << 0);
+                        bufferedImage.setRGB(x, y, value);
+                    }
+                }
+            } else {
+                // 取单波段
+                byte[] bytes = readPixelValues(open.GetRasterBand(1), 0.01, 0.99);
+                for(int x = 0; x < open.getRasterXSize(); x++){
+                    for(int y = 0; y < open.getRasterYSize(); y++){
+                        byte color = bytes[x + y * open.getRasterXSize()];
+                        int value = ((255 & 0xFF) << 24) |
+                                ((color & 0xFF) << 16) |
+                                ((color & 0xFF) << 8)  |
+                                ((color & 0xFF) << 0);
+
+                        bufferedImage.setRGB(x, y, value);
+                    }
                 }
             }
-        } else {
-            // 取单波段
-            byte[] bytes = readPixelValues(open.GetRasterBand(1), 0.01, 0.99);
-            for(int x = 0; x < open.getRasterXSize(); x++){
-                for(int y = 0; y < open.getRasterYSize(); y++){
-                    byte color = bytes[x + y * open.getRasterXSize()];
-                    int value = ((255 & 0xFF) << 24) |
-                            ((color & 0xFF) << 16) |
-                            ((color & 0xFF) << 8)  |
-                            ((color & 0xFF) << 0);
-
-                    bufferedImage.setRGB(x, y, value);
-                }
+            return bufferedImage;
+        }finally{
+            if(open != null){
+                open = null;
             }
         }
-        return bufferedImage;
     }
 
     public static byte[] readPixelValues(Band band) {
