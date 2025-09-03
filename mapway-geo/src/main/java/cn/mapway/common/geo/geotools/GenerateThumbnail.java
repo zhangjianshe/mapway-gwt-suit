@@ -281,7 +281,7 @@ public class GenerateThumbnail {
             return bufferedImage;
         }finally{
             if(open != null){
-                open = null;
+                open.delete();
             }
         }
     }
