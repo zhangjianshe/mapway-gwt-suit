@@ -241,12 +241,14 @@ public class Canny {
         int w=nms.length;
         int h=nms[0].length;
         edge=new int[w][h];
-        for(int x=0;x<w;x++) {
-            for(int y=0;y<h;y++) {
-                if(nms[x][y]>=high_th) {
-                    edge[x][y]=2;
-                }else if(nms[x][y]>=low_th) {
-                    edge[x][y]=1;
+        if(low_th != high_th){
+            for(int x=0;x<w;x++) {
+                for(int y=0;y<h;y++) {
+                    if(nms[x][y]>=high_th) {
+                        edge[x][y]=2;
+                    }else if(nms[x][y]>=low_th) {
+                        edge[x][y]=1;
+                    }
                 }
             }
         }
@@ -310,7 +312,6 @@ public class Canny {
                 if(find[x][y]==1)continue;
                 if(edge[x][y]==2) {
                     dfsWithStackAlternative(x,y,w,h);
-//                    dfs(x,y,w,h);
                 }else if(edge[x][y]==0) {
                     find[x][y]=1;
                 }
