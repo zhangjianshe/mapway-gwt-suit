@@ -3,6 +3,7 @@ package cn.mapway.common.geo.geotools;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
+import java.util.Stack;
 
 /**
  * @Author baoshuaiZealot@163.com  2023/7/12
@@ -262,6 +263,42 @@ public class Canny {
             }
         }
     }
+
+    private void dfsWithStackAlternative(int startX, int startY, int w, int h) {
+        Stack<int[]> stack = new Stack<>();
+        stack.push(new int[]{startX, startY});
+
+        while (!stack.isEmpty()) {
+            int[] current = stack.pop();
+            int x = current[0];
+            int y = current[1];
+
+            // 检查合法性：越界或已访问则跳过
+            if (x < 0 || x >= w || y < 0 || y >= h || find[x][y] == 1) {
+                continue;
+            }
+
+            // 无论何种情况，先标记已访问
+            find[x][y] = 1;
+
+            // 再判断是否是边缘点并进行特殊处理和扩散
+            if (edge[x][y] >= 1) {
+                edge[x][y] = 2;
+                // 将八个方向的邻居压入栈
+                for (int i = -1; i <= 1; i++) {
+                    for (int j = -1; j <= 1; j++) {
+                        if (i == 0 && j == 0) continue;
+                        stack.push(new int[]{x + i, y + j});
+                    }
+                }
+            }
+        }
+    }
+
+
+
+
+
     private int[][] boundary_tracking(){
         int w=edge.length;
         int h=edge[0].length;
@@ -272,7 +309,8 @@ public class Canny {
             for(int y=0;y<h;y++) {
                 if(find[x][y]==1)continue;
                 if(edge[x][y]==2) {
-                    dfs(x,y,w,h);
+                    dfsWithStackAlternative(x,y,w,h);
+//                    dfs(x,y,w,h);
                 }else if(edge[x][y]==0) {
                     find[x][y]=1;
                 }
