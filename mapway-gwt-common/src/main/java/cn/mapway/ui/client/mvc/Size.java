@@ -51,7 +51,7 @@ public class Size {
 
     /**
      * SVG representation
-     * points="50,0 21,90 98,35 2,35 79,90"
+     * Sizes="50,0 21,90 98,35 2,35 79,90"
      * x,y format
      * @return
      */
@@ -111,5 +111,62 @@ public class Size {
         x=x*scaleX;
         y=y*scaleY;
         return this;
+    }
+
+    /**
+     * Calculates the two base coordinates of an arrowhead given a line segment.
+     * The arrowhead tip is at 'endSize'.
+     *
+     * @param startSize    The starting Size of the line segment.
+     * @param endSize      The ending Size of the line segment (arrowhead tip).
+     * @param arrowLength   The length of the arrowhead (distance from tip to base).
+     * @param arrowHalfWidth The half-width of the arrowhead at its base.
+     * @return An array of two Size objects representing the base corners of the arrowhead.
+     * Returns null if the line segment has zero length (start and end Sizes are the same).
+     */
+    public static Size[] calculateArrowheadSizes(Size startSize, Size endSize,
+                                                   double arrowLength, double arrowHalfWidth) {
+
+        double x1 = startSize.x;
+        double y1 = startSize.y;
+        double x2 = endSize.x;
+        double y2 = endSize.y;
+
+        // 1. Calculate the vector of the segment (P1 to P2)
+        double Vx = x2 - x1;
+        double Vy = y2 - y1;
+
+        // 2. Calculate the length of the segment vector
+        double segmentLength = Math.sqrt(Vx * Vx + Vy * Vy);
+
+        // Handle zero-length segment to avoid division by zero
+        if (segmentLength == 0) {
+            return null;
+        }
+
+        // 3. Normalize the segment vector
+        double Ux = Vx / segmentLength;
+        double Uy = Vy / segmentLength;
+
+        // 4. Calculate a perpendicular unit vector (rotated 90 degrees clockwise)
+        double U_perp_x = -Uy;
+        double U_perp_y = Ux;
+
+        // 5. Calculate the intermediate Size for the base (back from P2 along the segment)
+        double P_base_x = x2 - arrowLength * Ux;
+        double P_base_y = y2 - arrowLength * Uy;
+
+        // 6. Calculate the two base Sizes of the arrowhead
+        Size B1 = new Size(
+                P_base_x + arrowHalfWidth * U_perp_x,
+                P_base_y + arrowHalfWidth * U_perp_y
+        );
+
+        Size B2 = new Size(
+                P_base_x - arrowHalfWidth * U_perp_x, // Subtract for the other side
+                P_base_y - arrowHalfWidth * U_perp_y
+        );
+
+        return new Size[]{endSize,B1, B2};
     }
 }

@@ -65,8 +65,8 @@ public class Rect implements Serializable, IsSerializable {
     public final Rect expand(double top, double right, double bottom, double left) {
         this.x -= left;
         this.y -= top;
-        this.width -= (left + right);
-        this.height -= (top + bottom);
+        this.width += (left + right);
+        this.height += (top + bottom);
         return this;
     }
 

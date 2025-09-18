@@ -1024,6 +1024,7 @@ public class TiffTools {
 
     private byte[] extract(ITileExtractor extractor, ImageInfo imageInfo, long tileX, long tileY, int zoom) {
         Stopwatch stopwatch = Stopwatch.begin();
+        log.info("try to open file {}",imageInfo.location);
         Dataset sourceDataset = gdal.Open(imageInfo.location, gdalconstConstants.GA_ReadOnly);
         File temp = tempFile();
         String targetPngFileName = temp.getAbsolutePath();
