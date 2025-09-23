@@ -49,6 +49,9 @@
             cursor: default;
             user-select: none;
         }
+        .icon > svg{
+            width: 100%;
+        }
     </ui:style>
     <g:HTMLPanel >
         <g:HTMLPanel styleName="{style.box}" ui:field="root">

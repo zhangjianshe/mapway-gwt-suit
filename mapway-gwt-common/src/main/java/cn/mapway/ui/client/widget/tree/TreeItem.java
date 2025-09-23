@@ -164,6 +164,9 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
         setIsDir(true);
         item.setText(text);
         item.setParentItem(this);
+        if(StringUtil.isNotBlank(getStyleName())) {
+            item.setStyleName(getStyleName());
+        }
         return item;
     }
 
@@ -251,6 +254,7 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
             {
                 icon.getElement().getStyle().setDisplay(Style.Display.BLOCK);
                 icon.setHTML(iconUrl);
+
             }
             else {
                 icon.getElement().getStyle().setDisplay(Style.Display.BLOCK);
