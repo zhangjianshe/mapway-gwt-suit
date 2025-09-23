@@ -145,7 +145,6 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
     }
 
     public void clear() {
-        data = null;
         childrenPanel.clear();
         childrenPanel.getElement().getStyle().setDisplay(Style.Display.NONE);
     }
