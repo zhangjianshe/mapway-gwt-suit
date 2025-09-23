@@ -251,6 +251,7 @@ public class TreeItem extends Composite implements IData<Object>, HasOpenHandler
             {
                 icon.getElement().getStyle().setDisplay(Style.Display.BLOCK);
                 icon.setHTML(iconUrl);
+
             }
             else {
                 icon.getElement().getStyle().setDisplay(Style.Display.BLOCK);
