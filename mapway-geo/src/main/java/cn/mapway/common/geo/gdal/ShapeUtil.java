@@ -79,6 +79,7 @@ public class ShapeUtil extends VectorUtil {
             source = getDriver().CreateDataSource(fileName);
             Vector<String> options1 = new Vector<>();
             options1.add("ENCODING=UTF-8");
+            options1.add("SHAPE_RESTORE_SHX=YES");
             layer = source.CreateLayer("Layer", spatialReference, geoType, options1);
         } catch (Exception e) {
             log.error("Open file {} {}", fileName, e.getMessage());
