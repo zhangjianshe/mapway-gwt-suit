@@ -67,6 +67,9 @@ public class AiCheckBox extends Label implements IData, HasValue<Boolean>, HasAl
 
     @Override
     public void setValue(Boolean value, boolean fireEvents) {
+        if(value==null){
+            value = false;
+        }
         this.value = value;
         if (value) {
             getElement().setAttribute("v-data", "true");
