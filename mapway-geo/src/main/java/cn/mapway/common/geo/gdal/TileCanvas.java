@@ -182,6 +182,11 @@ public class TileCanvas {
                 graphics.setColor(fillColor);
                 int width=borderStyle.width;
                 graphics.fillArc((int) (pt0.x - width), (int) (pt0.y - width), borderStyle.width*2, borderStyle.width*2, 0, 360);
+
+                graphics.setColor(borderColor);
+                graphics.setStroke(new BasicStroke(2));
+                graphics.drawArc((int) (pt0.x - width), (int) (pt0.y - width), borderStyle.width*2, borderStyle.width*2, 0, 360);
+
             }
         }
     }
