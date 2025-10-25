@@ -115,6 +115,13 @@ SUB_MODULE_POMS=(
 "README.md"
 )
 
+echo "Synchronizing parent version in sub-module POMs..."
+for  SUB_POM in  ${SUB_MODULE_POMS[@]}; do
+  echo "  -> Updating $SUB_POM"
+  execute sed -i.bak "/<parent>/,/<\\/parent>/ { s|<version>.*</version>|<version>${NEW_VERSION}</version>|; t; }" "$SUB_POM"
+  execute rm -f "${SUB_POM}.bak"
+done
+
 
 execute rm -f "pom.xml.bak"
 # 7. Commit the version change
