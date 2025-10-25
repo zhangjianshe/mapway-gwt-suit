@@ -98,13 +98,30 @@ execute sed -i.bak "0,/<version>.*<\/version>/s/<version>.*<\/version>/<version>
 execute rm -f "${POM_FILE}.bak"
 
 # NEW STEP: Update the version in sub-module pom.xml files
-SUB_MODULE_POMS=("api-tools-view/pom.xml" "api-tools-test/pom.xml" "api-tools-doc/pom.xml" "README.md")
+SUB_MODULE_POMS=(
+"mapway-geo/pom.xml"
+"mapy-gwt-ace/pom.xml"
+"mapway-gwt-common/pom.xml"
+"mapway-gwt-echart/pom.xml"
+"mapway-gwt-geo/pom.xml"
+"mapway-gwt-globe/pom.xml"
+"mapway-gwt-map/pom.xml"
+"mapway-gwt-mqtt/pom.xml"
+"mapway-gwt-openapi/pom.xml"
+"mapway-gwt-test/pom.xml"
+"mapway-gwt-xterm/pom.xml"
+"mapway-module-rbac/pom.xml"
+"mapway-spring-tools/pom.xml"
+"README.md"
+)
 
 echo "Synchronizing parent version in sub-module POMs..."
-SUB_POM=api-tools-view/pom.xml
-echo "  -> Updating $SUB_POM"
-execute sed -i.bak "/<parent>/,/<\\/parent>/ { s|<version>.*</version>|<version>${NEW_VERSION}</version>|; t; }" "$SUB_POM"
-execute rm -f "${SUB_POM}.bak"
+for  SUB_POM in  ${SUB_MODULE_POMS[@]}; do
+  echo "  -> Updating $SUB_POM"
+  execute sed -i.bak "/<parent>/,/<\\/parent>/ { s|<version>.*</version>|<version>${NEW_VERSION}</version>|; t; }" "$SUB_POM"
+  execute rm -f "${SUB_POM}.bak"
+done
+
 
 SUB_POM=api-tools-test/pom.xml
 echo "  -> Updating $SUB_POM"
