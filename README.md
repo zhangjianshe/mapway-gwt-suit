@@ -8,7 +8,7 @@ based gwt,provider a bunch of tools to build a mvc application.
 <dependency>
     <groupId>cn.mapway</groupId>
     <artifactId>mapway-gwt-common</artifactId>
-    <version>1.0.10</version>
+    <version>1.0.11</version>
 </dependency>
 ```
 
