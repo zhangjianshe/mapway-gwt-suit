@@ -111,7 +111,6 @@ SUB_MODULE_POMS=(
 "mapway-gwt-xterm/pom.xml"
 "mapway-module-rbac/pom.xml"
 "mapway-spring-tools/pom.xml"
-"README.md"
 )
 
 echo "Synchronizing parent version in sub-module POMs..."
@@ -120,6 +119,11 @@ for  SUB_POM in  ${SUB_MODULE_POMS[@]}; do
   execute sed -i.bak "/<parent>/,/<\\/parent>/ { s|<version>.*</version>|<version>${NEW_VERSION}</version>|; t; }" "$SUB_POM"
   execute rm -f "${SUB_POM}.bak"
 done
+
+SUB_POM=README.md
+echo "  -> Updating $SUB_POM"
+execute sed -i.bak "{ s|<version>.*</version>|<version>${NEW_VERSION}</version>|; t; }" "$SUB_POM"
+execute rm -f "${SUB_POM}.bak"
 
 
 execute rm -f "pom.xml.bak"
@@ -137,7 +141,7 @@ execute git tag -a "$TAG" -m "Version ${NEW_VERSION}"
 
 # 9. Push the tag to origin
 echo "Pushing tag ${TAG} to origin..."
-execute git push origin 
+execute git push origin
 execute git push origin "$TAG"
 
 echo ""
