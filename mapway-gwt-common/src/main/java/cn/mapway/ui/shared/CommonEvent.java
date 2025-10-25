@@ -437,7 +437,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(LOADEND, data);
     }
 
-    public static CommonEvent AbortEvent(Object data) {
+    public static CommonEvent abortEvent(Object data) {
         return new CommonEvent(ABORT, data);
     }
 
@@ -445,7 +445,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(READYSTATECHANGE, data);
     }
 
-    public static CommonEvent ErrorEvent(Object data) {
+    public static CommonEvent errorEvent(Object data) {
         return new CommonEvent(ERROR, data);
     }
 
