@@ -100,7 +100,7 @@ execute rm -f "${POM_FILE}.bak"
 # NEW STEP: Update the version in sub-module pom.xml files
 SUB_MODULE_POMS=(
 "mapway-geo/pom.xml"
-"mapy-gwt-ace/pom.xml"
+"mapway-gwt-ace/pom.xml"
 "mapway-gwt-common/pom.xml"
 "mapway-gwt-echart/pom.xml"
 "mapway-gwt-geo/pom.xml"
