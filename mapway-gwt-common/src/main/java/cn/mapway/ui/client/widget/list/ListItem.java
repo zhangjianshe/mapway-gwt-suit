@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.widget.List;
+package cn.mapway.ui.client.widget.list;
 
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.util.StringUtil;

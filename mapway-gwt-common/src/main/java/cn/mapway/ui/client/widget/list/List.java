@@ -1,4 +1,4 @@
-package cn.mapway.ui.client.widget.List;
+package cn.mapway.ui.client.widget.list;
 
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.shared.CommonEvent;
@@ -12,12 +12,9 @@ import com.google.gwt.user.client.ui.VerticalPanel;
 public class List extends CommonEventComposite {
     private static final ListUiBinder ourUiBinder = GWT.create(ListUiBinder.class);
     ListItem selectedItem = null;
-    ClickHandler itemClicked = new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-            ListItem listItem = (ListItem) event.getSource();
-            selectItem(listItem);
-        }
+    ClickHandler itemClicked = event -> {
+        ListItem listItem = (ListItem) event.getSource();
+        selectItem(listItem,true);
     };
     @UiField
     VerticalPanel root;
