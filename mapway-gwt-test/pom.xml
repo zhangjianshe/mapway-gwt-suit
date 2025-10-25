@@ -6,7 +6,7 @@
     <parent>
         <groupId>cn.mapway</groupId>
         <artifactId>mapway-gwt-suit</artifactId>
-        <version>1.0.6</version>
+        <version>1.0.7</version>
     </parent>
 
     <artifactId>mapway-gwt-test</artifactId>
