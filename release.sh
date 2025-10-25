@@ -115,28 +115,6 @@ SUB_MODULE_POMS=(
 "README.md"
 )
 
-echo "Synchronizing parent version in sub-module POMs..."
-for  SUB_POM in  ${SUB_MODULE_POMS[@]}; do
-  echo "  -> Updating $SUB_POM"
-  execute sed -i.bak "/<parent>/,/<\\/parent>/ { s|<version>.*</version>|<version>${NEW_VERSION}</version>|; t; }" "$SUB_POM"
-  execute rm -f "${SUB_POM}.bak"
-done
-
-
-SUB_POM=api-tools-test/pom.xml
-echo "  -> Updating $SUB_POM"
-execute sed -i.bak "s|<API_TOOLS_DOC_VERSION>.*</API_TOOLS_DOC_VERSION>|<API_TOOLS_DOC_VERSION>${NEW_VERSION}</API_TOOLS_DOC_VERSION>|" "$SUB_POM"
-execute rm -f "${SUB_POM}.bak"
-
-SUB_POM=api-tools-doc/pom.xml
-echo "  -> Updating $SUB_POM"
-execute sed -i.bak "/<parent>/,/<\\/parent>/ { s|<version>.*</version>|<version>${NEW_VERSION}</version>|; t; }" "$SUB_POM"
-execute rm -f "${SUB_POM}.bak"
-
-SUB_POM=README.md
-echo "  -> Updating $SUB_POM"
-execute sed -i.bak "s|<version>.*</version>|<version>${NEW_VERSION}</version>|" "$SUB_POM"
-execute rm -f "${SUB_POM}.bak"
 
 execute rm -f "pom.xml.bak"
 # 7. Commit the version change
