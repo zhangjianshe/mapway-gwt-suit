@@ -9,9 +9,9 @@
         <artifactId>mapway-gwt-suit</artifactId>
         <version>1.0.4</version>
         <relativePath>../pom.xml</relativePath> </parent>
-
     <artifactId>mapway-gwt-mqtt</artifactId>
-    <version>${project.parent.version}</version> <packaging>gwt-lib</packaging>
+    <version>${project.parent.version}</version>
+    <packaging>gwt-lib</packaging>
 
     <name>Mapway GWT MQTT</name>
     <description>GWT integration for MQTT communication using the Eclipse Paho MQTT client.</description>
