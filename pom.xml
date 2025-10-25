@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>cn.mapway</groupId>
     <artifactId>mapway-gwt-suit</artifactId>
-    <version>1.0.2</version>
+    <version>1.0.3</version>
     <packaging>pom</packaging>
     <name>Mapway GWT Suit</name>
     <description>A comprehensive suite of GWT-based components and tools developed by Mapway.</description>
