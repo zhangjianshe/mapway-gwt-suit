@@ -104,7 +104,6 @@ SUB_MODULE_POMS=(
 "mapway-gwt-common/pom.xml"
 "mapway-gwt-echart/pom.xml"
 "mapway-gwt-geo/pom.xml"
-"mapway-gwt-globe/pom.xml"
 "mapway-gwt-map/pom.xml"
 "mapway-gwt-mqtt/pom.xml"
 "mapway-gwt-openapi/pom.xml"
