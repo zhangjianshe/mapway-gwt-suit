@@ -45,7 +45,6 @@
         <module>mapway-geo</module>
         <module>mapway-gwt-mqtt</module>
         <module>mapway-module-rbac</module>
-        <module>mapway-gwt-globe</module>
     </modules>
 
     <properties>
