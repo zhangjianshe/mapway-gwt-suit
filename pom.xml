@@ -43,7 +43,6 @@
         <module>mapway-spring-tools</module>
         <module>mapway-gwt-echart</module>
         <module>mapway-geo</module>
-        <module>mapway-platform</module>
         <module>mapway-gwt-mqtt</module>
         <module>mapway-module-rbac</module>
         <module>mapway-gwt-globe</module>
