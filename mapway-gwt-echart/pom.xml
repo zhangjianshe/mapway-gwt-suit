@@ -7,7 +7,7 @@
     <parent>
         <artifactId>mapway-gwt-suit</artifactId>
         <groupId>cn.mapway</groupId>
-        <version>1.0.11</version>
+        <version>1.0.12</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
