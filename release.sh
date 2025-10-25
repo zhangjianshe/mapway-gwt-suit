@@ -132,6 +132,7 @@ COMMIT_MSG="Release: bump version to ${NEW_VERSION}"
 execute git add "$POM_FILE"
 # Add all sub-module POMs to the commit
 execute git add "${SUB_MODULE_POMS[@]}"
+execute git add "README.md"
 execute git commit -m "$COMMIT_MSG"
 
 
