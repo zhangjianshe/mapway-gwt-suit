@@ -4,7 +4,7 @@
 #    |---> v1.0.12
 #    |        |-> TAG v1.0.12
 #  version.txt is current released version
-set -e -x
+set -e
 # Configuration
 POM_FILE="pom.xml"
 DRY_RUN=false
