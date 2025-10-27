@@ -4,7 +4,7 @@ on:
   # Triggers when a new Git tag is pushed (e.g., git push --tags)
   push:
     tags:
-      - '*'
+      - 'v*.*.*'
   # Allows manual triggering from the GitHub Actions UI
   workflow_dispatch:
     inputs:

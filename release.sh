@@ -1,9 +1,14 @@
 #!/bin/bash
+# 每一个新的版本 都会产生一个新的分支 在新的分支上打上标签 然后推送到中央仓库
+# master
+#    |---> v1.0.12
+#    |        |-> TAG v1.0.12
+#  version.txt is current released version
 
 # Configuration
 POM_FILE="pom.xml"
 DRY_RUN=false
-
+VERSION_FILE=version.txt
 # --- Utility Functions ---
 
 # Function to parse and bump the version number (patch version)
@@ -69,12 +74,12 @@ if [ -n "$(git status --porcelain)" ]; then
 fi
 
 # 4. Extract current version from pom.xml
-echo "Reading current version from $POM_FILE..."
+echo "Reading current version from $VERSION_FILE..."
 # Use grep and sed to safely extract the version from the main <version> tag
-CURRENT_VERSION=$(grep -m 1 -A 3 '<groupId' "$POM_FILE" | grep -A 3 '<artifactId' | grep -A 1 '<version' | grep '<version' | sed -e 's/.*<version>//' -e 's/<\/version>.*//' | head -n 1 | sed 's/ //g')
-
+#CURRENT_VERSION=$(grep -m 1 -A 3 '<groupId' "$POM_FILE" | grep -A 3 '<artifactId' | grep -A 1 '<version' | grep '<version' | sed -e 's/.*<version>//' -e 's/<\/version>.*//' | head -n 1 | sed 's/ //g')
+CURRENT_VERSION=$(echo "$VERSION_FILE")
 if [ -z "$CURRENT_VERSION" ]; then
-    echo "Error: Could not extract version from $POM_FILE. Ensure the main <version> tag is present." >&2
+    echo "Error: Could not extract version from $VERSION_FILE. Ensure version.txt tag is present." >&2
     exit 1
 fi
 
@@ -88,8 +93,21 @@ if [ $? -ne 0 ]; then
 fi
 
 echo "New Version: $NEW_VERSION"
+
+#  commit new version info to version.txt
+cat "$NEW_VERSION" > version.txt
+git add version
+git commit -m "change to new version"
+
+
+
 TAG="v${NEW_VERSION}"
+NEW_BRANCH=release/${TAG}
 echo "New Tag: $TAG"
+
+git push origin
+git branch -b $NEW_BRANCH
+
 
 # 6. Update the version in pom.xml (Parent)
 echo "Updating $POM_FILE to version $NEW_VERSION..."
@@ -142,7 +160,7 @@ execute git tag -a "$TAG" -m "Version ${NEW_VERSION}"
 
 # 9. Push the tag to origin
 echo "Pushing tag ${TAG} to origin..."
-execute git push origin
+execute git push origin $NEW_BRANCH
 execute git push origin "$TAG"
 
 echo ""
