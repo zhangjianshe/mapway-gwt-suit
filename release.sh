@@ -95,7 +95,7 @@ fi
 echo "New Version: $NEW_VERSION"
 
 #  commit new version info to version.txt
-cat "$NEW_VERSION" > version.txt
+echo "$NEW_VERSION" > version.txt
 git add version.txt
 git commit -m "change to new version"
 
