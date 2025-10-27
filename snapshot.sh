@@ -27,20 +27,20 @@ BRANCH_SNAPSHOT="snapshot/$(date +%Y%m%d-%H%M%S)"
 echo "Creating branch: $BRANCH_SNAPSHOT"
 
 # Ensure we are on the base branch and up to date
-execute git checkout "$BASE_BRANCH"
-execute git pull "$TARGET_REPOSITORY" "$BASE_BRANCH"
+git checkout "$BASE_BRANCH"
+git pull "$TARGET_REPOSITORY" "$BASE_BRANCH"
 
 # Create the temporary branch
-execute git checkout -b "$BRANCH_SNAPSHOT"
+git checkout -b "$BRANCH_SNAPSHOT"
 
 # 4. Push the branch to trigger the GitHub Action
 echo "Pushing $BRANCH_SNAPSHOT to trigger snapshot deployment..."
-execute git push "$TARGET_REPOSITORY" "$BRANCH_SNAPSHOT"
+git push "$TARGET_REPOSITORY" "$BRANCH_SNAPSHOT"
 
 # 5. Clean up: Switch back and delete the temporary branch locally and remotely
-execute git checkout "$BASE_BRANCH"
+git checkout "$BASE_BRANCH"
 echo "Cleaning up local branch $BRANCH_SNAPSHOT..."
-execute git branch -D "$BRANCH_SNAPSHOT"
+git branch -D "$BRANCH_SNAPSHOT"
 # If you don't want to clutter the remote, you can delete the remote branch after deployment is finished:
 # execute git push "$TARGET_REPOSITORY" --delete "$BRANCH_SNAPSHOT"
 
