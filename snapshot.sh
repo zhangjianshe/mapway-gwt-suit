@@ -8,12 +8,7 @@ TARGET_REPOSITORY=origin
 BASE_BRANCH="master"
 SNAPSHOT_VERSION_IN_POM="1.0.0-SNAPSHOT" # Expected version in pom.xml
 
-# Function to execute a command or echo it if in dry-run mode
-# (Keep your existing execute function)
-# ...
-
-# --- Main Script Logic ---
-
+POM_FILE="pom.xml"
 # 1. Check prerequisites and uncommitted changes (as in your script)
 # ...
 
