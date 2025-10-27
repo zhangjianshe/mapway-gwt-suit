@@ -162,6 +162,7 @@ execute git tag -a "$TAG" -m "Version ${NEW_VERSION}"
 echo "Pushing tag ${TAG} to origin..."
 execute git push origin $NEW_BRANCH
 execute git push origin "$TAG"
+execute git checkout master
 
 echo ""
 if $DRY_RUN; then
