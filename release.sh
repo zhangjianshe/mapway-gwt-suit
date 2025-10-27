@@ -4,7 +4,7 @@
 #    |---> v1.0.12
 #    |        |-> TAG v1.0.12
 #  version.txt is current released version
-
+set -e -x
 # Configuration
 POM_FILE="pom.xml"
 DRY_RUN=false
@@ -106,7 +106,7 @@ NEW_BRANCH=release/${TAG}
 echo "New Tag: $TAG"
 
 git push origin
-git branch -b $NEW_BRANCH
+git checkout -b $NEW_BRANCH
 
 
 # 6. Update the version in pom.xml (Parent)
