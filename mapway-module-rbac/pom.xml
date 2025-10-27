@@ -12,7 +12,7 @@
     </parent>
 
     <artifactId>mapway-module-rbac</artifactId>
-    <packaging>gwt-lib</packaging>
+    <packaging>jar</packaging>
     <name>Mapway Module RBAC</name>
     <description>Role-Based Access Control (RBAC) module for Mapway applications, including GWT components.
     </description>
