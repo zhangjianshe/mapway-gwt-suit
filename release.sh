@@ -77,7 +77,7 @@ fi
 echo "Reading current version from $VERSION_FILE..."
 # Use grep and sed to safely extract the version from the main <version> tag
 #CURRENT_VERSION=$(grep -m 1 -A 3 '<groupId' "$POM_FILE" | grep -A 3 '<artifactId' | grep -A 1 '<version' | grep '<version' | sed -e 's/.*<version>//' -e 's/<\/version>.*//' | head -n 1 | sed 's/ //g')
-CURRENT_VERSION=$(echo "$VERSION_FILE")
+CURRENT_VERSION=$(cat "$VERSION_FILE")
 if [ -z "$CURRENT_VERSION" ]; then
     echo "Error: Could not extract version from $VERSION_FILE. Ensure version.txt tag is present." >&2
     exit 1
