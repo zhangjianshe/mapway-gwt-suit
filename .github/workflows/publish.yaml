@@ -5,6 +5,8 @@ on:
   push:
     tags:
       - 'v*.*.*'
+    branch:
+      - 'snapshot/*'
   # Allows manual triggering from the GitHub Actions UI
   workflow_dispatch:
     inputs:
