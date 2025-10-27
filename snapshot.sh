@@ -3,7 +3,7 @@
 set -e
 
 # Configuration
-TARGET_REPOSITORY=origin
+TARGET_REPOSITORY=cangling
 # For simplicity, we assume 'main' is the branch that holds the X.Y.Z-SNAPSHOT version
 BASE_BRANCH="master"
 SNAPSHOT_VERSION_IN_POM="1.0.0-SNAPSHOT" # Expected version in pom.xml

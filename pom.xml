@@ -176,12 +176,25 @@
                 </plugins>
             </build>
         </profile>
+            <profile>
+                <id>cangling</id>
+                <distributionManagement>
+                    <snapshotRepository>
+                        <id>cangling</id>
+                        <url>https://repo.cangling.cn/repository/maven-snapshots/</url>
+                    </snapshotRepository>
+                    <repository>
+                        <id>cangling</id>
+                        <url>https://repo.cangling.cn/repository/maven-releases/</url>
+                    </repository>
+                </distributionManagement>
+            </profile>
     </profiles>
 
     <distributionManagement>
         <snapshotRepository>
             <id>central</id>
-            <url>https://ossrh.sonatype.org/content/repositories/snapshots</url>
+            <url>https://ossrh.sonatype.org/content/repositories/snapshots/</url>
         </snapshotRepository>
         <repository>
             <id>central</id>
