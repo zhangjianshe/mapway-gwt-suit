@@ -56,7 +56,7 @@
         <gwt.version>2.12.2</gwt.version>
         <nutz.version>1.r.69.v20220703</nutz.version>
 
-        <mapway.gwt.suit.version>1.0.0</mapway.gwt.suit.version>
+        <mapway.gwt.suit.version>1.0.0-SNAPSHOT</mapway.gwt.suit.version>
         <slfj-api.version>1.7.33</slfj-api.version>
         <elementalVersion>1.2.1</elementalVersion>
         <gdal.version>3.8.0</gdal.version>
