@@ -45,6 +45,9 @@ public class TerminalOptions {
     @JsProperty
     public String fontWeightBold;
 
+    @JsProperty
+    public Boolean enableWebgl;
+
     protected TerminalOptions() {
 
     }

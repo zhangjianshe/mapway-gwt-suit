@@ -1,9 +1,12 @@
 package cn.mapway.xterm.client;
 
 import cn.mapway.xterm.client.addon.FitAddon;
+import cn.mapway.xterm.client.addon.IContextLose;
+import cn.mapway.xterm.client.addon.WebglAddon;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.RequiresResize;
 import com.google.gwt.user.client.ui.SimplePanel;
+import elemental2.dom.DomGlobal;
 
 /**
  * TerminalPanel
@@ -35,6 +38,16 @@ public class TerminalPanel extends SimplePanel implements RequiresResize {
         }
         fitAddon = new FitAddon();
         terminal = new Terminal(options);
+        if (options.enableWebgl != null && options.enableWebgl) {
+            WebglAddon webglAddon = new WebglAddon();
+            webglAddon.onContextLoss = new IContextLose() {
+                @Override
+                public void onContextLoss() {
+                    DomGlobal.console.log("onContextLoss");
+                }
+            };
+            terminal.loadAddon(webglAddon);
+        }
         terminal.loadAddon(fitAddon);
         terminal.open(getElement());
         fitAddon.fit();
