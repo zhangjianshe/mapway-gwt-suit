@@ -35,8 +35,9 @@ public class TerminalPanel extends SimplePanel implements RequiresResize {
         }
         fitAddon = new FitAddon();
         terminal = new Terminal(options);
-        terminal.open(getElement());
         terminal.loadAddon(fitAddon);
+        terminal.open(getElement());
+        fitAddon.fit();
         return terminal;
     }
 
