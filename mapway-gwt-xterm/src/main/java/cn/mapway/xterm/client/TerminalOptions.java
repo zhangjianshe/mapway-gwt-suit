@@ -55,7 +55,7 @@ public class TerminalOptions {
     public Boolean enableWebgl;
 
     @JsOverlay
-    public void setProperty(String key, Object value) {
+    public final void setProperty(String key, Object value) {
         JsPropertyMap<Object> map = Js.asPropertyMap(this);
         map.set(key, value);
     }
