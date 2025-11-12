@@ -6,10 +6,12 @@ import cn.mapway.ui.client.frame.ModuleDispatcher;
 import cn.mapway.ui.client.mvc.help.HelpInfo;
 import cn.mapway.ui.client.mvc.help.IHelpProvider;
 import cn.mapway.ui.client.widget.CommonEventComposite;
+import cn.mapway.ui.client.widget.panel.MessagePanel;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
+import elemental2.dom.DomGlobal;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,8 +27,10 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
     private static ModuleFactory FACTORY;
     IModuleCallback callback;
     boolean initialized = false;
+    boolean hasAuthority = true;
     private IModule mParentModule;
     private ModuleParameter mParameter;
+    private MessagePanel unauthorizedPanel;
 
     /**
      * Instantiates a new Base abstract module.
@@ -46,7 +50,6 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
         return FACTORY;
     }
 
-
     /**
      * 是否已经初始化了
      */
@@ -64,6 +67,20 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
         }
         mParentModule = parentModule;
 
+        //判断用户是否拥有此模块的 授权
+        Object object = mParameter.get(IAuthorize.IGNORE_CHECK_KEY);
+        if (object == null || !String.valueOf(object).trim().equalsIgnoreCase("true")) {
+            //用户没有特别设定　或略检查
+            Object authority = mParameter.get(IAuthorize.AUTHORITY_KEY);
+            if (authority instanceof IAuthorize) {
+                hasAuthority = ((IAuthorize) authority).isAuthorized(this.getModuleCode(), mParameter);
+            } else {
+                DomGlobal.console.log("模块权限检查配置错误");
+                hasAuthority = false;
+            }
+        } else {
+            hasAuthority = true;
+        }
 
         return true;
     }
@@ -147,7 +164,15 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
 
     @Override
     public Widget getRootWidget() {
-        return this;
+        if (hasAuthority) {
+            return this;
+        } else {
+            if (unauthorizedPanel == null) {
+                unauthorizedPanel = new MessagePanel();
+                unauthorizedPanel.setHtml("<div style='display:flex;align-items:center;justify-content:center;font-size:1.2rem;'>该模块(" + getModuleCode() + ")没有授权</div>");
+            }
+            return unauthorizedPanel;
+        }
     }
 
     private List<IModule> getModuleStack(IModule module) {
