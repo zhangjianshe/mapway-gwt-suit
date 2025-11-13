@@ -2,10 +2,7 @@ package cn.mapway.ui.client.frame;
 
 
 import cn.mapway.ui.client.event.MessageObject;
-import cn.mapway.ui.client.mvc.BaseAbstractModule;
-import cn.mapway.ui.client.mvc.IModule;
-import cn.mapway.ui.client.mvc.IToolsProvider;
-import cn.mapway.ui.client.mvc.ModuleInfo;
+import cn.mapway.ui.client.mvc.*;
 import cn.mapway.ui.client.tools.IShowMessage;
 import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.client.util.StringUtil;
@@ -59,10 +56,13 @@ public abstract class ToolbarModules extends BaseAbstractModule implements IShow
     private void switchToModule(IModule module) {
         if (current != null) {
             current.removeFromParent();
+            current=null;
         }
+        ModuleParameter parameter=new ModuleParameter();
+        parameter.put(IAuthorize.IGNORE_CHECK_KEY,"true");
+        module.initialize(ToolbarModules.this, parameter);
         current = module.getRootWidget();
         uiHolder.root.add(current);
-        module.initialize(ToolbarModules.this, null);
         uiHolder.tools.clear();
         IToolsProvider provider = (IToolsProvider) current;
         if (provider != null) {

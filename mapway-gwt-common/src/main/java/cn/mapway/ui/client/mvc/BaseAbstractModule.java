@@ -76,7 +76,8 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
                 hasAuthority = ((IAuthorize) authority).isAuthorized(this.getModuleCode(), mParameter);
             } else {
                 DomGlobal.console.log("模块权限检查配置错误");
-                hasAuthority = false;
+                //为了兼容之前的代码　所有判断错误的都允许授权
+                hasAuthority = true;
             }
         } else {
             hasAuthority = true;
