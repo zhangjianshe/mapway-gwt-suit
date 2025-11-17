@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String SATELLITE = "e7b8";
+    	public final static String SENSOR = "e7b9";
+	public final static String SATELLITE = "e7b8";
 	public final static String NP4 = "e7b7";
 	public final static String SNAPSHOT = "e7b6";
 	public final static String FOLDER_CREATE = "e7b4";
@@ -502,7 +503,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("SATELLITE", Fonts.SATELLITE);
+			unicodes.put("SENSOR", Fonts.SENSOR);
+	unicodes.put("SATELLITE", Fonts.SATELLITE);
 	unicodes.put("NP4", Fonts.NP4);
 	unicodes.put("SNAPSHOT", Fonts.SNAPSHOT);
 	unicodes.put("FOLDER_CREATE", Fonts.FOLDER_CREATE);
