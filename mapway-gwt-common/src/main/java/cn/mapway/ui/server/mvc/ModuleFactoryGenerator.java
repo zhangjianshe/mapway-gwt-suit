@@ -7,21 +7,22 @@ import com.google.gwt.core.ext.Generator;
 import com.google.gwt.core.ext.GeneratorContext;
 import com.google.gwt.core.ext.TreeLogger;
 import com.google.gwt.core.ext.UnableToCompleteException;
+import com.google.gwt.core.ext.linker.GeneratedResource;
 import com.google.gwt.core.ext.typeinfo.JClassType;
 import com.google.gwt.core.ext.typeinfo.TypeOracle;
 import com.google.gwt.user.rebind.ClassSourceFileComposerFactory;
 import com.google.gwt.user.rebind.SourceWriter;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringEscapeUtils;
+import org.nutz.json.Json;
 import org.nutz.lang.Files;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Streams;
 import org.nutz.lang.Strings;
 
-import java.io.File;
-import java.io.InputStream;
-import java.io.PrintWriter;
+import java.io.*;
 import java.lang.annotation.Annotation;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 
@@ -111,13 +112,24 @@ public class ModuleFactoryGenerator extends Generator {
 
             printResourceClass(clazzes, classBodyCodes);
             // 输出代码方法
-            printFactoryMethod(clazzes, moduleListInitCodes, moduleListCreateCodes);
+            List<ServerModuleInfo> serverModuleInfos = printFactoryMethod(clazzes, moduleListInitCodes, moduleListCreateCodes);
 
             String fileContent = readTemplate();
             fileContent = replaceAll(fileContent, genPackageName, genClassName, moduleListInitCodes.toString(), moduleListCreateCodes.toString(), classBodyCodes.toString());
             // 写入磁盘
             sourceWriter.print(fileContent);
             sourceWriter.commit(logger);
+
+            //输出模块的定义文件
+            try {
+                OutputStream outputStream = context.tryCreateResource(logger, "allModules.json");
+                outputStream.write(Json.toJson(serverModuleInfos).getBytes(StandardCharsets.UTF_8));
+                GeneratedResource generatedResource = context.commitResource(logger, outputStream);
+                log.info("ALL MODULE IS DEFINED AT {}", generatedResource.getPartialPath());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+
         }
 
         log.info("GWT 生成一个模块工厂类{}", typeName);
@@ -281,7 +293,9 @@ public class ModuleFactoryGenerator extends Generator {
      * @param intiCodes
      * @param createCodes
      */
-    private void printFactoryMethod(List<JClassType> clazzes, StringBuilder intiCodes, StringBuilder createCodes) {
+    private List<ServerModuleInfo> printFactoryMethod(List<JClassType> clazzes, StringBuilder intiCodes, StringBuilder createCodes) {
+
+        List<ServerModuleInfo> allModules=new ArrayList<>();
 
         intiCodes.append("\r\n");
         intiCodes.append("ModuleInfo moduleInfo;\r\n");
@@ -293,6 +307,8 @@ public class ModuleFactoryGenerator extends Generator {
             if (item == null) {
                 continue;
             }
+
+            allModules.add(item);
 
             if (Strings.isBlank(items.get(classType.getQualifiedSourceName()))) {
                 intiCodes.append(" moduleInfo= new ModuleInfo(\"" + item.name + "\",\"" + item.code + "\",\""
@@ -335,6 +351,7 @@ public class ModuleFactoryGenerator extends Generator {
             createCodes.append(String.format(" if(moduleCode.equals(\"%s\")){ return new %s();}\r\n", item.code, classType.getQualifiedSourceName()));
 
         }
+        return allModules;
     }
 
     /**
