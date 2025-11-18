@@ -118,7 +118,13 @@ public class RbacResourceService {
             return;
         }
         rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_KIND, "=", resourceKind.getCode()));
-        rbacResourceDao.getDao().insert(allResources);
+        for(RbacResourceEntity resource : allResources) {
+            try {
+                rbacResourceDao.getDao().insert(resource);
+            } catch (Exception e) {
+                log.error("insert module error {}", e.getMessage());
+            }
+        }
     }
 
     /**

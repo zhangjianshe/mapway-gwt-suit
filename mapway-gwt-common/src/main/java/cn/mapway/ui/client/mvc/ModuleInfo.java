@@ -15,7 +15,6 @@ import java.util.List;
  * @author zhangjianshe
  */
 public class ModuleInfo {
-
     /**
      * 排列顺序
      */
@@ -24,18 +23,15 @@ public class ModuleInfo {
      * The name.
      */
     public String name;
-
     /**
      * The code.
      */
     public String code;
-
     /**
      * 自定义图标标识码 &#x [6323]
      * 不包括前缀&#x
      */
     public String unicode;
-
     /**
      * sumamry.
      */
@@ -48,32 +44,26 @@ public class ModuleInfo {
      * module icon data base64
      */
     public ImageResource icon;
-
     /**
      * iconUrl  link or svg String or Base64 Image
      */
     public String iconUrl;
-
     /**
      * 是否单例创建.
      */
     public Boolean single;
-
     /**
      * 模块Hash值
      */
     public String hash;
-
     /**
      * The Is visible.
      */
     public boolean isVisible;
-
     /**
      * 模块分组信息
      */
     public String group;
-
     /**
      * 模块标签
      */
@@ -86,42 +76,34 @@ public class ModuleInfo {
      * 模块的父模块名称
      */
     public String parent;
-
     public List<ModuleInfo> children;
-
     public List<EventInfo> events;
-
     /**
      * 是否是引入组件
      */
     public Boolean custom;
     public ICustomModuleCreator creator;
+    public ModuleInfo() {
+        events = new ArrayList<>();
+        tags = new ArrayList<>();
+        themes = new ArrayList<>();
+        children = new ArrayList<>();
+    }
 
     /**
-     *  获取所有的标签
-     * @return
-     */
-    public List<String> getTags()
-    {
-        if(tags==null)
-        {
-            tags=new ArrayList<>();
-        }
-        return tags;
-    }
-    /**
      * 构建自定义组件
-     * @param name
+     *
      * @param code
      * @param summary
      * @param creator
+     * @parao name
      */
-    public ModuleInfo(String name, String code,String iconUrl,String unicode, String summary,ICustomModuleCreator creator) {
+    public ModuleInfo(String name, String code, String iconUrl, String unicode, String summary, ICustomModuleCreator creator) {
         this.name = name;
         this.code = code;
         this.summary = summary;
         this.isPublic = true;
-        this.unicode = StringUtil.isBlank(unicode)?Fonts.MODULE:unicode;
+        this.unicode = StringUtil.isBlank(unicode) ? Fonts.MODULE : unicode;
         this.hash = "";
         this.icon = null;
         this.isVisible = true;
@@ -129,10 +111,11 @@ public class ModuleInfo {
         this.themes = new ArrayList<>();
         children = new ArrayList<>();
         events = new ArrayList<>();
-        this.iconUrl=iconUrl;
+        this.iconUrl = iconUrl;
         this.custom = true;
         this.creator = creator;
     }
+
     /**
      * Instantiates a new module item.
      *
@@ -155,7 +138,7 @@ public class ModuleInfo {
         this.isVisible = visible;
         this.tags = new ArrayList<>();
         this.themes = new ArrayList<>();
-        this.custom=false;
+        this.custom = false;
         children = new ArrayList<>();
         events = new ArrayList<>();
     }
@@ -178,6 +161,18 @@ public class ModuleInfo {
         this(name, code, summary, isPublic, iconResource, hash, visible);
         this.group = group;
         this.unicode = unicode;
+    }
+
+    /**
+     * 获取所有的标签
+     *
+     * @return
+     */
+    public List<String> getTags() {
+        if (tags == null) {
+            tags = new ArrayList<>();
+        }
+        return tags;
     }
 
     /**
@@ -241,11 +236,12 @@ public class ModuleInfo {
 
     /**
      * 判断模块是否属于　某个主题
+     *
      * @param themeName
      * @return
      */
     public boolean forTheme(String themeName) {
-        if (themes == null || themes.size()==0 || themeName == null || themeName.length() == 0) {
+        if (themes == null || themes.size() == 0 || themeName == null || themeName.length() == 0) {
             return true;
         }
         for (String theme : themes) {
