@@ -3,7 +3,7 @@
 set -e
 
 # Configuration
-TARGET_REPOSITORY=cangling
+TARGET_REPOSITORY=cental
 # For simplicity, we assume 'main' is the branch that holds the X.Y.Z-SNAPSHOT version
 BASE_BRANCH="master"
 SNAPSHOT_VERSION_IN_POM="1.0.0-SNAPSHOT" # Expected version in pom.xml
@@ -27,7 +27,7 @@ BRANCH_SNAPSHOT="snapshot/$(date +%Y%m%d-%H%M%S)"
 echo "Creating branch: $BRANCH_SNAPSHOT"
 
 # Ensure we are on the base branch and up to date
-git checkout "$BASE_BRANCH"
+git checkout  "$BASE_BRANCH"
 git pull "$TARGET_REPOSITORY" "$BASE_BRANCH"
 
 # Create the temporary branch

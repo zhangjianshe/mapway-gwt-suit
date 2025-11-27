@@ -72,10 +72,25 @@ public class SaveBar extends CommonEventComposite implements IShowMessage, IData
             children.add(btnPanel.getWidget(i));
         }
         btnPanel.clear();
-        for (int i = 0; i < children.size(); i++) {
-            btnPanel.add(children.get(i));
+        for (Widget child : children) {
+            btnPanel.add(child);
         }
         return aiButton;
+    }
+
+    public void addNewWidget(Widget widget) {
+        if(widget==null){
+            return;
+        }
+        List<Widget> children=new ArrayList<Widget>();
+        children.add(widget);
+        for(int i=0;i<btnPanel.getWidgetCount();i++){
+            children.add(btnPanel.getWidget(i));
+        }
+        btnPanel.clear();
+        for (Widget child : children) {
+            btnPanel.add(child);
+        }
     }
 
     public void msg(Object message) {
