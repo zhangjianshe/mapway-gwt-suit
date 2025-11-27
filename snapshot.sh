@@ -27,7 +27,7 @@ BRANCH_SNAPSHOT="snapshot/$(date +%Y%m%d-%H%M%S)"
 echo "Creating branch: $BRANCH_SNAPSHOT"
 
 # Ensure we are on the base branch and up to date
-git checkout "$BASE_BRANCH"
+git checkout  "$BASE_BRANCH"
 git pull "$TARGET_REPOSITORY" "$BASE_BRANCH"
 
 # Create the temporary branch
