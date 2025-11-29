@@ -16,7 +16,23 @@ public class Fonts {
         }
     }
 
-    	public final static String SENSOR = "e7b9";
+    	public final static String SUN = "e7bb";
+	public final static String DATE = "e7ba";
+	public final static String XIAOXI = "e9aa";
+	public final static String A_FANGDA20 = "e9ab";
+	public final static String YONGHUGUANLI = "e99e";
+	public final static String SHUJUGUANLI = "e99f";
+	public final static String MOXINGXUNLIAN = "e9a0";
+	public final static String YINGXIANGCHULI = "e9a1";
+	public final static String SHESHINONGYE = "e9a2";
+	public final static String XUQINYANGZHI = "e9a3";
+	public final static String ZHONGZHIYONGDI = "e9a4";
+	public final static String XITONGGUANLI = "e9a5";
+	public final static String ZUOWUMIANJI = "e9a6";
+	public final static String YANGBENZHONGXIN = "e9a7";
+	public final static String CHENGGUOGUANLI = "e9a8";
+	public final static String YAOGANJIEYI1 = "e9a9";
+	public final static String SENSOR = "e7b9";
 	public final static String SATELLITE = "e7b8";
 	public final static String NP4 = "e7b7";
 	public final static String SNAPSHOT = "e7b6";
@@ -503,7 +519,23 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("SENSOR", Fonts.SENSOR);
+			unicodes.put("SUN", Fonts.SUN);
+	unicodes.put("DATE", Fonts.DATE);
+	unicodes.put("XIAOXI", Fonts.XIAOXI);
+	unicodes.put("A_FANGDA20", Fonts.A_FANGDA20);
+	unicodes.put("YONGHUGUANLI", Fonts.YONGHUGUANLI);
+	unicodes.put("SHUJUGUANLI", Fonts.SHUJUGUANLI);
+	unicodes.put("MOXINGXUNLIAN", Fonts.MOXINGXUNLIAN);
+	unicodes.put("YINGXIANGCHULI", Fonts.YINGXIANGCHULI);
+	unicodes.put("SHESHINONGYE", Fonts.SHESHINONGYE);
+	unicodes.put("XUQINYANGZHI", Fonts.XUQINYANGZHI);
+	unicodes.put("ZHONGZHIYONGDI", Fonts.ZHONGZHIYONGDI);
+	unicodes.put("XITONGGUANLI", Fonts.XITONGGUANLI);
+	unicodes.put("ZUOWUMIANJI", Fonts.ZUOWUMIANJI);
+	unicodes.put("YANGBENZHONGXIN", Fonts.YANGBENZHONGXIN);
+	unicodes.put("CHENGGUOGUANLI", Fonts.CHENGGUOGUANLI);
+	unicodes.put("YAOGANJIEYI1", Fonts.YAOGANJIEYI1);
+	unicodes.put("SENSOR", Fonts.SENSOR);
 	unicodes.put("SATELLITE", Fonts.SATELLITE);
 	unicodes.put("NP4", Fonts.NP4);
 	unicodes.put("SNAPSHOT", Fonts.SNAPSHOT);
