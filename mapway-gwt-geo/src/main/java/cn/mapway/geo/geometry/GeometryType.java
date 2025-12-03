@@ -15,15 +15,15 @@ import cn.mapway.ui.client.fonts.Fonts;
  * 参见 https://libgeos.org/specifications/wkb/
  */
 public enum GeometryType {
-
-    GT_UNKNOWN(0, "未知", Fonts.UNKNOWN, "GeometryCollection"),
+   //
+    GT_GEOMETRY(0, "混合类型", Fonts.GEO_COLLECTION, "Geometry"),
     GT_POINT(1, "点", Fonts.POINT, "Point"),
     GT_LINE(2, "线", Fonts.LINE, "Linestring"),
     GT_POLYGON(3, "多边形", Fonts.POLYGON, "Polygon"),
     GT_MULTI_POINT(4, "点集合", Fonts.POINTS, "MultiPoint"),
     GT_MULTI_LINE(5, "线集合", Fonts.LINES, "MultiLineString"),
     GT_MULTI_POLYGON(6, "多边形集合", Fonts.POLYGONS, "MultiPolygon"),
-    GT_GEOMETRY_COLLECTION(7, "混合类型", Fonts.GEO_COLLECTION, "GeometryCollection");
+    GT_GEOMETRY_COLLECTION(7, "集合", Fonts.TABLE_STYLE , "GeometryCollection");
 
     int code;
     String name;
@@ -45,14 +45,14 @@ public enum GeometryType {
 
     public static GeometryType valueOfCode(Integer code) {
         if (code == null) {
-            return GT_UNKNOWN;
+            return GT_GEOMETRY;
         }
         for (GeometryType gt : GeometryType.values()) {
             if (gt.code == code) {
                 return gt;
             }
         }
-        return GT_UNKNOWN;
+        return GT_GEOMETRY;
     }
 
     public int getCode() {
