@@ -3,7 +3,6 @@ package cn.mapway.ui.shared;
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.widget.CommandData;
 import com.google.gwt.event.shared.GwtEvent;
-import sun.awt.geom.Curve;
 
 import java.util.List;
 
