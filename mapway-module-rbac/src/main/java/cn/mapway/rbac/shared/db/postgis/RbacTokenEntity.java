@@ -3,6 +3,8 @@ package cn.mapway.rbac.shared.db.postgis;
 import cn.mapway.document.annotation.ApiField;
 import cn.mapway.document.annotation.Doc;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import lombok.Getter;
+import lombok.Setter;
 import org.nutz.dao.entity.annotation.*;
 
 import java.io.Serializable;
@@ -17,6 +19,8 @@ import java.sql.Timestamp;
  */
 @Table(value="rbac_token")
 @Doc("rbac_token")
+@Getter
+@Setter
 public class RbacTokenEntity implements Serializable, IsSerializable {
 
   public static final String FLD_ID = "id";

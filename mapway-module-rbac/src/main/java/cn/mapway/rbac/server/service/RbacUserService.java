@@ -1339,4 +1339,8 @@ public class RbacUserService {
         rbacOrgDao.getDao().delete(RbacTokenEntity.class,tokenId);
     }
 
+    public RbacUserEntity findUserById(Long userId) {
+        return rbacUserDao.fetch(userId);
+    }
+
 }
