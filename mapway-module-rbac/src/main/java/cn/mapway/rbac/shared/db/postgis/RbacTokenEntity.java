@@ -44,6 +44,7 @@ public class RbacTokenEntity implements Serializable, IsSerializable {
 
   @ApiField("用户ID")
   @Column(hump = true)
+  @ColDefine(notNull = true)
   private Long userId;
 
 
