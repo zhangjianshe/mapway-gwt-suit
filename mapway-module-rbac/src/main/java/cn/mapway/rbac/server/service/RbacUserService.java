@@ -478,8 +478,17 @@ public class RbacUserService {
 
             user.setPassword(Lang.sha1(RbacConstant.SALT + "_imagebot__"));
             user.setStatus("0");
+            user.setToken(R.UU16());
             user.setUserId(RbacConstant.SUPER_USER_ID);
             rbacUserDao.insert(user);
+        }else {
+            if (Strings.isBlank(user.getToken())) {
+                RbacUserEntity userEntity = new RbacUserEntity();
+                userEntity.setUserId(user.getUserId());
+                userEntity.setToken(R.UU16());
+                rbacUserDao.updateIgnoreNull(userEntity);
+                user.setToken(userEntity.getToken());
+            }
         }
     }
 
@@ -1317,6 +1326,17 @@ public class RbacUserService {
         UpdateOrgUserResponse updateOrgUserResponse = new UpdateOrgUserResponse();
         updateOrgUserResponse.setOrgUser(entity);
         return BizResult.success(updateOrgUserResponse);
+    }
+
+    public List<RbacTokenEntity> userTokens(Long userId) {
+        return rbacOrgDao.getDao().query(RbacTokenEntity.class,Cnd.where(RbacTokenEntity.FLD_USER_ID,"=",userId));
+    }
+
+    public RbacTokenEntity findTokenById(String tokenId) {
+        return rbacOrgDao.getDao().fetch(RbacTokenEntity.class,tokenId);
+    }
+    public void deleteToken(String tokenId) {
+        rbacOrgDao.getDao().delete(RbacTokenEntity.class,tokenId);
     }
 
 }

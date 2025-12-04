@@ -142,6 +142,7 @@ public class RbacServerPlugin implements IServerPlugin {
         tables.add(RbacUserCodeRoleEntity.class);
         tables.add(RbacUserEntity.class);
         tables.add(RbacResourceEntity.class);
+        tables.add(RbacTokenEntity.class);
         return tables;
     }
 

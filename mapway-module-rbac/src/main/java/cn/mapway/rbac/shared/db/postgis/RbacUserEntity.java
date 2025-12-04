@@ -3,6 +3,8 @@ package cn.mapway.rbac.shared.db.postgis;
 import cn.mapway.document.annotation.ApiField;
 import cn.mapway.document.annotation.Doc;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import lombok.Getter;
+import lombok.Setter;
 import org.nutz.dao.entity.annotation.*;
 
 import java.io.Serializable;
@@ -17,6 +19,8 @@ import java.util.Date;
  */
 @Table(value="rbac_user")
 @Doc("rbac_user")
+@Getter
+@Setter
 public class RbacUserEntity implements Serializable, IsSerializable {
   /**
    * user_id
@@ -144,6 +148,7 @@ public class RbacUserEntity implements Serializable, IsSerializable {
    */
   public static final String FLD_REL_ID = "rel_id";
 
+  public static final String FLD_TOKEN = "token";
   /**
    * 数据库表名称:rbac_user
    */
@@ -441,171 +446,17 @@ public class RbacUserEntity implements Serializable, IsSerializable {
   @Comment("相关方的ID")
   private String relId;
 
-  public Long getUserId() {
-    return this.userId;
-  }
+  /**
+   * 数据类型varchar
+   * 数据库字段长度:128(允许为空)
+   */
+  @ApiField("用户固定的TOKEN")
+  @Column("token")
+  @ColDefine(
+          type = org.nutz.dao.entity.annotation.ColType.VARCHAR,
+          width = 64
+  )
+  @Comment("用户固定的TOKEN")
+  private String token;
 
-  public void setUserId(Long userId) {
-    this.userId=userId;
-  }
-
-  public Long getDeptId() {
-    return this.deptId;
-  }
-
-  public void setDeptId(Long deptId) {
-    this.deptId=deptId;
-  }
-
-  public String getUserName() {
-    return this.userName;
-  }
-
-  public void setUserName(String userName) {
-    this.userName=userName;
-  }
-
-  public String getNickName() {
-    return this.nickName;
-  }
-
-  public void setNickName(String nickName) {
-    this.nickName=nickName;
-  }
-
-  public String getUserType() {
-    return this.userType;
-  }
-
-  public void setUserType(String userType) {
-    this.userType=userType;
-  }
-
-  public String getEmail() {
-    return this.email;
-  }
-
-  public void setEmail(String email) {
-    this.email=email;
-  }
-
-  public String getPhonenumber() {
-    return this.phonenumber;
-  }
-
-  public void setPhonenumber(String phonenumber) {
-    this.phonenumber=phonenumber;
-  }
-
-  public String getSex() {
-    return this.sex;
-  }
-
-  public void setSex(String sex) {
-    this.sex=sex;
-  }
-
-  public String getAvatar() {
-    return this.avatar;
-  }
-
-  public void setAvatar(String avatar) {
-    this.avatar=avatar;
-  }
-
-  public String getPassword() {
-    return this.password;
-  }
-
-  public void setPassword(String password) {
-    this.password=password;
-  }
-
-  public String getStatus() {
-    return this.status;
-  }
-
-  public void setStatus(String status) {
-    this.status=status;
-  }
-
-  public String getDelFlag() {
-    return this.delFlag;
-  }
-
-  public void setDelFlag(String delFlag) {
-    this.delFlag=delFlag;
-  }
-
-  public String getLoginIp() {
-    return this.loginIp;
-  }
-
-  public void setLoginIp(String loginIp) {
-    this.loginIp=loginIp;
-  }
-
-  public Date getLoginDate() {
-    return this.loginDate;
-  }
-
-  public void setLoginDate(Date loginDate) {
-    this.loginDate=loginDate;
-  }
-
-  public String getCreateBy() {
-    return this.createBy;
-  }
-
-  public void setCreateBy(String createBy) {
-    this.createBy=createBy;
-  }
-
-  public Date getCreateTime() {
-    return this.createTime;
-  }
-
-  public void setCreateTime(Date createTime) {
-    this.createTime=createTime;
-  }
-
-  public String getUpdateBy() {
-    return this.updateBy;
-  }
-
-  public void setUpdateBy(String updateBy) {
-    this.updateBy=updateBy;
-  }
-
-  public Date getUpdateTime() {
-    return this.updateTime;
-  }
-
-  public void setUpdateTime(Date updateTime) {
-    this.updateTime=updateTime;
-  }
-
-  public String getRemark() {
-    return this.remark;
-  }
-
-  public void setRemark(String remark) {
-    this.remark=remark;
-  }
-
-  public String getConfig() {
-    return this.config;
-  }
-
-  public void setConfig(String config) {
-    this.config=config;
-  }
-
-  public String getRelId() {
-    return this.relId;
-  }
-
-  public void setRelId(String relId) {
-    this.relId=relId;
-  }
 }
