@@ -148,6 +148,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int CREATE_FOLDER = 134; // 标签
     public final static int NEED_LOGIN = 135; // 需要登录
 
+    public final static int SHOW_SPECTRAL_CURVE = 136; // 显示光谱曲线
+
 
 
     public final static int OK = 200;
@@ -687,6 +689,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(CHANGE_CRS, data);
     }
 
+    public static CommonEvent showSpectralCurveEvent(Object data) {
+        return new CommonEvent(SHOW_SPECTRAL_CURVE, data);
+    }
+
     public boolean isObject() {
         return type == OBJECT;
     }
@@ -1184,6 +1190,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isLabel() {
         return LABEL == this.type;
+    }
+
+    public boolean isShowSpectralCurve() {
+        return SHOW_SPECTRAL_CURVE == this.type;
     }
 
     public static CommonEvent rbacPermissionChangeEvent(Object data) {
