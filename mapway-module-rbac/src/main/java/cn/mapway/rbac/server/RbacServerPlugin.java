@@ -59,35 +59,52 @@ public class RbacServerPlugin implements IServerPlugin {
             {
                dao.create(RbacConfigEntity.class,false);
             }
+            else {
+                Daos.migration(dao,RbacConfigEntity.class,true,true,false);
+            }
 
             if(!dao.exists(RbacOrgEntity.class)){
                 dao.create(RbacOrgEntity.class,false);
+            } else {
+                Daos.migration(dao,RbacOrgEntity.class,true,true,false);
             };
 
             if(!dao.exists(RbacOrgUserEntity.class)){
                 dao.create(RbacOrgUserEntity.class,false);
+            }else {
+                Daos.migration(dao,RbacOrgUserEntity.class,true,true,false);
             };
             if(!dao.exists(RbacRoleEntity.class)){
                 dao.create(RbacRoleEntity.class,false);
+            }else {
+                Daos.migration(dao,RbacRoleEntity.class,true,true,false);
             };
             if(!dao.exists(RbacRoleResourceEntity.class)){
                 dao.create(RbacRoleResourceEntity.class,false);
+            }else {
+                Daos.migration(dao,RbacRoleResourceEntity.class,true,true,false);
             };
             if(!dao.exists(RbacUserCodeRoleEntity.class)){
                 dao.create(RbacUserCodeRoleEntity.class,false);
+            }else {
+                Daos.migration(dao,RbacUserCodeRoleEntity.class,true,true,false);
             };
             if(!dao.exists(RbacUserEntity.class)){
                 dao.create(RbacUserEntity.class,false);
+            }else {
+                Daos.migration(dao,RbacUserEntity.class,true,true,false);
             };
             if(!dao.exists(RbacTokenEntity.class)){
                 dao.create(RbacTokenEntity.class,false);
+            }else {
+                Daos.migration(dao,RbacTokenEntity.class,true,true,false);
             };
 
             if(!dao.exists(RbacResourceEntity.class)){
                 dao.create(RbacResourceEntity.class,false);
             }
             else{
-               Daos.migration(dao,RbacResourceEntity.class,true,true,false);
+                Daos.migration(dao,RbacResourceEntity.class,true,true,false);
                 String dropConstrain="alter table public.rbac_resource drop CONSTRAINT rbac_resource_pkey;";
                 String createnew="alter table public.rbac_resource add CONSTRAINT rbac_resource_pkey PRIMARY KEY (\"resource_code\", \"kind\");";
                 DbTools dbTools=new DbTools(dao);
