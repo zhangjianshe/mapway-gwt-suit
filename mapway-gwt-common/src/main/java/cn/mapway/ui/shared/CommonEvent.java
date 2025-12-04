@@ -146,6 +146,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int RBAC_PERMISSION_CHANGE = 132; // RBAC权限变更事件
     public final static int LABEL = 133; // 标签
     public final static int CREATE_FOLDER = 134; // 标签
+    public final static int NEED_LOGIN = 135; // 需要登录
 
 
 
@@ -168,6 +169,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent needLoginEvent(Object data) {
+        return new CommonEvent(NEED_LOGIN, data);
     }
     public static CommonEvent labelEvent(Object data) {
         return new CommonEvent(LABEL, data);
@@ -1002,6 +1006,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isMouseWheel() {
         return MOUSEWHEEL == this.type;
+    }
+    public boolean isNeedLogin() {
+        return NEED_LOGIN == this.type;
     }
 
     public boolean isMouseMove() {
