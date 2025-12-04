@@ -6,25 +6,27 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public interface IRbacServerAsync {
     ///CODE_GEN_INSERT_POINT///
-	void queryUserRoleResource(QueryUserRoleResourceRequest request, AsyncCallback<RpcResult<QueryUserRoleResourceResponse>> async);
+    void queryUserRoleResource(QueryUserRoleResourceRequest request, AsyncCallback<RpcResult<QueryUserRoleResourceResponse>> async);
 
-	void queryUserOrg(QueryUserOrgRequest request, AsyncCallback<RpcResult<QueryUserOrgResponse>> async);
+    void queryUserOrg(QueryUserOrgRequest request, AsyncCallback<RpcResult<QueryUserOrgResponse>> async);
 
-	void deleteOrgUser(DeleteOrgUserRequest request, AsyncCallback<RpcResult<DeleteOrgUserResponse>> async);
+    void deleteOrgUser(DeleteOrgUserRequest request, AsyncCallback<RpcResult<DeleteOrgUserResponse>> async);
 
-	void updateOrgUser(UpdateOrgUserRequest request, AsyncCallback<RpcResult<UpdateOrgUserResponse>> async);
+    void updateOrgUser(UpdateOrgUserRequest request, AsyncCallback<RpcResult<UpdateOrgUserResponse>> async);
 
-	void queryOrgUser(QueryOrgUserRequest request, AsyncCallback<RpcResult<QueryOrgUserResponse>> async);
+    void queryOrgUser(QueryOrgUserRequest request, AsyncCallback<RpcResult<QueryOrgUserResponse>> async);
 
-	void queryOrg(QueryOrgRequest request, AsyncCallback<RpcResult<QueryOrgResponse>> async);
+    void queryOrg(QueryOrgRequest request, AsyncCallback<RpcResult<QueryOrgResponse>> async);
 
-	void deleteOrg(DeleteOrgRequest request, AsyncCallback<RpcResult<DeleteOrgResponse>> async);
+    void deleteOrg(DeleteOrgRequest request, AsyncCallback<RpcResult<DeleteOrgResponse>> async);
 
-	void updateOrg(UpdateOrgRequest request, AsyncCallback<RpcResult<UpdateOrgResponse>> async);
+    void updateOrg(UpdateOrgRequest request, AsyncCallback<RpcResult<UpdateOrgResponse>> async);
 
-	void queryCurrentUser(QueryCurrentUserRequest request, AsyncCallback<RpcResult<QueryCurrentUserResponse>> async);
+    void queryCurrentUser(QueryCurrentUserRequest request, AsyncCallback<RpcResult<QueryCurrentUserResponse>> async);
 
-	void login(LoginRequest request, AsyncCallback<RpcResult<LoginResponse>> async);
+    void login(LoginRequest request, AsyncCallback<RpcResult<LoginResponse>> async);
+
+    void logout(LogoutRequest request, AsyncCallback<RpcResult<LogoutResponse>> async);
 
     void queryUserResource(QueryUserResourceRequest request, AsyncCallback<RpcResult<QueryUserResourceResponse>> async);
 

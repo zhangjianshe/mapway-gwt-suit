@@ -52,7 +52,7 @@ public class RbacServerPlugin implements IServerPlugin {
         Dao dao = iServerContext.getBean(Dao.class);
 
 
-        String SCHEMA_DATE="2025-05-09";
+        String SCHEMA_DATE="2025-12-04";
         if(!dao.exists(RbacConfigEntity.class) || rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
 
             if(!dao.exists(RbacConfigEntity.class))
@@ -79,7 +79,9 @@ public class RbacServerPlugin implements IServerPlugin {
             if(!dao.exists(RbacUserEntity.class)){
                 dao.create(RbacUserEntity.class,false);
             };
-
+            if(!dao.exists(RbacTokenEntity.class)){
+                dao.create(RbacTokenEntity.class,false);
+            };
 
             if(!dao.exists(RbacResourceEntity.class)){
                 dao.create(RbacResourceEntity.class,false);

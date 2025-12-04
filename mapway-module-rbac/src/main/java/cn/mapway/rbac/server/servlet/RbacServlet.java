@@ -3,8 +3,10 @@ package cn.mapway.rbac.server.servlet;
 import cn.mapway.biz.core.BizContext;
 import cn.mapway.biz.core.BizRequest;
 import cn.mapway.biz.core.BizResult;
+import cn.mapway.rbac.client.user.RbacUser;
 import cn.mapway.rbac.server.RbacServerPlugin;
 import cn.mapway.rbac.server.service.*;
+import cn.mapway.rbac.shared.db.postgis.RbacUserEntity;
 import cn.mapway.rbac.shared.rpc.*;
 import cn.mapway.rbac.shared.servlet.IRbacServer;
 import cn.mapway.ui.client.IUserInfo;
@@ -77,14 +79,27 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
     DeleteUserExecutor deleteUserExecutor;
     @Resource
     UpdateRbacUserExecutor updateRbacUserExecutor;
+    @Resource
+    LogoutExecutor logoutExecutor;
+    @Resource
+    RbacUserService rbacUserService;
+
+    ///CODE_GEN_INSERT_POINT///
+
+    @Resource
+    QueryUserRoleResourceExecutor queryUserRoleResourceExecutor;
+    @Resource
+    QueryUserOrgExecutor queryUserOrgExecutor;
 
     public void extendCheckToken(List<String> methodList) {
         methodList.add("queryCurrentUser");
         methodList.add("login");
+        methodList.add("logout");
     }
 
     /**
-     *  when this method is implemented in subclass, findUserByToken getHeadTokenTag will be not called.
+     * when this method is implemented in subclass, findUserByToken getHeadTokenTag will be not called.
+     *
      * @return
      */
     @Override
@@ -94,35 +109,35 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
 
     @Override
     public IUserInfo findUserByToken(String token) {
-        return null;
+
+        RbacUserEntity userByToken = rbacUserService.findUserByToken(token);
+        if (userByToken != null) {
+            return new RbacUser(userByToken);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public String getHeadTokenTag() {
-        return null;
+        return CommonConstant.API_TOKEN;
     }
 
-
-    ///CODE_GEN_INSERT_POINT///
-	
-    @Resource
-    QueryUserRoleResourceExecutor queryUserRoleResourceExecutor;
     @Override
     public RpcResult<QueryUserRoleResourceResponse> queryUserRoleResource(QueryUserRoleResourceRequest request) {
         BizResult<QueryUserRoleResourceResponse> bizResult = queryUserRoleResourceExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
-
-
-	
-    @Resource
-    QueryUserOrgExecutor queryUserOrgExecutor;
+    @Override
+    public RpcResult<LogoutResponse> logout(LogoutRequest request) {
+        BizResult<LogoutResponse> bizResult = logoutExecutor.execute(getBizContext(), BizRequest.wrap("", request));
+        return toRpcResult(bizResult);
+    }
     @Override
     public RpcResult<QueryUserOrgResponse> queryUserOrg(QueryUserOrgRequest request) {
         BizResult<QueryUserOrgResponse> bizResult = queryUserOrgExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
-
 
 
     @Override

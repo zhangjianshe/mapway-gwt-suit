@@ -8,11 +8,11 @@ import java.util.Map;
  */
 public class Fonts {
     public static String toHtmlEntity(String fontIndex){
-        if(fontIndex==null || fontIndex.isEmpty()){
+        if(fontIndex==null || fontIndex.length()==0){
             return "";
         }
         else{
-            return "&#x"+fontIndex+";";
+            return "&#x"+fontIndex;
         }
     }
 

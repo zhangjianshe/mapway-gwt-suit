@@ -23,7 +23,6 @@ import cn.mapway.ui.shared.CommonConstant;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.nutz.dao.Cnd;
-import org.nutz.dao.Dao;
 import org.nutz.dao.Sqls;
 import org.nutz.dao.sql.Sql;
 import org.nutz.dao.util.cri.Exps;
@@ -32,14 +31,13 @@ import org.nutz.dao.util.cri.SqlValueRange;
 import org.nutz.lang.Lang;
 import org.nutz.lang.Strings;
 import org.nutz.lang.random.R;
-import org.nutz.trans.Trans;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.Cookie;
 import java.lang.annotation.Annotation;
 import java.util.*;
-import java.util.stream.Collectors;
 
 /**
  * this service save IUserInfo in the http session.
@@ -143,7 +141,7 @@ public class RbacUserService {
         List<RbacUserOrg> list = new ArrayList<>();
         for (RbacOrgUserEntity user : users) {
             RbacUserOrg userOrg = orgUserEntity2UserOrg(user);
-            if(userOrg == null){
+            if (userOrg == null) {
                 log.error("用户所属组织不存在" + user.getOrgCode());
                 continue;
             }
@@ -343,11 +341,12 @@ public class RbacUserService {
 
     /**
      * 根据userid查询用户的组织人员 ，
-     * @implSpec 注意! 有可能返回空
+     *
      * @param systemCode 系统code
-     * @param userId 用户id
-     * @param orgCode 组织code
+     * @param userId     用户id
+     * @param orgCode    组织code
      * @return RbacUserOrg
+     * @implSpec 注意! 有可能返回空
      */
     public RbacUserOrg queryOrgUser(String systemCode, String userId, String orgCode) {
         List<RbacOrgUserEntity> query = rbacOrgUserDao.query(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
@@ -364,16 +363,16 @@ public class RbacUserService {
     /**
      * RbacorgUserEntity 向 RbacUserOrg 转换方法
      *
-     * @implSpec 注意! 有可能返回空
      * @param user RbacOrgUserEntity
      * @return RbacUserOrg
+     * @implSpec 注意! 有可能返回空
      */
     private RbacUserOrg orgUserEntity2UserOrg(RbacOrgUserEntity user) {
-        if(user == null){
+        if (user == null) {
             return null;
         }
         RbacOrgEntity org = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", user.getOrgCode()));
-        if(org == null){
+        if (org == null) {
             return null;
         } else {
             RbacUserOrg userOrg = new RbacUserOrg();
@@ -446,6 +445,7 @@ public class RbacUserService {
 
         rbacUser.setExpireTime(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000);
         response.setCurrentUser(rbacUser);
+        ServletUtils.getResponse().addCookie(new Cookie(CommonConstant.API_TOKEN, user.getToken()));
 
         //全局保存一个登录用户的TOKEN对象 可以存放到Redis
         ServletUtils.getSession().setAttribute(CommonConstant.KEY_LOGIN_USER, rbacUser);
@@ -481,7 +481,7 @@ public class RbacUserService {
             user.setToken(R.UU16());
             user.setUserId(RbacConstant.SUPER_USER_ID);
             rbacUserDao.insert(user);
-        }else {
+        } else {
             if (Strings.isBlank(user.getToken())) {
                 RbacUserEntity userEntity = new RbacUserEntity();
                 userEntity.setUserId(user.getUserId());
@@ -839,8 +839,9 @@ public class RbacUserService {
     /**
      * 退出系统
      */
-    public void logout() {
+    public BizResult<LogoutResponse> logout(LogoutRequest request) {
         ServletUtils.getSession().removeAttribute(CommonConstant.KEY_LOGIN_USER);
+        return BizResult.success(new LogoutResponse());
     }
 
     /**
@@ -952,7 +953,7 @@ public class RbacUserService {
 
         userPermissions.roles = roles.toArray(new Role[0]);
         BizResult<QueryRoleResourceResponse> roleResourceResponse = queryUserResourceByKind(systemCode, userId, ResourceKind.RESOURCE_KIND_FRONT_END_COMPONENT);
-        if(roleResourceResponse.isSuccess()) {
+        if (roleResourceResponse.isSuccess()) {
             QueryRoleResourceResponse data = roleResourceResponse.getData();
             List<RbacResourceEntity> resources = data.getResources();
             userPermissions.resources = resources.stream().map((resourceEntity) -> {
@@ -992,7 +993,6 @@ public class RbacUserService {
     public void resetGroupCache() {
         plugin.getServerContext().clearToSession(RbacConstant.SESSION_CACHE_GROUP);
     }
-
 
 
     private Role fromRoleEntity(RbacRoleEntity roleEntity) {
@@ -1224,9 +1224,8 @@ public class RbacUserService {
     }
 
 
-
     private List<RbacResourceEntity> queryAllUserResource(String systemCode, String userId) {
-        if(StringUtils.isEmpty(systemCode)){
+        if (StringUtils.isEmpty(systemCode)) {
             return new ArrayList<>();
         }
         if (StringUtils.isEmpty(userId)) {
@@ -1258,7 +1257,7 @@ public class RbacUserService {
      * @return
      */
     public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String systemCode, String userId, Integer kind) {
-        if(StringUtils.isEmpty(systemCode)){
+        if (StringUtils.isEmpty(systemCode)) {
             return BizResult.error(400, "系统代码不能为空");
         }
         if (kind == null) {
@@ -1294,7 +1293,6 @@ public class RbacUserService {
     }
 
 
-
     public BizResult<QueryRoleResourceResponse> queryUserResourceByKind(String systemCode, String userId, ResourceKind kind) {
         if (kind == null) {
             return BizResult.error(400, "参数错误");
@@ -1303,14 +1301,14 @@ public class RbacUserService {
     }
 
     public BizResult<UpdateOrgUserResponse> addOrgUser(IUserInfo user, String orgCode) {
-        if(user == null){
+        if (user == null) {
             return BizResult.error(400, "用户信息不能为空");
         }
-        if(StringUtils.isEmpty(orgCode)){
+        if (StringUtils.isEmpty(orgCode)) {
             return BizResult.error(400, "组织代码不能为空");
         }
         RbacOrgEntity fetch = rbacOrgDao.fetch(Cnd.where(RbacOrgEntity.FLD_CODE, "=", orgCode));
-        if(fetch == null){
+        if (fetch == null) {
             return BizResult.error(400, "组织代码不存在");
         }
         RbacOrgUserEntity entity = new RbacOrgUserEntity();
@@ -1329,18 +1327,34 @@ public class RbacUserService {
     }
 
     public List<RbacTokenEntity> userTokens(Long userId) {
-        return rbacOrgDao.getDao().query(RbacTokenEntity.class,Cnd.where(RbacTokenEntity.FLD_USER_ID,"=",userId));
+        return rbacOrgDao.getDao().query(RbacTokenEntity.class, Cnd.where(RbacTokenEntity.FLD_USER_ID, "=", userId));
     }
 
     public RbacTokenEntity findTokenById(String tokenId) {
-        return rbacOrgDao.getDao().fetch(RbacTokenEntity.class,tokenId);
+        return rbacOrgDao.getDao().fetch(RbacTokenEntity.class, tokenId);
     }
+
     public void deleteToken(String tokenId) {
-        rbacOrgDao.getDao().delete(RbacTokenEntity.class,tokenId);
+        rbacOrgDao.getDao().delete(RbacTokenEntity.class, tokenId);
     }
 
     public RbacUserEntity findUserById(Long userId) {
         return rbacUserDao.fetch(userId);
     }
 
+    public RbacUserEntity findUserByToken(String token) {
+        if (Strings.isBlank(token)) {
+            return null;
+        }
+        RbacUserEntity fetch = rbacUserDao.fetch(Cnd.where(RbacUserEntity.FLD_TOKEN, "=", token));
+        if (fetch != null) {
+            return fetch;
+        }
+        RbacTokenEntity tokenEntity = rbacUserDao.getDao().fetch(RbacTokenEntity.class, Cnd.where(RbacTokenEntity.FLD_ID, "=", token));
+        if (tokenEntity == null || tokenEntity.getUserId() == null) {
+            return null;
+        }
+        RbacUserEntity fetch1 = rbacUserDao.fetch(tokenEntity.getId());
+        return fetch1;
+    }
 }
