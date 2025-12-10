@@ -9,8 +9,8 @@ import com.google.gwt.dom.client.Style;
  */
 public class ConvertButton  extends FontIcon {
     public ConvertButton() {
-        setIconUnicode(Fonts.SORT1);
-        Style style = getElement().getStyle();
-        style.setProperty("transform","rotate(-90deg)");
+        setIconUnicode(Fonts.GEOM_CORRECT);
+//        Style style = getElement().getStyle();
+//        style.setProperty("transform","rotate(-90deg)");
     }
 }

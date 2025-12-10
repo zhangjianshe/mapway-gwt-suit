@@ -12,6 +12,6 @@ import cn.mapway.ui.client.widget.FontIcon;
  */
 public class DownloadButton extends FontIcon {
     public DownloadButton() {
-        setIconUnicode(Fonts.DOWNLOAD);
+        setIconUnicode(Fonts.XIAZAI2);
     }
 }

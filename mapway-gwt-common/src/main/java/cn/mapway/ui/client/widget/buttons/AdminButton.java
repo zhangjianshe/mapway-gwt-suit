@@ -5,6 +5,6 @@ import cn.mapway.ui.client.widget.FontIcon;
 
 public class AdminButton extends FontIcon {
     public AdminButton() {
-        setIconUnicode(Fonts.ADMIN);
+        setIconUnicode(Fonts.YONGHUGUANLI);
     }
 }
