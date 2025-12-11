@@ -128,7 +128,17 @@ public abstract class VectorUtil implements Closeable {
             return feature.GetFieldAsString(fieldName);
         }
     }
-
+    public static String readAsStr(Feature feature, String fieldName, String encoding) {
+        FieldDefn fieldDefn = feature.GetFieldDefnRef(fieldName);
+        if (fieldDefn == null) {
+            return "";
+        }
+        if (fieldDefn.GetFieldType() == OFTString) {
+            return readString(feature, fieldName, encoding);
+        } else {
+            return feature.GetFieldAsString(fieldName);
+        }
+    }
     public  String readAsString(Feature feature, Integer fieldIndex) {
         String value = readAsString(feature, fieldIndex, getEncoding());
         return value;

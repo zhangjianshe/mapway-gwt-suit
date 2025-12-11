@@ -11,6 +11,7 @@ import cn.mapway.geo.shared.vector.*;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.img.Colors;
 import org.nutz.img.Images;
+import org.nutz.lang.Strings;
 
 import java.awt.Polygon;
 import java.awt.*;
@@ -117,6 +118,10 @@ public class TileCanvas {
         }
 
         GeoObject geometry = featureDraw.getGeometry();
+        String clColor = (String) featureDraw.properties.get("cl_color");
+        if(Strings.isNotBlank(clColor)){
+            fillColor = colorFromRgba( clColor);
+        }
         if (geometry instanceof Lines) {
             Lines lines = (Lines) geometry;
             if (lines.getCount() == 0) {
