@@ -99,7 +99,7 @@ public abstract class VectorUtil implements Closeable {
                 return wkbMultiPolygon;
             case GT_GEOMETRY_COLLECTION:
             case GT_POLYGON:
-            case GT_UNKNOWN:
+            case GT_GEOMETRY:
             default:
                 return wkbPolygon;
         }

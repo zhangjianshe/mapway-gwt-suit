@@ -183,7 +183,7 @@ public class StringUtil {
         if (time.length() < 20) {
             return time;
         }
-        return time.substring(0, 10) + time.substring(11, 19);
+        return time.substring(0, 10) +" " +time.substring(11, 19);
     }
 
     public static String formatNumber(Integer num, int length) {

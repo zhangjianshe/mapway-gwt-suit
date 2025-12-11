@@ -7,7 +7,7 @@
     <parent>
         <groupId>cn.mapway</groupId>
         <artifactId>mapway-gwt-suit</artifactId>
-        <version>1.0.0</version>
+        <version>1.0.0-SNAPSHOT</version>
         <relativePath>../pom.xml</relativePath>
     </parent>
 
@@ -18,12 +18,11 @@
     </description>
     <url>${project.parent.url}</url>
     <properties>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
-
     </properties>
 
     <dependencies>
@@ -51,7 +50,7 @@
         <dependency>
             <groupId>cn.mapway</groupId>
             <artifactId>biz-common</artifactId>
-            <version>1.8.1</version>
+            <version>1.8.47</version>
         </dependency>
         <dependency>
             <groupId>org.gwtproject</groupId>
@@ -198,4 +197,5 @@
             </plugin>
         </plugins>
     </build>
+
 </project>

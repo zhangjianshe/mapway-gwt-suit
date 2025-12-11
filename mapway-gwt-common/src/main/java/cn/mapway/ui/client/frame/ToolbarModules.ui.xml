@@ -13,12 +13,12 @@
         }
     </ui:style>
     <g:DockLayoutPanel ui:field="root">
-        <g:north size="40">
+        <g:north size="46">
             <g:HTMLPanel ui:field="panel">
                 <g:HorizontalPanel ui:field="bar" width="100%" height="100%" spacing="0"
                                    verticalAlignment="middle">
-                    <g:cell width="30px" verticalAlignment="middle">
-                        <g:HorizontalPanel height="100%" verticalAlignment="middle" horizontalAlignment="center">
+                    <g:cell width="30px" verticalAlignment="middle" horizontalAlignment="center">
+                        <g:HorizontalPanel height="100%" verticalAlignment="middle">
                             <g:Image ui:field="icon" visible="false" width="20px" height="20px"
                                      styleName="{style.icon}"/>
                             <widget:FontIcon visible="false" ui:field="fontIcon"/>

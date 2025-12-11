@@ -1,0 +1,45 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
+    <ui:style field="style" type="cn.mapway.ui.client.widget.AiPagination.MyStyle">
+        @eval BK "var(--color-background)";
+        @eval COLOR "var(--color-text-title)";
+        @eval BK_HOVER "var(--color-background-hover)";
+        @eval COLOR_HOVER "var(--color-text-title-hover)";
+        @eval BK_ACTIVE "var(--el-color-primary-light-4)";
+
+        .pagination {
+            white-space: nowrap;
+            padding: 2px 5px;
+            color: #303133;
+            text-align:center;
+            line-height: 25px;
+            height: 30px;
+            -webkit-user-select:none;
+            -moz-user-select:none;
+            -ms-user-select:none;
+            user-select:none;
+        }
+        .button{
+            margin-right: 5px;
+            margin-left: 5px;
+            font-size: 16px;
+            cursor: pointer;
+            border: 1px solid #DCDFE6;
+            background-color: BK_HOVER;
+            padding: 2px 5px;
+        }
+        .button:hover{
+            color: BK_ACTIVE;
+            border-color: BK_ACTIVE;
+            background-color: #F5F7FA;
+        }
+        .buttonSelect{
+            color: BK_ACTIVE;
+            border-color: BK_ACTIVE;
+            background-color: #F5F7FA;
+        }
+    </ui:style>
+    <g:HTMLPanel ui:field="root" styleName="{style.pagination}">
+
+    </g:HTMLPanel>
+</ui:UiBinder>

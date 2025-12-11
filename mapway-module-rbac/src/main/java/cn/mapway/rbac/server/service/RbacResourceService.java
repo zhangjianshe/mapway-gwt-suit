@@ -31,6 +31,7 @@ public class RbacResourceService {
     RbacRoleResourceDao rbacRoleResourceDao;
     @Resource
     RbacUserService rbacUserService;
+
     /**
      * 添加资源
      *
@@ -107,6 +108,26 @@ public class RbacResourceService {
     }
 
     /**
+     * 清空某类的资源点定义　并重新插入新的数据
+     *
+     * @param resourceKind
+     * @param allResources
+     */
+    public void clearAndReloadResourceByKind(ResourceKind resourceKind, List<RbacResourceEntity> allResources) {
+        if (resourceKind == null) {
+            return;
+        }
+        rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_KIND, "=", resourceKind.getCode()));
+        for(RbacResourceEntity resource : allResources) {
+            try {
+                rbacResourceDao.getDao().insert(resource);
+            } catch (Exception e) {
+                log.error("insert module error {}", e.getMessage());
+            }
+        }
+    }
+
+    /**
      * 批量删除资源
      *
      * @param resources
@@ -119,7 +140,7 @@ public class RbacResourceService {
                 .filter(this::checkRemoveResource)
                 .map(RbacResourceEntity::getResourceCode)
                 .collect(Collectors.toList());
-        if(deleteList.isEmpty()) {
+        if (deleteList.isEmpty()) {
             return 0;
         }
         Trans.exec(() -> {
@@ -149,31 +170,28 @@ public class RbacResourceService {
         List<RbacResourceEntity> updateList = resources.stream()
                 .filter(this::checkRemoveResource)
                 .collect(Collectors.toList());
-        if(updateList.isEmpty()) {
+        if (updateList.isEmpty()) {
             return 0;
         }
         int updateCount = 0;
         for (RbacResourceEntity resource : updateList) {
-            if(rbacResourceDao.update(resource) > 0){
-                updateCount ++;
+            if (rbacResourceDao.update(resource) > 0) {
+                updateCount++;
             }
         }
         return updateCount;
     }
 
     public boolean checkRemoveResource(RbacResourceEntity resource) {
-        if(resource == null){
+        if (resource == null) {
             return false;
         }
         String resourceCode = resource.getResourceCode();
-        if(StringUtils.isEmpty(resourceCode)){
+        if (StringUtils.isEmpty(resourceCode)) {
             return false;
         }
         RbacResourceEntity fetch = rbacResourceDao.fetch(resourceCode);
-        if(fetch == null){
-            return false;
-        }
-        return true;
+        return fetch != null;
     }
 
     public List<RbacResourceOperation> syncResource(List<RbacResourceEntity> newList, ResourceKind kind) {
@@ -258,7 +276,7 @@ public class RbacResourceService {
         // 检查资源是否存在
         List<RbacRoleResourceEntity> resourceList = rbacRoleResourceDao.query(Cnd.where(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "in", resourceKeys));
         // 去重
-        if(resourceList == null){
+        if (resourceList == null) {
             resourceList = new ArrayList<>();
         }
         for (RbacRoleResourceEntity resourceEntity : resourceList) {
@@ -281,7 +299,7 @@ public class RbacResourceService {
         if (resources == null || resources.isEmpty() || StringUtils.isEmpty(roleKey)) {
             return 0;
         }
-        log.info(Json.toJson( resources));
+        log.info(Json.toJson(resources));
 
         List<String> resourceKeys = resources.stream().filter(resourceEntity -> resourceEntity.getResourceCode() != null)
                 .map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());

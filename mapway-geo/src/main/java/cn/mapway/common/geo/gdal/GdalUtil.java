@@ -53,7 +53,7 @@ public class GdalUtil {
         if (gdalJNI.isAvailable()) {
             //注册所有的驱动
             gdal.AllRegister();
-            // gdal.SetConfigOption("SHAPE_RESTORE_SHX", "YES");
+            gdal.SetConfigOption("SHAPE_RESTORE_SHX", "YES");
             gdal.SetConfigOption("GDAL_FILENAME_IS_UTF8", "YES");
             gdal.SetConfigOption("SHAPE_ENCODING", "");
             log.info("GDAL Java 工具初始化 - version {}", gdal.VersionInfo("VERSION_NUM"));

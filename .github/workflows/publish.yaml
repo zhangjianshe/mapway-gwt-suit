@@ -1,8 +1,19 @@
 name: Publish to Maven Central
 
 on:
-  release:
-    types: [created]
+  # Triggers when a new Git tag is pushed (e.g., git push --tags)
+  push:
+    tags:
+      - 'v*.*.*'
+    branches:
+      - 'snapshot/*'
+  # Allows manual triggering from the GitHub Actions UI
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Specify an optional tag/version for manual deployment (e.g., 1.2.3)'
+        required: false
+        default: 'manual-run'
 
 jobs:
   publish:
@@ -17,13 +28,16 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
-          server-id: central # Match the id in pom.xml
-          server-username: ${{ secrets.MAVEN_USERNAME }}
-          server-password: ${{ secrets.MAVEN_PASSWORD }}
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_PASSWORD
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
+          cache: 'maven'
       - name: Publish to Maven Central
-        run: mvn --batch-mode deploy
+        run: mvn  --batch-mode clean  deploy -P release -ntp  -Dmaven.test.skip=true
         env:
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.MAVEN_PASSWORD }}
+

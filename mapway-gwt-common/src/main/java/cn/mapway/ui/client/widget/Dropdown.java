@@ -74,6 +74,11 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
 
     }
 
+    public void setMaxContextWidth(int maxWidth) {
+        Style style = content.getElement().getStyle();
+        style.setProperty("maxWidth", maxWidth + "px");
+    }
+
     public void setPopupMaxHeight(int maxHeight) {
         this.maxHeight = 300;
     }
@@ -264,13 +269,6 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
         return null;
     }
 
-    public String getSelectedText() {
-        if (selected != null) {
-            return selected.getText().trim();
-        }
-        return null;
-    }
-
     /**
      * 设置值为选中状态
      *
@@ -279,6 +277,13 @@ public class Dropdown extends HorizontalPanel implements IOptionProviderCallback
     @Override
     public void setValue(Object value) {
         setValue(value, true);
+    }
+
+    public String getSelectedText() {
+        if (selected != null) {
+            return selected.getText().trim();
+        }
+        return null;
     }
 
     @Override

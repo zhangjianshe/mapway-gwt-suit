@@ -6,9 +6,9 @@ package cn.mapway.ui.client.mvc;
  * @author admin
  */
 public class SwitchModuleData {
-    public String oldCode;
     private final String moduleCode;
     private final String hash;
+    public String oldCode;
     private ModuleParameter paras;
     private Boolean saveToHistory;
 
@@ -80,10 +80,17 @@ public class SwitchModuleData {
     }
 
 
-    public SwitchModuleData merge(ModuleParameter moduleParameter)
-    {
+    public SwitchModuleData merge(ModuleParameter moduleParameter) {
         this.getParameters().merge(moduleParameter);
         return this;
+    }
+
+    public SwitchModuleData ignoreCheckAuthority() {
+        this.paras.put(IAuthorize.IGNORE_CHECK_KEY, "true");
+        return this;
+    }
+    public void setAuthorityProvider(IAuthorize authorityProvider) {
+        this.paras.put(IAuthorize.AUTHORITY_KEY, authorityProvider);
     }
 
     public Boolean getSaveToHistory() {

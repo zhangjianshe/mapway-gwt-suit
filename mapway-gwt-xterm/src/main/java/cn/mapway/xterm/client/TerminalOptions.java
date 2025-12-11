@@ -1,8 +1,11 @@
 package cn.mapway.xterm.client;
 
 import cn.mapway.xterm.client.theme.Theme;
+import jsinterop.annotations.JsOverlay;
 import jsinterop.annotations.JsProperty;
 import jsinterop.annotations.JsType;
+import jsinterop.base.Js;
+import jsinterop.base.JsPropertyMap;
 
 import static jsinterop.annotations.JsPackage.GLOBAL;
 
@@ -32,6 +35,9 @@ public class TerminalOptions {
     public Theme theme;
 
     @JsProperty
+    public Boolean allowMouseEvents;
+
+    @JsProperty
     public String fontFamily;
 
     @JsProperty
@@ -44,6 +50,15 @@ public class TerminalOptions {
     public String fontWeight;
     @JsProperty
     public String fontWeightBold;
+
+    @JsProperty
+    public Boolean enableWebgl;
+
+    @JsOverlay
+    public final void setProperty(String key, Object value) {
+        JsPropertyMap<Object> map = Js.asPropertyMap(this);
+        map.set(key, value);
+    }
 
     protected TerminalOptions() {
 

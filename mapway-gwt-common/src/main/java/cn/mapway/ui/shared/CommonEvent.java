@@ -146,6 +146,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int RBAC_PERMISSION_CHANGE = 132; // RBAC权限变更事件
     public final static int LABEL = 133; // 标签
     public final static int CREATE_FOLDER = 134; // 标签
+    public final static int NEED_LOGIN = 135; // 需要登录
+
+    public final static int SHOW_SPECTRAL_CURVE = 136; // 显示光谱曲线
 
 
 
@@ -168,6 +171,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent needLoginEvent(Object data) {
+        return new CommonEvent(NEED_LOGIN, data);
     }
     public static CommonEvent labelEvent(Object data) {
         return new CommonEvent(LABEL, data);
@@ -437,7 +443,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(LOADEND, data);
     }
 
-    public static CommonEvent AbortEvent(Object data) {
+    public static CommonEvent abortEvent(Object data) {
         return new CommonEvent(ABORT, data);
     }
 
@@ -445,7 +451,7 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(READYSTATECHANGE, data);
     }
 
-    public static CommonEvent ErrorEvent(Object data) {
+    public static CommonEvent errorEvent(Object data) {
         return new CommonEvent(ERROR, data);
     }
 
@@ -681,6 +687,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public static CommonEvent changeCrsEvent(Object data) {
         return new CommonEvent(CHANGE_CRS, data);
+    }
+
+    public static CommonEvent showSpectralCurveEvent(Object data) {
+        return new CommonEvent(SHOW_SPECTRAL_CURVE, data);
     }
 
     public boolean isObject() {
@@ -1003,6 +1013,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public boolean isMouseWheel() {
         return MOUSEWHEEL == this.type;
     }
+    public boolean isNeedLogin() {
+        return NEED_LOGIN == this.type;
+    }
 
     public boolean isMouseMove() {
         return MOUSEMOVE == this.type;
@@ -1177,6 +1190,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isLabel() {
         return LABEL == this.type;
+    }
+
+    public boolean isShowSpectralCurve() {
+        return SHOW_SPECTRAL_CURVE == this.type;
     }
 
     public static CommonEvent rbacPermissionChangeEvent(Object data) {
