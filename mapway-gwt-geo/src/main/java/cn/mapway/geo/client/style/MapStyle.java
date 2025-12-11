@@ -2,11 +2,8 @@ package cn.mapway.geo.client.style;
 
 import com.google.gwt.user.client.rpc.IsSerializable;
 import jsinterop.annotations.JsType;
-import lombok.Data;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * MapStyle
@@ -21,10 +18,11 @@ public class MapStyle implements Serializable, IsSerializable {
     /**
      * 样式规则类型 缺省是简单样式
      */
-    public int styleType ;
+    public int styleType;
     /**
      * 描述样式图层
      */
-    public  StyleLayer[] styles;
+    public StyleLayer[] styles;
+    public ColorMapper[] colorMappers;
 
 }
