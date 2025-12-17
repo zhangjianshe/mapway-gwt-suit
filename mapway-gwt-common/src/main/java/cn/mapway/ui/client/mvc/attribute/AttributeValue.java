@@ -1,10 +1,9 @@
 package cn.mapway.ui.client.mvc.attribute;
 
+import cn.mapway.ui.shared.CommonConstant;
 import com.google.gwt.user.client.rpc.IsSerializable;
 import jsinterop.annotations.JsType;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.io.Serializable;
 
@@ -14,6 +13,8 @@ import java.io.Serializable;
  *
  * @author zhang
  */
+@Getter
+@Setter
 public class AttributeValue implements Serializable, IsSerializable {
     String name;
     String altName;
@@ -28,6 +29,13 @@ public class AttributeValue implements Serializable, IsSerializable {
      * @See ParameterTypeEnum
      */
     Integer parameterType;
+
+    public AttributeValue asFileFolder()
+    {
+        setEditCode(CommonConstant.EDITOR_FILE_DIR);
+        return this;
+    }
+
 
     public AttributeValue(String name, String value) {
         this.name = name;
@@ -53,54 +61,5 @@ public class AttributeValue implements Serializable, IsSerializable {
     }
     public AttributeValue()
     {
-
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getAltName() {
-        return altName;
-    }
-
-    public void setAltName(String altName) {
-        this.altName = altName;
-    }
-
-    public String getValue() {
-        return value;
-    }
-
-    public void setValue(String value) {
-        this.value = value;
-    }
-
-    public Integer getInputType() {
-        return inputType;
-    }
-
-    public void setInputType(Integer inputType) {
-        this.inputType = inputType;
-    }
-
-    public String getEditCode() {
-        return editCode;
-    }
-
-    public void setEditCode(String editCode) {
-        this.editCode = editCode;
-    }
-
-    public Integer getParameterType() {
-        return parameterType;
-    }
-
-    public void setParameterType(Integer parameterType) {
-        this.parameterType = parameterType;
     }
 }
