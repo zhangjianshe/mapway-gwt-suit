@@ -12,6 +12,6 @@ import cn.mapway.ui.client.widget.FontIcon;
 public class MapButton extends FontIcon  {
 
     public MapButton() {
-        setIconUnicode(Fonts.DITU);
+        setIconUnicode(Fonts.MAP_GLOBAL);
     }
 }
