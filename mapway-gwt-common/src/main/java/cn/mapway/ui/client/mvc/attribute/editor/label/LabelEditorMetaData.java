@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.mvc.attribute.editor.label;
 
+import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
 import cn.mapway.ui.client.mvc.attribute.marker.AbstractEditorMetaData;
 
 /**
@@ -16,5 +17,15 @@ public class LabelEditorMetaData extends AbstractEditorMetaData {
     @Override
     protected void initMetaData() {
 
+    }
+
+    public LabelEditorMetaData asHTMLLabel() {
+        replaceParameter(ParameterKeys.KEY_AS_HTML, true, false);
+        return this;
+    }
+
+    public LabelEditorMetaData setHeight(String height) {
+        replaceParameter(ParameterKeys.KEY_HEIGHT, height, false);
+        return this;
     }
 }

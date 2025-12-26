@@ -10,6 +10,7 @@ public class ParameterKeys {
     public final static String KEY_IMAGE_UPLOAD_REL = "upload_action_rel";
     public final static String KEY_WIDTH = "width";
     public final static String KEY_HEIGHT = "height";
+    public final static String KEY_AS_HTML = "as_html";
     public final static String KEY_SELECT_FILE_TYPE = "select_file_type";
     public final static String KEY_FILE_SUFFIX = "file_suffix";
     public final static String KEY_OPTIONS = "options";
