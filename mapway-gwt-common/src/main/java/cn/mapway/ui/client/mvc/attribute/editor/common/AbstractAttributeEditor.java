@@ -14,6 +14,7 @@ import cn.mapway.ui.client.mvc.attribute.editor.NotifyKind;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.core.JsObject;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,10 +31,15 @@ import java.util.List;
  * 3.重载 setAttribute getDisplayWidget getPopupWidget
  */
 public abstract class AbstractAttributeEditor<T> extends CommonEventComposite implements IAttributeEditor {
+    @Getter
     IAttribute attribute;
     /**
      * 运行时的参数
+     * -- GETTER --
+     *  获取编辑器选项
+     *  这个选项一定不为空 并且融合了 设计期和运行期 的所有编辑器参数选项
      */
+    @Getter
     List<ParameterValue> runtimeParameters;
     IAttributeEditorNotifyHandler editorNotifyHandler;
     private Object data;
@@ -47,20 +53,6 @@ public abstract class AbstractAttributeEditor<T> extends CommonEventComposite im
     @Override
     public Size getSize() {
         return new Size(700, 600);
-    }
-
-    public IAttribute getAttribute() {
-        return attribute;
-    }
-
-    /**
-     * 获取编辑器选项
-     * 这个选项一定不为空 并且融合了 设计期和运行期 的所有编辑器参数选项
-     *
-     * @return
-     */
-    public List<ParameterValue> getRuntimeParameters() {
-        return runtimeParameters;
     }
 
     /**

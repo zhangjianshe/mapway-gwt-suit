@@ -46,13 +46,13 @@ public class LabelAttributeEditor extends AbstractAttributeEditor<String> {
     @Override
     public void updateUI() {
         String v = DataCastor.castToString(getAttribute().getValue());
-        Object object = fetchParam(ParameterKeys.KEY_AS_HTML);
+        Object object = option(ParameterKeys.KEY_AS_HTML,null);
         if (DataCastor.castToBoolean(object)) {
             label.getElement().setInnerHTML(v);
         } else {
             label.setText(v);
         }
-        Object height = fetchParam(ParameterKeys.KEY_HEIGHT);
+        Object height = option(ParameterKeys.KEY_HEIGHT,null);
         if (height != null) {
             String h = String.valueOf(height);
             label.setHeight(h);
@@ -64,18 +64,5 @@ public class LabelAttributeEditor extends AbstractAttributeEditor<String> {
     @Override
     public void fromUI() {
 
-    }
-
-    private Object fetchParam(String key) {
-        List<ParameterValue> runtimeParameters = getRuntimeParameters();
-        if (StringUtil.isBlank(key) || runtimeParameters == null) {
-            return null;
-        }
-        for (ParameterValue pv : runtimeParameters) {
-            if (pv.name.equals(key)) {
-                return pv.value;
-            }
-        }
-        return null;
     }
 }
