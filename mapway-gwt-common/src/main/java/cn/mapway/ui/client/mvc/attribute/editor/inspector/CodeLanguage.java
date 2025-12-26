@@ -11,6 +11,8 @@ public enum CodeLanguage {
     HTML("HTML", "html", Fonts.HTML),
     CSS("CSS", "css", Fonts.CSS),
     XML("XML", "xml", Fonts.XML),
+    SHELL("BASH", "sh", Fonts.SHELL),
+    YML("YAML", "yml", Fonts.YAML),
     SQL("SQL", "sql", Fonts.SFILE),
     TEXT("文本", "txt", Fonts.FILE);
 

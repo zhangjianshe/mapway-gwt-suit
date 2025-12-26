@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String DEBUG = "e7d3";
+    	public final static String YAML = "e7d8";
+	public final static String DEBUG = "e7d3";
 	public final static String ATTRIBUTE = "e7d6";
 	public final static String CHUIZHIJUZHONG = "e9c4";
 	public final static String FANGDAJING_ = "e9cb";
@@ -394,6 +395,7 @@ public class Fonts {
 	public final static String SLIDER = "e719";
 	public final static String LAYOUT1 = "e71a";
 	public final static String DROPDOWN = "e717";
+	public final static String PROPERTY = "e716";
 	public final static String PILIANGTIANJIA = "e715";
 	public final static String JIAZAIZHONG = "e714";
 	public final static String THUNDER = "e713";
@@ -548,7 +550,6 @@ public class Fonts {
 	public final static String ZHONG = "e682";
 	public final static String OPEN = "e681";
 	public final static String DEVELOPER = "e680";
-	public final static String SCHEMA_PROPERTY = "e67f";
 	public final static String WARNING = "e67e";
 	public final static String STYLE = "e67d";
 	public final static String OVERVIEW = "e67c";
@@ -677,7 +678,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("DEBUG", Fonts.DEBUG);
+			unicodes.put("YAML", Fonts.YAML);
+	unicodes.put("DEBUG", Fonts.DEBUG);
 	unicodes.put("ATTRIBUTE", Fonts.ATTRIBUTE);
 	unicodes.put("CHUIZHIJUZHONG", Fonts.CHUIZHIJUZHONG);
 	unicodes.put("FANGDAJING_", Fonts.FANGDAJING_);
@@ -1055,7 +1057,7 @@ public class Fonts {
 	unicodes.put("SLIDER", Fonts.SLIDER);
 	unicodes.put("LAYOUT1", Fonts.LAYOUT1);
 	unicodes.put("DROPDOWN", Fonts.DROPDOWN);
-	unicodes.put("ATTRIBUTE", Fonts.ATTRIBUTE);
+	unicodes.put("PROPERTY", Fonts.PROPERTY);
 	unicodes.put("PILIANGTIANJIA", Fonts.PILIANGTIANJIA);
 	unicodes.put("JIAZAIZHONG", Fonts.JIAZAIZHONG);
 	unicodes.put("THUNDER", Fonts.THUNDER);
@@ -1210,7 +1212,6 @@ public class Fonts {
 	unicodes.put("ZHONG", Fonts.ZHONG);
 	unicodes.put("OPEN", Fonts.OPEN);
 	unicodes.put("DEVELOPER", Fonts.DEVELOPER);
-	unicodes.put("SCHEMA_PROPERTY", Fonts.SCHEMA_PROPERTY);
 	unicodes.put("WARNING", Fonts.WARNING);
 	unicodes.put("STYLE", Fonts.STYLE);
 	unicodes.put("OVERVIEW", Fonts.OVERVIEW);
