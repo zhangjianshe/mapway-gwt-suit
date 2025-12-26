@@ -30,7 +30,6 @@ public class LabelAttributeEditor extends AbstractAttributeEditor<String> {
         Style style = label.getElement().getStyle();
         style.setOverflow(Style.Overflow.HIDDEN);
         style.setWidth(100, Style.Unit.PCT);
-        style.setTextOverflow(Style.TextOverflow.CLIP);
     }
 
     @Override
@@ -51,12 +50,14 @@ public class LabelAttributeEditor extends AbstractAttributeEditor<String> {
             label.getElement().setInnerHTML(v);
         } else {
             label.setText(v);
+            label.setTitle(v);
         }
         Object height = option(ParameterKeys.KEY_HEIGHT,null);
         if (height != null) {
             String h = String.valueOf(height);
             label.setHeight(h);
             Style style = label.getElement().getStyle();
+            style.setProperty("textWrap","auto");
             style.setOverflow(Style.Overflow.AUTO);
         }
     }
