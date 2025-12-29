@@ -397,7 +397,7 @@ public class TiffTools {
             extractor.setColorTable(colorTable);
 
             byte[] transparentBand = extractor.getBand(dataset.GetRasterCount() == 1, new Size(targetWidth, targetHeight),
-                    source, target, sourceBandList, targetBandList);
+                    target,source,  sourceBandList, targetBandList);
             previewDataset.GetRasterBand(4).WriteRaster(0, 0, targetWidth, targetHeight, transparentBand);
             previewDataset.FlushCache();
             //输出到指定的路径
