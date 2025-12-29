@@ -370,8 +370,9 @@ public class TiffTools {
      * @param callback
      */
 
-    public static void calRasterPreview(String sourceFileName, String targetFileName, int targetWidth, List<BandInfo> bandInfos, ChanelData chanelData, ColorTable colorTable, ProgressCallback callback) {
+    public static boolean calRasterPreview(String sourceFileName, String targetFileName, int targetWidth, List<BandInfo> bandInfos, ChanelData chanelData, ColorTable colorTable, ProgressCallback callback) {
         Dataset dataset = null;
+        boolean success = false;
         try {
             dataset = gdal.Open(sourceFileName, gdalconstConstants.GA_ReadOnly);
             //读取数据 生成预览图
@@ -402,7 +403,7 @@ public class TiffTools {
             //输出到指定的路径
             Dataset targetDataset = getPngDriver().CreateCopy(targetFileName, previewDataset);
             targetDataset.FlushCache();
-            targetDataset = null;
+            success = true;
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
@@ -410,6 +411,7 @@ public class TiffTools {
                 dataset = null;
             }
         }
+        return success;
     }
 
     public static String[] extractBandOverview(Band band) {
