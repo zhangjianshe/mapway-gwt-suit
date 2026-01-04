@@ -30,6 +30,14 @@ public class AttributeValue implements Serializable, IsSerializable {
      */
     Integer parameterType;
 
+    /**
+     * 当作为　参数在流程图中进行属性传递过程中　该值表示　从上一个节点传递过来的参数映射
+     * 对应　上一个节点的参数Name
+     * 这个字段的格式为nodeId.paramName 如果没有nodeId.就表示从上一个节点
+     * 如何使用这个字段　当启动算法模型进行计算的时候　就会根据此值进行查询并赋值
+     */
+    String mapFrom;
+
     public AttributeValue asFileFolder()
     {
         setEditCode(CommonConstant.EDITOR_FILE_DIR);
