@@ -30,7 +30,11 @@ public class AttributeEditorInfo {
     public String icon;
     public int rank;
 
-
+    /**
+     *
+     */
+    public AttributeEditorInfo() {
+    }
 
     public AttributeEditorInfo(String code, String name, String group) {
         this.code = code;

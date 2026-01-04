@@ -38,7 +38,6 @@ public class AttributeValue implements Serializable, IsSerializable {
      * 如何使用这个字段　当启动算法模型进行计算的时候　就会根据此值进行查询并赋值
      */
     String mapFrom;
-
     public AttributeValue(String name, String value) {
         this.name = name;
         this.value = value;
