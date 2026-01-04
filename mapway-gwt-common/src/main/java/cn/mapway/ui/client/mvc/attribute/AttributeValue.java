@@ -1,9 +1,10 @@
 package cn.mapway.ui.client.mvc.attribute;
 
+import cn.mapway.ui.client.mvc.attribute.marker.ParameterTypeEnum;
 import cn.mapway.ui.shared.CommonConstant;
 import com.google.gwt.user.client.rpc.IsSerializable;
-import jsinterop.annotations.JsType;
-import lombok.*;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.io.Serializable;
 
@@ -38,20 +39,12 @@ public class AttributeValue implements Serializable, IsSerializable {
      */
     String mapFrom;
 
-    public AttributeValue asFileFolder()
-    {
-        setEditCode(CommonConstant.EDITOR_FILE_DIR);
-        return this;
-    }
-
-
     public AttributeValue(String name, String value) {
         this.name = name;
         this.value = value;
     }
 
     /**
-     *
      * @param name
      * @param altName
      * @param value
@@ -59,7 +52,7 @@ public class AttributeValue implements Serializable, IsSerializable {
      * @param editCode
      * @param parameterType is type
      */
-    public AttributeValue(String name, String altName,String value,Integer inputType,String editCode,Integer parameterType) {
+    public AttributeValue(String name, String altName, String value, Integer inputType, String editCode, Integer parameterType) {
         this.name = name;
         this.altName = altName;
         this.value = value;
@@ -67,7 +60,27 @@ public class AttributeValue implements Serializable, IsSerializable {
         this.editCode = editCode;
         this.parameterType = parameterType;
     }
-    public AttributeValue()
-    {
+
+    public AttributeValue() {
+    }
+
+    public AttributeValue asFileFolder() {
+        setEditCode(CommonConstant.EDITOR_FILE_DIR);
+        return this;
+    }
+
+    public AttributeValue asRunningParameter() {
+        parameterType = ParameterTypeEnum.PT_RUNNING.getCode();
+        return this;
+    }
+
+    public AttributeValue asInputParameter() {
+        parameterType = ParameterTypeEnum.PT_INPUT.getCode();
+        return this;
+    }
+
+    public AttributeValue asOutputParameter() {
+        parameterType = ParameterTypeEnum.PT_OUTPUT.getCode();
+        return this;
     }
 }
