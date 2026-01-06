@@ -25,7 +25,7 @@ import java.util.Map;
 public class WebFontImport {
     public static void main(String[] args) throws FileNotFoundException {
 
-        String zipLocation = getFromEnviroment("FONT_ZIP_LOCATION", "D:\\data\\download.zip");
+        String zipLocation = getFromEnviroment("FONT_ZIP_LOCATION", "F:\\data\\download.zip");
         String path = Files.getParent(zipLocation);
         String tempPath = path + File.separator + "temp";
         Files.createDirIfNoExists(tempPath);
