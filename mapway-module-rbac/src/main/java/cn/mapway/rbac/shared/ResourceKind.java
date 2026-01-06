@@ -20,7 +20,8 @@ public enum ResourceKind {
     RESOURCE_KIND_SAMPLE_SET(1002, "样本集"),
     RESOURCE_KIND_TRAIN_PROJECT(1003,"训练项目"),
     RESOURCE_KIND_COMPUTE_RESOURCE(1004,"硬件资源"),
-    RESOURCE_KIND_FRONT_END_COMPONENT(1005,"前端组件资源");;
+    RESOURCE_KIND_FRONT_END_COMPONENT(1005,"前端组件资源"),
+    RESOURCE_KIND_TRAIN_MODEL( 1006,"可训练模型");
 
     public final Integer code;
     public final String name;
