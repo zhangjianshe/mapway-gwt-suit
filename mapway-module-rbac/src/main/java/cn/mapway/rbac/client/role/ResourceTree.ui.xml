@@ -23,6 +23,7 @@
             padding: 10px;
             cursor: default;
             user-select: none;
+            flex-wrap: wrap;
         }
     </ui:style>
     <g:DockLayoutPanel>
@@ -32,23 +33,25 @@
         <g:north size="50">
             <g:HTMLPanel styleName="ai-top">
                 <widget:Header>系统权限点</widget:Header>
-                    <g:HorizontalPanel>
-                        <g:Button  ui:field="btnCreate">新建资源点</g:Button>
-                        <g:Button  ui:field="btnDelete">删除资源点</g:Button>
-                    </g:HorizontalPanel>
+                <g:HorizontalPanel>
+                    <g:Button ui:field="btnCreate">新建资源点</g:Button>
+                    <g:Button ui:field="btnDelete">删除资源点</g:Button>
+                </g:HorizontalPanel>
             </g:HTMLPanel>
         </g:north>
         <g:east size="300">
-            <inspector:ObjectInspector  labelWidth="80" addStyleNames="ai-border-left" vertical="true" ui:field="objectInspector"/>
+            <inspector:ObjectInspector labelWidth="80" addStyleNames="ai-border-left" vertical="true"
+                                       ui:field="objectInspector"/>
         </g:east>
+        <g:north size="80">
+            <g:ScrollPanel>
+                <g:HTMLPanel ui:field="indexPanel" addStyleNames="{style.index}">
+                </g:HTMLPanel>
+            </g:ScrollPanel>
+        </g:north>
         <g:center>
             <g:ScrollPanel>
-                <g:HTMLPanel>
-                    <g:HTMLPanel ui:field="indexPanel" addStyleNames="{style.index}">
-
-                    </g:HTMLPanel>
-                    <g:FlexTable addStyleNames="attr-table" ui:field="table" width="100%"/>
-                </g:HTMLPanel>
+                <g:FlexTable addStyleNames="attr-table" ui:field="table" width="100%"/>
             </g:ScrollPanel>
         </g:center>
     </g:DockLayoutPanel>
