@@ -3,6 +3,8 @@ package cn.mapway.rbac.shared.db.postgis;
 import cn.mapway.document.annotation.ApiField;
 import cn.mapway.document.annotation.Doc;
 import com.google.gwt.user.client.rpc.IsSerializable;
+import lombok.Getter;
+import lombok.Setter;
 import org.nutz.dao.entity.annotation.*;
 
 import java.io.Serializable;
@@ -16,6 +18,8 @@ import java.io.Serializable;
  */
 @Table(value="rbac_org")
 @Doc("rbac_org")
+@Getter
+@Setter
 public class RbacOrgEntity implements Serializable, IsSerializable {
   /**
    * id
@@ -97,6 +101,12 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   public static final String FLD_LOCATION = "location";
 
   /**
+   * location
+   * 数据库字段序号:13
+   */
+  public static final String FLD_DEFAULT_ORG = "default_org";
+
+  /**
    * 数据库表名称:rbac_org
    */
   public static final String TBL_RBAC_ORG = "rbac_org";
@@ -142,6 +152,21 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   )
   @Comment("组织图标")
   private String icon;
+
+  /**
+   * 是否是缺省组织
+   * 缺省值:null
+   * 数据类型varchar
+   * 数据库字段长度:255(允许为空)
+   */
+  @ApiField("是否是缺省组织")
+  @Column("default_org")
+  @ColDefine(
+          type = org.nutz.dao.entity.annotation.ColType.VARCHAR
+  )
+  @Comment("是否是缺省组织")
+  @Default("false")
+  private Boolean defaultOrg;
 
   /**
    * 组织简介 
@@ -300,113 +325,4 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   @Comment("初始化位置")
   private String location;
 
-
-  public String getId() {
-    return this.id;
-  }
-
-  public void setId(String id) {
-    this.id=id;
-  }
-
-  public String getName() {
-    return this.name;
-  }
-
-  public void setName(String name) {
-    this.name=name;
-  }
-
-  public String getIcon() {
-    return this.icon;
-  }
-
-  public void setIcon(String icon) {
-    this.icon=icon;
-  }
-
-  public String getSummary() {
-    return this.summary;
-  }
-
-  public void setSummary(String summary) {
-    this.summary=summary;
-  }
-
-  public String getLink() {
-    return this.link;
-  }
-
-  public void setLink(String link) {
-    this.link=link;
-  }
-
-  public String getParentId() {
-    return this.parentId;
-  }
-
-  public void setParentId(String parentId) {
-    this.parentId=parentId;
-  }
-
-  public String getAddress() {
-    return this.address;
-  }
-
-  public void setAddress(String address) {
-    this.address=address;
-  }
-
-  public String getCharger() {
-    return this.charger;
-  }
-
-  public void setCharger(String charger) {
-    this.charger=charger;
-  }
-
-  public String getEmail() {
-    return this.email;
-  }
-
-  public void setEmail(String email) {
-    this.email=email;
-  }
-
-  public String getTel() {
-    return this.tel;
-  }
-
-  public void setTel(String tel) {
-    this.tel=tel;
-  }
-
-  public String getCode() {
-    return this.code;
-  }
-
-  public void setCode(String code) {
-    this.code=code;
-  }
-
-  public String getRegionCode() {
-    return this.regionCode;
-  }
-  public void setRegionCode(String regionCode) {
-    this.regionCode=regionCode;
-  }
-
-  public Integer getRank() {
-    return this.rank;
-  }
-  public void setRank(Integer rank) {
-    this.rank=rank;
-  }
-
-  public String getLocation() {
-    return this.location;
-  }
-  public void setLocation(String location) {
-    this.location=location;
-  }
 }

@@ -4,20 +4,20 @@ import cn.mapway.rbac.shared.db.postgis.RbacOrgEntity;
 import cn.mapway.ui.client.mvc.attribute.AbstractAttribute;
 import cn.mapway.ui.client.mvc.attribute.AbstractAttributesProvider;
 import cn.mapway.ui.client.mvc.attribute.DataCastor;
+import cn.mapway.ui.client.mvc.attribute.atts.CheckBoxAttribute;
 import cn.mapway.ui.client.mvc.attribute.atts.LabelAttribute;
 import cn.mapway.ui.client.mvc.attribute.atts.TextBoxAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.IEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.icon.IconSelectorEditorMetaData;
 import cn.mapway.ui.client.mvc.attribute.editor.sys.TextAreaAttribute;
-import cn.mapway.ui.client.mvc.attribute.editor.sys.TextAreaAttributeEditorData;
 import cn.mapway.ui.client.mvc.attribute.marker.AbstractEditorMetaData;
 
 public class RbacOrgAttrProvider extends AbstractAttributesProvider {
     RbacOrgEntity org;
+
     public void rebuild(RbacOrgEntity org) {
-        this.org=org;
-        if(org==null)
-        {
+        this.org = org;
+        if (org == null) {
             getAttributes().clear();
             notifyAttributeReady();
             return;
@@ -25,7 +25,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
 
         getAttributes().clear();
 
-        getAttributes().add(new LabelAttribute("pid","上级组织") {
+        getAttributes().add(new LabelAttribute("pid", "上级组织") {
             @Override
             public Object getValue() {
                 return org.getParentId();
@@ -66,6 +66,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
                     }
                 };
             }
+
             @Override
             public Object getValue() {
                 return org.getRegionCode();
@@ -76,7 +77,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
                 org.setRegionCode(DataCastor.castToString(o));
             }
         });
-        getAttributes().add(new AbstractAttribute("location","初始化位置") {
+        getAttributes().add(new AbstractAttribute("location", "初始化位置") {
             @Override
             public IEditorMetaData getEditorMetaData() {
                 return new AbstractEditorMetaData() {
@@ -98,7 +99,20 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         });
 
-        getAttributes().add(new TextBoxAttribute("charge","排序") {
+        getAttributes().add(new CheckBoxAttribute("is_default", "缺省组织") {
+            @Override
+            public Object getValue() {
+                return org.getDefaultOrg();
+            }
+
+            @Override
+            public void setValue(Object o) {
+                org.setDefaultOrg(DataCastor.castToBoolean(o));
+            }
+        });
+
+
+        getAttributes().add(new TextBoxAttribute("charge", "排序") {
             @Override
             public Object getValue() {
                 return org.getRank();
@@ -115,7 +129,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         }.asNumber());
 
-        getAttributes().add(new TextBoxAttribute("charge","负责人") {
+        getAttributes().add(new TextBoxAttribute("charge", "负责人") {
             @Override
             public Object getValue() {
                 return org.getCharger();
@@ -123,12 +137,12 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
 
             @Override
             public void setValue(Object o) {
-                     org.setCharger(DataCastor.castToString(o));
+                org.setCharger(DataCastor.castToString(o));
             }
         });
 
 
-        getAttributes().add(new AbstractAttribute("tel","电话") {
+        getAttributes().add(new AbstractAttribute("tel", "电话") {
             @Override
             public Object getValue() {
                 return org.getTel();
@@ -139,7 +153,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
                 org.setTel(DataCastor.castToString(o));
             }
         });
-        getAttributes().add(new TextBoxAttribute("email","电子邮件") {
+        getAttributes().add(new TextBoxAttribute("email", "电子邮件") {
             @Override
             public Object getValue() {
                 return org.getEmail();
@@ -151,7 +165,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         });
 
-        getAttributes().add(new TextBoxAttribute("web","网址") {
+        getAttributes().add(new TextBoxAttribute("web", "网址") {
             @Override
             public Object getValue() {
                 return org.getLink();
@@ -164,8 +178,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
         });
 
 
-
-        getAttributes().add(new TextBoxAttribute("address","地址") {
+        getAttributes().add(new TextBoxAttribute("address", "地址") {
             @Override
             public Object getValue() {
                 return org.getAddress();
@@ -177,7 +190,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         });
 
-        getAttributes().add(new TextAreaAttribute("summary","简要介绍") {
+        getAttributes().add(new TextAreaAttribute("summary", "简要介绍") {
             @Override
             public Object getValue() {
                 return org.getSummary();
@@ -189,7 +202,7 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
             }
         });
 
-        getAttributes().add(new AbstractAttribute("icon","图标") {
+        getAttributes().add(new AbstractAttribute("icon", "图标") {
             @Override
             public IEditorMetaData getEditorMetaData() {
                 return new IconSelectorEditorMetaData();
@@ -209,14 +222,14 @@ public class RbacOrgAttrProvider extends AbstractAttributesProvider {
 
         notifyAttributeReady();
     }
+
     public RbacOrgEntity getOrg() {
         return org;
     }
 
     @Override
     public String getAttributeTitle() {
-        if(org==null)
-        {
+        if (org == null) {
             return "选择组织";
         }
 

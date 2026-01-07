@@ -1,8 +1,11 @@
 package cn.mapway.rbac.server.service;
 
+import cn.mapway.rbac.server.dao.RbacOrgDao;
 import cn.mapway.rbac.server.dao.RbacResourceDao;
 import cn.mapway.rbac.server.dao.RbacRoleResourceDao;
+import cn.mapway.rbac.shared.RbacConstant;
 import cn.mapway.rbac.shared.ResourceKind;
+import cn.mapway.rbac.shared.db.postgis.RbacOrgEntity;
 import cn.mapway.rbac.shared.db.postgis.RbacResourceEntity;
 import cn.mapway.rbac.shared.db.postgis.RbacRoleResourceEntity;
 import cn.mapway.rbac.shared.rpc.RbacResourceOperation;
@@ -31,6 +34,25 @@ public class RbacResourceService {
     RbacRoleResourceDao rbacRoleResourceDao;
     @Resource
     RbacUserService rbacUserService;
+    @Resource
+    RbacOrgDao rbacOrgDao;
+
+    /**
+     * 获取缺省组织
+     *
+     * @return
+     */
+    public RbacOrgEntity getDefaultOrg() {
+        List<RbacOrgEntity> query = rbacOrgDao.query(Cnd.where(RbacOrgEntity.FLD_DEFAULT_ORG, "=", true));
+        if (query.isEmpty()) {
+            List<RbacOrgEntity> queried = rbacOrgDao.query(Cnd.where(RbacOrgEntity.FLD_CODE, "=", RbacConstant.RBAC_ORG_DEFAULT));
+            if (queried.isEmpty()) {
+                return null;
+            }
+            return queried.get(0);
+        }
+        return query.get(0);
+    }
 
     /**
      * 添加资源
@@ -118,7 +140,7 @@ public class RbacResourceService {
             return;
         }
         rbacResourceDao.clear(Cnd.where(RbacResourceEntity.FLD_KIND, "=", resourceKind.getCode()));
-        for(RbacResourceEntity resource : allResources) {
+        for (RbacResourceEntity resource : allResources) {
             try {
                 rbacResourceDao.getDao().insert(resource);
             } catch (Exception e) {
