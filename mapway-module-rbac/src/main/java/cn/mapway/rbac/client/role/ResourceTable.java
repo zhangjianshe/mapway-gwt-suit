@@ -46,7 +46,6 @@ public class ResourceTable extends AiFlexTable implements HasCommonHandlers {
             setWidget(row, col++, new Header("删除"));
         }
         setWidget(row, col++, new Header("资源编码"));
-        setWidget(row, col++, new Header("类别"));
         setWidget(row, col++, new Header("资源名称"));
         setWidget(row, col++, new Header("资源类型"));
         setWidget(row, col++, new Header("说明"));
@@ -62,8 +61,7 @@ public class ResourceTable extends AiFlexTable implements HasCommonHandlers {
                 setWidget(row, col++, deleteButton);
             }
             setWidget(row, col++, new Label(resource.getResourceCode()));
-            setWidget(row, col++, new Label(resource.getCatalog()));
-            setWidget(row, col++, new Label(resource.getName()));
+            setWidget(row, col++, new Label(resource.getCatalog()+"/"+resource.getName()));
             setWidget(row, col++, new Label(ResourceKind.fromCode(resource.getKind()).getName()));
             setWidget(row, col++, new Label(resource.getSummary()));
 

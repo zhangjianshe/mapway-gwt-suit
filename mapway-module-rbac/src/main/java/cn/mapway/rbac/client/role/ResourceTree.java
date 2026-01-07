@@ -221,8 +221,8 @@ public class ResourceTree extends CommonEventComposite {
                     updateSelect();
                 });
                 table.setWidget(row, col++, checkBoxEx);
-                cellFormatter.setWidth(row,col,"32px");
-                table.setText(row, col++, resource.getName());
+                cellFormatter.setWidth(row,col-1,"32px");
+                table.setText(row, col++, resource.getCatalog()+"/"+resource.getName());
                 table.setText(row, col++, resource.getResourceCode());
                 table.setText(row, col++, resource.getSummary());
             }
