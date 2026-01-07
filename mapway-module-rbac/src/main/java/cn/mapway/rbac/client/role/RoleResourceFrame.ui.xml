@@ -19,9 +19,10 @@
             </g:HTMLPanel>
         </g:north>
         <g:center>
+            <g:ScrollPanel>
             <role:ResourceTable ui:field="resourceTable">
-
             </role:ResourceTable>
+            </g:ScrollPanel>
         </g:center>
     </g:DockLayoutPanel>
 </ui:UiBinder>

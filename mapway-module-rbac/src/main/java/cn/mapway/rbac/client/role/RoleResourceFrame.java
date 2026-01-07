@@ -24,6 +24,9 @@ import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @ModuleMarker(value = RoleResourceFrame.MODULE_CODE,
         name = "角色资源",
         unicode = Fonts.RBAC_ROLE_RESOURCE,
@@ -101,8 +104,8 @@ public class RoleResourceFrame extends BaseAbstractModule {
             @Override
             public void onCommonEvent(CommonEvent commonEvent) {
                 if (commonEvent.isOk()) {
-                    RbacResourceEntity resource = commonEvent.getValue();
-                    doAddResource(resource);
+                    List<RbacResourceEntity> resources=commonEvent.getValue();
+                    doAddResource(resources);
                 }
                 dialog.hide();
             }
@@ -150,9 +153,13 @@ public class RoleResourceFrame extends BaseAbstractModule {
      *
      * @param resource
      */
-    private void doAddResource(RbacResourceEntity resource) {
+    private void doAddResource(List<RbacResourceEntity> resource) {
         UpdateRoleResourceRequest request = new UpdateRoleResourceRequest();
-        request.setResourceCode(resource.getResourceCode());
+        List<String> codes = new ArrayList<String>();
+        for (RbacResourceEntity item : resource) {
+            codes.add(item.getResourceCode());
+        }
+        request.setResourceCodes(codes);
         request.setRoleCode(selectedRole.code);
         RbacServerProxy.get().updateRoleResource(request, new AsyncCallbackLambda<RpcResult<UpdateRoleResourceResponse>>() {
             @Override

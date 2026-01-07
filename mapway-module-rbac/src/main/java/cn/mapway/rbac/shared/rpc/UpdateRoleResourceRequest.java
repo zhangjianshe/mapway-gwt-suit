@@ -6,6 +6,7 @@ import com.google.gwt.user.client.rpc.IsSerializable;
 import lombok.Data;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * QueryRegionRequest
@@ -17,6 +18,6 @@ import java.io.Serializable;
 public class UpdateRoleResourceRequest implements Serializable, IsSerializable {
     @ApiField(value = "角色CODE",example = "1")
     String roleCode;
-    @ApiField(value = "资源CODE",example = "1")
-    String resourceCode;
+    @ApiField(value = "资源CODE",example = "[]")
+    List<String> resourceCodes;
 }

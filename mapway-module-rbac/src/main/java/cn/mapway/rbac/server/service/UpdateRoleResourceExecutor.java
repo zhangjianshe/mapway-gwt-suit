@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Cnd;
 import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
+import org.nutz.lang.Strings;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
@@ -49,34 +50,37 @@ public class UpdateRoleResourceExecutor extends AbstractBizExecutor<UpdateRoleRe
 
         //判断权限
         BizResult<Boolean> assignResource = rbacUserService.isAssignResource(user, null, RbacConstant.RESOURCE_RBAC_MAINTAINER);
-        if(assignResource.isFailed()){
+        if (assignResource.isFailed()) {
             return assignResource.asBizResult();
         }
 
-
-        Cnd where = Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", request.getRoleCode())
-                .and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", request.getResourceCode());
-
-        //添加关联关系
-        int count = rbacRoleResourceDao.count(where);
-        if (count > 0) {
-            log.warn("role[{}] already has resource[{}]", request.getRoleCode(), request.getResourceCode());
-        } else {
-            //first check role and resource exists
-            int roleCount = rbacRoleDao.count(Cnd.where(RbacRoleEntity.FLD_CODE, "=", request.getRoleCode()));
-            int resourceCount = rbacResourceDao.count(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", request.getResourceCode()));
-            if (roleCount == 0) {
-                throw new RuntimeException("role[" + request.getRoleCode() + "] not exists");
+        for (String resourceCode : request.getResourceCodes()) {
+            if (Strings.isBlank(resourceCode)) {
+                continue;
             }
-            if (resourceCount == 0) {
-                throw new RuntimeException("resource[" + request.getResourceCode() + "] not exists");
+            Cnd where = Cnd.where(RbacRoleResourceEntity.FLD_ROLE_CODE, "=", request.getRoleCode())
+                    .and(RbacRoleResourceEntity.FLD_RESOURCE_CODE, "=", resourceCode);
+            //添加关联关系
+            int count = rbacRoleResourceDao.count(where);
+            if (count > 0) {
+                log.warn("role[{}] already has resource[{}]", request.getRoleCode(), resourceCode);
+            } else {
+                //first check role and resource exists
+                int roleCount = rbacRoleDao.count(Cnd.where(RbacRoleEntity.FLD_CODE, "=", request.getRoleCode()));
+                int resourceCount = rbacResourceDao.count(Cnd.where(RbacResourceEntity.FLD_RESOURCE_CODE, "=", resourceCode));
+                if (roleCount == 0) {
+                    throw new RuntimeException("role[" + request.getRoleCode() + "] not exists");
+                }
+                if (resourceCount == 0) {
+                    throw new RuntimeException("resource[" + resourceCode + "] not exists");
+                }
+                RbacRoleResourceEntity entity = new RbacRoleResourceEntity();
+                entity.setRoleCode(request.getRoleCode());
+                entity.setResourceCode(resourceCode);
+                rbacRoleResourceDao.insert(entity);
             }
-            RbacRoleResourceEntity entity = new RbacRoleResourceEntity();
-            entity.setRoleCode(request.getRoleCode());
-            entity.setResourceCode(request.getResourceCode());
-            rbacRoleResourceDao.insert(entity);
-            rbacUserService.resetGroupCache();
         }
+        rbacUserService.resetGroupCache();
         return BizResult.success(new UpdateRoleResourceResponse());
     }
 }

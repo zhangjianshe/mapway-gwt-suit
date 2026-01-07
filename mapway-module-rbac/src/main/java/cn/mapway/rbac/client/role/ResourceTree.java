@@ -5,28 +5,33 @@ import cn.mapway.rbac.shared.ResourceKind;
 import cn.mapway.rbac.shared.db.postgis.RbacResourceEntity;
 import cn.mapway.rbac.shared.rpc.*;
 import cn.mapway.ui.client.event.AsyncCallbackLambda;
-import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.mvc.attribute.editor.inspector.ObjectInspector;
 import cn.mapway.ui.client.tools.DataBus;
-import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.CommonEventComposite;
+import cn.mapway.ui.client.widget.Header;
+import cn.mapway.ui.client.widget.buttons.AiButton;
+import cn.mapway.ui.client.widget.buttons.CheckBoxEx;
 import cn.mapway.ui.client.widget.dialog.Dialog;
 import cn.mapway.ui.client.widget.dialog.SaveBar;
-import cn.mapway.ui.client.widget.tree.ImageTextItem;
-import cn.mapway.ui.client.widget.tree.ZTree;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.DockLayoutPanel;
-import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.*;
+import elemental2.dom.Element;
+import elemental2.dom.ScrollIntoViewOptions;
+import jsinterop.base.Js;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,8 +40,6 @@ public class ResourceTree extends CommonEventComposite {
     private static final ResourceTreeUiBinder ourUiBinder = GWT.create(ResourceTreeUiBinder.class);
     private static Dialog<ResourceTree> dialog;
     @UiField
-    ZTree resourceTree;
-    @UiField
     Button btnCreate;
     @UiField
     SaveBar saveBar;
@@ -44,14 +47,64 @@ public class ResourceTree extends CommonEventComposite {
     ObjectInspector objectInspector;
     @UiField
     Button btnDelete;
-    Map<String, ImageTextItem> pathNodeMapper = new HashMap<>();
-    RbacResourceEntity selectedResource;
+    @UiField
+    HTMLPanel indexPanel;
+    @UiField
+    FlexTable table;
     ResourceAttrProvider resourceAttrProvider;
+    Map<String, List<CheckBoxEx>> checkGroups = new HashMap<>();
+    private final ClickHandler scrollToGroup = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            Label source = (Label) event.getSource();
+            String catalogName = source.getText();
+            List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
+            if (checkBoxExes != null && !checkBoxExes.isEmpty()) {
+                Element element = Js.uncheckedCast(checkBoxExes.get(0).getElement());
+                ScrollIntoViewOptions viewOptions = ScrollIntoViewOptions.create();
+                viewOptions.setBlock("start");
+                viewOptions.setBehavior("smooth");
+                element.scrollIntoView(viewOptions);
+            }
+        }
+    };
+    List<RbacResourceEntity> selectedItems = new ArrayList<>();
+    private final ClickHandler selectAll = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            IData source = (IData) event.getSource();
+            String catalogName = (String) source.getData();
+            List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
+            if (checkBoxExes != null) {
+                for (CheckBoxEx checkBoxEx : checkBoxExes) {
+                    checkBoxEx.setValue(true, false);
+                }
+            }
+            updateSelect();
+        }
+    };
+    private final ClickHandler reverSelect = new ClickHandler() {
+        @Override
+        public void onClick(ClickEvent event) {
+            IData source = (IData) event.getSource();
+            String catalogName = (String) source.getData();
+            List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
+            if (checkBoxExes != null) {
+                for (CheckBoxEx checkBoxEx : checkBoxExes) {
+                    checkBoxEx.setValue(!checkBoxEx.getValue(), false);
+                }
+            }
+            updateSelect();
+        }
+    };
+    @UiField
+    SStyle style;
 
     public ResourceTree() {
         initWidget(ourUiBinder.createAndBindUi(this));
         resourceAttrProvider = new ResourceAttrProvider();
         objectInspector.setData(resourceAttrProvider);
+        btnDelete.setEnabled(false);
     }
 
     public static Dialog<ResourceTree> getDialog(boolean reuse) {
@@ -76,8 +129,7 @@ public class ResourceTree extends CommonEventComposite {
             @Override
             public void onResult(RpcResult<QueryResourceResponse> result) {
                 if (result.isSuccess()) {
-                    renderTree(result.getData());
-
+                    renderTable(result.getData());
                 } else {
                     DataBus.get().message(result.getMessage());
                 }
@@ -85,52 +137,97 @@ public class ResourceTree extends CommonEventComposite {
         });
     }
 
-    private void renderTree(QueryResourceResponse data) {
-        resourceTree.clear();
-        pathNodeMapper.clear();
-        for (RbacResourceEntity resource : data.getResources()) {
-            ImageTextItem pathItem = surePathItem(resource.getCatalog());
-            ImageTextItem item = resourceTree.addFontIconItem(pathItem, resource.getName(), Fonts.RBAC_RESOURCE);
-            Label lbCode=new Label("["+resource.getResourceCode()+"]");
-            item.appendWidget(lbCode,null);
-            item.setData(resource);
+    private void updateSelect() {
+        selectedItems.clear();
+        for (List<CheckBoxEx> checkBoxExes : checkGroups.values()) {
+            for (CheckBoxEx checkBoxEx : checkBoxExes) {
+                if (checkBoxEx.getValue()) {
+                    selectedItems.add((RbacResourceEntity) checkBoxEx.getData());
+                }
+            }
         }
+        String message = "当前选择" + selectedItems.size() + "个资源点";
+        saveBar.msg(message);
+        saveBar.enableSave(!selectedItems.isEmpty());
+        btnDelete.setEnabled(canDelete());
     }
 
-    private ImageTextItem surePathItem(String catalog) {
-        if (catalog == null) {
-            return null;
-        }
-        catalog = catalog.trim();
-        if (StringUtil.isBlank(catalog)) {
-            return null;
+    private void renderTable(QueryResourceResponse data) {
+        indexPanel.clear();
+        checkGroups.clear();
+        Map<Integer, List<RbacResourceEntity>> catalogs = new HashMap<>();
+
+        //分类
+        for (RbacResourceEntity resource : data.getResources()) {
+            Integer kind = ResourceKind.fromCode(resource.getKind()).code;
+            List<RbacResourceEntity> list = catalogs.get(kind);
+            if (list == null) {
+                list = new ArrayList<>();
+                catalogs.put(kind, list);
+            }
+            list.add(resource);
         }
 
-        if (pathNodeMapper.containsKey(catalog)) {
-            return pathNodeMapper.get(catalog);
-        }
 
-        List<String> list = StringUtil.splitIgnoreBlank(catalog, "/");
-        String path = "";
-        ImageTextItem parent = null;
-        for (int i = 0; i < list.size(); i++) {
-            if (i == 0) {
-                path = list.get(i);
-            } else {
-                path = path + "/" + list.get(i);
+        FlexTable.FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
+        int row = -1;
+        int col = 0;
+        for (Integer kind : catalogs.keySet()) {
+
+            ResourceKind resourceKind = ResourceKind.fromCode(kind);
+            Label catalogLabel = new Label(resourceKind.getName());
+            catalogLabel.setStyleName(style.catalog());
+            indexPanel.add(catalogLabel);
+            catalogLabel.addClickHandler(scrollToGroup);
+            List<RbacResourceEntity> list = catalogs.get(kind);
+            row++;
+            col = 0;
+            HorizontalPanel catalogHeader = new HorizontalPanel();
+            catalogHeader.setVerticalAlignment(HasVerticalAlignment.ALIGN_MIDDLE);
+
+            catalogHeader.setSpacing(6);
+            Header header = new Header(resourceKind.getName());
+            header.setWidth("200px");
+            catalogHeader.add(header);
+
+            AiButton all = new AiButton("全选");
+            AiButton reverse = new AiButton("反选");
+            catalogHeader.add(all);
+            catalogHeader.add(reverse);
+            all.setData(resourceKind.getName());
+            reverse.setData(resourceKind.getName());
+
+            all.addClickHandler(selectAll);
+            reverse.addClickHandler(reverSelect);
+
+            table.setWidget(row, col++, catalogHeader);
+            cellFormatter.setColSpan(row, col-1, 4);
+
+            List<CheckBoxEx> checkBoxExes = checkGroups.get(resourceKind.getName());
+            if (checkBoxExes == null) {
+                checkBoxExes = new ArrayList<>();
+                checkGroups.put(resourceKind.getName(), checkBoxExes);
             }
 
-            if (pathNodeMapper.containsKey(path)) {
-                parent = pathNodeMapper.get(path);
-                continue;
-            } else {
-                ImageTextItem item = resourceTree.addItem(parent, list.get(i), null);
-                item.setData(null);
-                pathNodeMapper.put(path, item);
-                parent = item;
+
+            for (RbacResourceEntity resource : list) {
+                row++;
+                col = 0;
+                CheckBoxEx checkBoxEx = new CheckBoxEx();
+                checkBoxEx.setValue(false, false);
+                checkBoxEx.setData(resource);
+                checkBoxExes.add(checkBoxEx);
+                checkBoxEx.addValueChangeHandler(event -> {
+                    updateSelect();
+                });
+                table.setWidget(row, col++, checkBoxEx);
+                cellFormatter.setWidth(row,col,"32px");
+                table.setText(row, col++, resource.getName());
+                table.setText(row, col++, resource.getResourceCode());
+                table.setText(row, col++, resource.getSummary());
             }
         }
-        return parent;
+
     }
 
     @UiHandler("btnCreate")
@@ -147,39 +244,14 @@ public class ResourceTree extends CommonEventComposite {
         objectInspector.setSaveButtonVisible(true);
     }
 
-    @UiHandler("resourceTree")
-    public void resourceTreeCommon(CommonEvent event) {
-        if (event.isSelect()) {
-            ImageTextItem item = event.getValue();
-            selectedResource = (RbacResourceEntity) item.getData();
-            resourceAttrProvider.rebuild(selectedResource);
-            if (ResourceKind.fromCode(selectedResource.getKind()) == ResourceKind.RESOURCE_KIND_CUSTOM) {
-                objectInspector.setSaveButtonEnable(true);
-                objectInspector.setSaveButtonVisible(true);
-            } else {
-                objectInspector.setSaveButtonEnable(false);
-                objectInspector.setSaveButtonVisible(false);
-            }
-        }
-        updateUI();
-    }
-
-    private void updateUI() {
-        saveBar.enableSave(selectedResource != null);
-        btnDelete.setEnabled(canDelete());
-    }
-
     private boolean canDelete() {
-        if (selectedResource == null) {
-            return false;
-        }
-       return true;
+        return selectedItems.size() == 1;
     }
 
     @UiHandler("saveBar")
     public void saveBarCommon(CommonEvent event) {
         if (event.isOk()) {
-            fireEvent(CommonEvent.okEvent(selectedResource));
+            fireEvent(CommonEvent.okEvent(selectedItems));
         } else {
             fireEvent(event);
         }
@@ -212,12 +284,15 @@ public class ResourceTree extends CommonEventComposite {
         });
     }
 
-
     @UiHandler("btnDelete")
     public void btnDeleteClick(ClickEvent event) {
+        if (!canDelete()) {
+            return;
+        }
         DeleteResourceRequest request = new DeleteResourceRequest();
-        request.setResourceCode(selectedResource.getResourceCode());
-        request.setKind(selectedResource.getKind());
+        RbacResourceEntity resourceEntity = selectedItems.get(0);
+        request.setResourceCode(resourceEntity.getResourceCode());
+        request.setKind(resourceEntity.getKind());
         RbacServerProxy.get().deleteResource(request, new AsyncCallback<RpcResult<DeleteResourceResponse>>() {
             @Override
             public void onFailure(Throwable caught) {
@@ -237,7 +312,15 @@ public class ResourceTree extends CommonEventComposite {
 
     @Override
     public Size requireDefaultSize() {
-        return new Size(900, 700);
+        int width = Window.getClientWidth();
+        int height = Window.getClientHeight();
+        return new Size(width - 300, height - 400);
+    }
+
+    interface SStyle extends CssResource {
+        String catalog();
+
+        String index();
     }
 
     interface ResourceTreeUiBinder extends UiBinder<DockLayoutPanel, ResourceTree> {

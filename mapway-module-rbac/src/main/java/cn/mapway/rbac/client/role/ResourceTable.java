@@ -20,15 +20,12 @@ import java.util.List;
  * 资源列表
  */
 public class ResourceTable extends AiFlexTable implements HasCommonHandlers {
-    private final ClickHandler deleteHandler = new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-            event.preventDefault();
-            event.stopPropagation();
-            FontIcon icon = (FontIcon) event.getSource();
-            RbacResourceEntity resource = (RbacResourceEntity) icon.getData();
-            fireEvent(CommonEvent.deleteEvent(resource));
-        }
+    private final ClickHandler deleteHandler = event -> {
+        event.preventDefault();
+        event.stopPropagation();
+        FontIcon icon = (FontIcon) event.getSource();
+        RbacResourceEntity resource = (RbacResourceEntity) icon.getData();
+        fireEvent(CommonEvent.deleteEvent(resource));
     };
 
     Boolean enableDelete=true;
