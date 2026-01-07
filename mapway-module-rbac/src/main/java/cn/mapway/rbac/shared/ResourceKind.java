@@ -12,6 +12,7 @@ public enum ResourceKind {
     RESOURCE_KIND_SYSTEM(1, "系统资源"),
     RESOURCE_KIND_REGION(2, "数据区域"),
     RESOURCE_KIND_FUNCTION(3, "功能资源"),
+    RESOURCE_KIND_SYS_MENU(4, "菜单资源"),
 
     RESOURCE_KIND_TOOLBOX(1000, "工具箱"),
     RESOURCE_KIND_MODEL_TEMPLATE(1001, "模型模板"),
