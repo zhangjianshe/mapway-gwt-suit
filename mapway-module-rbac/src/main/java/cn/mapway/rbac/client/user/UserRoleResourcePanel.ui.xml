@@ -17,13 +17,15 @@
                 </g:north>
                 <g:center>
                     <g:ScrollPanel>
-                        <tree:ZTree  width="100%" ui:field="roleList"/>
+                        <tree:ZTree width="100%" ui:field="roleList"/>
                     </g:ScrollPanel>
                 </g:center>
             </g:DockLayoutPanel>
         </g:west>
         <g:center>
-            <role:ResourceTable enableDelete="false" ui:field="resourceTable"/>
+            <g:ScrollPanel>
+                <role:ResourceTable enableDelete="false" ui:field="resourceTable"/>
+            </g:ScrollPanel>
         </g:center>
     </g:DockLayoutPanel>
 </ui:UiBinder>
