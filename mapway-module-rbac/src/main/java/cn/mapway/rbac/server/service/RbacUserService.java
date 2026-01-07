@@ -201,7 +201,22 @@ public class RbacUserService {
             }
         }
     }
-
+    /**
+     * 获取缺省组织
+     *
+     * @return
+     */
+    public RbacOrgEntity getDefaultOrg() {
+        List<RbacOrgEntity> query = rbacOrgDao.query(Cnd.where(RbacOrgEntity.FLD_DEFAULT_ORG, "=", true));
+        if (query.isEmpty()) {
+            List<RbacOrgEntity> queried = rbacOrgDao.query(Cnd.where(RbacOrgEntity.FLD_CODE, "=", RbacConstant.RBAC_ORG_DEFAULT));
+            if (queried.isEmpty()) {
+                return null;
+            }
+            return queried.get(0);
+        }
+        return query.get(0);
+    }
     /**
      * 用户身份 是否拥有某个角色
      *
@@ -489,6 +504,49 @@ public class RbacUserService {
                 rbacUserDao.updateIgnoreNull(userEntity);
                 user.setToken(userEntity.getToken());
             }
+        }
+    }
+
+    /**
+     * 将用户添加到缺省组织中
+     * @param userId
+     * @param userName
+     * @param avator
+     * @param systemCode
+     */
+    public void userAddToDefaultOrg(String userId,String userName,String avator,String systemCode) {
+        if(Strings.isBlank(userId)) {
+            log.error("[RBAC] 没有办法设置一个空用户所在的角色");
+            return;
+        }
+        RbacOrgEntity defaultOrg = getDefaultOrg();
+        if(defaultOrg ==null)
+        {
+            log.error("[RBAC] 没有配置缺省组织");
+            return;
+        }
+
+        int count=rbacOrgUserDao.count(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
+                .and(RbacOrgUserEntity.FLD_ORG_CODE, "=", defaultOrg.getCode()));
+        if(count>0)
+        {
+            log.warn("[RBAC]用户｛｝已存在于组织中｛｝",userId,defaultOrg.getCode());
+            return;
+        }
+
+        RbacOrgUserEntity entity = new RbacOrgUserEntity();
+        entity.setUserId(userId);
+        entity.setUserCode(UUIDTools.uuid());
+        entity.setOrgCode(defaultOrg.getCode());
+        entity.setCreateTime(new Date());
+        entity.setAliasName(userName);
+        entity.setAvatar(avator);
+        entity.setSystemCode(systemCode);
+        entity.setMajor(true);
+        try {
+            rbacOrgUserDao.insert(entity);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

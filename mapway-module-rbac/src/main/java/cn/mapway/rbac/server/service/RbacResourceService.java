@@ -34,25 +34,8 @@ public class RbacResourceService {
     RbacRoleResourceDao rbacRoleResourceDao;
     @Resource
     RbacUserService rbacUserService;
-    @Resource
-    RbacOrgDao rbacOrgDao;
 
-    /**
-     * 获取缺省组织
-     *
-     * @return
-     */
-    public RbacOrgEntity getDefaultOrg() {
-        List<RbacOrgEntity> query = rbacOrgDao.query(Cnd.where(RbacOrgEntity.FLD_DEFAULT_ORG, "=", true));
-        if (query.isEmpty()) {
-            List<RbacOrgEntity> queried = rbacOrgDao.query(Cnd.where(RbacOrgEntity.FLD_CODE, "=", RbacConstant.RBAC_ORG_DEFAULT));
-            if (queried.isEmpty()) {
-                return null;
-            }
-            return queried.get(0);
-        }
-        return query.get(0);
-    }
+    
 
     /**
      * 添加资源
