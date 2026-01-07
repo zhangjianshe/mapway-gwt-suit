@@ -52,7 +52,7 @@ public class RbacServerPlugin implements IServerPlugin {
         Dao dao = iServerContext.getBean(Dao.class);
 
 
-        String SCHEMA_DATE="2025-12-04";
+        String SCHEMA_DATE="2026-01-07";
         if(!dao.exists(RbacConfigEntity.class) || rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
 
             if(!dao.exists(RbacConfigEntity.class))
