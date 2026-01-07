@@ -162,7 +162,7 @@ public class RbacOrgEntity implements Serializable, IsSerializable {
   @ApiField("是否是缺省组织")
   @Column("default_org")
   @ColDefine(
-          type = org.nutz.dao.entity.annotation.ColType.VARCHAR
+          type = ColType.BOOLEAN
   )
   @Comment("是否是缺省组织")
   @Default("false")
