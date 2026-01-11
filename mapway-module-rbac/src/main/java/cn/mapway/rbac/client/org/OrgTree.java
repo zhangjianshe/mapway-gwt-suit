@@ -6,10 +6,13 @@ import cn.mapway.rbac.shared.rpc.QueryOrgRequest;
 import cn.mapway.rbac.shared.rpc.QueryOrgResponse;
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.client.widget.buttons.EditButton;
 import cn.mapway.ui.client.widget.tree.ImageTextItem;
 import cn.mapway.ui.client.widget.tree.ZTree;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
 
@@ -19,9 +22,17 @@ import java.util.*;
  * 组织树
  */
 public class OrgTree extends ZTree {
-    public void load()
-    {
-        QueryOrgRequest request=new QueryOrgRequest();
+    Map<String, List<RbacOrgEntity>> orgTemp = new HashMap<>();
+    private final ClickHandler editHandler = event -> {
+        event.stopPropagation();
+        event.preventDefault();
+        EditButton source = (EditButton) event.getSource();
+        RbacOrgEntity org = (RbacOrgEntity) source.getData();
+        fireEvent(CommonEvent.editEvent(org));
+    };
+
+    public void load() {
+        QueryOrgRequest request = new QueryOrgRequest();
         RbacServerProxy.get().queryOrg(request, new AsyncCallback<RpcResult<QueryOrgResponse>>() {
             @Override
             public void onFailure(Throwable caught) {
@@ -30,40 +41,36 @@ public class OrgTree extends ZTree {
 
             @Override
             public void onSuccess(RpcResult<QueryOrgResponse> result) {
-                if(result.isSuccess()){
+                if (result.isSuccess()) {
                     renderResponse(result.getData().getOrgs());
-                }
-                else {
+                } else {
                     fireEvent(CommonEvent.messageEvent(MessageObject.info(0, result.getMessage())));
                 }
             }
         });
     }
-    Map<String,List<RbacOrgEntity>> orgTemp=new HashMap<>();
+
     private void renderResponse(List<RbacOrgEntity> orgs) {
         clear();
 
         // the org is a tree, first we need build the tree
         orgTemp.clear();
-        List<RbacOrgEntity> roots=new ArrayList<>();
-        for(RbacOrgEntity org:orgs){
-            if(StringUtil.isBlank(org.getParentId()))
-            {
+        List<RbacOrgEntity> roots = new ArrayList<>();
+        for (RbacOrgEntity org : orgs) {
+            if (StringUtil.isBlank(org.getParentId())) {
                 //根节点
                 roots.add(org);
-            }
-            else {
+            } else {
                 List<RbacOrgEntity> list = orgTemp.get(org.getParentId());
-                if(list==null)
-                {
-                    list=new ArrayList<>();
-                    orgTemp.put(org.getParentId(),list);
+                if (list == null) {
+                    list = new ArrayList<>();
+                    orgTemp.put(org.getParentId(), list);
                 }
                 list.add(org);
             }
         }
-        Collections.sort(roots,Comparator.comparing(RbacOrgEntity::getRank));
-        recursiveRenderTree(null,roots);
+        Collections.sort(roots, Comparator.comparing(RbacOrgEntity::getRank));
+        recursiveRenderTree(null, roots);
 
     }
 
@@ -78,10 +85,15 @@ public class OrgTree extends ZTree {
             Label label = new Label();
             label.setText(org.getCode());
             label.setStyleName("ai-summary");
-            item.appendWidget(label,null);
+            item.appendWidget(label, null);
+
+            EditButton editButton = new EditButton();
+            editButton.setData(org);
+            editButton.addClickHandler(editHandler);
+            item.appendWidget(editButton, 26);
 
             List<RbacOrgEntity> children = orgTemp.get(org.getId());
-            recursiveRenderTree(item,children);
+            recursiveRenderTree(item, children);
         }
     }
 }

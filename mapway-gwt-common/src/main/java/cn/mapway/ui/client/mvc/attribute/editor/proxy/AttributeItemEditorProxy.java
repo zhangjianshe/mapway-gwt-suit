@@ -67,13 +67,12 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
      * @param attribute 编辑器组件的定义(属性的定义)
      */
     public void createEditorInstance(IAttribute attribute) {
-        String editorCode= TextboxAttributeEditor.EDITOR_CODE;
+        String editorCode = TextboxAttributeEditor.EDITOR_CODE;
         if (attribute == null || attribute.getEditorMetaData() == null ||
                 StringUtil.isBlank(attribute.getEditorMetaData().getEditorCode())) {
             Logs.info("Attribute is null or editorCode is null in AttributeItemEditorProxy");
-        }
-        else {
-            editorCode=attribute.getEditorMetaData().getEditorCode();
+        } else {
+            editorCode = attribute.getEditorMetaData().getEditorCode();
         }
 
         box.clear();
@@ -82,9 +81,9 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
         //创建统一的属性列表编辑UI
         attributeEditor = AttributeEditorFactory.get().createEditor(editorCode, false);
         if (attributeEditor == null) {
-            DomGlobal.console.log("创建"+attribute.getName()+"编辑器:" + attribute.getEditorMetaData().getEditorCode());
+            DomGlobal.console.log("创建" + attribute.getName() + "编辑器:" + attribute.getEditorMetaData().getEditorCode());
             //用一个文本框替换
-            attributeEditor= new TextboxAttributeEditor();
+            attributeEditor = new TextboxAttributeEditor();
         }
 
         Widget displayWidget = attributeEditor.getDisplayWidget();
@@ -112,7 +111,6 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
     public IAttributeEditor getEditor() {
         return attributeEditor;
     }
-
 
 
     public void setLabelWidth(int width) {
@@ -191,6 +189,10 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
     @Override
     public void onAttributePropertyChange(IAttribute senderAttribute) {
         attributeEditor.updateAllEditorOption();
+    }
+
+    public Label getLabel() {
+        return lbHeader;
     }
 
     @Override

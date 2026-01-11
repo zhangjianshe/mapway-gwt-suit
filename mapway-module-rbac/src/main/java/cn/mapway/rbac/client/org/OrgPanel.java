@@ -22,6 +22,7 @@ public class OrgPanel extends CommonEventComposite {
     @UiField
     Button btnDelete;
     RbacOrgEntity selected;
+
     public OrgPanel() {
         initWidget(ourUiBinder.createAndBindUi(this));
         updateUI();
@@ -29,7 +30,7 @@ public class OrgPanel extends CommonEventComposite {
 
     public void init() {
         orgTree.load();
-        selected=null;
+        selected = null;
         updateUI();
     }
 
@@ -39,7 +40,10 @@ public class OrgPanel extends CommonEventComposite {
             ImageTextItem item = event.getValue();
             selected = (RbacOrgEntity) item.getData();
             updateUI();
-            fireEvent(CommonEvent.editEvent(selected));
+            fireEvent(CommonEvent.selectEvent(selected));
+        } else if (event.isEdit()) {
+            RbacOrgEntity org = event.getValue();
+            fireEvent(CommonEvent.editEvent(org));
         }
     }
 

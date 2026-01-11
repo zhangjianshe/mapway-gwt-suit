@@ -33,7 +33,7 @@
             align-self: center;
             font-weight: bold;
             color: #666666;
-            font-size: 0.9rem;
+            font-size: 1.0rem;
         }</ui:style>
     <g:VerticalPanel ui:field="root" width="100%">
         <g:HTMLPanel styleName="{style.layout2}" ui:field="box">

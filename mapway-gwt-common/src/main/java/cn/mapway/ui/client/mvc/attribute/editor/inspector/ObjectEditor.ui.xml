@@ -1,0 +1,30 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:dialog="urn:import:cn.mapway.ui.client.widget.dialog"
+             xmlns:panel="urn:import:cn.mapway.ui.client.widget.panel">
+    <ui:style type="cn.mapway.ui.client.mvc.attribute.editor.inspector.ObjectEditor.SStyle">
+        .table {
+            padding: 10px;
+        }
+        .header{
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+    </ui:style>
+    <g:DockLayoutPanel>
+        <g:south size="68">
+            <dialog:SaveBar ui:field="saveBar"/>
+        </g:south>
+        <g:center>
+            <g:ScrollPanel>
+                <g:HTMLPanel>
+                    <panel:MessagePanel height="130px" ui:field="messageBar" visible="false"/>
+                    <g:FlexTable width="100%" cellSpacing="4" cellPadding="4" ui:field="table"
+                                 addStyleNames="{style.table}">
+
+                    </g:FlexTable>
+                </g:HTMLPanel>
+            </g:ScrollPanel>
+        </g:center>
+    </g:DockLayoutPanel>
+</ui:UiBinder>

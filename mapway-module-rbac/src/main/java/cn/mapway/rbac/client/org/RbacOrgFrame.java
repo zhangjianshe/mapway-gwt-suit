@@ -16,10 +16,13 @@ import cn.mapway.ui.client.mvc.BaseAbstractModule;
 import cn.mapway.ui.client.mvc.IModule;
 import cn.mapway.ui.client.mvc.ModuleMarker;
 import cn.mapway.ui.client.mvc.ModuleParameter;
-import cn.mapway.ui.client.mvc.attribute.editor.inspector.ObjectInspector;
+import cn.mapway.ui.client.mvc.attribute.editor.inspector.ObjectEditor;
 import cn.mapway.ui.client.tools.DataBus;
 import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.client.widget.dialog.Dialog;
+import cn.mapway.ui.client.widget.dialog.SaveBar;
 import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -27,6 +30,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.TabLayoutPanel;
 
 /**
  *
@@ -44,19 +48,18 @@ public class RbacOrgFrame extends BaseAbstractModule {
     @UiField
     OrgPanel orgPanel;
     @UiField
-    ObjectInspector objectInspector;
-    @UiField
     OrgUserListPanel userList;
     @UiField
     UserRoleResourcePanel userRoleResourcePanel;
     @UiField
     UserOrgListPanel userOrgList;
+    @UiField
+    TabLayoutPanel tab;
     RbacOrgAttrProvider rbacOrgAttrProvider;
 
     public RbacOrgFrame() {
         initWidget(ourUiBinder.createAndBindUi(this));
         rbacOrgAttrProvider = new RbacOrgAttrProvider();
-        objectInspector.setData(rbacOrgAttrProvider);
     }
 
 
@@ -72,27 +75,9 @@ public class RbacOrgFrame extends BaseAbstractModule {
         return MODULE_CODE;
     }
 
-    @UiHandler("objectInspector")
     public void objectInspectorCommon(CommonEvent event) {
         if (event.isSave()) {
-            RbacOrgEntity org = rbacOrgAttrProvider.getOrg();
-            UpdateOrgRequest request = new UpdateOrgRequest();
-            request.setOrg(org);
-            RbacServerProxy.get().updateOrg(request, new AsyncCallback<RpcResult<UpdateOrgResponse>>() {
-                @Override
-                public void onFailure(Throwable caught) {
-                    msg(caught.getMessage());
-                }
 
-                @Override
-                public void onSuccess(RpcResult<UpdateOrgResponse> result) {
-                    if (result.isSuccess()) {
-                        orgPanel.init();
-                    } else {
-                        RbacClient.get().getClientContext().alert(result.getMessage());
-                    }
-                }
-            });
         }
     }
 
@@ -103,8 +88,11 @@ public class RbacOrgFrame extends BaseAbstractModule {
     @UiHandler("orgPanel")
     public void orgPanelCommon(CommonEvent event) {
         if (event.isEdit()) {
+            //编辑组织
             RbacOrgEntity org = event.getValue();
-            rbacOrgAttrProvider.rebuild(org);
+            editOrg(org);
+        } else if (event.isSelect()) {
+            RbacOrgEntity org = event.getValue();
             if (StringUtil.isNotBlank(org.getId())) {
                 userList.load(org.getCode());
             }
@@ -112,6 +100,52 @@ public class RbacOrgFrame extends BaseAbstractModule {
             RbacOrgEntity org = event.getValue();
             confirmDelete(org);
         }
+    }
+
+    private void editOrg(RbacOrgEntity org) {
+        rbacOrgAttrProvider.rebuild(org);
+        Dialog<ObjectEditor> dialog = ObjectEditor.getDialog(true);
+        dialog.getContent().setColumns(2);
+        dialog.addCommonHandler(new CommonEventHandler() {
+            @Override
+            public void onCommonEvent(CommonEvent event) {
+                if (event.isSave()) {
+                    doSave(rbacOrgAttrProvider);
+                    dialog.hide();
+                } else {
+                    dialog.hide();
+                }
+            }
+        });
+        SaveBar saveBar = dialog.getContent().getSaveBar();
+        saveBar.setEnableSave(true);
+        saveBar.setSaveText("保存");
+        dialog.setPixelSize(900, 500);
+        dialog.center();
+        dialog.getContent().setData(rbacOrgAttrProvider);
+
+    }
+
+    private void doSave(RbacOrgAttrProvider rbacOrgAttrProvider) {
+
+        RbacOrgEntity org = rbacOrgAttrProvider.getOrg();
+        UpdateOrgRequest request = new UpdateOrgRequest();
+        request.setOrg(org);
+        RbacServerProxy.get().updateOrg(request, new AsyncCallback<RpcResult<UpdateOrgResponse>>() {
+            @Override
+            public void onFailure(Throwable caught) {
+                msg(caught.getMessage());
+            }
+
+            @Override
+            public void onSuccess(RpcResult<UpdateOrgResponse> result) {
+                if (result.isSuccess()) {
+                    orgPanel.init();
+                } else {
+                    RbacClient.get().getClientContext().alert(result.getMessage());
+                }
+            }
+        });
     }
 
     @UiHandler("userList")
@@ -123,7 +157,7 @@ public class RbacOrgFrame extends BaseAbstractModule {
             RbacOrgUserEntity user = event.getValue();
             userRoleResourcePanel.load(user.getUserCode());
             // 2.用户所属的机构列表
-            userOrgList.load(user.getUserId(),user.getSystemCode());
+            userOrgList.load(user.getUserId(), user.getSystemCode());
         }
     }
 

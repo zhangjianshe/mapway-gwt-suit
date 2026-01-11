@@ -1,8 +1,7 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
              xmlns:org="urn:import:cn.mapway.rbac.client.org"
-             xmlns:inspector="urn:import:cn.mapway.ui.client.mvc.attribute.editor.inspector"
-             xmlns:user="urn:import:cn.mapway.rbac.client.user" xmlns:widget="urn:import:cn.mapway.ui.client.widget"
+             xmlns:user="urn:import:cn.mapway.rbac.client.user"
 >
     <g:DockLayoutPanel>
         <g:west size="400">
@@ -11,35 +10,23 @@
                     <org:OrgPanel ui:field="orgPanel"/>
                 </g:north>
                 <g:center>
-                    <inspector:ObjectInspector
-                            addStyleNames="ai-border-top"
-                            vertical="true" saveButtonVisible="true" ui:field="objectInspector"/>
-                </g:center>
-            </g:DockLayoutPanel>
-        </g:west>
-        <g:west size="400">
-            <g:DockLayoutPanel unit="PCT" addStyleNames="ai-border-right">
-                <g:north size="50">
                     <org:OrgUserListPanel  ui:field="userList"/>
-                </g:north>
-                <g:center>
-                    <g:DockLayoutPanel addStyleNames="ai-border-right">
-                        <g:north size="40">
-                            <g:HTMLPanel addStyleNames="ai-flex-panel">
-                                <widget:Header>用户所在的组织列表</widget:Header>
-                            </g:HTMLPanel>
-                        </g:north>
-                        <g:center>
-                            <g:ScrollPanel>
-                                <user:UserOrgListPanel width="100%" ui:field="userOrgList"/>
-                            </g:ScrollPanel>
-                        </g:center>
-                    </g:DockLayoutPanel>
                 </g:center>
             </g:DockLayoutPanel>
         </g:west>
         <g:center>
-            <user:UserRoleResourcePanel ui:field="userRoleResourcePanel"/>
+            <g:TabLayoutPanel barHeight="50" ui:field="tab">
+                <g:tab>
+                    <g:header>用户角色资源</g:header>
+                    <user:UserRoleResourcePanel ui:field="userRoleResourcePanel"/>
+                </g:tab>
+                <g:tab>
+                    <g:header>用户所在的组织列表</g:header>
+                    <g:ScrollPanel>
+                        <user:UserOrgListPanel width="100%" ui:field="userOrgList"/>
+                    </g:ScrollPanel>
+                </g:tab>
+            </g:TabLayoutPanel>
         </g:center>
     </g:DockLayoutPanel>
 </ui:UiBinder>
