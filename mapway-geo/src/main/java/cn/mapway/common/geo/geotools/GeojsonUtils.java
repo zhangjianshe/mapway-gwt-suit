@@ -35,6 +35,10 @@ public class GeojsonUtils {
 
     static FeatureJSON fjson = new FeatureJSON(gjson);
 
+    static {
+        fjson.setEncodeNullValues(true);
+    }
+
     public static Geometry parseGeometry(String geojson) {
         try {
             return gjson.read(geojson);

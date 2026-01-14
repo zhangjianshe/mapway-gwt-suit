@@ -150,6 +150,8 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public final static int SHOW_SPECTRAL_CURVE = 136; // 显示光谱曲线
 
+    public final static int SPLIT = 137; // 切分
+
 
 
     public final static int OK = 200;
@@ -693,6 +695,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
         return new CommonEvent(SHOW_SPECTRAL_CURVE, data);
     }
 
+    public static CommonEvent splitEvent(Object data) {
+        return new CommonEvent(SPLIT, data);
+    }
+
     public boolean isObject() {
         return type == OBJECT;
     }
@@ -1194,6 +1200,10 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public boolean isShowSpectralCurve() {
         return SHOW_SPECTRAL_CURVE == this.type;
+    }
+
+    public boolean isSplit() {
+        return SPLIT == this.type;
     }
 
     public static CommonEvent rbacPermissionChangeEvent(Object data) {
