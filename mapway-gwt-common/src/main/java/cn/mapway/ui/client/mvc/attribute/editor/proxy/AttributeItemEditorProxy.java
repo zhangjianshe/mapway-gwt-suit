@@ -47,14 +47,14 @@ public class AttributeItemEditorProxy extends Composite implements HasCommonHand
     }
 
     private void fireSummaryEvent() {
-        if (attributeEditor != null && attributeEditor.getAttribute() != null) {
-            String description = attributeEditor.getAttribute().getDescription();
-            if (description == null) {
-                description = attributeEditor.getAttribute().getTip();
+        IAttribute attribute = attributeEditor.getAttribute();
+        if (attributeEditor != null && attribute != null) {
+            String description = attribute.getDescription();
+            if(StringUtil.isBlank(description))
+            {
+                description = attribute.getTip()==null?"":attribute.getTip();
             }
-            if (description == null) {
-                description = "";
-            }
+
             //添加对参数的理解提示信息
             description += attributeEditor.getEditorTip();
             fireEvent(CommonEvent.infoEvent(description));

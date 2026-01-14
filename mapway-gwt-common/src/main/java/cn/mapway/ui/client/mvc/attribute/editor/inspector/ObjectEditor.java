@@ -26,6 +26,7 @@ import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.FlexTable;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -44,15 +45,6 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
     @Getter
     @UiField
     SaveBar saveBar;
-    private final CommonEventHandler proxyHandler = new CommonEventHandler() {
-        @Override
-        public void onCommonEvent(CommonEvent event) {
-            if (event.isInfo()) {
-                //提示事件上报
-                saveBar.msg(event.getValue());
-            }
-        }
-    };
     @UiField
     FlexTable table;
     @UiField
@@ -67,13 +59,36 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
     boolean enableGroup = true;
     @UiField
     SStyle style;
+    @UiField
+    DockLayoutPanel root;
+    @UiField
+    HTMLPanel tipPanel;
+    @UiField
+    MessagePanel messagePanel;
     HandlerRegistration stateChangeHandler = null;
     Map<String, AttributeItemEditorProxy> editorMaps = new HashMap<>();
+    boolean tipPanelVisible = false;
+    private final CommonEventHandler proxyHandler = new CommonEventHandler() {
+        @Override
+        public void onCommonEvent(CommonEvent event) {
+            if (event.isInfo()) {
+                if (tipPanelVisible) {
+                    messagePanel.setHtml(event.getValue());
+                } else if (saveBar.isVisible()) {
+                    saveBar.msg(event.getValue());
+                } else {
+                    fireEvent(event);
+                }
+            }
+        }
+    };
     private IAttributesProvider provider;
 
     public ObjectEditor() {
         initWidget(ourUiBinder.createAndBindUi(this));
         size = new Size(Window.getClientWidth() - 400, Window.getClientHeight() - 400);
+        //缺省不显示　保存栏　当使用getDialog()获取时　缺省显示保存栏
+        setSaveBarVisible(false);
     }
 
     public static Dialog<ObjectEditor> getDialog(boolean reuse) {
@@ -89,6 +104,7 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
 
     private static Dialog<ObjectEditor> createOne() {
         ObjectEditor editor = new ObjectEditor();
+        editor.setSaveBarVisible(true);
         return new Dialog<>(editor, "对象编辑器");
     }
 
@@ -112,6 +128,19 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
             stateChangeHandler = provider.addAttributeStateChangeHandler(this);
         }
         updateUI();
+    }
+
+    public void setTipPanelVisible(boolean visible) {
+        tipPanelVisible = visible;
+        if (tipPanelVisible) {
+            root.setWidgetSize(tipPanel, 50);
+        } else {
+            root.setWidgetSize(tipPanel, 0);
+        }
+    }
+
+    public void setSaveBarVisible(boolean visible) {
+        root.setWidgetHidden(saveBar, !visible);
     }
 
     private void updateUI() {
@@ -140,15 +169,17 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
                 groups.put("基本属性", provider.getAttributes());
             }
 
-            int row = 0;
+            int row = -1;
             FlexTable.FlexCellFormatter formatter = table.getFlexCellFormatter();
             boolean showGroupLabel = enableGroup && groups.size() > 1;
+            int col = 0;
             for (String groupName : groups.keySet()) {
                 List<IAttribute> list = groups.get(groupName);
                 if (list.isEmpty()) {
                     continue;
                 }
-                int col = 0;
+                row++;
+                col = 0;
                 //添加一个分组名称行
                 if (showGroupLabel) {
                     table.setWidget(row, col, new Header(groupName));
@@ -163,19 +194,29 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
                         col = 0;
                     }
                     AttributeItemEditorProxy itemEditorProxy = new AttributeItemEditorProxy();
+
+                    itemEditorProxy.addCommonHandler(proxyHandler);
+                    itemEditorProxy.createEditorInstance(attribute);
+                    table.setWidget(row, col++, itemEditorProxy);
                     if (labelWidth > 0) {
                         itemEditorProxy.setLabelWidth(labelWidth);
                     }
                     if (StringUtil.isNotBlank(labelStyle)) {
                         itemEditorProxy.getLabel().setStyleName(labelStyle);
                     }
-                    itemEditorProxy.addCommonHandler(proxyHandler);
-                    itemEditorProxy.createEditorInstance(attribute);
-                    table.setWidget(row, col++, itemEditorProxy);
                     editorMaps.put(attribute.getName(), itemEditorProxy);
                 }
             }
 
+        }
+    }
+
+    public void setLabelWidth(int width) {
+        labelWidth = width;
+        if (labelWidth > 0) {
+            for (AttributeItemEditorProxy itemEditorProxy : editorMaps.values()) {
+                itemEditorProxy.setLabelWidth(labelWidth);
+            }
         }
     }
 
@@ -253,6 +294,8 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
         String table();
 
         String header();
+
+        String tipPanel();
     }
 
     interface ObjectEditorUiBinder extends UiBinder<DockLayoutPanel, ObjectEditor> {

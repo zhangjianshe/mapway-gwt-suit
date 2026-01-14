@@ -6,14 +6,28 @@
         .table {
             padding: 10px;
         }
-        .header{
+
+        .header {
             font-size: 1.1rem;
             font-weight: bold;
         }
-    </ui:style>
-    <g:DockLayoutPanel>
+
+        .tipPanel {
+            background-color: beige;
+        }
+
+        .box {
+            height: 100%;
+            overflow: auto;
+        }</ui:style>
+    <g:DockLayoutPanel ui:field="root">
         <g:south size="68">
             <dialog:SaveBar ui:field="saveBar"/>
+        </g:south>
+        <g:south size="0">
+            <g:HTMLPanel ui:field="tipPanel" addStyleNames="{style.tipPanel}">
+                <panel:MessagePanel addStyleNames="{style.box}" ui:field="messagePanel"/>
+            </g:HTMLPanel>
         </g:south>
         <g:center>
             <g:ScrollPanel>
@@ -21,7 +35,6 @@
                     <panel:MessagePanel height="130px" ui:field="messageBar" visible="false"/>
                     <g:FlexTable width="100%" cellSpacing="4" cellPadding="4" ui:field="table"
                                  addStyleNames="{style.table}">
-
                     </g:FlexTable>
                 </g:HTMLPanel>
             </g:ScrollPanel>
