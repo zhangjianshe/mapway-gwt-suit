@@ -182,7 +182,9 @@ public class ObjectEditor extends CommonEventComposite implements IData<IAttribu
                 col = 0;
                 //添加一个分组名称行
                 if (showGroupLabel) {
-                    table.setWidget(row, col, new Header(groupName));
+                    Header header=new Header(groupName);
+                    header.addStyleName(style.header());
+                    table.setWidget(row, col, header);
                     formatter.setColSpan(row, col, columns);
                     row++;
                 }

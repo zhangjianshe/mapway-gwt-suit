@@ -65,7 +65,7 @@ public class RbacFrame extends BaseAbstractModule {
         }
         else{
             root.setWidgetHidden(tools, false);
-            SwitchModuleData switchModuleData = new SwitchModuleData(SimpleFrame.MODULE_CODE, "");
+            SwitchModuleData switchModuleData = new SwitchModuleData(RbacOrgFrame.MODULE_CODE, "");
             switchModuleData.getParameters().put("");
             switchModule(switchModuleData);
         }

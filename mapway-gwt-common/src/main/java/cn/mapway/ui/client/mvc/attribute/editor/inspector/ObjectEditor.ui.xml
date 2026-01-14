@@ -10,6 +10,7 @@
         .header {
             font-size: 1.1rem;
             font-weight: bold;
+            padding-top: 20px;
         }
 
         .tipPanel {
@@ -33,7 +34,7 @@
             <g:ScrollPanel>
                 <g:HTMLPanel>
                     <panel:MessagePanel height="130px" ui:field="messageBar" visible="false"/>
-                    <g:FlexTable width="100%" cellSpacing="4" cellPadding="4" ui:field="table"
+                    <g:FlexTable width="100%" cellSpacing="8" cellPadding="4" ui:field="table"
                                  addStyleNames="{style.table}">
                     </g:FlexTable>
                 </g:HTMLPanel>
