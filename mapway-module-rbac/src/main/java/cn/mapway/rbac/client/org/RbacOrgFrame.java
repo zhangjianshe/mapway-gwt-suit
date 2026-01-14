@@ -120,7 +120,7 @@ public class RbacOrgFrame extends BaseAbstractModule {
         SaveBar saveBar = dialog.getContent().getSaveBar();
         saveBar.setEnableSave(true);
         saveBar.setSaveText("保存");
-        dialog.setPixelSize(900, 500);
+        dialog.setPixelSize(900, 550);
         dialog.center();
         dialog.getContent().setData(rbacOrgAttrProvider);
 

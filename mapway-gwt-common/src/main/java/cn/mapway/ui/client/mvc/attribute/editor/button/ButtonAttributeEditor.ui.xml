@@ -1,0 +1,9 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:buttons="urn:import:cn.mapway.ui.client.widget.buttons">
+    <g:HTMLPanel>
+        <g:HTMLPanel ui:field="panel">
+            <buttons:AiButton ui:field="btn"/>
+        </g:HTMLPanel>
+    </g:HTMLPanel>
+</ui:UiBinder>

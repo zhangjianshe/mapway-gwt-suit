@@ -5,6 +5,7 @@ package cn.mapway.ui.client.mvc.attribute.editor;
  */
 public class EditorCodes {
     public static final String EDITOR_FILE_DIR = "FILE_DIR_EDITOR";
+    public static final String EDITOR_BUTTON = "BUTTON_EDITOR";
     public static final String EDITOR_TEXTBOX = "TEXTBOX_EDITOR";
     public static final String EDITOR_DROPDOWN = "DROPDOWN_EDITOR";
     public static final String EDITOR_CHECKBOX="CHECKBOX_EDITOR";
