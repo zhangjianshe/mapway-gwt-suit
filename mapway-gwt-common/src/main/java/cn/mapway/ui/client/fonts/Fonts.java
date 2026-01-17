@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String YAML = "e7d8";
+    	public final static String FORK = "e7d9";
+	public final static String YAML = "e7d8";
 	public final static String DEBUG = "e7d3";
 	public final static String ATTRIBUTE = "e7d6";
 	public final static String CHUIZHIJUZHONG = "e9c4";
@@ -678,7 +679,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("YAML", Fonts.YAML);
+			unicodes.put("FORK", Fonts.FORK);
+	unicodes.put("YAML", Fonts.YAML);
 	unicodes.put("DEBUG", Fonts.DEBUG);
 	unicodes.put("ATTRIBUTE", Fonts.ATTRIBUTE);
 	unicodes.put("CHUIZHIJUZHONG", Fonts.CHUIZHIJUZHONG);
