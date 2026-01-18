@@ -1,22 +1,8 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:frame="urn:import:cn.mapway.ui.client.frame">
+>
     <ui:style>
-        @eval BK_COLOR "var(--color-background)";
-        .box{
-            background-color:BK_COLOR;
-            display: flex;
-            align-items: center;
-            justify-content: flex-start;
-            gap: 5px;
-            padding: 0 10px;
-        }
     </ui:style>
     <g:DockLayoutPanel ui:field="root">
-        <g:north size="50">
-            <g:HTMLPanel ui:field="tools" styleName="{style.box} ai-border-bottom">
-                <frame:ModuleBar styleName="{style.box}" ui:field="moduleBar"/>
-            </g:HTMLPanel>
-        </g:north>
     </g:DockLayoutPanel>
 </ui:UiBinder>

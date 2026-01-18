@@ -6,7 +6,7 @@ import cn.mapway.rbac.shared.db.postgis.RbacResourceEntity;
 import cn.mapway.rbac.shared.rpc.*;
 import cn.mapway.ui.client.event.AsyncCallbackLambda;
 import cn.mapway.ui.client.mvc.Size;
-import cn.mapway.ui.client.mvc.attribute.editor.inspector.ObjectInspector;
+import cn.mapway.ui.client.mvc.attribute.editor.inspector.ObjectEditor;
 import cn.mapway.ui.client.tools.DataBus;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.CommonEventComposite;
@@ -16,6 +16,7 @@ import cn.mapway.ui.client.widget.buttons.CheckBoxEx;
 import cn.mapway.ui.client.widget.dialog.Dialog;
 import cn.mapway.ui.client.widget.dialog.SaveBar;
 import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -44,8 +45,6 @@ public class ResourceTree extends CommonEventComposite {
     @UiField
     SaveBar saveBar;
     @UiField
-    ObjectInspector objectInspector;
-    @UiField
     Button btnDelete;
     @UiField
     HTMLPanel indexPanel;
@@ -53,10 +52,18 @@ public class ResourceTree extends CommonEventComposite {
     FlexTable table;
     ResourceAttrProvider resourceAttrProvider;
     Map<String, List<CheckBoxEx>> checkGroups = new HashMap<>();
+    Label selectLabel = null;
     private final ClickHandler scrollToGroup = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
             Label source = (Label) event.getSource();
+            if (selectLabel != null) {
+                CommonEventComposite.setElementSelect(selectLabel.getElement(), false);
+            }
+            selectLabel = source;
+            if (selectLabel != null) {
+                CommonEventComposite.setElementSelect(selectLabel.getElement(), true);
+            }
             String catalogName = source.getText();
             List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
             if (checkBoxExes != null && !checkBoxExes.isEmpty()) {
@@ -103,7 +110,6 @@ public class ResourceTree extends CommonEventComposite {
     public ResourceTree() {
         initWidget(ourUiBinder.createAndBindUi(this));
         resourceAttrProvider = new ResourceAttrProvider();
-        objectInspector.setData(resourceAttrProvider);
         btnDelete.setEnabled(false);
     }
 
@@ -170,6 +176,7 @@ public class ResourceTree extends CommonEventComposite {
 
 
         FlexTable.FlexCellFormatter cellFormatter = table.getFlexCellFormatter();
+        HTMLTable.RowFormatter rowFormatter = table.getRowFormatter();
         int row = -1;
         int col = 0;
         for (Integer kind : catalogs.keySet()) {
@@ -201,7 +208,9 @@ public class ResourceTree extends CommonEventComposite {
             reverse.addClickHandler(reverSelect);
 
             table.setWidget(row, col++, catalogHeader);
-            cellFormatter.setColSpan(row, col-1, 4);
+            cellFormatter.setColSpan(row, col - 1, 4);
+            com.google.gwt.user.client.Element element = rowFormatter.getElement(row);
+            element.getStyle().setBackgroundColor("skyblue");
 
             List<CheckBoxEx> checkBoxExes = checkGroups.get(resourceKind.getName());
             if (checkBoxExes == null) {
@@ -221,8 +230,8 @@ public class ResourceTree extends CommonEventComposite {
                     updateSelect();
                 });
                 table.setWidget(row, col++, checkBoxEx);
-                cellFormatter.setWidth(row,col-1,"32px");
-                table.setText(row, col++, resource.getCatalog()+"/"+resource.getName());
+                cellFormatter.setWidth(row, col - 1, "32px");
+                table.setText(row, col++, resource.getCatalog() + "/" + resource.getName());
                 table.setText(row, col++, resource.getResourceCode());
                 table.setText(row, col++, resource.getSummary());
             }
@@ -240,8 +249,23 @@ public class ResourceTree extends CommonEventComposite {
         newResource.setKind(ResourceKind.RESOURCE_KIND_CUSTOM.getCode());
         newResource.setData("");
         resourceAttrProvider.rebuild(newResource);
-        objectInspector.setSaveButtonEnable(true);
-        objectInspector.setSaveButtonVisible(true);
+        Dialog<ObjectEditor> dialog1 = ObjectEditor.getDialog(true);
+        dialog1.addCommonHandler(new CommonEventHandler() {
+            @Override
+            public void onCommonEvent(CommonEvent event) {
+                if (event.isSave()) {
+                    doSave(resourceAttrProvider.getResource());
+                } else if (event.isClose()) {
+                    dialog1.hide();
+                }
+            }
+        });
+        dialog1.getContent().setColumns(2);
+        dialog1.getContent().setSaveBarVisible(true);
+        dialog1.getContent().setEnableGroup(false);
+        dialog1.getContent().setData(resourceAttrProvider);
+        dialog1.setPixelSize(800, 450);
+        dialog1.center();
     }
 
     private boolean canDelete() {
@@ -254,13 +278,6 @@ public class ResourceTree extends CommonEventComposite {
             fireEvent(CommonEvent.okEvent(selectedItems));
         } else {
             fireEvent(event);
-        }
-    }
-
-    @UiHandler("objectInspector")
-    public void objectInspectorCommon(CommonEvent event) {
-        if (event.isSave()) {
-            doSave(resourceAttrProvider.getResource());
         }
     }
 
@@ -312,9 +329,10 @@ public class ResourceTree extends CommonEventComposite {
 
     @Override
     public Size requireDefaultSize() {
-        int width = Window.getClientWidth();
-        int height = Window.getClientHeight();
-        return new Size(width - 300, height - 400);
+        Size pt = new Size(0, 0);
+        pt.x = Math.max(Window.getClientWidth() - 250, 850);
+        pt.y = Math.max(Window.getClientHeight() - 150, 450);
+        return pt;
     }
 
     interface SStyle extends CssResource {

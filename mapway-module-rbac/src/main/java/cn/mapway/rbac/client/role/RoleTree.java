@@ -10,8 +10,8 @@ import cn.mapway.ui.client.tools.DataBus;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.FontIcon;
 import cn.mapway.ui.client.widget.dialog.Dialog;
-import cn.mapway.ui.client.widget.tree.ImageTextItem;
-import cn.mapway.ui.client.widget.tree.ZTree;
+import cn.mapway.ui.client.widget.tree.Tree;
+import cn.mapway.ui.client.widget.tree.TreeItem;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
@@ -20,6 +20,7 @@ import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 
 import java.util.List;
@@ -30,14 +31,14 @@ import java.util.List;
 public class RoleTree extends CommonEventComposite {
     private static final RoleTreeUiBinder ourUiBinder = GWT.create(RoleTreeUiBinder.class);
     @UiField
-    FontIcon btnCreate;
+    Button btnCreate;
     @UiField
-    ZTree roleTree;
+    Tree roleTree;
     RbacRole selectedRole;
+    Boolean enableEditor = true;
 
     public RoleTree() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        btnCreate.setIconUnicode(Fonts.PLUS);
     }
 
     public void load() {
@@ -54,11 +55,8 @@ public class RoleTree extends CommonEventComposite {
         });
     }
 
-
-    Boolean enableEditor=true;
-    public void setEnableEditor(Boolean enabled)
-    {
-        this.enableEditor=enabled;
+    public void setEnableEditor(Boolean enabled) {
+        this.enableEditor = enabled;
         btnCreate.setEnabled(enabled);
     }
 
@@ -67,14 +65,14 @@ public class RoleTree extends CommonEventComposite {
         recursiveRenderTree(null, data.getRoles());
     }
 
-    private void recursiveRenderTree(ImageTextItem parent, List<RbacRole> roles) {
+    private void recursiveRenderTree(TreeItem parent, List<RbacRole> roles) {
         if (roles == null || roles.size() == 0) {
             return;
         }
         for (RbacRole role : roles) {
-            ImageTextItem item = roleTree.addFontIconItem(parent, role.name+"  ["+role.code+"]", role.icon);
+            TreeItem item = roleTree.addItem(parent, role.name + "  [" + role.code + "]", role.icon);
             item.setData(role);
-            if(enableEditor) {
+            if (enableEditor) {
                 FontIcon editButton = new FontIcon();
                 editButton.setIconUnicode(Fonts.PEN);
                 editButton.addClickHandler(event -> {
@@ -82,9 +80,9 @@ public class RoleTree extends CommonEventComposite {
                     event.preventDefault();
                     doEdit(role);
                 });
-                item.appendWidget(editButton);
+                item.appendRightWidget(editButton);
             }
-            if(enableEditor) {
+            if (enableEditor) {
                 if (role.children == null || role.children.size() == 0) {
                     // last leaf node
                     FontIcon deleteButton = new FontIcon();
@@ -94,7 +92,7 @@ public class RoleTree extends CommonEventComposite {
                         event.preventDefault();
                         confirmDelete(role);
                     });
-                    item.appendWidget(deleteButton);
+                    item.appendRightWidget(deleteButton);
                 }
             }
 
@@ -187,7 +185,7 @@ public class RoleTree extends CommonEventComposite {
     @UiHandler("roleTree")
     public void roleTreeCommon(CommonEvent event) {
         if (event.isSelect()) {
-            ImageTextItem item = event.getValue();
+            TreeItem item = event.getValue();
             selectedRole = (RbacRole) item.getData();
             fireEvent(CommonEvent.selectEvent(selectedRole));
         }

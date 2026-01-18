@@ -7,21 +7,23 @@
 
     </ui:style>
     <g:DockLayoutPanel>
-        <g:west size="400">
+        <g:west size="450">
             <role:RoleTree addStyleNames="ai-border-right" ui:field="roleTree"/>
         </g:west>
         <g:north size="50">
             <g:HTMLPanel styleName="ai-top">
                 <widget:Header ui:field="lbLabel"/>
+                <widget:SearchBox width="200px" ui:field="searchBox"/>
                 <g:HorizontalPanel ui:field="tools">
-                    <g:Button ui:field="btnAdd" enabled="false">添加资源</g:Button>
+                    <role:ResourceKindDropdown ui:field="kindDropdown" width="250px"/>
+                    <g:Button ui:field="btnAdd">添加资源</g:Button>
                 </g:HorizontalPanel>
             </g:HTMLPanel>
         </g:north>
         <g:center>
             <g:ScrollPanel>
-            <role:ResourceTable ui:field="resourceTable">
-            </role:ResourceTable>
+                <role:ResourceTable ui:field="resourceTable">
+                </role:ResourceTable>
             </g:ScrollPanel>
         </g:center>
     </g:DockLayoutPanel>
