@@ -7,11 +7,10 @@ import cn.mapway.rbac.shared.rpc.QueryOrgResponse;
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.buttons.EditButton;
-import cn.mapway.ui.client.widget.tree.ImageTextItem;
-import cn.mapway.ui.client.widget.tree.ZTree;
+import cn.mapway.ui.client.widget.tree.Tree;
+import cn.mapway.ui.client.widget.tree.TreeItem;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.rpc.RpcResult;
-import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Label;
@@ -21,8 +20,7 @@ import java.util.*;
 /**
  * 组织树
  */
-public class OrgTree extends ZTree {
-    Map<String, List<RbacOrgEntity>> orgTemp = new HashMap<>();
+public class OrgTree extends Tree {
     private final ClickHandler editHandler = event -> {
         event.stopPropagation();
         event.preventDefault();
@@ -30,6 +28,7 @@ public class OrgTree extends ZTree {
         RbacOrgEntity org = (RbacOrgEntity) source.getData();
         fireEvent(CommonEvent.editEvent(org));
     };
+    Map<String, List<RbacOrgEntity>> orgTemp = new HashMap<>();
 
     public void load() {
         QueryOrgRequest request = new QueryOrgRequest();
@@ -74,23 +73,26 @@ public class OrgTree extends ZTree {
 
     }
 
-    private void recursiveRenderTree(ImageTextItem parent, List<RbacOrgEntity> roots) {
+    private void recursiveRenderTree(TreeItem parent, List<RbacOrgEntity> roots) {
 
         if (roots == null || roots.size() == 0) {
             return;
         }
         for (RbacOrgEntity org : roots) {
-            ImageTextItem item = addFontIconItem(parent, org.getName(), org.getIcon());
+            TreeItem item = addItem(parent, org.getName(), org.getIcon());
             item.setData(org);
             Label label = new Label();
             label.setText(org.getCode());
             label.setStyleName("ai-summary");
-            item.appendWidget(label, null);
+            if (org.getDefaultOrg() != null && org.getDefaultOrg()) {
+                label.addStyleName("ai-bold");
+            }
+            item.appendRightWidget(label, null);
 
             EditButton editButton = new EditButton();
             editButton.setData(org);
             editButton.addClickHandler(editHandler);
-            item.appendWidget(editButton, 26);
+            item.appendRightWidget(editButton, 26);
 
             List<RbacOrgEntity> children = orgTemp.get(org.getId());
             recursiveRenderTree(item, children);

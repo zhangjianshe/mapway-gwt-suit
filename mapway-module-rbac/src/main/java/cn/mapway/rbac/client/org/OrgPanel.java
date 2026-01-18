@@ -2,7 +2,7 @@ package cn.mapway.rbac.client.org;
 
 import cn.mapway.rbac.shared.db.postgis.RbacOrgEntity;
 import cn.mapway.ui.client.widget.CommonEventComposite;
-import cn.mapway.ui.client.widget.tree.ImageTextItem;
+import cn.mapway.ui.client.widget.tree.TreeItem;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -37,7 +37,7 @@ public class OrgPanel extends CommonEventComposite {
     @UiHandler("orgTree")
     public void orgTreeCommon(CommonEvent event) {
         if (event.isSelect()) {
-            ImageTextItem item = event.getValue();
+            TreeItem item = event.getValue();
             selected = (RbacOrgEntity) item.getData();
             updateUI();
             fireEvent(CommonEvent.selectEvent(selected));
