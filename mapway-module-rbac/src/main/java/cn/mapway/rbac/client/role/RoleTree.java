@@ -110,6 +110,7 @@ public class RoleTree extends CommonEventComposite {
 
     private void doDelete(RbacRole role) {
         DeleteRoleRequest request = new DeleteRoleRequest();
+        request.setRoleCode(role.code);
         RbacServerProxy.get().deleteRole(request, new AsyncCallback<RpcResult<DeleteRoleResponse>>() {
             @Override
             public void onFailure(Throwable caught) {

@@ -1,11 +1,8 @@
 package cn.mapway.rbac.server.service;
 
-import cn.mapway.rbac.server.dao.RbacOrgDao;
 import cn.mapway.rbac.server.dao.RbacResourceDao;
 import cn.mapway.rbac.server.dao.RbacRoleResourceDao;
-import cn.mapway.rbac.shared.RbacConstant;
 import cn.mapway.rbac.shared.ResourceKind;
-import cn.mapway.rbac.shared.db.postgis.RbacOrgEntity;
 import cn.mapway.rbac.shared.db.postgis.RbacResourceEntity;
 import cn.mapway.rbac.shared.db.postgis.RbacRoleResourceEntity;
 import cn.mapway.rbac.shared.rpc.RbacResourceOperation;
@@ -35,7 +32,6 @@ public class RbacResourceService {
     @Resource
     RbacUserService rbacUserService;
 
-    
 
     /**
      * 添加资源

@@ -12,6 +12,7 @@ import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.ui.Widget;
 import elemental2.dom.DomGlobal;
+import lombok.Getter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
     private static ModuleFactory FACTORY;
     IModuleCallback callback;
     boolean initialized = false;
+    @Getter
     boolean hasAuthority = true;
     private IModule mParentModule;
     private ModuleParameter mParameter;
@@ -83,7 +85,7 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
             hasAuthority = true;
         }
 
-        return true;
+        return hasAuthority;
     }
 
     /**

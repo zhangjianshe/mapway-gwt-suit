@@ -84,7 +84,7 @@ public class RbacUserService {
 
     private static final String SQL_TEMPLATE_QUERY_ROLE = "SELECT r.role_code from rbac_user_code_role r LEFT JOIN rbac_org_user u on r.user_code = u.user_code where u.user_id = @userId and u.system_code = @systemCode";
     private static final String SQL_TEMPLATE_QUERY_RESOURCE_CODE = "SELECT distinct res.resource_code from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where res.kind = @kind and r.role_code in (@roleList)";
-    private static final String SQL_TEMPLATE_QUERY_ALL_RESOURCE_CODE = "SELECT distinct res.resource_code, kind from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where r.role_code in (@roleList)";
+    private static final String SQL_TEMPLATE_QUERY_ALL_RESOURCE_CODE = "SELECT distinct res.resource_code, res.kind,res.data,res.name,res.catalog from rbac_role_resource r left join rbac_resource res on r.resource_code = res.resource_code where r.role_code in (@roleList)";
     @Resource
     RbacUserDao rbacUserDao;
     @Resource
@@ -201,6 +201,7 @@ public class RbacUserService {
             }
         }
     }
+
     /**
      * 获取缺省组织
      *
@@ -217,6 +218,7 @@ public class RbacUserService {
         }
         return query.get(0);
     }
+
     /**
      * 用户身份 是否拥有某个角色
      *
@@ -509,28 +511,27 @@ public class RbacUserService {
 
     /**
      * 将用户添加到缺省组织中
+     *
      * @param userId
      * @param userName
      * @param avator
      * @param systemCode
      */
-    public void userAddToDefaultOrg(String userId,String userName,String avator,String systemCode) {
-        if(Strings.isBlank(userId)) {
+    public void userAddToDefaultOrg(String userId, String userName, String avator, String systemCode) {
+        if (Strings.isBlank(userId)) {
             log.error("[RBAC] 没有办法设置一个空用户所在的角色");
             return;
         }
         RbacOrgEntity defaultOrg = getDefaultOrg();
-        if(defaultOrg ==null)
-        {
+        if (defaultOrg == null) {
             log.error("[RBAC] 没有配置缺省组织");
             return;
         }
 
-        int count=rbacOrgUserDao.count(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
+        int count = rbacOrgUserDao.count(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
                 .and(RbacOrgUserEntity.FLD_ORG_CODE, "=", defaultOrg.getCode()));
-        if(count>0)
-        {
-            log.warn("[RBAC]用户｛｝已存在于组织中｛｝",userId,defaultOrg.getCode());
+        if (count > 0) {
+            log.warn("[RBAC]用户｛｝已存在于组织中｛｝", userId, defaultOrg.getCode());
             return;
         }
 
@@ -625,6 +626,7 @@ public class RbacUserService {
                 entity.setIcon(Fonts.RBAC_ROLE);
                 entity.setSummary(roleDeclare.summary());
                 entity.setParentCode(roleDeclare.parentCode());
+                entity.setSystemRole(true);
                 try {
                     rbacRoleDao.insert(entity);
                 } catch (Exception e) {
@@ -991,6 +993,8 @@ public class RbacUserService {
             }
         });
         userPermissions.organizations = organizationsTree.toArray(new Organization[0]);
+
+
         //查找所有的角色
         List<Role> roles = new ArrayList<>();
         if (userCodes.size() > 0) {
@@ -1008,16 +1012,18 @@ public class RbacUserService {
                 }
             }
         }
-
         userPermissions.roles = roles.toArray(new Role[0]);
-        BizResult<QueryRoleResourceResponse> roleResourceResponse = queryUserResourceByKind(systemCode, userId, ResourceKind.RESOURCE_KIND_FRONT_END_COMPONENT);
-        if (roleResourceResponse.isSuccess()) {
-            QueryRoleResourceResponse data = roleResourceResponse.getData();
-            List<RbacResourceEntity> resources = data.getResources();
+
+
+        //查找用户的所有权限点到前端
+        List<RbacResourceEntity> resources = queryUserAllResource(systemCode, userId);
+        if (Lang.isNotEmpty(resources)) {
             userPermissions.resources = resources.stream().map((resourceEntity) -> {
                 Res res = new Res();
                 res.resourceCode = resourceEntity.getResourceCode();
                 res.kind = resourceEntity.getKind();
+                res.name = resourceEntity.getName();
+                res.catalog = resourceEntity.getCatalog();
                 return res;
             }).toArray(Res[]::new);
         } else {
@@ -1197,7 +1203,7 @@ public class RbacUserService {
      * @param permission
      */
     public void confirmUserPermission(IUserInfo user, String permission) {
-        BizResult<Boolean> assignRole = isAssignRole(user, "", permission);
+        BizResult<Boolean> assignRole = isAssignResource(user, "", permission);
         if (assignRole.isFailed() || !assignRole.getData()) {
             throw BizException.get(503, "权限不足(" + permission + ")");
         }
@@ -1282,7 +1288,7 @@ public class RbacUserService {
     }
 
 
-    private List<RbacResourceEntity> queryAllUserResource(String systemCode, String userId) {
+    private List<RbacResourceEntity> queryUserAllResource(String systemCode, String userId) {
         if (StringUtils.isEmpty(systemCode)) {
             return new ArrayList<>();
         }
@@ -1301,11 +1307,24 @@ public class RbacUserService {
             return new ArrayList<>();
         }
         // 查询角色的资源
+        final List<RbacResourceEntity> resourceEntityList = new ArrayList<>();
         Sql sql1 = Sqls.create(SQL_TEMPLATE_QUERY_ALL_RESOURCE_CODE);
         sql1.params().set("roleList", roleNames);
-        sql1.setCallback(Sqls.callback.entity());
+        sql1.setCallback((conn, rs, sql2) -> {
+            while (rs.next()) {
+                //res.resource_code, res.kind,res.data,res.name,res.catalog
+                RbacResourceEntity resource = new RbacResourceEntity();
+                resource.setResourceCode(rs.getString(1));
+                resource.setKind(rs.getInt(2));
+                resource.setData(rs.getString(3));
+                resource.setName(rs.getString(4));
+                resource.setCatalog(rs.getString(5));
+                resourceEntityList.add(resource);
+            }
+            return resourceEntityList;
+        });
         rbacRoleDao.getDao().execute(sql1);
-        return sql1.getList(RbacResourceEntity.class);
+        return resourceEntityList;
     }
 
     /**

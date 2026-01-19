@@ -18,22 +18,28 @@
         <g:center>
             <g:HTMLPanel styleName="{style.box}">
                 <g:HorizontalPanel width="100%" spacing="4">
-                    <g:cell width="100px">
+                    <g:cell width="140px">
                         <widget:Header addStyleNames="{style.lb}">角色名称</widget:Header>
                     </g:cell>
                     <g:TextBox addStyleNames="ai-input" ui:field="txtName"/>
                 </g:HorizontalPanel>
                 <g:HorizontalPanel width="100%" spacing="4">
-                    <g:cell width="100px">
+                    <g:cell width="140px">
                         <widget:Header addStyleNames="{style.lb}">角色代码</widget:Header>
                     </g:cell>
                     <g:TextBox addStyleNames="ai-input" ui:field="txtCode"/>
                 </g:HorizontalPanel>
                 <g:HorizontalPanel width="100%" spacing="4">
-                    <g:cell width="100px">
+                    <g:cell width="140px">
+                        <widget:Header addStyleNames="{style.lb}">是否是系统角色</widget:Header>
+                    </g:cell>
+                    <g:CheckBox ui:field="checkSystemCode" enabled="false"/>
+                </g:HorizontalPanel>
+                <g:HorizontalPanel width="100%" spacing="4">
+                    <g:cell width="140px">
                         <widget:Header addStyleNames="{style.lb}">角色说明</widget:Header>
                     </g:cell>
-                    <g:TextArea addStyleNames="ai-input" height="300px" ui:field="txtSummary"/>
+                    <g:TextArea addStyleNames="ai-input" height="360px" ui:field="txtSummary"/>
                 </g:HorizontalPanel>
             </g:HTMLPanel>
         </g:center>

@@ -7,6 +7,7 @@ import cn.mapway.rbac.shared.db.postgis.*;
 import cn.mapway.server.IServerPlugin;
 import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.server.IServerContext;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.dao.Dao;
 import org.nutz.dao.util.Daos;
@@ -25,6 +26,7 @@ import java.util.List;
 @Slf4j
 public class RbacServerPlugin implements IServerPlugin {
 
+    @Getter
     @Resource
     IServerContext serverContext;
     @Resource
@@ -52,7 +54,7 @@ public class RbacServerPlugin implements IServerPlugin {
         Dao dao = iServerContext.getBean(Dao.class);
 
 
-        String SCHEMA_DATE="2026-01-08";
+        String SCHEMA_DATE="2026-01-19";
         if(!dao.exists(RbacConfigEntity.class) || rbacConfigService.needUpdate("SCHEMA_DATE",SCHEMA_DATE)) {
 
             if(!dao.exists(RbacConfigEntity.class))
@@ -134,10 +136,6 @@ public class RbacServerPlugin implements IServerPlugin {
         }
         rbacUserService.importResourcePointFromCode(scanPackages, iServerContext.getSuperUser());
 
-    }
-
-    public IServerContext getServerContext() {
-            return serverContext;
     }
 
     @Override

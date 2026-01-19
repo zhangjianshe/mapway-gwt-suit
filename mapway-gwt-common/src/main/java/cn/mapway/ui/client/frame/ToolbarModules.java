@@ -59,7 +59,7 @@ public abstract class ToolbarModules extends BaseAbstractModule implements IShow
             current=null;
         }
         ModuleParameter parameter=new ModuleParameter();
-        parameter.put(IAuthorize.IGNORE_CHECK_KEY,"true");
+        //parameter.put(IAuthorize.IGNORE_CHECK_KEY,"true");
         module.initialize(ToolbarModules.this, parameter);
         current = module.getRootWidget();
         uiHolder.root.add(current);

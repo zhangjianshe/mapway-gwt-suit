@@ -12,6 +12,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
@@ -21,8 +22,8 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class RoleEditor extends CommonEventComposite implements IData<RbacRole> {
 
-    private static Dialog<RoleEditor> dialog;
     private static final RoleEditorUiBinder ourUiBinder = GWT.create(RoleEditorUiBinder.class);
+    private static Dialog<RoleEditor> dialog;
     @UiField
     TextBox txtName;
     @UiField
@@ -31,6 +32,8 @@ public class RoleEditor extends CommonEventComposite implements IData<RbacRole> 
     TextArea txtSummary;
     @UiField
     SaveBar saveBar;
+    @UiField
+    CheckBox checkSystemCode;
     private RbacRole role;
 
     public RoleEditor() {
@@ -68,13 +71,8 @@ public class RoleEditor extends CommonEventComposite implements IData<RbacRole> 
         txtCode.setText(role.code);
         txtName.setText(role.name);
         txtSummary.setText(role.summary);
-        if(StringUtil.isBlank(role.code))
-        {
-            txtCode.setEnabled(true);
-        }else
-        {
-            txtCode.setEnabled(false);
-        }
+        txtCode.setEnabled(StringUtil.isBlank(role.code));
+        checkSystemCode.setValue(role.systemRole);
     }
 
     public void msg(String message) {
@@ -100,6 +98,7 @@ public class RoleEditor extends CommonEventComposite implements IData<RbacRole> 
         role.code = txtCode.getValue();
         role.name = txtName.getValue();
         role.summary = txtSummary.getValue();
+        role.systemRole = checkSystemCode.getValue();
     }
 
     interface RoleEditorUiBinder extends UiBinder<DockLayoutPanel, RoleEditor> {

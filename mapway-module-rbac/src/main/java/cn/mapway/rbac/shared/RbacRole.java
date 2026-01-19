@@ -12,6 +12,7 @@ public class RbacRole implements Serializable, IsSerializable {
     public String summary;
     public String icon;
     public String parentCode;
+    public Boolean systemRole;
     public List<RbacRole> children;
 
     public void addChild(RbacRole role) {

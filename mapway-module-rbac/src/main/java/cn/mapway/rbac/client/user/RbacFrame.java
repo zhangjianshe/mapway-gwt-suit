@@ -40,6 +40,7 @@ public class RbacFrame extends ToolbarModules {
     @Override
     public boolean initialize(IModule parentModule, ModuleParameter parameter) {
         Boolean b = super.initialize(parentModule, parameter);
+
         if (first) {
             first = false;
             switchTo(RbacOrgFrame.MODULE_CODE);

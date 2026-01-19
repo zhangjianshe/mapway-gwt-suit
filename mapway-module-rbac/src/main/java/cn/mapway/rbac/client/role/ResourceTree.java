@@ -11,6 +11,7 @@ import cn.mapway.ui.client.tools.DataBus;
 import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.Header;
+import cn.mapway.ui.client.widget.SearchBox;
 import cn.mapway.ui.client.widget.buttons.AiButton;
 import cn.mapway.ui.client.widget.buttons.CheckBoxEx;
 import cn.mapway.ui.client.widget.dialog.Dialog;
@@ -21,6 +22,8 @@ import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -76,41 +79,44 @@ public class ResourceTree extends CommonEventComposite {
         }
     };
     List<RbacResourceEntity> selectedItems = new ArrayList<>();
-    private final ClickHandler selectAll = new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-            IData source = (IData) event.getSource();
-            String catalogName = (String) source.getData();
-            List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
-            if (checkBoxExes != null) {
-                for (CheckBoxEx checkBoxEx : checkBoxExes) {
-                    checkBoxEx.setValue(true, false);
-                }
+    private final ClickHandler selectAll = event -> {
+        IData source = (IData) event.getSource();
+        String catalogName = (String) source.getData();
+        List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
+        if (checkBoxExes != null) {
+            for (CheckBoxEx checkBoxEx : checkBoxExes) {
+                checkBoxEx.setValue(true, false);
             }
-            updateSelect();
         }
+        updateSelect();
     };
-    private final ClickHandler reverSelect = new ClickHandler() {
-        @Override
-        public void onClick(ClickEvent event) {
-            IData source = (IData) event.getSource();
-            String catalogName = (String) source.getData();
-            List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
-            if (checkBoxExes != null) {
-                for (CheckBoxEx checkBoxEx : checkBoxExes) {
-                    checkBoxEx.setValue(!checkBoxEx.getValue(), false);
-                }
+    private final ClickHandler reverSelect = event -> {
+        IData source = (IData) event.getSource();
+        String catalogName = (String) source.getData();
+        List<CheckBoxEx> checkBoxExes = checkGroups.get(catalogName);
+        if (checkBoxExes != null) {
+            for (CheckBoxEx checkBoxEx : checkBoxExes) {
+                checkBoxEx.setValue(!checkBoxEx.getValue(), false);
             }
-            updateSelect();
         }
+        updateSelect();
     };
     @UiField
     SStyle style;
+    @UiField
+    SearchBox searchBox;
 
     public ResourceTree() {
         initWidget(ourUiBinder.createAndBindUi(this));
         resourceAttrProvider = new ResourceAttrProvider();
         btnDelete.setEnabled(false);
+        searchBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                String name = event.getValue();
+                filterName(name);
+            }
+        });
     }
 
     public static Dialog<ResourceTree> getDialog(boolean reuse) {
@@ -127,6 +133,37 @@ public class ResourceTree extends CommonEventComposite {
     private static Dialog<ResourceTree> createOne() {
         ResourceTree tree = new ResourceTree();
         return new Dialog(tree, "资源权限点");
+    }
+
+    private void filterName(String name) {
+        HTMLTable.RowFormatter rowFormatter = table.getRowFormatter();
+        if (name == null || name.length() == 0) {
+            for (int i = 0; i < table.getRowCount(); i++) {
+                rowFormatter.setVisible(i, true);
+            }
+        } else {
+            for (int row = 0; row < table.getRowCount(); row++) {
+                Widget widget = table.getWidget(row, 0);
+                if (widget instanceof CheckBoxEx) {
+                    String catalog = table.getText(row, 1);
+                    if (catalog.contains(name)) {
+                        rowFormatter.setVisible(row, true);
+                        continue;
+                    }
+                    if (table.getText(row, 2).contains(name)) {
+                        rowFormatter.setVisible(row, true);
+                        continue;
+                    }
+                    if (table.getText(row, 3).contains(name)) {
+                        rowFormatter.setVisible(row, true);
+                        continue;
+                    }
+                    rowFormatter.setVisible(row, false);
+                } else {
+                    rowFormatter.setVisible(row, false);
+                }
+            }
+        }
     }
 
     public void load() {
@@ -158,6 +195,7 @@ public class ResourceTree extends CommonEventComposite {
         btnDelete.setEnabled(canDelete());
     }
 
+
     private void renderTable(QueryResourceResponse data) {
         indexPanel.clear();
         checkGroups.clear();
@@ -181,6 +219,7 @@ public class ResourceTree extends CommonEventComposite {
         int col = 0;
         for (Integer kind : catalogs.keySet()) {
 
+            //分类行
             ResourceKind resourceKind = ResourceKind.fromCode(kind);
             Label catalogLabel = new Label(resourceKind.getName());
             catalogLabel.setStyleName(style.catalog());
@@ -208,7 +247,7 @@ public class ResourceTree extends CommonEventComposite {
             reverse.addClickHandler(reverSelect);
 
             table.setWidget(row, col++, catalogHeader);
-            cellFormatter.setColSpan(row, col - 1, 4);
+            cellFormatter.setColSpan(row, col - 1, 5);
             com.google.gwt.user.client.Element element = rowFormatter.getElement(row);
             element.getStyle().setBackgroundColor("skyblue");
 
@@ -218,7 +257,7 @@ public class ResourceTree extends CommonEventComposite {
                 checkGroups.put(resourceKind.getName(), checkBoxExes);
             }
 
-
+            //内容行
             for (RbacResourceEntity resource : list) {
                 row++;
                 col = 0;
@@ -231,7 +270,8 @@ public class ResourceTree extends CommonEventComposite {
                 });
                 table.setWidget(row, col++, checkBoxEx);
                 cellFormatter.setWidth(row, col - 1, "32px");
-                table.setText(row, col++, resource.getCatalog() + "/" + resource.getName());
+                table.setText(row, col++, resource.getCatalog());
+                table.setText(row, col++, resource.getName());
                 table.setText(row, col++, resource.getResourceCode());
                 table.setText(row, col++, resource.getSummary());
             }

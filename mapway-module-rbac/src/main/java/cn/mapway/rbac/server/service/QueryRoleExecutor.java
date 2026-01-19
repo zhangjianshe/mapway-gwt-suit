@@ -55,6 +55,7 @@ public class QueryRoleExecutor extends AbstractBizExecutor<QueryRoleResponse, Qu
             role.icon = roleEntity.getIcon();
             role.summary = roleEntity.getSummary();
             role.parentCode = roleEntity.getParentCode();
+            role.systemRole=roleEntity.getSystemRole();
             roleMap.put(roleEntity.getCode(), role);
             allRoles.add(role);
         }

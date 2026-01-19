@@ -38,6 +38,7 @@
         <g:north size="50">
             <g:HTMLPanel styleName="ai-top">
                 <widget:Header>系统权限点</widget:Header>
+                <widget:SearchBox ui:field="searchBox" width="250px"/>
                 <g:HorizontalPanel>
                     <g:Button ui:field="btnCreate">新建资源点</g:Button>
                     <g:Button ui:field="btnDelete">删除资源点</g:Button>
