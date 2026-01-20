@@ -26,13 +26,13 @@ public enum CodeLanguage {
         this.unicode = unicode;
     }
 
-    public static CodeLanguage fromName(String dataType) {
+    public static CodeLanguage fromCode(String dataType) {
         if(dataType==null)
         {
             return TEXT;
         }
         for (CodeLanguage codeLanguage : CodeLanguage.values()) {
-            if(codeLanguage.name().endsWith(dataType))
+            if(codeLanguage.getCode().endsWith(dataType))
             {
                 return codeLanguage;
             }
