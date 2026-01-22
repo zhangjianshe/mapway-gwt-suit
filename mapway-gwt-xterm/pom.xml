@@ -125,13 +125,6 @@
                 <configuration>
                     <moduleName>cn.mapway.xterm.Xterm</moduleName>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>

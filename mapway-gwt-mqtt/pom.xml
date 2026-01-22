@@ -97,13 +97,6 @@
                 <configuration>
                     <moduleName>cn.mapway.mqtt.MapwayMqtt</moduleName>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>

@@ -109,13 +109,6 @@
                 <configuration>
                     <moduleName>cn.mapway.map.MapwayMap</moduleName>
                 </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>compile</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>

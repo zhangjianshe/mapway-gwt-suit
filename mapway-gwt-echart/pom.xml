@@ -114,15 +114,6 @@
                         </arg>
                     </jvmArgs>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>package-gwt-lib</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package-lib</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
 
         </plugins>

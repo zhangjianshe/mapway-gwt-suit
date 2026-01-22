@@ -185,15 +185,6 @@
                         <arg>-Dfile.encoding=UTF-8</arg>
                     </jvmArgs>
                 </configuration>
-                <executions>
-                    <execution>
-                        <id>package-gwt-lib</id>
-                        <phase>package</phase>
-                        <goals>
-                            <goal>package-lib</goal>
-                        </goals>
-                    </execution>
-                </executions>
             </plugin>
         </plugins>
     </build>
