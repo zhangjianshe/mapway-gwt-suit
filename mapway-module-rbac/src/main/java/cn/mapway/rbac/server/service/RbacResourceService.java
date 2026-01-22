@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
-import org.nutz.json.Json;
 import org.nutz.trans.Trans;
 import org.springframework.stereotype.Service;
 
@@ -123,7 +122,7 @@ public class RbacResourceService {
             try {
                 rbacResourceDao.getDao().insert(resource);
             } catch (Exception e) {
-                log.error("insert module error {}", e.getMessage());
+                log.error("[RBAC RESOURCE] insert module error {}", e.getMessage());
             }
         }
     }
@@ -196,12 +195,16 @@ public class RbacResourceService {
     }
 
     public List<RbacResourceOperation> syncResource(List<RbacResourceEntity> newList, ResourceKind kind) {
+
         if (newList == null) {
-            throw new NullPointerException(" newList is null");
+            log.warn("[RBAC RESOURCE] syncResource: newList is null");
+            return new ArrayList<>();
         }
         if (kind == null) {
-            throw new NullPointerException(" kind is null");
+            log.warn("[RBAC RESOURCE] syncResource: kind is null");
+            return new ArrayList<>();
         }
+
         List<RbacResourceOperation> result = new ArrayList<>();
         Map<String, RbacResourceEntity> newCache = new HashMap<>();
         for (RbacResourceEntity resourceEntity : newList) {
@@ -300,7 +303,9 @@ public class RbacResourceService {
         if (resources == null || resources.isEmpty() || StringUtils.isEmpty(roleKey)) {
             return 0;
         }
-        log.info(Json.toJson(resources));
+        for (RbacResourceEntity resourceEntity : resources) {
+            log.info("[RBAC RESOURCE] assign resource {} to role {}", resourceEntity.getResourceCode(), roleKey);
+        }
 
         List<String> resourceKeys = resources.stream().filter(resourceEntity -> resourceEntity.getResourceCode() != null)
                 .map(RbacResourceEntity::getResourceCode).collect(Collectors.toList());
