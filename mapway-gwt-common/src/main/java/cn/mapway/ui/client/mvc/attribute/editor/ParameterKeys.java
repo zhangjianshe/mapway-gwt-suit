@@ -22,4 +22,5 @@ public class ParameterKeys {
     public static final String KEY_PRODUCT_ID="product_id";
     public static final String KEY_CSS_RULES_PROVIDER="css_rules_provider";
     public static final String KEY_BUTTON_TYPE = "button_type";
+    public static final String KEY_CATALOG_USAGE = "catalog_usage";
 }
