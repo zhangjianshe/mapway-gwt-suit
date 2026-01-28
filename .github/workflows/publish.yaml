@@ -35,7 +35,16 @@ jobs:
           gpg-passphrase: ${{ secrets.GPG_PASSPHRASE }}
           cache: 'maven'
       - name: Publish to Maven Central
-        run: mvn  --batch-mode clean  deploy -P release -ntp  -Dmaven.test.skip=true
+        run: |
+          # If we are on a tag, use the release profile. 
+          # Otherwise, perform a standard snapshot deploy.
+          if [[ "${{ github.ref }}" == refs/tags/* ]]; then
+            echo "Publishing Release..."
+            mvn --batch-mode clean deploy -P release -ntp -Dmaven.test.skip=true
+          else
+            echo "Publishing Snapshot..."
+            mvn --batch-mode clean deploy -ntp -Dmaven.test.skip=true
+          fi
         env:
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           MAVEN_USERNAME: ${{ secrets.MAVEN_USERNAME }}
