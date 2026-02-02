@@ -32,10 +32,6 @@ public class LoginExecutor extends AbstractBizExecutor<LoginResponse, LoginReque
         LoginRequest request = bizParam.getData();
         log.info("LoginExecutor {}", Json.toJson(request, JsonFormat.compact()));
         BizResult<LoginResponse> result = rbacUserService.login(request);
-        if (result.isSuccess()) {
-            Cookie cookie = new Cookie(CommonConstant.API_TOKEN, result.getData().getToken());
-            ServletUtils.getResponse().addCookie(cookie);
-        }
         return result;
     }
 }
