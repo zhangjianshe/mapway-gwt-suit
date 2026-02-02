@@ -23,7 +23,7 @@ import com.google.gwt.user.client.ui.DockLayoutPanel;
         unicode = Fonts.AUTHORIZE,
         summary = "RbacStudio",
         group = RbacConstant.MODULE_GROUP_RBAC,
-        order = 1
+        order = 1000
 )
 public class RbacFrame extends ToolbarModules {
     public static final String MODULE_CODE = "rbac_frame";
