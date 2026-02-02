@@ -66,6 +66,7 @@ public class Tree extends Composite implements HasCommonHandlers {
 
     public Tree() {
         this(Fonts.toHtmlEntity(Fonts.DOWN), Fonts.toHtmlEntity(Fonts.RIGHT));
+        setMessage("",0);
     }
 
     public Tree(String openIcon, String closeIcon) {
@@ -85,13 +86,18 @@ public class Tree extends Composite implements HasCommonHandlers {
 
     public void setMessage(String message,Integer height) {
         if(height != null && height > 0) {
-            lbMessage.setVisible(true);
+            lbMessage.clear();
             lbMessage.add(new Label(message));
             lbMessage.setHeight(height+"px");
         }
         else {
-            lbMessage.setVisible(false);
+            lbMessage.setHeight("0px");
         }
+    }
+    public void clearMessage()
+    {
+        lbMessage.clear();
+        lbMessage.setHeight("0px");
     }
     /**
      * 重新加载所有的items 为子节点

@@ -1,11 +1,12 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui'>
     <ui:style>
-        .message{
-            margin: 10px;
+        .message {
+            display: flex;
             align-items: center;
             justify-content: center;
-            display: none;
+            height: 0;
+            overflow: hidden;
         }
     </ui:style>
     <g:HTMLPanel>
