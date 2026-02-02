@@ -37,7 +37,7 @@ public class QueryCurrentUserExecutor extends AbstractBizExecutor<QueryCurrentUs
         if (user != null) {
             QueryCurrentUserResponse response = new QueryCurrentUserResponse();
             response.setCurrentUser(user);
-            response.setUserPermissions(rbacUserService.getUserPermissions("DEV", user.getId()));
+            response.setUserPermissions(rbacUserService.getUserPermissions(request.getSystemCode(), user.getId()));
             return BizResult.success(response);
         }
         return BizResult.error(Messages.NSG_NEED_LOGIN.getCode(), Messages.NSG_NEED_LOGIN.getMessage());

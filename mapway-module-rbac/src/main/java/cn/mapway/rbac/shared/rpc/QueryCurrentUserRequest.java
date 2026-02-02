@@ -12,4 +12,5 @@ import java.io.Serializable;
  */
 @Data
 public class QueryCurrentUserRequest implements Serializable, IsSerializable {
+    String systemCode;
 }
