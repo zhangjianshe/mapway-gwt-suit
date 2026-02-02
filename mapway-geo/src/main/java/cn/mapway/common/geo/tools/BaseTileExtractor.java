@@ -868,10 +868,10 @@ public class BaseTileExtractor {
         Rect source = new Rect();
         Rect target = new Rect();
         Dataset dataset;
-        try {
-            dataset = gdal.Open(location);
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        dataset = gdal.Open(location);
+        if(dataset == null) {
+            log.error("[TILE EXTRACTOR] can't open location:{} " , location);
             return null;
         }
         int rasterWidth = dataset.getRasterXSize();
