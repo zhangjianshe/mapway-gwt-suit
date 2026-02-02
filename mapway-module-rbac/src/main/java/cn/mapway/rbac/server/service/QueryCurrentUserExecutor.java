@@ -14,6 +14,9 @@ import org.nutz.json.Json;
 import org.nutz.json.JsonFormat;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+import javax.annotation.Resources;
+
 /**
  * QueryCurrentUserExecutor
  *
@@ -22,6 +25,10 @@ import org.springframework.stereotype.Component;
 @Component
 @Slf4j
 public class QueryCurrentUserExecutor extends AbstractBizExecutor<QueryCurrentUserResponse, QueryCurrentUserRequest> {
+
+    @Resource
+    private RbacUserService rbacUserService;
+
     @Override
     protected BizResult<QueryCurrentUserResponse> process(BizContext context, BizRequest<QueryCurrentUserRequest> bizParam) {
         QueryCurrentUserRequest request = bizParam.getData();
@@ -30,6 +37,7 @@ public class QueryCurrentUserExecutor extends AbstractBizExecutor<QueryCurrentUs
         if (user != null) {
             QueryCurrentUserResponse response = new QueryCurrentUserResponse();
             response.setCurrentUser(user);
+            response.setUserPermissions(rbacUserService.getUserPermissions("DEV", user.getId()));
             return BizResult.success(response);
         }
         return BizResult.error(Messages.NSG_NEED_LOGIN.getCode(), Messages.NSG_NEED_LOGIN.getMessage());

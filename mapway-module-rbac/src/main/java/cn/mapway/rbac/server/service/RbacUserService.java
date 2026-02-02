@@ -464,6 +464,7 @@ public class RbacUserService {
         response.setCurrentUser(rbacUser);
         ServletUtils.getResponse().addCookie(new Cookie(CommonConstant.API_TOKEN, user.getToken()));
         //全局保存一个登录用户的TOKEN对象 可以存放到Redis
+        
         ServletUtils.getRequest().getSession(true).setAttribute(CommonConstant.KEY_LOGIN_USER, rbacUser);
 
         return BizResult.success(response);
