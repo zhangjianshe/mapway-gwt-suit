@@ -76,9 +76,8 @@ public class AiTextBox extends TextBox implements IData {
     public void setDoubleStep(double step) {
         setAttribute("step", step + "");
     }
-
     public void disableAutocomplete() {
-        setAttribute("autocomplete", "new-thing");
+        setAttribute("autocomplete", "new-password");
     }
     public void setDefaultValue(String value) {
         defaultValue = value;
