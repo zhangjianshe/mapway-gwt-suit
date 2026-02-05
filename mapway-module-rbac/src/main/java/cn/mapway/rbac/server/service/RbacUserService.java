@@ -430,7 +430,53 @@ public class RbacUserService {
 
     }
 
-    public BizResult<LoginResponse> checkUserLogin(RbacUserEntity user, boolean create) {
+    /**
+     * 将用户添加到缺省的组织和分配缺省的角色
+     */
+    public void checkUserDefaultPrivileges(String userId,String orgCode,String sysCode)
+    {
+        RbacUserEntity user=rbacUserDao.fetch(Cnd.where(RbacUserEntity.FLD_USER_ID, "=", userId));
+        if(user==null)
+        {
+            log.error("[RBAC] 绑定用户到缺省组织和权限 没有发现用户信息");
+            return;
+        }
+
+        RbacOrgUserEntity fetch = rbacOrgUserDao.fetch(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId)
+                .and(RbacOrgUserEntity.FLD_ORG_CODE, "=", orgCode)
+                .and(RbacOrgUserEntity.FLD_SYSTEM_CODE, "=", sysCode));
+
+        if(fetch == null)
+        {
+            RbacOrgUserEntity orgUser = new RbacOrgUserEntity();
+            orgUser.setUserId(userId);
+            orgUser.setOrgCode(orgCode);
+            orgUser.setSystemCode(sysCode);
+            orgUser.setAvatar(user.getAvatar());
+            orgUser.setAliasName(user.getUserName());
+            orgUser.setMajor(true);
+            orgUser.setCreateTime(new Date());
+            orgUser.setUserCode(R.UU16());
+            rbacOrgUserDao.insert(orgUser);
+            fetch=orgUser;
+        }
+
+        RbacUserCodeRoleEntity codeRoleEntity = rbacUserCodeRoleDao.fetch(
+                Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", fetch.getUserCode())
+                .and(RbacUserCodeRoleEntity.FLD_ROLE_CODE, "=", RbacConstant.ROLE_NORMAL_USER));
+
+        if (codeRoleEntity == null) {
+            codeRoleEntity = new RbacUserCodeRoleEntity();
+            codeRoleEntity.setRoleCode(RbacConstant.ROLE_NORMAL_USER);
+            codeRoleEntity.setUserCode(fetch.getUserCode());
+            codeRoleEntity.setCreateTime(new Date());
+            codeRoleEntity.setCreateUser("SYS");
+            rbacUserCodeRoleDao.insert(codeRoleEntity);
+        }
+
+    }
+
+    public BizResult<LoginResponse> checkUserLogin(RbacUserEntity user, boolean create,String sysCode) {
         if (user == null) {
             return BizResult.error(500, "[RBAC] 没有发现请求的用户数据");
         }
@@ -457,6 +503,8 @@ public class RbacUserService {
                 user.setStatus("1");
                 rbacUserDao.insert(user);
                 userInDb=rbacUserDao.fetch(user.getUserId());
+                //创建完用户 分配到缺省的用户组和权限
+               checkUserDefaultPrivileges(String.valueOf(user.getUserId()),RbacConstant.DEFAULT_ORG_CODE,sysCode);
             }
         }
         //这个时候 userInDb 一定有值
@@ -1475,4 +1523,5 @@ public class RbacUserService {
         RbacUserEntity fetch1 = rbacUserDao.fetch(tokenEntity.getId());
         return fetch1;
     }
+
 }
