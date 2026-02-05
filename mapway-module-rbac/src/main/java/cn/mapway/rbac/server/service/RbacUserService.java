@@ -430,6 +430,59 @@ public class RbacUserService {
 
     }
 
+    public BizResult<LoginResponse> checkUserLogin(RbacUserEntity user, boolean create) {
+        if (user == null) {
+            return BizResult.error(500, "[RBAC] 没有发现请求的用户数据");
+        }
+        if (Strings.isBlank(user.getUserName()) || Strings.isBlank(user.getUserType())) {
+            return BizResult.error(500, "[RBAC] 请求的用户信息错误,缺少用户名和用户类型");
+        }
+        Cnd where = Cnd.where(RbacUserEntity.FLD_USER_NAME, "=", user.getUserName());
+        where.and(RbacUserEntity.FLD_USER_TYPE, "=", RbacConstant.USER_TYPE_RBAC);
+
+        RbacUserEntity userInDb = rbacUserDao.fetch(where);
+        if (userInDb == null ) {
+            if(!create){
+                String msg = "[RBAC] 用户 " + user.getUserName() + "/" + user.getUserType() + " 还没有初始化";
+                log.info(msg);
+                return BizResult.error(500, msg);
+            }
+            else {
+                //创建用户
+                user.setUserId(null);
+                user.setToken(R.UU16());
+                user.setCreateBy("admin");
+                user.setCreateTime(new Date());
+                user.setUpdateTime(new Date());
+                user.setStatus("1");
+                rbacUserDao.insert(user);
+                userInDb=rbacUserDao.fetch(user.getUserId());
+            }
+        }
+        //这个时候 userInDb 一定有值
+        if (!user.getStatus().equals("0")) {
+            return BizResult.error(500, "用户已被禁用");
+        }
+
+       return sureLogin(userInDb);
+    }
+
+    private BizResult<LoginResponse> sureLogin(RbacUserEntity user) {
+        LoginResponse response = new LoginResponse();
+        user.setPassword("");
+        response.setToken(R.UU16());
+        RbacUser rbacUser = new RbacUser(user);
+
+        rbacUser.setExpireTime(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000);
+        response.setCurrentUser(rbacUser);
+        ServletUtils.getResponse().addCookie(new Cookie(CommonConstant.API_TOKEN, user.getToken()));
+        //全局保存一个登录用户的TOKEN对象 可以存放到Redis
+
+        ServletUtils.getRequest().getSession(true).setAttribute(CommonConstant.KEY_LOGIN_USER, rbacUser);
+
+        return BizResult.success(response);
+    }
+
     public BizResult<LoginResponse> login(LoginRequest request) {
         if (request == null || Strings.isBlank(request.getUserName())) {
             return BizResult.error(500, "用户名不能为空");
@@ -440,6 +493,7 @@ public class RbacUserService {
         }
 
         Cnd where = Cnd.where(RbacUserEntity.FLD_USER_NAME, "=", request.getUserName());
+        where.and(RbacUserEntity.FLD_USER_TYPE, "=", RbacConstant.USER_TYPE_RBAC);
 
         RbacUserEntity user = rbacUserDao.fetch(where);
 
@@ -454,20 +508,7 @@ public class RbacUserService {
         if (!user.getStatus().equals("0")) {
             return BizResult.error(500, "用户已被禁用");
         }
-
-        LoginResponse response = new LoginResponse();
-        user.setPassword("");
-        response.setToken(R.UU16());
-        RbacUser rbacUser = new RbacUser(user);
-
-        rbacUser.setExpireTime(System.currentTimeMillis() + 2 * 24 * 60 * 60 * 1000);
-        response.setCurrentUser(rbacUser);
-        ServletUtils.getResponse().addCookie(new Cookie(CommonConstant.API_TOKEN, user.getToken()));
-        //全局保存一个登录用户的TOKEN对象 可以存放到Redis
-        
-        ServletUtils.getRequest().getSession(true).setAttribute(CommonConstant.KEY_LOGIN_USER, rbacUser);
-
-        return BizResult.success(response);
+        return sureLogin(user);
     }
 
     /**
@@ -489,7 +530,7 @@ public class RbacUserService {
             user.setEmail("admin@system.com");
             user.setDeptId(0L);
             user.setUpdateTime(new Date());
-            user.setUserType("00");
+            user.setUserType(RbacConstant.USER_TYPE_RBAC);
             user.setUpdateBy("system");
             user.setRemark("system created");
 

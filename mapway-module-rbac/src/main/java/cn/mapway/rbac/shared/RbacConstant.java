@@ -45,5 +45,8 @@ public class RbacConstant {
      */
     public static final String USER_PERMISSION_CACHE_KEY_PREFIX = "USER_PERMISSION_";
     public static final String SESSION_CACHE_GROUP = "rbac";
-    
+
+    public static final String USER_TYPE_RBAC = "00";
+    public static final String USER_TYPE_LDAP = "LDAP";
+    public static final String USER_TYPE_GITEE = "GITEE";
 }
