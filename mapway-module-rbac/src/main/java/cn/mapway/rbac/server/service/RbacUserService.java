@@ -435,7 +435,7 @@ public class RbacUserService {
      */
     public void checkUserDefaultPrivileges(String userId,String orgCode,String sysCode)
     {
-        RbacUserEntity user=rbacUserDao.fetch(Cnd.where(RbacUserEntity.FLD_USER_ID, "=", userId));
+        RbacUserEntity user=rbacUserDao.fetch(Cnd.where(RbacUserEntity.FLD_USER_ID, "=", Long.parseLong(userId)));
         if(user==null)
         {
             log.error("[RBAC] 绑定用户到缺省组织和权限 没有发现用户信息");
