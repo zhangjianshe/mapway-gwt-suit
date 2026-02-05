@@ -484,7 +484,7 @@ public class RbacUserService {
             return BizResult.error(500, "[RBAC] 请求的用户信息错误,缺少用户名和用户类型");
         }
         Cnd where = Cnd.where(RbacUserEntity.FLD_USER_NAME, "=", user.getUserName());
-        where.and(RbacUserEntity.FLD_USER_TYPE, "=", RbacConstant.USER_TYPE_RBAC);
+        where.and(RbacUserEntity.FLD_USER_TYPE, "=", user.getUserType());
 
         RbacUserEntity userInDb = rbacUserDao.fetch(where);
         if (userInDb == null ) {
