@@ -508,7 +508,7 @@ public class RbacUserService {
             }
         }
         //这个时候 userInDb 一定有值
-        if (!user.getStatus().equals("0")) {
+        if (!"0".equals(userInDb.getStatus())) {
             return BizResult.error(500, "用户已被禁用");
         }
 
