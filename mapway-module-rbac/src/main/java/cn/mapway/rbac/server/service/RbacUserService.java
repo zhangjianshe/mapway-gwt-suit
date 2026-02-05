@@ -500,7 +500,7 @@ public class RbacUserService {
                 user.setCreateBy("admin");
                 user.setCreateTime(new Date());
                 user.setUpdateTime(new Date());
-                user.setStatus("1");
+                user.setStatus("0");
                 rbacUserDao.insert(user);
                 userInDb=rbacUserDao.fetch(user.getUserId());
                 //创建完用户 分配到缺省的用户组和权限
