@@ -8,10 +8,7 @@
         </g:south>
         <g:north size="50">
             <g:HorizontalPanel height="50px" spacing="4" verticalAlignment="middle">
-                <g:cell width="60px">
-                    <widget:Header>搜索</widget:Header>
-                </g:cell>
-                <g:TextBox width="100%" ui:field="txtSearch"/>
+                <widget:SearchBox ui:field="searchBox"/>
             </g:HorizontalPanel>
         </g:north>
         <g:center>

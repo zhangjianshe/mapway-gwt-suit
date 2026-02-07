@@ -6,6 +6,7 @@ import cn.mapway.rbac.shared.rpc.QueryUserRequest;
 import cn.mapway.rbac.shared.rpc.QueryUserResponse;
 import cn.mapway.ui.client.mvc.Size;
 import cn.mapway.ui.client.widget.CommonEventComposite;
+import cn.mapway.ui.client.widget.SearchBox;
 import cn.mapway.ui.client.widget.dialog.Dialog;
 import cn.mapway.ui.client.widget.dialog.SaveBar;
 import cn.mapway.ui.client.widget.tree.ImageTextItem;
@@ -28,11 +29,11 @@ public class SearchUserPanel extends CommonEventComposite {
     private static final SearchUserPanelUiBinder ourUiBinder = GWT.create(SearchUserPanelUiBinder.class);
     private static Dialog<SearchUserPanel> dialog;
     @UiField
-    TextBox txtSearch;
-    @UiField
     VerticalPanel list;
     @UiField
     SaveBar saveBar;
+    @UiField
+    SearchBox searchBox;
     ImageTextItem selectedItem = null;
     private final ClickHandler itemSelected = new ClickHandler() {
         @Override
@@ -44,10 +45,10 @@ public class SearchUserPanel extends CommonEventComposite {
 
     public SearchUserPanel() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        txtSearch.addValueChangeHandler(new ValueChangeHandler<String>() {
+        searchBox.addValueChangeHandler(new ValueChangeHandler<String>() {
             @Override
             public void onValueChange(ValueChangeEvent<String> event) {
-                search(txtSearch.getValue());
+                search(searchBox.getValue());
             }
         });
     }
