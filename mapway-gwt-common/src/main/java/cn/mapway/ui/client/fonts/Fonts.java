@@ -16,7 +16,32 @@ public class Fonts {
         }
     }
 
-    	public final static String AUTHORIZE = "e7db";
+    	public final static String CODE = "e7dc";
+	public final static String BOOK = "e7dd";
+	public final static String QUANPING = "e9d9";
+	public final static String XIAOXI1 = "e9da";
+	public final static String LISHIJILU = "e9db";
+	public final static String MOSHUBANG = "e9dc";
+	public final static String NAVLIANXIWOMEN = "e9c0";
+	public final static String NAVDIKUAIGUANLI = "e9c1";
+	public final static String NAVNONGTIANZAIHAIJIANCEPINGGU = "e9c5";
+	public final static String NAVXUQINYANGZHI = "e9ba";
+	public final static String NAVNONGYEQUANSHENGMINGZHOUQI = "e9c3";
+	public final static String NAVNONGYEZIYUANJIANCEPINGJIA = "e9bb";
+	public final static String NAVXITONGGUANLI = "e9c2";
+	public final static String NAVMOXINGXUNLIAN = "e9bf";
+	public final static String NAVSHEBEIGUANLI = "e9be";
+	public final static String NAVSHOUYE = "e9bc";
+	public final static String NAVSHUJUGUANLI = "e9bd";
+	public final static String NAVWEIXINGUANLI = "e9c7";
+	public final static String NAVYAOGANJIEYI = "e9c9";
+	public final static String NAVYINGXIANGCHULI = "e9ca";
+	public final static String NAVNONGTIANSHENGTAIJIANCE = "e9cc";
+	public final static String NAVRIZHIGUANLI = "e9d5";
+	public final static String NAVSUANFAGUANLI = "e9d6";
+	public final static String NAVYANGBENZHONGXIN = "e9d7";
+	public final static String NAVZIDONGSHENHEGONGZUOLIU = "e9d8";
+	public final static String AUTHORIZE = "e7db";
 	public final static String FORK = "e7d9";
 	public final static String YAML = "e7d8";
 	public final static String DEBUG = "e7d3";
@@ -680,7 +705,32 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("AUTHORIZE", Fonts.AUTHORIZE);
+			unicodes.put("CODE", Fonts.CODE);
+	unicodes.put("BOOK", Fonts.BOOK);
+	unicodes.put("QUANPING", Fonts.QUANPING);
+	unicodes.put("XIAOXI1", Fonts.XIAOXI1);
+	unicodes.put("LISHIJILU", Fonts.LISHIJILU);
+	unicodes.put("MOSHUBANG", Fonts.MOSHUBANG);
+	unicodes.put("NAVLIANXIWOMEN", Fonts.NAVLIANXIWOMEN);
+	unicodes.put("NAVDIKUAIGUANLI", Fonts.NAVDIKUAIGUANLI);
+	unicodes.put("NAVNONGTIANZAIHAIJIANCEPINGGU", Fonts.NAVNONGTIANZAIHAIJIANCEPINGGU);
+	unicodes.put("NAVXUQINYANGZHI", Fonts.NAVXUQINYANGZHI);
+	unicodes.put("NAVNONGYEQUANSHENGMINGZHOUQI", Fonts.NAVNONGYEQUANSHENGMINGZHOUQI);
+	unicodes.put("NAVNONGYEZIYUANJIANCEPINGJIA", Fonts.NAVNONGYEZIYUANJIANCEPINGJIA);
+	unicodes.put("NAVXITONGGUANLI", Fonts.NAVXITONGGUANLI);
+	unicodes.put("NAVMOXINGXUNLIAN", Fonts.NAVMOXINGXUNLIAN);
+	unicodes.put("NAVSHEBEIGUANLI", Fonts.NAVSHEBEIGUANLI);
+	unicodes.put("NAVSHOUYE", Fonts.NAVSHOUYE);
+	unicodes.put("NAVSHUJUGUANLI", Fonts.NAVSHUJUGUANLI);
+	unicodes.put("NAVWEIXINGUANLI", Fonts.NAVWEIXINGUANLI);
+	unicodes.put("NAVYAOGANJIEYI", Fonts.NAVYAOGANJIEYI);
+	unicodes.put("NAVYINGXIANGCHULI", Fonts.NAVYINGXIANGCHULI);
+	unicodes.put("NAVNONGTIANSHENGTAIJIANCE", Fonts.NAVNONGTIANSHENGTAIJIANCE);
+	unicodes.put("NAVRIZHIGUANLI", Fonts.NAVRIZHIGUANLI);
+	unicodes.put("NAVSUANFAGUANLI", Fonts.NAVSUANFAGUANLI);
+	unicodes.put("NAVYANGBENZHONGXIN", Fonts.NAVYANGBENZHONGXIN);
+	unicodes.put("NAVZIDONGSHENHEGONGZUOLIU", Fonts.NAVZIDONGSHENHEGONGZUOLIU);
+	unicodes.put("AUTHORIZE", Fonts.AUTHORIZE);
 	unicodes.put("FORK", Fonts.FORK);
 	unicodes.put("YAML", Fonts.YAML);
 	unicodes.put("DEBUG", Fonts.DEBUG);
