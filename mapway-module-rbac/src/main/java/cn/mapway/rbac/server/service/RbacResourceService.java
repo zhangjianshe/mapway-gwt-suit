@@ -360,6 +360,12 @@ public class RbacResourceService {
         return BizResult.success(rbacRole);
     }
 
+    /**
+     * 确认资源点在角色中
+     * @param resourceCode
+     * @param roleCode
+     * @return
+     */
     public BizResult<String> confirmResourceInRole(String resourceCode, String roleCode) {
         RbacRoleResourceEntity fetchx = rbacRoleResourceDao.fetchx(roleCode, resourceCode);
         if (fetchx == null) {
@@ -369,6 +375,14 @@ public class RbacResourceService {
             rbacRoleResourceDao.insert(fetchx);
         }
         return BizResult.success(fetchx.getResourceCode());
+    }
+
+    /**
+     * 确认资源点存在
+     * @param resource
+     */
+    public void confirmResourceExist(RbacResourceEntity resource) {
+        rbacResourceDao.insertOrUpdate(resource);
     }
 
 }
