@@ -1,15 +1,20 @@
 package cn.mapway.rbac.server.service;
 
+import cn.mapway.biz.core.BizResult;
 import cn.mapway.rbac.server.dao.RbacResourceDao;
+import cn.mapway.rbac.server.dao.RbacRoleDao;
 import cn.mapway.rbac.server.dao.RbacRoleResourceDao;
+import cn.mapway.rbac.shared.RbacRole;
 import cn.mapway.rbac.shared.ResourceKind;
 import cn.mapway.rbac.shared.db.postgis.RbacResourceEntity;
+import cn.mapway.rbac.shared.db.postgis.RbacRoleEntity;
 import cn.mapway.rbac.shared.db.postgis.RbacRoleResourceEntity;
 import cn.mapway.rbac.shared.rpc.RbacResourceOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.nutz.dao.Cnd;
 import org.nutz.dao.Dao;
+import org.nutz.lang.Strings;
 import org.nutz.trans.Trans;
 import org.springframework.stereotype.Service;
 
@@ -30,7 +35,8 @@ public class RbacResourceService {
     RbacRoleResourceDao rbacRoleResourceDao;
     @Resource
     RbacUserService rbacUserService;
-
+    @Resource
+    RbacRoleDao rbacRoleDao;
 
     /**
      * 添加资源
@@ -312,5 +318,57 @@ public class RbacResourceService {
         return assignResourceKeyToRole(resourceKeys, roleKey);
     }
 
+    /**
+     * 确保系统存在角色
+     *
+     * @param roleCode
+     * @param roleName
+     * @param parentRoleCode
+     * @param icon
+     * @param summary
+     * @return
+     */
+    public BizResult<RbacRole> confirmRoleExist(String roleCode, String roleName, String parentRoleCode, String icon, String summary) {
+        if (Strings.isBlank(roleCode)) {
+            return BizResult.error(500, "[RBAC] 开发错误 没有提供角色代码");
+        }
+        RbacRoleEntity role = rbacRoleDao.fetch(roleCode);
+        if (role == null) {
+            role = new RbacRoleEntity();
+            role.setSystemRole(true);
+            role.setCode(roleCode);
+            role.setParentCode(parentRoleCode);
+            role.setIcon(icon);
+            role.setSummary(summary);
+            role.setName(roleName);
+            rbacRoleDao.insert(role);
+        } else {
+            role.setSystemRole(true);
+            role.setCode(roleCode);
+            role.setParentCode(parentRoleCode);
+            role.setIcon(icon);
+            role.setSummary(summary);
+            role.setName(roleName);
+            rbacRoleDao.update(role);
+        }
+        RbacRole rbacRole = new RbacRole();
+        rbacRole.systemRole = role.getSystemRole();
+        rbacRole.code = roleCode;
+        rbacRole.parentCode = parentRoleCode;
+        rbacRole.icon = icon;
+        rbacRole.summary = summary;
+        return BizResult.success(rbacRole);
+    }
+
+    public BizResult<String> confirmResourceInRole(String resourceCode, String roleCode) {
+        RbacRoleResourceEntity fetchx = rbacRoleResourceDao.fetchx(roleCode, resourceCode);
+        if (fetchx == null) {
+            fetchx = new RbacRoleResourceEntity();
+            fetchx.setResourceCode(resourceCode);
+            fetchx.setRoleCode(roleCode);
+            rbacRoleResourceDao.insert(fetchx);
+        }
+        return BizResult.success(fetchx.getResourceCode());
+    }
 
 }
