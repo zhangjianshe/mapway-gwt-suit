@@ -47,7 +47,7 @@ public class StringUtil {
         dfS = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT + ".SSS");
     }
 
-    public String toRelativeTime(Date date) {
+    public static String toRelativeTime(Date date) {
         if (date == null) return "";
 
         long millis = System.currentTimeMillis() - date.getTime();
