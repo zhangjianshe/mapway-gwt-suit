@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String BRANCH = "e7de";
+    	public final static String COPY = "e7df";
+	public final static String BRANCH = "e7de";
 	public final static String CODE = "e7dc";
 	public final static String BOOK = "e7dd";
 	public final static String QUANPING = "e9d9";
@@ -706,7 +707,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("BRANCH", Fonts.BRANCH);
+			unicodes.put("COPY", Fonts.COPY);
+	unicodes.put("BRANCH", Fonts.BRANCH);
 	unicodes.put("CODE", Fonts.CODE);
 	unicodes.put("BOOK", Fonts.BOOK);
 	unicodes.put("QUANPING", Fonts.QUANPING);
