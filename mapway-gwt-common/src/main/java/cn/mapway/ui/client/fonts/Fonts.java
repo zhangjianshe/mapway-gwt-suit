@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String CODE = "e7dc";
+    	public final static String BTANCH = "e7de";
+	public final static String CODE = "e7dc";
 	public final static String BOOK = "e7dd";
 	public final static String QUANPING = "e9d9";
 	public final static String XIAOXI1 = "e9da";
@@ -705,7 +706,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("CODE", Fonts.CODE);
+			unicodes.put("BTANCH", Fonts.BTANCH);
+	unicodes.put("CODE", Fonts.CODE);
 	unicodes.put("BOOK", Fonts.BOOK);
 	unicodes.put("QUANPING", Fonts.QUANPING);
 	unicodes.put("XIAOXI1", Fonts.XIAOXI1);
