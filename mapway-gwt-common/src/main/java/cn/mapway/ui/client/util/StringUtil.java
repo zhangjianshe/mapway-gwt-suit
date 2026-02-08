@@ -47,6 +47,36 @@ public class StringUtil {
         dfS = DateTimeFormat.getFormat(FULL_DATETIME_FORMAT + ".SSS");
     }
 
+    public String toRelativeTime(Date date) {
+        if (date == null) return "";
+
+        long millis = System.currentTimeMillis() - date.getTime();
+        long seconds = millis / 1000;
+
+        if (seconds < 60) return "刚刚";
+        if (seconds < 3600) return (seconds / 60) + " 分钟前";
+        if (seconds < 86400) return (seconds / 3600) + " 小时前";
+
+        // 天的逻辑
+        if (seconds < 604800) { // 7天以内
+            long days = seconds / 86400;
+            return days == 1 ? "昨天" : days + " 天前";
+        }
+
+        // 周的逻辑
+        if (seconds < 2592000) { // 30天以内
+            long weeks = seconds / 604800;
+            return weeks == 1 ? "上周" : weeks + " 周前";
+        }
+
+        // 月的逻辑
+        if (seconds < 31104000) { // 12个月以内
+            return (seconds / 2592000) + " 个月前";
+        }
+
+        return (seconds / 31104000) + " 年前";
+    }
+
     public static Date parseDate(String format, String value) {
         if (value == null || value.length() == 0) {
             return null;
