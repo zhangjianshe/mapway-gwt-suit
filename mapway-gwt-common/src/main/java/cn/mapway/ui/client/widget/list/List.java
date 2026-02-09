@@ -14,7 +14,7 @@ public class List extends CommonEventComposite {
     ListItem selectedItem = null;
     ClickHandler itemClicked = event -> {
         ListItem listItem = (ListItem) event.getSource();
-        selectItem(listItem,true);
+        selectItem(listItem, true);
     };
     @UiField
     VerticalPanel root;
@@ -38,6 +38,18 @@ public class List extends CommonEventComposite {
         if (fireEvent) {
             fireEvent(CommonEvent.selectEvent(selectedItem));
         }
+    }
+
+    public void selectIndex(int index, boolean fireEvent) {
+        if (index < 0 || index >= root.getWidgetCount()) {
+            return;
+        }
+        ListItem listItem = (ListItem) root.getWidget(index);
+        selectItem(listItem, fireEvent);
+    }
+
+    public void selectFirst(boolean fireEvent) {
+        selectIndex(0, fireEvent);
     }
 
     public void addItem(ListItem item) {
