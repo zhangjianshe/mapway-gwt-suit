@@ -41,6 +41,14 @@ public class ListItem extends CommonEventComposite implements IData<Object> {
         lbName.setTitle(text);
     }
 
+    public void setLabelColor(String color) {
+        lbName.getElement().getStyle().setColor(color);
+    }
+
+    public Label getLabel() {
+        return lbName;
+    }
+
     public void setIcon(String iconUnicode) {
         if (StringUtil.isBlank(iconUnicode)) {
             icon.setVisible(false);
