@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.widget.list;
 
+import cn.mapway.ui.client.util.IEachElement;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
@@ -56,6 +57,19 @@ public class List extends CommonEventComposite {
         root.add(item);
 
         item.addDomHandler(itemClicked, ClickEvent.getType());
+    }
+
+    public void eachItem(IEachElement<ListItem> consumer) {
+        if (consumer == null) {
+            return;
+        }
+        for (int i = 0; i < root.getWidgetCount(); i++) {
+            ListItem listItem = (ListItem) root.getWidget(i);
+            boolean doNext = consumer.each(listItem);
+            if (!doNext) {
+                return;
+            }
+        }
     }
 
     public void clear() {
