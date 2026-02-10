@@ -7,8 +7,9 @@ import cn.mapway.ui.client.widget.FontIcon;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 
 public class ListItem extends CommonEventComposite implements IData<Object> {
     private static final ListItemUiBinder ourUiBinder = GWT.create(ListItemUiBinder.class);
@@ -16,6 +17,8 @@ public class ListItem extends CommonEventComposite implements IData<Object> {
     FontIcon icon;
     @UiField
     Label lbName;
+    @UiField
+    HorizontalPanel tools;
     private Object data;
 
     public ListItem() {
@@ -35,6 +38,7 @@ public class ListItem extends CommonEventComposite implements IData<Object> {
 
     public void setText(String text) {
         lbName.setText(text);
+        lbName.setTitle(text);
     }
 
     public void setIcon(String iconUnicode) {
@@ -46,6 +50,27 @@ public class ListItem extends CommonEventComposite implements IData<Object> {
         }
     }
 
-    interface ListItemUiBinder extends UiBinder<HTMLPanel, ListItem> {
+    public void appendRight(Widget widget, Integer width) {
+        if (widget == null) {
+            return;
+        }
+        tools.add(widget);
+        if (width != null) {
+            tools.setCellWidth(widget, width + "px");
+        }
+    }
+
+    public void clearRight() {
+        tools.clear();
+    }
+
+    public Widget getRight(int index) {
+        if (index >= 0 && index < tools.getWidgetCount()) {
+            return tools.getWidget(index);
+        }
+        return null;
+    }
+
+    interface ListItemUiBinder extends UiBinder<HorizontalPanel, ListItem> {
     }
 }
