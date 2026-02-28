@@ -7,7 +7,7 @@
             <dialog:SaveBar ui:field="saveBar" saveText="选择"/>
         </g:south>
         <g:north size="50">
-            <g:HorizontalPanel height="50px" spacing="4" horizontalAlignment="middle" verticalAlignment="middle">
+            <g:HorizontalPanel height="50px" spacing="4" horizontalAlignment="center" verticalAlignment="middle">
                 <widget:SearchBox ui:field="searchBox"/>
             </g:HorizontalPanel>
         </g:north>
