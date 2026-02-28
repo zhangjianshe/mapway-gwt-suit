@@ -65,12 +65,13 @@ import java.util.*;
         }
 )
 @ResourceDeclares(
-        {@ResourceDeclare(
+        {
+                @ResourceDeclare(
                 roleCode = RbacConstant.ROLE_SYS,
                 catalog = "系统", name = "资源维护", code = RbacConstant.RESOURCE_RBAC_MAINTAINER,
                 summary = "维护系统角色以及资源点", kind = ResourceKind.RESOURCE_KIND_SYSTEM
 
-        ),
+                ),
                 @ResourceDeclare(
                         roleCode = RbacConstant.ROLE_SYS,
                         catalog = "系统", name = "用户授权", code = RbacConstant.RESOURCE_RBAC_AUTHORITY,
