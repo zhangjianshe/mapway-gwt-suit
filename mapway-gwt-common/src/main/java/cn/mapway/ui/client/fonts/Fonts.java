@@ -16,7 +16,10 @@ public class Fonts {
         }
     }
 
-    	public final static String COPY = "e7df";
+    	public final static String DEPARTMENT = "e7e2";
+	public final static String GROUP = "e7e0";
+	public final static String LDAP = "e7e1";
+	public final static String COPY = "e7df";
 	public final static String BRANCH = "e7de";
 	public final static String CODE = "e7dc";
 	public final static String BOOK = "e7dd";
@@ -707,7 +710,10 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("COPY", Fonts.COPY);
+			unicodes.put("DEPARTMENT", Fonts.DEPARTMENT);
+	unicodes.put("GROUP", Fonts.GROUP);
+	unicodes.put("LDAP", Fonts.LDAP);
+	unicodes.put("COPY", Fonts.COPY);
 	unicodes.put("BRANCH", Fonts.BRANCH);
 	unicodes.put("CODE", Fonts.CODE);
 	unicodes.put("BOOK", Fonts.BOOK);
