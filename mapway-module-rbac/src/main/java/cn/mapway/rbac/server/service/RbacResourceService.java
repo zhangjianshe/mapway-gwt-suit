@@ -1,14 +1,10 @@
 package cn.mapway.rbac.server.service;
 
 import cn.mapway.biz.core.BizResult;
-import cn.mapway.rbac.server.dao.RbacResourceDao;
-import cn.mapway.rbac.server.dao.RbacRoleDao;
-import cn.mapway.rbac.server.dao.RbacRoleResourceDao;
+import cn.mapway.rbac.server.dao.*;
 import cn.mapway.rbac.shared.RbacRole;
 import cn.mapway.rbac.shared.ResourceKind;
-import cn.mapway.rbac.shared.db.postgis.RbacResourceEntity;
-import cn.mapway.rbac.shared.db.postgis.RbacRoleEntity;
-import cn.mapway.rbac.shared.db.postgis.RbacRoleResourceEntity;
+import cn.mapway.rbac.shared.db.postgis.*;
 import cn.mapway.rbac.shared.rpc.RbacResourceOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -19,10 +15,7 @@ import org.nutz.trans.Trans;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,6 +30,11 @@ public class RbacResourceService {
     RbacUserService rbacUserService;
     @Resource
     RbacRoleDao rbacRoleDao;
+    @Resource
+    RbacOrgUserDao rbacOrgUserDao;
+    @Resource
+    RbacUserCodeRoleDao rbacUserCodeRoleDao;
+
 
     /**
      * 添加资源
@@ -362,6 +360,7 @@ public class RbacResourceService {
 
     /**
      * 确认资源点在角色中
+     *
      * @param resourceCode
      * @param roleCode
      * @return
@@ -379,10 +378,48 @@ public class RbacResourceService {
 
     /**
      * 确认资源点存在
+     *
      * @param resource
      */
     public void confirmResourceExist(RbacResourceEntity resource) {
         rbacResourceDao.insertOrUpdate(resource);
     }
 
+    public BizResult<Boolean> assignUserRole(String userId, String roleCode, Boolean delete) {
+
+
+        RbacRoleEntity fetch = rbacRoleDao.fetch(roleCode);
+        if (fetch == null) {
+            return BizResult.error(500, "系统没有角色" + roleCode);
+        }
+
+        //移除角色
+        if (delete != null && delete) {
+            List<RbacOrgUserEntity> list = rbacOrgUserDao.query(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId));
+            for (RbacOrgUserEntity user : list) {
+                rbacUserCodeRoleDao.clear(Cnd.where(RbacUserCodeRoleEntity.FLD_ROLE_CODE, "=", roleCode)
+                        .and(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", user.getUserCode()));
+            }
+            return BizResult.success(true);
+        }
+
+        RbacOrgUserEntity orgUserEntity = rbacOrgUserDao.fetch(Cnd.where(RbacOrgUserEntity.FLD_USER_ID, "=", userId));
+        if (orgUserEntity == null) {
+            return BizResult.error(500, "用户没有缺省的组织");
+        }
+
+        RbacUserCodeRoleEntity fetch1 = rbacUserCodeRoleDao.fetch(Cnd.where(RbacUserCodeRoleEntity.FLD_USER_CODE, "=", orgUserEntity.getUserCode())
+                .and(RbacUserCodeRoleEntity.FLD_ROLE_CODE, "=", roleCode));
+
+        if (fetch1 == null) {
+            fetch1 = new RbacUserCodeRoleEntity();
+            fetch1.setCreateUser("SYS");
+            fetch1.setUserCode(orgUserEntity.getUserCode());
+            fetch1.setCreateTime(new Date());
+            fetch1.setRoleCode(roleCode);
+            rbacUserCodeRoleDao.insert(fetch1);
+        }
+        return BizResult.success(true);
+
+    }
 }

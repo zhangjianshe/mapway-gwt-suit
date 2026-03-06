@@ -5,6 +5,7 @@ import cn.mapway.rbac.shared.db.postgis.RbacUserEntity;
 import cn.mapway.rbac.shared.rpc.QueryUserRequest;
 import cn.mapway.rbac.shared.rpc.QueryUserResponse;
 import cn.mapway.ui.client.mvc.Size;
+import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.client.widget.SearchBox;
 import cn.mapway.ui.client.widget.dialog.Dialog;
@@ -22,6 +23,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 
@@ -120,6 +122,9 @@ public class SearchUserPanel extends CommonEventComposite {
             ImageTextItem item = new ImageTextItem();
             item.setText(user.getUserName());
             item.setData(user);
+            if(StringUtil.isNotBlank(user.getAvatar())){
+                item.setIcon(new Image(user.getAvatar()));
+            }
             item.addDomHandler(itemSelected, ClickEvent.getType());
             list.add(item);
         }

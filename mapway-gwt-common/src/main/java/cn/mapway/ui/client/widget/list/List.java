@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.widget.list;
 
+import cn.mapway.ui.client.util.IEachElement;
 import cn.mapway.ui.client.widget.CommonEventComposite;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
@@ -14,7 +15,7 @@ public class List extends CommonEventComposite {
     ListItem selectedItem = null;
     ClickHandler itemClicked = event -> {
         ListItem listItem = (ListItem) event.getSource();
-        selectItem(listItem,true);
+        selectItem(listItem, true);
     };
     @UiField
     VerticalPanel root;
@@ -40,10 +41,35 @@ public class List extends CommonEventComposite {
         }
     }
 
+    public void selectIndex(int index, boolean fireEvent) {
+        if (index < 0 || index >= root.getWidgetCount()) {
+            return;
+        }
+        ListItem listItem = (ListItem) root.getWidget(index);
+        selectItem(listItem, fireEvent);
+    }
+
+    public void selectFirst(boolean fireEvent) {
+        selectIndex(0, fireEvent);
+    }
+
     public void addItem(ListItem item) {
         root.add(item);
 
         item.addDomHandler(itemClicked, ClickEvent.getType());
+    }
+
+    public void eachItem(IEachElement<ListItem> consumer) {
+        if (consumer == null) {
+            return;
+        }
+        for (int i = 0; i < root.getWidgetCount(); i++) {
+            ListItem listItem = (ListItem) root.getWidget(i);
+            boolean doNext = consumer.each(listItem);
+            if (!doNext) {
+                return;
+            }
+        }
     }
 
     public void clear() {
