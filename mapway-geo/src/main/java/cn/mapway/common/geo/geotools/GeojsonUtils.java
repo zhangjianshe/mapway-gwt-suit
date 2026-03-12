@@ -181,7 +181,8 @@ public class GeojsonUtils {
             gjson.write((Geometry) obj, output);
         } else if (obj instanceof Feature
                 || obj instanceof FeatureCollection
-                || obj instanceof CoordinateReferenceSystem) {
+                || obj instanceof CoordinateReferenceSystem
+                || obj instanceof SimpleFeatureSource) {
 
             if (obj instanceof SimpleFeature) {
                 fjson.writeFeature((SimpleFeature) obj, output);
