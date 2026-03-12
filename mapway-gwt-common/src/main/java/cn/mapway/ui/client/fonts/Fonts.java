@@ -16,7 +16,12 @@ public class Fonts {
         }
     }
 
-    	public final static String DEPARTMENT = "e7e2";
+    	public final static String TASK = "e7e7";
+	public final static String EPIC = "e7e4";
+	public final static String STORY = "e7e5";
+	public final static String MILESTONE = "e7e6";
+	public final static String SUMMARY = "e7e3";
+	public final static String DEPARTMENT = "e7e2";
 	public final static String GROUP = "e7e0";
 	public final static String LDAP = "e7e1";
 	public final static String COPY = "e7df";
@@ -650,7 +655,6 @@ public class Fonts {
 	public final static String TERMINAL = "e640";
 	public final static String SHARE = "e641";
 	public final static String LOG = "e642";
-	public final static String TASK = "e63b";
 	public final static String FEATURE = "e63c";
 	public final static String OBJECT = "e63d";
 	public final static String MODEL = "e63e";
@@ -710,7 +714,12 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("DEPARTMENT", Fonts.DEPARTMENT);
+			unicodes.put("TASK", Fonts.TASK);
+	unicodes.put("EPIC", Fonts.EPIC);
+	unicodes.put("STORY", Fonts.STORY);
+	unicodes.put("MILESTONE", Fonts.MILESTONE);
+	unicodes.put("SUMMARY", Fonts.SUMMARY);
+	unicodes.put("DEPARTMENT", Fonts.DEPARTMENT);
 	unicodes.put("GROUP", Fonts.GROUP);
 	unicodes.put("LDAP", Fonts.LDAP);
 	unicodes.put("COPY", Fonts.COPY);
@@ -1344,7 +1353,6 @@ public class Fonts {
 	unicodes.put("TERMINAL", Fonts.TERMINAL);
 	unicodes.put("SHARE", Fonts.SHARE);
 	unicodes.put("LOG", Fonts.LOG);
-	unicodes.put("TASK", Fonts.TASK);
 	unicodes.put("FEATURE", Fonts.FEATURE);
 	unicodes.put("OBJECT", Fonts.OBJECT);
 	unicodes.put("MODEL", Fonts.MODEL);
