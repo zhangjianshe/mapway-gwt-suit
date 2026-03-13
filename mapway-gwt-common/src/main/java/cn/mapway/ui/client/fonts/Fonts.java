@@ -16,7 +16,10 @@ public class Fonts {
         }
     }
 
-    	public final static String EXPAND_OUTLINE = "e7e9";
+    	public final static String INSERT_BEFORE = "e7f0";
+	public final static String INSERT_AFTER = "e7f1";
+	public final static String INSERT_CHILD = "e7f2";
+	public final static String EXPAND_OUTLINE = "e7e9";
 	public final static String SHRINK_OUTLINE = "e7ea";
 	public final static String UNSELECT_FILL = "e7eb";
 	public final static String SHRINK_FILL = "e7ec";
@@ -722,7 +725,10 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("EXPAND_OUTLINE", Fonts.EXPAND_OUTLINE);
+			unicodes.put("INSERT_BEFORE", Fonts.INSERT_BEFORE);
+	unicodes.put("INSERT_AFTER", Fonts.INSERT_AFTER);
+	unicodes.put("INSERT_CHILD", Fonts.INSERT_CHILD);
+	unicodes.put("EXPAND_OUTLINE", Fonts.EXPAND_OUTLINE);
 	unicodes.put("SHRINK_OUTLINE", Fonts.SHRINK_OUTLINE);
 	unicodes.put("UNSELECT_FILL", Fonts.UNSELECT_FILL);
 	unicodes.put("SHRINK_FILL", Fonts.SHRINK_FILL);
