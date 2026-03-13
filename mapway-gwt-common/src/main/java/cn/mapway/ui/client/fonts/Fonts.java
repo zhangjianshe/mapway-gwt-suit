@@ -16,7 +16,15 @@ public class Fonts {
         }
     }
 
-    	public final static String TASK = "e7e7";
+    	public final static String EXPAND_OUTLINE = "e7e9";
+	public final static String SHRINK_OUTLINE = "e7ea";
+	public final static String UNSELECT_FILL = "e7eb";
+	public final static String SHRINK_FILL = "e7ec";
+	public final static String SELECT_OUTLINE = "e7ed";
+	public final static String EXPAND_FILL = "e7ee";
+	public final static String UNSELECT_OUTLINE = "e7ef";
+	public final static String SELECT_FILL = "e7e8";
+	public final static String TASK = "e7e7";
 	public final static String EPIC = "e7e4";
 	public final static String STORY = "e7e5";
 	public final static String MILESTONE = "e7e6";
@@ -714,7 +722,15 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("TASK", Fonts.TASK);
+			unicodes.put("EXPAND_OUTLINE", Fonts.EXPAND_OUTLINE);
+	unicodes.put("SHRINK_OUTLINE", Fonts.SHRINK_OUTLINE);
+	unicodes.put("UNSELECT_FILL", Fonts.UNSELECT_FILL);
+	unicodes.put("SHRINK_FILL", Fonts.SHRINK_FILL);
+	unicodes.put("SELECT_OUTLINE", Fonts.SELECT_OUTLINE);
+	unicodes.put("EXPAND_FILL", Fonts.EXPAND_FILL);
+	unicodes.put("UNSELECT_OUTLINE", Fonts.UNSELECT_OUTLINE);
+	unicodes.put("SELECT_FILL", Fonts.SELECT_FILL);
+	unicodes.put("TASK", Fonts.TASK);
 	unicodes.put("EPIC", Fonts.EPIC);
 	unicodes.put("STORY", Fonts.STORY);
 	unicodes.put("MILESTONE", Fonts.MILESTONE);
