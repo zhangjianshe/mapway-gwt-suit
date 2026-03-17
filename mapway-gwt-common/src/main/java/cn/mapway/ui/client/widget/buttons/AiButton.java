@@ -24,6 +24,29 @@ import com.google.gwt.user.client.ui.Button;
  */
 public class AiButton extends Button implements IData, ISelectable {
     private static final String BUTTON_STYLE_KEY = "btn-style";
+
+    public static final String TYPE_PRIMARY = "primary";
+
+    public static final String TYPE_SUCCESS = "success";
+
+    public static final String TYPE_WARNING = "warning";
+
+    public static final String TYPE_DANGER = "danger";
+
+    public static final String TYPE_INFO = "info";
+
+    public static final String TYPE_TEXT = "text";
+
+    public static final String SIZE_MINI = "mini";
+
+    public static final String SIZE_SMALL = "small";
+
+    public static final String SIZE_MEDIUM = "medium";
+
+
+
+
+
     boolean down = false;
     private Object data;
 
@@ -212,7 +235,6 @@ public class AiButton extends Button implements IData, ISelectable {
         }
         addStyleName("ai-button--" + size);
     }
-
 
     /**
      * 将RbacComposite 变为组合式的组件
