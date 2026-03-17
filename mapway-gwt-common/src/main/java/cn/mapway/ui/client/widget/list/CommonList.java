@@ -43,7 +43,7 @@ public class CommonList extends CommonEventComposite {
         }
     }
 
-    void selectItem(CommonListItem item, boolean fireEvent) {
+    public void selectItem(CommonListItem item, boolean fireEvent) {
         if (selected != null) {
             selected.setSelect(false);
         }

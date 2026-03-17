@@ -7,9 +7,14 @@ import cn.mapway.ui.client.util.Logs;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
+import com.google.gwt.core.client.Callback;
+import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.user.client.Event;
 import com.google.gwt.user.client.ui.PopupPanel;
 import com.google.gwt.user.client.ui.Widget;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Popup
@@ -17,6 +22,8 @@ import com.google.gwt.user.client.ui.Widget;
  * @author zhang
  */
 public class Popup<T extends Widget> extends PopupPanel implements HasCommonHandlers, IData {
+    @Setter
+    @Getter
     T content;
     Object object;
     HandlerRegistration old;
@@ -68,16 +75,24 @@ public class Popup<T extends Widget> extends PopupPanel implements HasCommonHand
     }
 
     @Override
+    protected void onPreviewNativeEvent(Event.NativePreviewEvent event) {
+        super.onPreviewNativeEvent(event);
+        if (event.getTypeInt() == Event.ONKEYDOWN) {
+            int keyCode = event.getNativeEvent().getKeyCode();
+            if (this.isShowing()) {
+                if (keyCode == KeyCodes.KEY_ESCAPE) {
+                    event.getNativeEvent().preventDefault();
+                    event.getNativeEvent().stopPropagation();
+                    event.cancel();
+                    this.hide();
+                }
+            }
+        }
+    }
+
+    @Override
     public void setPixelSize(int width, int height) {
         content.setPixelSize(width, height);
-    }
-
-    public T getContent() {
-        return content;
-    }
-
-    public void setContent(T content) {
-        this.content = content;
     }
 
     @Override

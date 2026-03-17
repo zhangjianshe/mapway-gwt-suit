@@ -16,7 +16,23 @@ public class Fonts {
         }
     }
 
-    	public final static String DEPARTMENT = "e7e2";
+    	public final static String INSERT_BEFORE = "e7f0";
+	public final static String INSERT_AFTER = "e7f1";
+	public final static String INSERT_CHILD = "e7f2";
+	public final static String EXPAND_OUTLINE = "e7e9";
+	public final static String SHRINK_OUTLINE = "e7ea";
+	public final static String UNSELECT_FILL = "e7eb";
+	public final static String SHRINK_FILL = "e7ec";
+	public final static String SELECT_OUTLINE = "e7ed";
+	public final static String EXPAND_FILL = "e7ee";
+	public final static String UNSELECT_OUTLINE = "e7ef";
+	public final static String SELECT_FILL = "e7e8";
+	public final static String TASK = "e7e7";
+	public final static String EPIC = "e7e4";
+	public final static String STORY = "e7e5";
+	public final static String MILESTONE = "e7e6";
+	public final static String SUMMARY = "e7e3";
+	public final static String DEPARTMENT = "e7e2";
 	public final static String GROUP = "e7e0";
 	public final static String LDAP = "e7e1";
 	public final static String COPY = "e7df";
@@ -650,7 +666,6 @@ public class Fonts {
 	public final static String TERMINAL = "e640";
 	public final static String SHARE = "e641";
 	public final static String LOG = "e642";
-	public final static String TASK = "e63b";
 	public final static String FEATURE = "e63c";
 	public final static String OBJECT = "e63d";
 	public final static String MODEL = "e63e";
@@ -710,7 +725,23 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("DEPARTMENT", Fonts.DEPARTMENT);
+			unicodes.put("INSERT_BEFORE", Fonts.INSERT_BEFORE);
+	unicodes.put("INSERT_AFTER", Fonts.INSERT_AFTER);
+	unicodes.put("INSERT_CHILD", Fonts.INSERT_CHILD);
+	unicodes.put("EXPAND_OUTLINE", Fonts.EXPAND_OUTLINE);
+	unicodes.put("SHRINK_OUTLINE", Fonts.SHRINK_OUTLINE);
+	unicodes.put("UNSELECT_FILL", Fonts.UNSELECT_FILL);
+	unicodes.put("SHRINK_FILL", Fonts.SHRINK_FILL);
+	unicodes.put("SELECT_OUTLINE", Fonts.SELECT_OUTLINE);
+	unicodes.put("EXPAND_FILL", Fonts.EXPAND_FILL);
+	unicodes.put("UNSELECT_OUTLINE", Fonts.UNSELECT_OUTLINE);
+	unicodes.put("SELECT_FILL", Fonts.SELECT_FILL);
+	unicodes.put("TASK", Fonts.TASK);
+	unicodes.put("EPIC", Fonts.EPIC);
+	unicodes.put("STORY", Fonts.STORY);
+	unicodes.put("MILESTONE", Fonts.MILESTONE);
+	unicodes.put("SUMMARY", Fonts.SUMMARY);
+	unicodes.put("DEPARTMENT", Fonts.DEPARTMENT);
 	unicodes.put("GROUP", Fonts.GROUP);
 	unicodes.put("LDAP", Fonts.LDAP);
 	unicodes.put("COPY", Fonts.COPY);
@@ -1344,7 +1375,6 @@ public class Fonts {
 	unicodes.put("TERMINAL", Fonts.TERMINAL);
 	unicodes.put("SHARE", Fonts.SHARE);
 	unicodes.put("LOG", Fonts.LOG);
-	unicodes.put("TASK", Fonts.TASK);
 	unicodes.put("FEATURE", Fonts.FEATURE);
 	unicodes.put("OBJECT", Fonts.OBJECT);
 	unicodes.put("MODEL", Fonts.MODEL);
