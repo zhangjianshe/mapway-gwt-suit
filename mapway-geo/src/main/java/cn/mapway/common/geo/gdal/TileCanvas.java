@@ -119,8 +119,14 @@ public class TileCanvas {
 
         GeoObject geometry = featureDraw.getGeometry();
         String clColor = (String) featureDraw.properties.get("cl_color");
-        String clBorderColor = (String) featureDraw.properties.get("cl_border_color");
-        int clBorderWidth = (int) featureDraw.properties.get("cl_border_width");
+        String clBorderColor=null;
+        int clBorderWidth=0;
+        if(featureDraw.properties.get("cl_border_color")!=null){
+             clBorderColor = (String) featureDraw.properties.get("cl_border_color");
+        }
+        if(featureDraw.properties.get("cl_border_width")!=null){
+            clBorderWidth = (int) featureDraw.properties.get("cl_border_width");
+        }
         if(Strings.isNotBlank(clColor)){
             fillColor = colorFromRgba( clColor);
         }
