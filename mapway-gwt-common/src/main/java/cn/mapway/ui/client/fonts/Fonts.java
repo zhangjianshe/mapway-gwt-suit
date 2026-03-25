@@ -16,7 +16,8 @@ public class Fonts {
         }
     }
 
-    	public final static String MEETING = "e7f3";
+    	public final static String ARCHIVE = "e7f4";
+	public final static String MEETING = "e7f3";
 	public final static String INSERT_BEFORE = "e7f0";
 	public final static String INSERT_AFTER = "e7f1";
 	public final static String INSERT_CHILD = "e7f2";
@@ -726,7 +727,8 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("MEETING", Fonts.MEETING);
+			unicodes.put("ARCHIVE", Fonts.ARCHIVE);
+	unicodes.put("MEETING", Fonts.MEETING);
 	unicodes.put("INSERT_BEFORE", Fonts.INSERT_BEFORE);
 	unicodes.put("INSERT_AFTER", Fonts.INSERT_AFTER);
 	unicodes.put("INSERT_CHILD", Fonts.INSERT_CHILD);
