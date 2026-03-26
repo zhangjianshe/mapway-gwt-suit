@@ -186,7 +186,7 @@ public class AceEditor extends Composite implements RequiresResize, HasText, Tak
 
 		public native void addEvent(String type, AceEditorCallback callback) /*-{
 			var editor = this.@cn.mapway.ace.client.AceEditor::editor;
-			editor.getSession().on(type, function(e) {
+			editor.on(type, function(e) {
 				callback.@cn.mapway.ace.client.AceEditorCallback::invokeAceCallback(Lcom/google/gwt/core/client/JavaScriptObject;)(e);
 			});
 		}-*/;
