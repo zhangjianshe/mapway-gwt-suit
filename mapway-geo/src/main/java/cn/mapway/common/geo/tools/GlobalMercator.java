@@ -359,8 +359,8 @@ public class GlobalMercator {
      */
     public Box tileLngLatBounds(long tx, long ty, int zoom) {
         // 瓦片左上角 和右下角的 以米为单位的坐标
-        Point topLeftMi = pixelsToMeters(tx * tileSize, ty * tileSize + tileSize, zoom);
-        Point bottomRightMi = pixelsToMeters(tx * tileSize + tileSize, ty * tileSize, zoom);
+        Point topLeftMi = pixelsToMeters(tx * tileSize, ty * tileSize , zoom);
+        Point bottomRightMi = pixelsToMeters(tx * tileSize + tileSize, ty * tileSize+tileSize, zoom);
 
         //瓦片左上角 和右下角的 经纬度坐标
         Point topLeftGPS = meterTolngLat(topLeftMi.getX(), topLeftMi.getY());
@@ -390,7 +390,36 @@ public class GlobalMercator {
         Box box = new Box(minPoint.getX(), minPoint.getY(), maxPoint.getX(), maxPoint.getY());
         return box;
     }
+    // EPSG:3857 的半周长 (单位：米)
+    private static final double MAX_EXTENT = 20037508.342789244;
+    // 全局范围 (2 * MAX_EXTENT)
+    private static final double FULL_SIZE = MAX_EXTENT * 2;
 
+    /**
+     * 计算指定瓦片在 EPSG:3857 坐标系下的物理边界
+     * @param tileX 瓦片 X 编号
+     * @param tileY 瓦片 Y 编号 (注意：这里默认是 Google/TMS 标准，左上角为原点)
+     * @param zoom  缩放级别
+     * @return double[] {minX, minY, maxX, maxY}
+     */
+    public static double[] getTileBounds3857(long tileX, long tileY, int zoom) {
+        // 1. 计算当前 zoom 下总瓦片数 (2^zoom)
+        double numTiles = Math.pow(2, zoom);
+
+        // 2. 每个瓦片在 3857 坐标系下的物理尺寸
+        double tileSizeInMeters = FULL_SIZE / numTiles;
+
+        // 3. 计算左上角坐标 (Origin 是 -MAX_EXTENT, MAX_EXTENT)
+        // 注意：WebMercator 的 X 是从左往右增，Y 是从上往下减
+        double minX = -MAX_EXTENT + (tileX * tileSizeInMeters);
+        double maxY =  MAX_EXTENT - (tileY * tileSizeInMeters);
+
+        // 4. 计算右下角坐标
+        double maxX = minX + tileSizeInMeters;
+        double minY = maxY - tileSizeInMeters;
+
+        return new double[]{minX, minY, maxX, maxY};
+    }
     /**
      * 经纬度坐标 所在的tile索引
      * 参考 https://wiki.openstreetmap.org/wiki/Slippy_map_tilenames

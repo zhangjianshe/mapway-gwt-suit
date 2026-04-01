@@ -216,4 +216,8 @@ public class Box implements Serializable, IsSerializable {
 
         System.out.println(box1.isCross(box2));
     }
+
+    public boolean contain(Point center) {
+        return (xmin <= center.x && xmax >= center.x) && (ymin <= center.y && ymax >= center.y);
+    }
 }
