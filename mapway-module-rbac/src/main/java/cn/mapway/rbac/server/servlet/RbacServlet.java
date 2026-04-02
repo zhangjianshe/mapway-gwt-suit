@@ -80,7 +80,7 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
     @Resource
     UpdateRbacUserExecutor updateRbacUserExecutor;
     @Resource
-    LogoutExecutor logoutExecutor;
+    RbacLogoutExecutor rbacLogoutExecutor;
     @Resource
     RbacUserService rbacUserService;
 
@@ -130,7 +130,7 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
     }
     @Override
     public RpcResult<LogoutResponse> logout(LogoutRequest request) {
-        BizResult<LogoutResponse> bizResult = logoutExecutor.execute(getBizContext(), BizRequest.wrap("", request));
+        BizResult<LogoutResponse> bizResult = rbacLogoutExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
     @Override
