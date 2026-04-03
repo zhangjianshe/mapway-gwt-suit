@@ -40,7 +40,8 @@
             text-align: right;
             padding: 0 2px;
         }
-        .icon{
+
+        .icon {
             display: none;
             width: 26px;
             align-self: center;
@@ -48,12 +49,14 @@
             font-size: 22px;
             cursor: default;
             user-select: none;
+            text-align: center;
         }
-        .icon > svg{
+
+        .icon > svg {
             width: 100%;
         }
     </ui:style>
-    <g:HTMLPanel >
+    <g:HTMLPanel>
         <g:HTMLPanel styleName="{style.box}" ui:field="root">
             <g:HTML addStyleNames="{style.navi}" ui:field="navi"/>
             <g:HTML addStyleNames="{style.icon}" ui:field="icon"/>
