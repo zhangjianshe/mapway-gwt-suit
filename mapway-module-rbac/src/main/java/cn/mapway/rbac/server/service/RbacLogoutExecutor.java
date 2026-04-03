@@ -4,8 +4,6 @@ import cn.mapway.biz.core.AbstractBizExecutor;
 import cn.mapway.biz.core.BizContext;
 import cn.mapway.biz.core.BizRequest;
 import cn.mapway.biz.core.BizResult;
-import cn.mapway.rbac.shared.rpc.LoginRequest;
-import cn.mapway.rbac.shared.rpc.LoginResponse;
 import cn.mapway.rbac.shared.rpc.LogoutRequest;
 import cn.mapway.rbac.shared.rpc.LogoutResponse;
 import cn.mapway.spring.tools.ServletUtils;
@@ -25,7 +23,7 @@ import javax.servlet.http.Cookie;
  */
 @Component
 @Slf4j
-public class LogoutExecutor extends AbstractBizExecutor<LogoutResponse, LogoutRequest> {
+public class RbacLogoutExecutor extends AbstractBizExecutor<LogoutResponse, LogoutRequest> {
     @Resource
     RbacUserService rbacUserService;
 
