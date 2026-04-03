@@ -13,10 +13,17 @@ import cn.mapway.ui.client.IUserInfo;
 import cn.mapway.ui.server.CheckUserServlet;
 import cn.mapway.ui.shared.CommonConstant;
 import cn.mapway.ui.shared.rpc.RpcResult;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
+import org.nutz.lang.Strings;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
 
 /**
@@ -84,12 +91,15 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
     @Resource
     RbacUserService rbacUserService;
 
-    ///CODE_GEN_INSERT_POINT///
+    /// CODE_GEN_INSERT_POINT///
 
     @Resource
     QueryUserRoleResourceExecutor queryUserRoleResourceExecutor;
     @Resource
     QueryUserOrgExecutor queryUserOrgExecutor;
+    @Setter
+    @Getter
+    String policyFilePath = "";
 
     public void extendCheckToken(List<String> methodList) {
         methodList.add("queryCurrentUser");
@@ -128,24 +138,24 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
         BizResult<QueryUserRoleResourceResponse> bizResult = queryUserRoleResourceExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
+
     @Override
     public RpcResult<LogoutResponse> logout(LogoutRequest request) {
         BizResult<LogoutResponse> bizResult = logoutExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
+
     @Override
     public RpcResult<QueryUserOrgResponse> queryUserOrg(QueryUserOrgRequest request) {
         BizResult<QueryUserOrgResponse> bizResult = queryUserOrgExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
 
-
     @Override
     public RpcResult<DeleteOrgUserResponse> deleteOrgUser(DeleteOrgUserRequest request) {
         BizResult<DeleteOrgUserResponse> bizResult = deleteOrgUserExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
-
 
     @Override
     public RpcResult<UpdateOrgUserResponse> updateOrgUser(UpdateOrgUserRequest request) {
@@ -182,7 +192,6 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
         BizResult<QueryCurrentUserResponse> bizResult = queryCurrentUserExecutor.execute(getBizContext(), BizRequest.wrap("", request));
         return toRpcResult(bizResult);
     }
-
 
     @Override
     public RpcResult<LoginResponse> login(LoginRequest request) {
@@ -292,7 +301,6 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
         return toRpcResult(bizResult);
     }
 
-
     /**
      * 将BizResult 转换为RpcResult
      *
@@ -318,5 +326,24 @@ public class RbacServlet extends CheckUserServlet<IUserInfo> implements IRbacSer
         context.put(CommonConstant.KEY_LOGIN_USER, requestUser());
         return context;
     }
+
+    @Override
+    public InputStream findResource(HttpServletRequest request, String moduleBaseURL, String strongName) {
+        String path = strongName + ".gwt.rpc";
+        if (Strings.isBlank(policyFilePath)) {
+            log.error("请配置RbacServlet的属性 policyFilePath　该属性指向部署的JS脚本　相对与classPath的路径 比如 /static/js/app/ ");
+            return null;
+        }
+        ClassPathResource resource = new ClassPathResource(policyFilePath + path);
+        if (resource.exists()) {
+            try {
+                return resource.getInputStream();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return null;
+    }
+
 
 }

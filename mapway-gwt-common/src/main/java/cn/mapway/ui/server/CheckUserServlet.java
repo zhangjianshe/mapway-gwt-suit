@@ -5,13 +5,15 @@ import cn.mapway.ui.shared.CommonConstant;
 import cn.mapway.ui.shared.Messages;
 import cn.mapway.ui.shared.rpc.RpcResult;
 import com.google.gwt.user.client.rpc.SerializationException;
-import com.google.gwt.user.server.rpc.RPC;
-import com.google.gwt.user.server.rpc.RPCRequest;
-import com.google.gwt.user.server.rpc.RemoteServiceServlet;
+import com.google.gwt.user.server.rpc.*;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.lang.Strings;
+import org.nutz.resource.NutResource;
+import org.nutz.resource.Scans;
+import org.nutz.resource.impl.WebClassesResourceLocation;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
@@ -52,6 +54,32 @@ public abstract class CheckUserServlet<T> extends RemoteServiceServlet {
 
     }
 
+    public InputStream findResource(HttpServletRequest request,
+                                    String moduleBaseURL,
+                                    String strongName) {
+        return null;
+    }
+    @Override
+    protected SerializationPolicy doGetSerializationPolicy(HttpServletRequest request,
+                                                           String moduleBaseURL,
+                                                           String strongName) {
+        SerializationPolicy policy = super.doGetSerializationPolicy(request, moduleBaseURL, strongName);
+
+        if (policy == null) {
+            try(InputStream resource = findResource(request, moduleBaseURL, strongName))
+            {
+                if (resource != null) {
+                    log.info("[SERVLET SUCCESS] 加载序列化策略文件"+strongName);
+                    return SerializationPolicyLoader.loadFromStream(resource, null);
+                }
+            }
+            catch (Exception e)
+            {
+                log.error("Manual policy load failed", e);
+            }
+        }
+        return policy;
+    }
     /**
      * 检查TOKEN
      */

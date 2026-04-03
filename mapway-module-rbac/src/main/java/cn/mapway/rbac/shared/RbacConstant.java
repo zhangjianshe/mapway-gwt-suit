@@ -49,4 +49,5 @@ public class RbacConstant {
     public static final String USER_TYPE_RBAC = "00";
     public static final String USER_TYPE_LDAP = "LDAP";
     public static final String USER_TYPE_GITEE = "GITEE";
+    public static final String RESOURCE_PATH_RELATIVE_TO_CLASSES = "RESOURCE_PATH_RELATIVE_TO_CLASSES";
 }
