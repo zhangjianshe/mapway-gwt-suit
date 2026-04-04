@@ -16,7 +16,15 @@ public class Fonts {
         }
     }
 
-    	public final static String QUANPINGSUOXIAO = "e9dd";
+    	public final static String H5 = "e7f5";
+	public final static String QUOTE = "e7f6";
+	public final static String PARAGRAPH = "e7f7";
+	public final static String H2 = "e7f8";
+	public final static String H1 = "e7f9";
+	public final static String PAGE = "e7fa";
+	public final static String H3 = "e7fb";
+	public final static String H4 = "e7fc";
+	public final static String QUANPINGSUOXIAO = "e9dd";
 	public final static String JIEGUOXIUZHENG = "e9de";
 	public final static String KEXUNLIANMOXING = "e9df";
 	public final static String CHENGGUOGUIDANG = "e9e0";
@@ -809,7 +817,15 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("QUANPINGSUOXIAO", Fonts.QUANPINGSUOXIAO);
+			unicodes.put("H5", Fonts.H5);
+	unicodes.put("QUOTE", Fonts.QUOTE);
+	unicodes.put("PARAGRAPH", Fonts.PARAGRAPH);
+	unicodes.put("H2", Fonts.H2);
+	unicodes.put("H1", Fonts.H1);
+	unicodes.put("PAGE", Fonts.PAGE);
+	unicodes.put("H3", Fonts.H3);
+	unicodes.put("H4", Fonts.H4);
+	unicodes.put("QUANPINGSUOXIAO", Fonts.QUANPINGSUOXIAO);
 	unicodes.put("JIEGUOXIUZHENG", Fonts.JIEGUOXIUZHENG);
 	unicodes.put("KEXUNLIANMOXING", Fonts.KEXUNLIANMOXING);
 	unicodes.put("CHENGGUOGUIDANG", Fonts.CHENGGUOGUIDANG);
