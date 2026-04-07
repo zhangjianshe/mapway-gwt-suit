@@ -1541,7 +1541,9 @@ public class TiffTools {
         } else {
             log.error("未处理的 GDAL 数据类型: {}", dt);
         }
-        return ByteBuffer.wrap(target).order(ByteOrder.nativeOrder());
+        ByteBuffer byteBuffer = ByteBuffer.allocateDirect(targetWidth * targetHeight);
+        byteBuffer.put(target);
+        return byteBuffer;
     }
 
     /**
