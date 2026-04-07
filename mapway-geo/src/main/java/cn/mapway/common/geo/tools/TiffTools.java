@@ -123,11 +123,11 @@ public class TiffTools {
         filePath = "/data/personal/1/bhg/guoyuan_ndvi_20240910.tif";
         filePath = "/mnt/cangling/devdata/personal/1/O_53_27_214_109.tif";
         filePath = "/mnt/cangling/devdata/personal/1/tianye_sentinel_20240606.tif";
-        filePath = "/home/satway/Downloads/post.tif";
-        //17/106779/52007.png
-        long tilex = 106779;
-        long tiley = 52007;
-        int zoom = 17;
+        filePath = "/mnt/cangling/devdata/personal/1/dev/GF1C_PMS_E117.5_N32.4_20260321_L1A1022612292.tif";
+        // 18/216345/106002.png
+        long tilex = 216345;
+        long tiley = 106002;
+        int zoom = 18;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
@@ -1282,10 +1282,9 @@ public class TiffTools {
                     int location = row * targetRect.getWidthAsInt() + col;
 
                     int tilePosition = row * width + col;
-                    double pixelValue = 0;
+                    double pixelValue = 0.;
                     if (dt == GDT_Byte || dt == GDT_Int8) {
                         pixelValue = ((int) sourceData.get(location)) & 0xFF;
-
                     } else if (dt == GDT_Int16) {
                         pixelValue = shortBuffer.get(location);
                     } else if (dt == gdalconstConstants.GDT_UInt16) {
@@ -1321,34 +1320,14 @@ public class TiffTools {
                         transparentBand[tilePosition] = (byte) 0xFF;
                         continue;
                     }
-                    if (info.enableGamma) {
-                        // 采用Gamma矫正算法
-                        //  value  [outputMin,outputMax]
-                        double value = info.calValue(pixelValue);
-                        if (colorTable == null) {
-                            int v = (int) value;
-                            rgba = Colors.fromColorInt(v, v, v, 0xFF);
-                        } else if (colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
-                            //缺省的颜色表
-                            int v = (int) value;
-                            rgba = Colors.fromColorInt(v, v, v, 0xFF);
-                        } else {
-                            if (colorTable != null && colorTable.getNormalize() != null && colorTable.getNormalize()) {
-                                //用户设置了归一化调色板
-                                pixelValue = normalizePixel(bandData, value);
-                                rgba = translateColor(colorTable, pixelValue);
-                            } else {
-                                long valueLong = Math.round(value);
-                                rgba = translateColor(colorTable, valueLong);
-                            }
-                        }
-                    } else if (colorTable != null) {
+                    double value= info.calValue(false,pixelValue);
+                    if (colorTable != null) {
                         //颜色表为缺省的　首先使用
                         if (colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
 
                             if (bandData.getInfo().colorMaps != null) {
                                 //用户设定了自己的颜色表　就用用户的颜色表渲染
-                                rgba = translateImageColorTable(bandData.getInfo().colorMaps, pixelValue);
+                                rgba = translateImageColorTable(bandData.getInfo().colorMaps, value);
                             } else {
                                 //如果没有设定,直接用像素值
                                 int v = (int) pixelValue;
@@ -1360,22 +1339,22 @@ public class TiffTools {
                             if (colorTable.getNormalize() != null && colorTable.getNormalize()) {
                                 //颜色表是归一化颜色表 0.0-1.0  范围之外的颜色通通为透明
                                 // 讲数据中的颜色进行归一化处理
-                                pixelValue = normalizePixel(bandData, pixelValue);
+                                pixelValue = normalizePixel(bandData, value);
 
                                 if (pixelValue < 0.0 || pixelValue > 1.0) {
                                     rgba = 0xFFFFFF00;
                                 } else {
-                                    rgba = translateColor(colorTable, pixelValue);
+                                    rgba = translateColor(colorTable, value);
                                 }
 
                             } else {
                                 //颜色表不是归一化颜色表 使用颜色表进行转换
-                                rgba = translateColor(colorTable, pixelValue);
+                                rgba = translateColor(colorTable, value);
                             }
                         }
                     } else {
                         //没有条色斑　原始数据
-                        int v = (int) pixelValue;
+                        int v = (int) value;
                         rgba = Colors.fromColorInt(v, v, v, 0xFF);
                     }
 
@@ -1497,11 +1476,11 @@ public class TiffTools {
         sourceBand.ReadRaster_Direct(sourceX, sourceY, sourceWidth, sourceHeight,
                 targetWidth, targetHeight, dt, source);
 
-        // 2. 动态计算 Gamma（针对当前瓦片统计信息）
+       /* // 2. 动态计算 Gamma（针对当前瓦片统计信息）
         if (info.enableGamma && (info.gammaMax == null || info.gammaMin == null)) {
             calculateGamma(info, source, dt, new Rect().setValue(0, 0, targetWidth, targetHeight));
         }
-        info.check();
+        info.check();*/
 
         int totalPixels = targetWidth * targetHeight;
         source.rewind();
@@ -1510,33 +1489,33 @@ public class TiffTools {
         if (dt == gdalconstConstants.GDT_Byte || dt == gdalconstConstants.GDT_Int8) {
             for (int i = 0; i < totalPixels; i++) {
                 double pixel = source.get(i) & 0xFF;
-                processPixel(i, pixel, info, transparentBand, target); // this will failed
+                processPixel(false,i, pixel, info, transparentBand, target); // this will failed
             }
         } else if (dt == gdalconstConstants.GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
             ShortBuffer sb = source.asShortBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 // 注意 UInt16 的符号位处理
-                double pixel = (dt == gdalconstConstants.GDT_UInt16) ? (sb.get(i) & 0xFFFF) : sb.get(i);
-                processPixel(i, pixel, info, transparentBand, target);
+                double pixel = (dt == gdalconstConstants.GDT_UInt16) ? (sb.get(i) & 0xFFFFFF) : sb.get(i);
+                processPixel(true,i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Int32 || dt == gdalconstConstants.GDT_UInt32) {
             IntBuffer ib = source.asIntBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 // 注意 UInt32 的符号位处理
                 double pixel = (dt == gdalconstConstants.GDT_UInt32) ? (ib.get(i) & 0xFFFFFFFFL) : ib.get(i);
-                processPixel(i, pixel, info, transparentBand, target);
+                processPixel(true,i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Float32) {
             FloatBuffer fb = source.asFloatBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 double pixel = fb.get(i);
-                processPixel(i, pixel, info, transparentBand, target);
+                processPixel(true,i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Float64) {
             DoubleBuffer db = source.asDoubleBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 double pixel = db.get(i);
-                processPixel(i, pixel, info, transparentBand, target);
+                processPixel(true,i, pixel, info, transparentBand, target);
             }
         } else {
             log.error("未处理的 GDAL 数据类型: {}", dt);
@@ -1549,7 +1528,7 @@ public class TiffTools {
     /**
      * 像素处理核心逻辑：透明度检查 + 色彩映射
      */
-    private void processPixel(int index, double pixel, BandInfo info, byte[] transparentBand, byte[] target) {
+    private void processPixel(boolean lashen,int index, double pixel, BandInfo info, byte[] transparentBand, byte[] target) {
         // 透明度处理
         if (isPixelTransparent(pixel, info)) {
             transparentBand[index] = (byte) 0x00;
@@ -1562,12 +1541,9 @@ public class TiffTools {
         }
 
         // 映射到 0-255 并存入目标 Buffer
-        if (info.enableGamma) {
-            double val = info.calValue(pixel);
+
+            double val = info.calValue(lashen,pixel);
             target[index] = (byte) ((int) val & 0xFF);
-        } else {
-            target[index] = (byte) ((int) pixel & 0xFF);
-        }
 
     }
 

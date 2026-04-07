@@ -1,5 +1,6 @@
 package cn.mapway.common.geo.tools.parser;
 
+import cn.mapway.geo.client.raster.ChanelData;
 import cn.mapway.geo.client.raster.ImageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.nutz.lang.Files;
@@ -51,6 +52,9 @@ public class GF1Parser implements ISatelliteExtractor {
             return true;
         }
 
+        ChanelData chanelData = new ChanelData();
+        chanelData.setData(3, 2, 1);
+        imageInfo.setChanelData(chanelData);
 
         //最后根据名字进行猜测
         //GF1C_MSS1_017153_20210605_MY8L1_01_016_L1A.tiff

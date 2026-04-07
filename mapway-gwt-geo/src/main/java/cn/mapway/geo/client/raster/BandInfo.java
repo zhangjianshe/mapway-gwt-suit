@@ -71,17 +71,37 @@ public class BandInfo implements Serializable, IsSerializable {
      */
     public String name;
 
-    public double calValue(double v) {
-            if (Objects.equals(gammaMax, gammaMin)) {
-                return v;
-            }
-            if (v < gammaMin) {
-                v = gammaMin;
-            }
-            if (v > gammaMax) {
-                v = gammaMax;
-            }
-            return outputMin + (outputMax - outputMin) * Math.pow((v - gammaMin) / (gammaMax - gammaMin), gamma);
+    /**
+     * 像素处理分为２个步骤
+     * 1. 检查是不是需要拉伸
+     * 　　byte uint8 有没有设定
+     * 　　其他类型　必须拉伸
+     * 2.是否需要Gamma 矫正取决与用户设定
+     *
+     * @param v
+     * @return
+     */
+    public double calValue(boolean mustLashen, double v) {
+        double v1=v;
+        if (mustLashen || outputMin>0 || outputMax<255) {
+            double min = this.getCalMinValue(); // 即 Mean - 2*StdDev
+            double max = this.getCalMaxValue(); // 即 Mean + 2*StdDev
+            // 2. 执行线性拉伸计算
+            double result = ((v - min) / (max - min)) * 255.0;
+
+            // 3. 边界检查 (Clamping)
+            if (result < 0) result = 0;
+            if (result > 255) result = 255;
+
+            v1 = result;
+        }
+        if(enableGamma)
+        {
+            return Math.pow((v1 - gammaMin) / (gammaMax - gammaMin), gamma);
+        }
+        else {
+            return v1;
+        }
     }
 
     public void check() {

@@ -296,7 +296,7 @@ public class BaseTileExtractor {
                         if (sourceBandInfo.enableGamma) {
                             // 采用Gamma矫正算法
                             //  value  [outputMin,outputMax]
-                            pixel = sourceBandInfo.calValue(pixel);
+                            pixel = sourceBandInfo.calValue(false,pixel);
                         }
 
                         target.put(posTarget, (byte) pixel);
@@ -336,7 +336,7 @@ public class BaseTileExtractor {
                             transparentBand[posTarget] = (byte) 0xFF;
                         }
                     }
-                    pixel = sourceBandInfo.calValue(pixel);
+                    pixel = sourceBandInfo.calValue(true,pixel);
                     int v = (((int) pixel) & 0xFF);
                     target.put(posTarget, (byte) v);
                 }
@@ -377,7 +377,7 @@ public class BaseTileExtractor {
                                 transparentBand[posTarget] = (byte) 0xFF;
                             }
                         }
-                        pixel = sourceBandInfo.calValue(pixel);
+                        pixel = sourceBandInfo.calValue(true,pixel);
                         int v = (((int) pixel) & 0xFF);
                         target.put(posTarget, (byte) v);
                     }
@@ -417,7 +417,7 @@ public class BaseTileExtractor {
                                 transparentBand[posTarget] = (byte) 0xFF;
                             }
                         }
-                        pixel = sourceBandInfo.calValue(pixel);
+                        pixel = sourceBandInfo.calValue(true,pixel);
                         int v = (((int) pixel) & 0xFF);
                         target.put(posTarget, (byte) v);
                     }
@@ -458,7 +458,7 @@ public class BaseTileExtractor {
                                 transparentBand[posTarget] = (byte) 0xFF;
                             }
                         }
-                        pixel = sourceBandInfo.calValue(pixel);
+                        pixel = sourceBandInfo.calValue(true,pixel);
                         int v = (((int) pixel) & 0xFF);
                         target.put(posTarget, (byte) v);
                     }
@@ -752,7 +752,7 @@ public class BaseTileExtractor {
                     if (source1.getInfo().enableGamma) {
                         // 采用Gamma矫正算法
                         //  value  [outputMin,outputMax]
-                        double value = source1.getInfo().calValue(pixelValue);
+                        double value = source1.getInfo().calValue(true,pixelValue);
                         if(colorTable == null){
                             int v = (int) value;
                             rgba = Colors.fromColorInt(v, v, v, 0xFF);
