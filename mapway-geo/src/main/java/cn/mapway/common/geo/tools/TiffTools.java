@@ -123,10 +123,11 @@ public class TiffTools {
         filePath = "/data/personal/1/bhg/guoyuan_ndvi_20240910.tif";
         filePath = "/mnt/cangling/devdata/personal/1/O_53_27_214_109.tif";
         filePath = "/mnt/cangling/devdata/personal/1/tianye_sentinel_20240606.tif";
-        //17/101104/56083.png
-        long tilex = 94;
-        long tiley = 45;
-        int zoom = 7;
+        filePath = "/home/satway/Downloads/post.tif";
+        //17/106779/52007.png
+        long tilex = 106779;
+        long tiley = 52007;
+        int zoom = 17;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
@@ -1122,7 +1123,7 @@ public class TiffTools {
             if (!isIntersect && !tileLonLat.contain(center)) {
                 return null; // 或者返回透明图片，避免浪费 CPU 进行 Warp
             }
-
+            // -t_srs  EPSG:3857  -te  1.2609969430262096E7  4136160.4745674576  1.2610275178375237E7  4136466.2226805985  -ts  256  256  -dstnodata  0  -r  bilinear
             // 2. 构造 Warp 选项
             // 使用 Warp 可以自动处理：坐标转换、切片裁剪、重采样
             Vector<String> options = new Vector<>();
@@ -1143,7 +1144,6 @@ public class TiffTools {
             options.add("-of");
             options.add("MEM");     // 直接输出到内存驱动
             ChanelData chanelData = imageInfo.getChanelData();
-
             if (chanelData == null) {
                 chanelData = new ChanelData();
             }
@@ -1418,7 +1418,7 @@ public class TiffTools {
                 destBand.WriteRaster_Direct(0, 0, width, height, renderedBuffer);
 
             }
-            // 处理 Alpha 通道 (第 4 波段)
+
             renderDataset.GetRasterBand(4).WriteRaster(0, 0, width, height, transparentBand);
         }
     }
@@ -1488,10 +1488,9 @@ public class TiffTools {
         BandInfo info = sourceBandData.info;
 
         // 获取缓冲区（建议根据 DataType 动态分配大小，这里沿用你的 getSourceBuffer）
-        ByteBuffer target = getTargetBuffer(canvasWidth, canvasHeight);
+        byte[] target = new byte[targetWidth * targetHeight];
         ByteBuffer source = getSourceBuffer(targetWidth, targetHeight);
         source.order(ByteOrder.nativeOrder());
-        target.position(0);
         source.position(0);
 
         // 1. 直接读取原始数据到 DirectBuffer
@@ -1505,12 +1504,13 @@ public class TiffTools {
         info.check();
 
         int totalPixels = targetWidth * targetHeight;
+        source.rewind();
 
         // 3. 根据不同数据类型进行解析与像素映射
         if (dt == gdalconstConstants.GDT_Byte || dt == gdalconstConstants.GDT_Int8) {
             for (int i = 0; i < totalPixels; i++) {
-                double pixel = (source.get(i) & 0xFF);
-                processPixel(i, pixel, info, transparentBand, target);
+                double pixel = source.get(i) & 0xFF;
+                processPixel(i, pixel, info, transparentBand, target); // this will failed
             }
         } else if (dt == gdalconstConstants.GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
             ShortBuffer sb = source.asShortBuffer();
@@ -1541,14 +1541,13 @@ public class TiffTools {
         } else {
             log.error("未处理的 GDAL 数据类型: {}", dt);
         }
-
-        return target;
+        return ByteBuffer.wrap(target).order(ByteOrder.nativeOrder());
     }
 
     /**
      * 像素处理核心逻辑：透明度检查 + 色彩映射
      */
-    private void processPixel(int index, double pixel, BandInfo info, byte[] transparentBand, ByteBuffer target) {
+    private void processPixel(int index, double pixel, BandInfo info, byte[] transparentBand, byte[] target) {
         // 透明度处理
         if (isPixelTransparent(pixel, info)) {
             transparentBand[index] = (byte) 0x00;
@@ -1561,8 +1560,13 @@ public class TiffTools {
         }
 
         // 映射到 0-255 并存入目标 Buffer
-        double val = info.calValue(pixel);
-        target.put(index, (byte) ((int) val & 0xFF));
+        if (info.enableGamma) {
+            double val = info.calValue(pixel);
+            target[index] = (byte) ((int) val & 0xFF);
+        } else {
+            target[index] = (byte) ((int) pixel & 0xFF);
+        }
+
     }
 
     private void calculateGamma(BandInfo info, ByteBuffer sourceData, int dt, Rect targetRect) {
