@@ -125,6 +125,7 @@ public class TiffTools {
         filePath = "/mnt/cangling/devdata/personal/1/tianye_sentinel_20240606.tif";
         filePath = "/mnt/cangling/devdata/personal/1/dev/GF1C_PMS_E117.5_N32.4_20260321_L1A1022612292.tif";
         filePath = "/mnt/cangling/devdata/personal/1/test/GF2_PMS1_E119.5_N25.7_20220729_L1A0006632555-MSS1-rpc-ortho-rc-ac-fusion.tif";
+        filePath = "/mnt/cangling/devdata/personal/1/test/GF2_PMS1_E117.4_N34.7_20230705_L1A0007378447-MSS1-rpc-ortho-rc-ac-fusion-bs.tif";
         // 16/54099/26444.png
         //https://ib.cangling.cn:22002/api/v1/map3/b3689473dc2ba8b8d7e9f3e94f63a5662b17ab7e186cb30b4c6378bc85d61790/12/3407/1745.png
         // 12/3407/17457
@@ -620,8 +621,16 @@ public class TiffTools {
                 info.setProjection(spatialReference.ExportToPrettyWkt());
             }
         } else {
-            info.setSrid(SRID_NULL);
-            info.setProjection("");
+            box.setValue(leftBottom.getX(), leftBottom.getY(), rightTop.getX(), rightTop.getY());
+            if(leftBottom.getX()>=-180 && leftBottom.getX()<=180) {
+                // guess it is wgs84 srs
+                info.setSrid(SRID_WGS84);
+                info.setProjection("");
+            }
+            else {
+                info.setSrid(SRID_NULL);
+                info.setProjection("");
+            }
         }
 
         if (info.getSrid() == SRID_WGS84) {
@@ -1009,40 +1018,7 @@ public class TiffTools {
         return info;
     }
 
-    /* *//**
-     * 从原始影像中输出瓦片
-     *
-     * @param imageInfo
-     * @param tileX
-     * @param tileY
-     * @param zoom
-     * @return
-     *//*
-    public byte[] extractFromSource(ImageInfo imageInfo, long tileX, long tileY, int zoom, ColorTable colorTable) {
-        if (imageInfo == null || !Files.isFile(new File(imageInfo.location))) {
-            log.error("ImageInfo 描述的影像 不是一个合法的文件{}", Json.toJson(imageInfo));
-            return null;
-        }
-        byte[] outData = null;
 
-        if (imageInfo.getSrid() == SRID_WGS84) {
-            WGS84TileExtractor extractor = new WGS84TileExtractor();
-            extractor.setColorTable(colorTable);
-            outData = extract(extractor, imageInfo, tileX, tileY, zoom);
-        } else if (imageInfo.getSrid() == SRID_CGCS2000) {
-            CGCS2000TileExtractor extractor = new CGCS2000TileExtractor();
-            extractor.setColorTable(colorTable);
-            outData = extract(extractor, imageInfo, tileX, tileY, zoom);
-        } else if (imageInfo.getSrid() == SRID_WEB_MERCATO) {
-            WebMercatorTileExtractor extractor = new WebMercatorTileExtractor();
-            extractor.setColorTable(colorTable);
-            outData = extract(extractor, imageInfo, tileX, tileY, zoom);
-        } else {
-            log.error("程序员抓紧实现 对 {}的影像进行解读", imageInfo.getSrid());
-            return null;
-        }
-        return outData;
-    }*/
 
     /**
      * 根据配置的解析列表进行猜测 元数据文件信息
@@ -1114,9 +1090,9 @@ public class TiffTools {
             double[] bounds3857 = GlobalMercator.getTileBounds3857(tilex, tiley, zoom);
 
             // 检查tile是否落在srcDataset内部
-            double[] extent4 = new double[4];
-            srcDataset.GetExtentWGS84LongLat(extent4);
-            Box imgBox = new Box(extent4[0], extent4[2], extent4[1], extent4[3]);
+            //double[] extent4 = new double[4];
+            //srcDataset.GetExtentWGS84LongLat(extent4);
+            Box imgBox = imageInfo.getBox();
             // 将你的瓦片 3857 边界转回经纬度 (使用你的 GlobalMercator 工具)
             Box tileLonLat = GlobalMercator.get().tileLngLatBounds(tilex, tiley, zoom);
             // tileLonLat 通常返回 [minLon, minLat, maxLon, maxLat]
@@ -1131,6 +1107,12 @@ public class TiffTools {
             // 2. 构造 Warp 选项
             // 使用 Warp 可以自动处理：坐标转换、切片裁剪、重采样
             Vector<String> options = new Vector<>();
+            if(Strings.isBlank(srcDataset.GetProjection()) && imageInfo.getSrid()==SRID_WGS84)
+            {
+                //源文件没有设置投影方式 SRID_WGS84是猜测的结果
+                options.add("-s_srs");
+                options.add("EPSG:4326");
+            }
             options.add("-t_srs");
             options.add("EPSG:3857");
             options.add("-te"); // 设置输出范围 [xmin ymin xmax ymax]
