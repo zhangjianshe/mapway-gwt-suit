@@ -86,12 +86,13 @@ public class BandInfo implements Serializable, IsSerializable {
         if (mustLashen || outputMin>0 || outputMax<255) {
             double min = this.getCalMinValue(); // 即 Mean - 2*StdDev
             double max = this.getCalMaxValue(); // 即 Mean + 2*StdDev
+            double outputExtend=outputMax-outputMin;
             // 2. 执行线性拉伸计算
-            double result = ((v - min) / (max - min)) * 255.0;
+            double result =outputMin+ ((v - min) / (max - min)) * outputExtend;
 
             // 3. 边界检查 (Clamping)
-            if (result < 0) result = 0;
-            if (result > 255) result = 255;
+            if (result < outputMin) result = outputMin;
+            if (result > outputMax) result = outputMax;
 
             v1 = result;
         }

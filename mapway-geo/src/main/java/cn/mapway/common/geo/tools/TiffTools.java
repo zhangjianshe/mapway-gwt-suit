@@ -124,10 +124,13 @@ public class TiffTools {
         filePath = "/mnt/cangling/devdata/personal/1/O_53_27_214_109.tif";
         filePath = "/mnt/cangling/devdata/personal/1/tianye_sentinel_20240606.tif";
         filePath = "/mnt/cangling/devdata/personal/1/dev/GF1C_PMS_E117.5_N32.4_20260321_L1A1022612292.tif";
-        // 18/216345/106002.png
-        long tilex = 216345;
-        long tiley = 106002;
-        int zoom = 18;
+        filePath = "/mnt/cangling/devdata/personal/1/test/GF2_PMS1_E119.5_N25.7_20220729_L1A0006632555-MSS1-rpc-ortho-rc-ac-fusion.tif";
+        // 16/54099/26444.png
+        //https://ib.cangling.cn:22002/api/v1/map3/b3689473dc2ba8b8d7e9f3e94f63a5662b17ab7e186cb30b4c6378bc85d61790/12/3407/1745.png
+        // 12/3407/17457
+        long tilex = 3407;
+        long tiley = 1745;
+        int zoom = 12;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
@@ -158,6 +161,7 @@ public class TiffTools {
         if (md5File.getBandInfos().get(0).getColorMaps() != null) {
             colorTable.setColorMaps(md5File.getBandInfos().get(0).getColorMaps());
         }
+        md5File.getChanelData().setData(4,3,2);
         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, colorTable);
         if (bytes == null) {
             System.out.println("gen error");
@@ -1495,7 +1499,7 @@ public class TiffTools {
             ShortBuffer sb = source.asShortBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 // 注意 UInt16 的符号位处理
-                double pixel = (dt == gdalconstConstants.GDT_UInt16) ? (sb.get(i) & 0xFFFFFF) : sb.get(i);
+                double pixel = (dt == gdalconstConstants.GDT_UInt16) ? (sb.get(i) & 0xFFFF) : sb.get(i);
                 processPixel(true,i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Int32 || dt == gdalconstConstants.GDT_UInt32) {
@@ -1508,7 +1512,7 @@ public class TiffTools {
         } else if (dt == gdalconstConstants.GDT_Float32) {
             FloatBuffer fb = source.asFloatBuffer();
             for (int i = 0; i < totalPixels; i++) {
-                double pixel = fb.get(i);
+                double pixel = (float)fb.get(i);
                 processPixel(true,i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Float64) {
