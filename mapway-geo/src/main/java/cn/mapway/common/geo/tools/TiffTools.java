@@ -1107,7 +1107,7 @@ public class TiffTools {
             String noData="0";
             Double[] noValues = imageInfo.getBandInfos().get(0).getNoValues();
             if (noValues !=null && noValues.length>0) {
-              noData= noValues[0].toString();
+              noData= noValues[noValues.length-1].toString();
             }
 
             // -t_srs  EPSG:3857  -te  1.2609969430262096E7  4136160.4745674576  1.2610275178375237E7  4136466.2226805985  -ts  256  256  -dstnodata  0  -r  bilinear
@@ -1310,7 +1310,7 @@ public class TiffTools {
                         sourceBuffer[0].put(tilePosition, (byte) 0xFF);
                         sourceBuffer[1].put(tilePosition, (byte) 0xFF);
                         sourceBuffer[2].put(tilePosition, (byte) 0xFF);
-                        transparentBand[tilePosition] = (byte) 0xFF;
+                        transparentBand[tilePosition] = (byte) 0x00;
                         continue;
                     }
                     double value= info.calValue(false,pixelValue);
