@@ -30,7 +30,7 @@ public class ImageInfo implements Serializable, IsSerializable {
     public int maxZoom;
     public String copyright;
     // 影像类型   0  目录 1 文件
-    public int type =0;
+    public int type = 0;
     /**
      * 分辨率 以cm为单位
      */
@@ -109,23 +109,31 @@ public class ImageInfo implements Serializable, IsSerializable {
      * 单波段 二值影像 可以设定一个rgb 颜色值 用于渲染输出
      */
     byte[] singleColor;
+    /**
+     * 采样方式
+     */
+    String sample;
 
     public ImageInfo() {
         bandInfos = new ArrayList<>();
         singleColor = null;
     }
 
+    public String getSample() {
+        if (sample == null || sample.isEmpty()) {
+            return "bilinear";
+        }
+        return sample;
+    }
+
 
     /**
-     *
-     * @param chanelIndex  1,2,3
+     * @param chanelIndex 1,2,3
      * @return
      */
     public BandInfo findBand(int chanelIndex) {
-        for(BandInfo bandInfo:bandInfos)
-        {
-            if(bandInfo.index==chanelIndex-1)
-            {
+        for (BandInfo bandInfo : bandInfos) {
+            if (bandInfo.index == chanelIndex - 1) {
                 return bandInfo;
             }
         }

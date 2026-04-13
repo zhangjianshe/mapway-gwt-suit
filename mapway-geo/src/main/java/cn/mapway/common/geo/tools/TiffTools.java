@@ -1083,7 +1083,7 @@ public class TiffTools {
         Dataset renderDataset = null;
         try {
             srcDataset = gdal.Open(imageInfo.location, gdalconstConstants.GA_ReadOnly);
-            if (srcDataset == null) return null;
+            if (srcDataset == null || srcDataset.GetRasterCount()==0) return null;
 
             // 1. 计算瓦片在 EPSG:3857 下的边界 (minX, minY, maxX, maxY)
             // 使用 GlobalMercator 或你项目中的 WebMercator 工具类
@@ -1103,6 +1103,13 @@ public class TiffTools {
             if (!isIntersect && !tileLonLat.contain(center)) {
                 return null; // 或者返回透明图片，避免浪费 CPU 进行 Warp
             }
+
+            String noData="0";
+            Double[] noValues = imageInfo.getBandInfos().get(0).getNoValues();
+            if (noValues !=null && noValues.length>0) {
+              noData= noValues[0].toString();
+            }
+
             // -t_srs  EPSG:3857  -te  1.2609969430262096E7  4136160.4745674576  1.2610275178375237E7  4136466.2226805985  -ts  256  256  -dstnodata  0  -r  bilinear
             // 2. 构造 Warp 选项
             // 使用 Warp 可以自动处理：坐标转换、切片裁剪、重采样
@@ -1124,9 +1131,9 @@ public class TiffTools {
             options.add("256");
             options.add("256"); // 输出分辨率
             options.add("-dstnodata");
-            options.add("0");
+            options.add(noData);
             options.add("-r");
-            options.add("bilinear"); // 重采样方式：双线性插值
+            options.add(imageInfo.getSample()); // 重采样方式：双线性插值
             options.add("-of");
             options.add("MEM");     // 直接输出到内存驱动
             ChanelData chanelData = imageInfo.getChanelData();
