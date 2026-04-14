@@ -20,6 +20,7 @@ public class ParameterKeys {
     public static final String KEY_MAX = "max";
     public static final String KEY_DATETIME_FORMAT = "datetime_format";
     public static final String KEY_PRODUCT_ID="product_id";
+    public static final String KEY_APP_ID="app_id";
     public static final String KEY_CSS_RULES_PROVIDER="css_rules_provider";
     public static final String KEY_BUTTON_TYPE = "button_type";
     public static final String KEY_CATALOG_USAGE = "catalog_usage";
