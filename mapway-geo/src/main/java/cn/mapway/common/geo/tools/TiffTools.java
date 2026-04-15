@@ -1130,6 +1130,8 @@ public class TiffTools {
             options.add("-ts");
             options.add("256");
             options.add("256"); // 输出分辨率
+            options.add("-srcnodata");
+            options.add(noData);
             options.add("-dstnodata");
             options.add(noData);
             options.add("-r");
