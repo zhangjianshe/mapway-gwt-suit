@@ -23,8 +23,6 @@ import java.util.List;
  * @author zhangjianshe
  */
 public abstract class BaseAbstractModule extends CommonEventComposite implements IModule, IToolsProvider, IHelpProvider {
-
-
     private static ModuleFactory FACTORY;
     IModuleCallback callback;
     boolean initialized = false;
@@ -245,5 +243,15 @@ public abstract class BaseAbstractModule extends CommonEventComposite implements
         if (result != null && result.getCode().equals(300001)) {
             throw new RuntimeException("300001");
         }
+    }
+
+    @Override
+    public String getHashData() {
+        return getModuleInfo().hash;
+    }
+
+    @Override
+    public boolean parseHashData(String hashData) {
+        return false;
     }
 }

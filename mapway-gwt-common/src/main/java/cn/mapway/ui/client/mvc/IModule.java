@@ -82,4 +82,19 @@ public interface IModule {
      * @param callback
      */
     void addModuleCallback(IModuleCallback callback);
+
+    /**
+     * 每个模块根据自己的内容　生成一个HashData用于标识一个模块以及他的初始化数据
+     * 该数据会添加到浏览器的历史记录中
+     * 缺省系统　返回模块的哈西值,继承类会在模块哈西值的后面添加数据
+     * @return
+     */
+    String getHashData();
+
+    /**
+     * 解析getHashData返回数据 格式为　＃XXXXXXX;custom data
+     * @param hashData
+     * @return true标识解析成功　false 解析失败
+     */
+    boolean parseHashData(String hashData);
 }
