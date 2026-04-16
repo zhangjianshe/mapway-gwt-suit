@@ -1,5 +1,8 @@
 package cn.mapway.ui.client.mvc;
 
+import lombok.Getter;
+import lombok.Setter;
+
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
@@ -15,8 +18,21 @@ public class ModuleParameter {
      * 通用参数，用于从数据库中的参数传递到模块中.
      */
     public final static String PARA_KEY = "para_key";
-    private String subModule = "";
     private final Map<String, Object> paras;
+    /**
+     * -- GETTER --
+     * 获取子模块
+     * <p>
+     * <p>
+     * -- SETTER --
+     * Sets sub module.
+     *
+     * @return sub module
+     * @param moduleCode the module code
+     */
+    @Setter
+    @Getter
+    private String subModule = "";
 
     /**
      * Instantiates a new Module parameter.
@@ -35,30 +51,25 @@ public class ModuleParameter {
     }
 
     /**
-     * 获取子模块
-     *
-     * @return sub module
-     */
-    public String getSubModule() {
-        return subModule;
-    }
-
-    /**
-     * Sets sub module.
-     *
-     * @param moduleCode the module code
-     */
-    public void setSubModule(String moduleCode) {
-        subModule = moduleCode;
-    }
-
-    /**
      * 获取默认参数.
      *
      * @return object
      */
     public Object get() {
         return get(PARA_KEY);
+    }
+
+    /**
+     * URL中提取的数据
+     *
+     * @return
+     */
+    public String getHashData() {
+        String hasData = (String) get(IModuleDispatcher.KEY_MODULE_HASHES);
+        if (hasData == null) {
+            hasData = "";
+        }
+        return hasData;
     }
 
     /**
