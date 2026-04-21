@@ -34,7 +34,12 @@ public class ColorTable implements Serializable, IsSerializable {
 
     List<ColorMap> colorMaps;
     /**
-     * 是否是缺省系统的颜色表
+     *  系统全局定一个一个颜色表
+     *  当查询一个影像记录的时候 记录中有一个colorTable字段 表示用户设定的颜色表
+     *  如果这个字段为空或者查询不到颜色表 就赋值一个缺省的颜色表进行使用，这个时候
+     *  defaultTable字段就为True
+     *  在渲染的时候 当此值为true的时候 程序员要首先查找影像文件中是否存储了颜色表(在BandInfo中保存如果有 就使用影像
+     *  自己的颜色表 如果影像没有就是用 缺省的颜色表)
      */
     Boolean defaultTable;
 

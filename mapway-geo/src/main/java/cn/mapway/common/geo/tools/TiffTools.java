@@ -162,7 +162,7 @@ public class TiffTools {
         if (md5File.getBandInfos().get(0).getColorMaps() != null) {
             colorTable.setColorMaps(md5File.getBandInfos().get(0).getColorMaps());
         }
-        md5File.getChanelData().setData(4,3,2);
+        md5File.getChanelData().setData(4, 3, 2);
         byte[] bytes = tiffTools.extractFromSource(md5File, tilex, tiley, zoom, colorTable);
         if (bytes == null) {
             System.out.println("gen error");
@@ -622,12 +622,11 @@ public class TiffTools {
             }
         } else {
             box.setValue(leftBottom.getX(), leftBottom.getY(), rightTop.getX(), rightTop.getY());
-            if(leftBottom.getX()>=-180 && leftBottom.getX()<=180) {
+            if (leftBottom.getX() >= -180 && leftBottom.getX() <= 180) {
                 // guess it is wgs84 srs
                 info.setSrid(SRID_WGS84);
                 info.setProjection("");
-            }
-            else {
+            } else {
                 info.setSrid(SRID_NULL);
                 info.setProjection("");
             }
@@ -1019,7 +1018,6 @@ public class TiffTools {
     }
 
 
-
     /**
      * 根据配置的解析列表进行猜测 元数据文件信息
      *
@@ -1083,7 +1081,7 @@ public class TiffTools {
         Dataset renderDataset = null;
         try {
             srcDataset = gdal.Open(imageInfo.location, gdalconstConstants.GA_ReadOnly);
-            if (srcDataset == null || srcDataset.GetRasterCount()==0) return null;
+            if (srcDataset == null || srcDataset.GetRasterCount() == 0) return null;
 
             // 1. 计算瓦片在 EPSG:3857 下的边界 (minX, minY, maxX, maxY)
             // 使用 GlobalMercator 或你项目中的 WebMercator 工具类
@@ -1104,18 +1102,17 @@ public class TiffTools {
                 return null; // 或者返回透明图片，避免浪费 CPU 进行 Warp
             }
 
-            String noData="0";
+            String noData = "0";
             Double[] noValues = imageInfo.getBandInfos().get(0).getNoValues();
-            if (noValues !=null && noValues.length>0) {
-              noData= noValues[noValues.length-1].toString();
+            if (noValues != null && noValues.length > 0) {
+                noData = noValues[noValues.length - 1].toString();
             }
 
             // -t_srs  EPSG:3857  -te  1.2609969430262096E7  4136160.4745674576  1.2610275178375237E7  4136466.2226805985  -ts  256  256  -dstnodata  0  -r  bilinear
             // 2. 构造 Warp 选项
             // 使用 Warp 可以自动处理：坐标转换、切片裁剪、重采样
             Vector<String> options = new Vector<>();
-            if(Strings.isBlank(srcDataset.GetProjection()) && imageInfo.getSrid()==SRID_WGS84)
-            {
+            if (Strings.isBlank(srcDataset.GetProjection()) && imageInfo.getSrid() == SRID_WGS84) {
                 //源文件没有设置投影方式 SRID_WGS84是猜测的结果
                 options.add("-s_srs");
                 options.add("EPSG:4326");
@@ -1315,13 +1312,13 @@ public class TiffTools {
                         transparentBand[tilePosition] = (byte) 0x00;
                         continue;
                     }
-                    double value= info.calValue(false,pixelValue);
+                    double value = info.calValue(false, pixelValue);
                     if (colorTable != null) {
-                        //颜色表为缺省的　首先使用
-                        if (colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
 
+                        if (colorTable.getDefaultTable() != null && colorTable.getDefaultTable()) {
+                            //传递进来了一个缺省的颜色表 说明用户没有为这个影像设定颜色表
+                            //首先查看影像是否自己有颜色表
                             if (bandData.getInfo().colorMaps != null) {
-                                //用户设定了自己的颜色表　就用用户的颜色表渲染
                                 rgba = translateImageColorTable(bandData.getInfo().colorMaps, value);
                             } else {
                                 //如果没有设定,直接用像素值
@@ -1398,12 +1395,11 @@ public class TiffTools {
     }
 
     private int translateImageColorTable(List<ColorMap> colorMaps, double pixelValue) {
-        //System.out.println("pixel value: " + pixelValue);
         if (colorMaps == null) {
             return defaultColor;
         }
         for (ColorMap colorMap : colorMaps) {
-            if (colorMap.getStart() == pixelValue) {
+            if (Math.abs(colorMap.getStart() - pixelValue) < 0.001) {
                 return colorMap.getRgba();
             }
         }
@@ -1484,33 +1480,33 @@ public class TiffTools {
         if (dt == gdalconstConstants.GDT_Byte || dt == gdalconstConstants.GDT_Int8) {
             for (int i = 0; i < totalPixels; i++) {
                 double pixel = source.get(i) & 0xFF;
-                processPixel(false,i, pixel, info, transparentBand, target); // this will failed
+                processPixel(false, i, pixel, info, transparentBand, target); // this will failed
             }
         } else if (dt == gdalconstConstants.GDT_Int16 || dt == gdalconstConstants.GDT_UInt16) {
             ShortBuffer sb = source.asShortBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 // 注意 UInt16 的符号位处理
                 double pixel = (dt == gdalconstConstants.GDT_UInt16) ? (sb.get(i) & 0xFFFF) : sb.get(i);
-                processPixel(true,i, pixel, info, transparentBand, target);
+                processPixel(true, i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Int32 || dt == gdalconstConstants.GDT_UInt32) {
             IntBuffer ib = source.asIntBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 // 注意 UInt32 的符号位处理
                 double pixel = (dt == gdalconstConstants.GDT_UInt32) ? (ib.get(i) & 0xFFFFFFFFL) : ib.get(i);
-                processPixel(true,i, pixel, info, transparentBand, target);
+                processPixel(true, i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Float32) {
             FloatBuffer fb = source.asFloatBuffer();
             for (int i = 0; i < totalPixels; i++) {
-                double pixel = (float)fb.get(i);
-                processPixel(true,i, pixel, info, transparentBand, target);
+                double pixel = fb.get(i);
+                processPixel(true, i, pixel, info, transparentBand, target);
             }
         } else if (dt == gdalconstConstants.GDT_Float64) {
             DoubleBuffer db = source.asDoubleBuffer();
             for (int i = 0; i < totalPixels; i++) {
                 double pixel = db.get(i);
-                processPixel(true,i, pixel, info, transparentBand, target);
+                processPixel(true, i, pixel, info, transparentBand, target);
             }
         } else {
             log.error("未处理的 GDAL 数据类型: {}", dt);
@@ -1523,7 +1519,7 @@ public class TiffTools {
     /**
      * 像素处理核心逻辑：透明度检查 + 色彩映射
      */
-    private void processPixel(boolean lashen,int index, double pixel, BandInfo info, byte[] transparentBand, byte[] target) {
+    private void processPixel(boolean lashen, int index, double pixel, BandInfo info, byte[] transparentBand, byte[] target) {
         // 透明度处理
         if (isPixelTransparent(pixel, info)) {
             transparentBand[index] = (byte) 0x00;
@@ -1537,8 +1533,8 @@ public class TiffTools {
 
         // 映射到 0-255 并存入目标 Buffer
 
-            double val = info.calValue(lashen,pixel);
-            target[index] = (byte) ((int) val & 0xFF);
+        double val = info.calValue(lashen, pixel);
+        target[index] = (byte) ((int) val & 0xFF);
 
     }
 
