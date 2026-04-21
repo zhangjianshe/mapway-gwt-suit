@@ -126,12 +126,13 @@ public class TiffTools {
         filePath = "/mnt/cangling/devdata/personal/1/dev/GF1C_PMS_E117.5_N32.4_20260321_L1A1022612292.tif";
         filePath = "/mnt/cangling/devdata/personal/1/test/GF2_PMS1_E119.5_N25.7_20220729_L1A0006632555-MSS1-rpc-ortho-rc-ac-fusion.tif";
         filePath = "/mnt/cangling/devdata/personal/1/test/GF2_PMS1_E117.4_N34.7_20230705_L1A0007378447-MSS1-rpc-ortho-rc-ac-fusion-bs.tif";
+        filePath = "/mnt/cangling/devdata/personal/1/test1/S2_ZJK_YumiMask_20250910_20250920_NDVI_Feature.tif";
         // 16/54099/26444.png
         //https://ib.cangling.cn:22002/api/v1/map3/b3689473dc2ba8b8d7e9f3e94f63a5662b17ab7e186cb30b4c6378bc85d61790/12/3407/1745.png
-        // 12/3407/17457
-        long tilex = 3407;
-        long tiley = 1745;
-        int zoom = 12;
+        // 12/3407/17457  14/13397/6175.png
+        long tilex = 13397;
+        long tiley = 6175;
+        int zoom = 14;
         GdalUtil.init();
         GdalUtil.setPAM(true, "/data/pam");
         TiffTools tiffTools = new TiffTools();
@@ -466,25 +467,27 @@ public class TiffTools {
             BandInfo bandInfo = new BandInfo();
             bandInfo.setIndex(i);
             bandInfo.setDataType(band.GetRasterDataType());
+            if (band.GetColorInterpretation() == GCI_PaletteIndex) {
+                org.gdal.gdal.ColorTable colorTable = band.GetRasterColorTable();
+                if (colorTable != null) {
+                    List<ColorMap> colorMaps = new ArrayList<>();
 
-            org.gdal.gdal.ColorTable colorTable = band.GetColorTable();
-            if (colorTable != null) {
-                List<ColorMap> colorMaps = new ArrayList<>();
-
-                for (int index = 0; index < colorTable.GetCount(); index++) {
-                    Color color = colorTable.GetColorEntry(index);
-                    if (color.getRed() == 0 && color.getGreen() == 0 && color.getBlue() == 0) {
-                        continue;
+                    for (int index = 0; index < colorTable.GetCount(); index++) {
+                        Color color = colorTable.GetColorEntry(index);
+                        if (color.getRed() == 0 && color.getGreen() == 0 && color.getBlue() == 0) {
+                            continue;
+                        }
+                        ColorMap colorMap = new ColorMap();
+                        colorMap.setName(String.valueOf(index));
+                        colorMap.setStart(index);
+                        colorMap.setEnd(index);
+                        colorMap.setRgba(colorFrom(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
+                        colorMaps.add(colorMap);
                     }
-                    ColorMap colorMap = new ColorMap();
-                    colorMap.setName(String.valueOf(index));
-                    colorMap.setStart(index);
-                    colorMap.setEnd(index);
-                    colorMap.setRgba(colorFrom(color.getRed(), color.getGreen(), color.getBlue(), color.getAlpha()));
-                    colorMaps.add(colorMap);
+                    bandInfo.colorMaps = colorMaps;
+                } else {
+                    bandInfo.colorMaps = null;
                 }
-
-                bandInfo.colorMaps = colorMaps;
             } else {
                 bandInfo.colorMaps = null;
             }
