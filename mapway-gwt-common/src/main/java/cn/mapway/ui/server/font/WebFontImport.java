@@ -31,9 +31,15 @@ public class WebFontImport {
         Files.createDirIfNoExists(tempPath);
         Files.deleteDir(new File(tempPath));
 
+        System.out.println("Attempting to load zip from: " + zipLocation);
         String fontPath = "";
         try {
-            ZipUtil.unzip(new File(zipLocation), tempPath);
+            File file = new File(zipLocation);
+            if (!file.exists()) {
+                System.out.println("file not exist "+zipLocation);
+                System.exit(1);
+            }
+            ZipUtil.unzip(file, tempPath);
         } catch (IOException e) {
             e.printStackTrace();
         }
