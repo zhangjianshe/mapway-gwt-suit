@@ -16,7 +16,9 @@ public class Fonts {
         }
     }
 
-    	public final static String H5 = "e7f5";
+    	public final static String GRAFANA = "ebb0";
+	public final static String GIT = "e7fd";
+	public final static String H5 = "e7f5";
 	public final static String QUOTE = "e7f6";
 	public final static String PARAGRAPH = "e7f7";
 	public final static String H2 = "e7f8";
@@ -817,7 +819,9 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("H5", Fonts.H5);
+			unicodes.put("GRAFANA", Fonts.GRAFANA);
+	unicodes.put("GIT", Fonts.GIT);
+	unicodes.put("H5", Fonts.H5);
 	unicodes.put("QUOTE", Fonts.QUOTE);
 	unicodes.put("PARAGRAPH", Fonts.PARAGRAPH);
 	unicodes.put("H2", Fonts.H2);
