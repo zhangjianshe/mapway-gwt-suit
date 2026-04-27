@@ -1,19 +1,10 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'>
-    <ui:style>
-
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:widget="urn:import:cn.mapway.ui.client.widget">
+    <ui:style type="cn.mapway.ui.client.widget.icon.IconSelector.SStyle">
+        @eval BK "var(--color-background-selected)";
         .box {
             text-align: center;
             padding: 10px 20px 10px 20px;
-        }
-
-        .head {
-            height: 24px;
-            padding-left: -10px;
-            font-family: MicrosoftYaHei-Bold;
-            font-size: 18px;
-            color: #333333;
-            font-weight: 700;
         }
 
         .info {
@@ -21,24 +12,49 @@
             padding-right: 0.5em;
             color: crimson;
         }
+
+        .panel {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            justify-items: center;
+            flex-wrap: wrap;
+        }
+
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 10px;
+        }
+        .item{
+            width: 36px;
+            height: 36px;
+            font-size: 36px;
+            overflow: hidden;
+        }
+        .item:HOVER{
+            background-color: BK;
+        }
     </ui:style>
     <g:DockLayoutPanel width="720px" height="450px">
-        <g:north size="40">
-            <g:HorizontalPanel width="100%" height="40px" styleName="ai-toolbar" verticalAlignment="middle" spacing="3">
-                <g:Label styleName="{style.head}">图标选择</g:Label>
-                <g:cell horizontalAlignment="right">
-                    <g:HorizontalPanel spacing="4" verticalAlignment="middle">
-                        <g:Label styleName="{style.info}" ui:field="lbInfo"/>
-                        <g:Button ui:field="btnClear">清除选择</g:Button>
-                    </g:HorizontalPanel>
-                </g:cell>
-            </g:HorizontalPanel>
+        <g:north size="50">
+            <g:HTMLPanel addStyleNames="{style.topbar}">
+                <g:HorizontalPanel  spacing="4" verticalAlignment="middle">
+                <widget:Header>图标选择</widget:Header>
+                    <widget:SearchBox ui:field="searchBox" width="250px"/>
+                </g:HorizontalPanel>
+                <g:HorizontalPanel spacing="4" verticalAlignment="middle">
+                    <g:Label styleName="{style.info}" ui:field="lbInfo"/>
+                    <g:Button ui:field="btnClear">清除选择</g:Button>
+                </g:HorizontalPanel>
+            </g:HTMLPanel>
         </g:north>
         <g:center>
             <g:ScrollPanel styleName="{style.box}">
-                <g:FlexTable ui:field="panel" cellSpacing="8">
+                <g:HTMLPanel ui:field="panel" addStyleNames="{style.panel}">
 
-                </g:FlexTable>
+                </g:HTMLPanel>
             </g:ScrollPanel>
         </g:center>
     </g:DockLayoutPanel>

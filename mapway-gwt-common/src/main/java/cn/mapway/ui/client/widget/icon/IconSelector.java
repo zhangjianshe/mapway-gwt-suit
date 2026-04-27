@@ -2,17 +2,27 @@ package cn.mapway.ui.client.widget.icon;
 
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.tools.IData;
+import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.client.widget.AiLabel;
 import cn.mapway.ui.client.widget.CommonEventComposite;
-import cn.mapway.ui.client.widget.FontIcon;
+import cn.mapway.ui.client.widget.SearchBox;
 import cn.mapway.ui.client.widget.dialog.Popup;
 import cn.mapway.ui.shared.CommonEvent;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.Style;
-import com.google.gwt.event.dom.client.*;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.MouseOverEvent;
+import com.google.gwt.event.dom.client.MouseOverHandler;
+import com.google.gwt.event.logical.shared.ValueChangeEvent;
+import com.google.gwt.event.logical.shared.ValueChangeHandler;
+import com.google.gwt.resources.client.CssResource;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.uibinder.client.UiHandler;
-import com.google.gwt.user.client.ui.*;
+import com.google.gwt.user.client.ui.Button;
+import com.google.gwt.user.client.ui.DockLayoutPanel;
+import com.google.gwt.user.client.ui.HTMLPanel;
+import com.google.gwt.user.client.ui.Label;
 
 /**
  * IconSelector
@@ -23,42 +33,46 @@ import com.google.gwt.user.client.ui.*;
 public class IconSelector extends CommonEventComposite implements IData<String> {
     private static final IconSelectorUiBinder ourUiBinder = GWT.create(IconSelectorUiBinder.class);
     private static Popup<IconSelector> popup;
-    private final MouseOutHandler fontOutHandler = new MouseOutHandler() {
-        @Override
-        public void onMouseOut(MouseOutEvent event) {
-            FontIcon icon = (FontIcon) event.getSource();
-            icon.removeStyleName("ai-hover");
-        }
-    };
-    String unicode;
     private final ClickHandler fontClicked = new ClickHandler() {
         @Override
         public void onClick(ClickEvent event) {
-            FontIcon icon = (FontIcon) event.getSource();
-
-            unicode = icon.getIconUnicode();
-            fireEvent(CommonEvent.dataEvent(unicode));
+            AiLabel label = (AiLabel) event.getSource();
+            String key = (String) label.getData();
+            fireEvent(CommonEvent.dataEvent(Fonts.unicodes.get(key)));
         }
     };
+    String unicode;
     @UiField
-    FlexTable panel;
+    HTMLPanel panel;
     @UiField
     Label lbInfo;
-    @UiField
-    Button btnClear;
     private final MouseOverHandler fontOverHandler = new MouseOverHandler() {
         @Override
         public void onMouseOver(MouseOverEvent event) {
-            FontIcon icon = (FontIcon) event.getSource();
-            icon.addStyleName("ai-hover");
-            String text = icon.getData() + " " + icon.getIconUnicode();
+            AiLabel label = (AiLabel) event.getSource();
+            String key = (String) label.getData();
+            String text = key + " " + Fonts.unicodes.get(key);
             lbInfo.setText(text);
         }
     };
+    @UiField
+    Button btnClear;
+    @UiField
+    SStyle style;
+    @UiField
+    SearchBox searchBox;
 
     public IconSelector() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        init();
+
+        searchBox.addValueChangeHandler(new ValueChangeHandler<String>() {
+            @Override
+            public void onValueChange(ValueChangeEvent<String> event) {
+                filter(event.getValue());
+            }
+        });
+
+        filter("");
     }
 
     public static Popup<IconSelector> getPopup(boolean reuse) {
@@ -79,26 +93,32 @@ public class IconSelector extends CommonEventComposite implements IData<String> 
         return popup;
     }
 
-    /**
-     * 初始化所有的图标字体
-     */
-    private void init() {
-        int row = 0;
-        int col = 0;
-        HTMLTable.CellFormatter cellFormatter = panel.getCellFormatter();
-        for (String key : Fonts.unicodes.keySet()) {
-            FontIcon fontIcon = new FontIcon(Fonts.unicodes.get(key));
-            fontIcon.setSize(32, Style.Unit.PX);
-            panel.setWidget(row, col, fontIcon);
-            cellFormatter.setHorizontalAlignment(row, col, HasHorizontalAlignment.ALIGN_CENTER);
-            fontIcon.addClickHandler(fontClicked);
-            fontIcon.addMouseOverHandler(fontOverHandler);
-            fontIcon.addMouseOutHandler(fontOutHandler);
-            fontIcon.setData(key);
-            col++;
-            if (col > 15) {
-                row++;
-                col = 0;
+    private void filter(String value) {
+        if (StringUtil.isBlank(value)) {
+            panel.clear();
+            for (String key : Fonts.unicodes.keySet()) {
+                AiLabel label = new AiLabel();
+                label.getElement().setInnerHTML(Fonts.toHtmlEntity(Fonts.unicodes.get(key)));
+                label.setStyleName(style.item());
+                panel.add(label);
+                label.addMouseOverHandler(fontOverHandler);
+                label.setData(key);
+                label.addClickHandler(fontClicked);
+            }
+        } else {
+            String v = value.toLowerCase();
+            panel.clear();
+            for (String key : Fonts.unicodes.keySet()) {
+                if (key.toLowerCase().contains(v)) {
+                    AiLabel label = new AiLabel("");
+                    label.getElement().setInnerHTML(Fonts.toHtmlEntity(Fonts.unicodes.get(key)));
+                    label.setStyleName(style.item());
+                    panel.add(label);
+                    label.addMouseOverHandler(fontOverHandler);
+                    label.setData(key);
+                    label.addClickHandler(fontClicked);
+                }
+
             }
         }
     }
@@ -116,6 +136,19 @@ public class IconSelector extends CommonEventComposite implements IData<String> 
     @UiHandler("btnClear")
     public void btnClearClick(ClickEvent event) {
         fireEvent(CommonEvent.clearEvent(null));
+    }
+
+    interface SStyle extends CssResource {
+
+        String item();
+
+        String box();
+
+        String panel();
+
+        String topbar();
+
+        String info();
     }
 
     interface IconSelectorUiBinder extends UiBinder<DockLayoutPanel, IconSelector> {

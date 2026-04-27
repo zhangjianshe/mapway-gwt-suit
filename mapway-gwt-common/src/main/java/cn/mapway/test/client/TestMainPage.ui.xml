@@ -14,6 +14,7 @@
         <g:center>
             <g:HTMLPanel styleName="{style.box}">
                 <color:AiColor addStyleNames="{style.input}" ui:field="color"/>
+                <g:Button ui:field="btnTest">测试</g:Button>
             </g:HTMLPanel>
         </g:center>
     </g:DockLayoutPanel>
