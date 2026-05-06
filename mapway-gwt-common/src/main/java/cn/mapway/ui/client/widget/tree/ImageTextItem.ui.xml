@@ -49,7 +49,7 @@
         }
 
     </ui:style>
-    <g:VerticalPanel width="100%" ui:field="box">
+    <g:VerticalPanel ui:field="box" addStyleNames="tree-item">
         <g:HTMLPanel  ui:field="root">
             <g:HTMLPanel ui:field="bar" styleName="{style.bar}"/>
             <g:Label ui:field="gap" styleName="{style.gap}" width="1px"/>
@@ -57,6 +57,7 @@
             <g:CheckBox ui:field="check" visible="false" />
             <widget:FontIcon visible="false" ui:field="fontIcon" addStyleNames="{style.ic}"/>
             <g:Image ui:field="icon" addStyleNames="{style.ic}" visible="false" width="22px" height="22px"/>
+            <g:HTMLPanel ui:field="widgetIcon" visible="false" width="22px" height="22px"></g:HTMLPanel>
             <g:Label ui:field="lbText" styleName="text-content"/>
             <widget:FontIcon visible="false" ui:field="fontIconSuffix"/>
         </g:HTMLPanel>

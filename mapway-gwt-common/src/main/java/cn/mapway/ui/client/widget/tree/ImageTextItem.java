@@ -89,6 +89,8 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     HTMLPanel bar;
     @UiField
     MyStyle style;
+    @UiField
+    HTMLPanel widgetIcon;
     boolean enabled = true;
     private String storageKey = "";
     private Object data;
@@ -418,6 +420,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     public void setIcon(String unicode) {
         icon.setVisible(false);
         fontIcon.setVisible(false);
+        widgetIcon.setVisible(false);
         if (!StringUtil.isBlank(unicode)) {
             fontIcon.setVisible(true);
             fontIcon.setIconUnicode(unicode);
@@ -427,9 +430,20 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     public void setIcon(Image resource) {
         icon.setVisible(false);
         fontIcon.setVisible(false);
+        widgetIcon.setVisible(false);
         if (resource != null) {
             icon.setVisible(true);
             icon.setUrl(resource.getUrl());
+        }
+    }
+
+    public void setIconWidget(Widget icon) {
+        icon.setVisible(false);
+        fontIcon.setVisible(false);
+        widgetIcon.setVisible(false);
+        if (icon != null) {
+            widgetIcon.setVisible(true);
+            widgetIcon.add(icon);
         }
     }
 
