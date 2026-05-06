@@ -499,9 +499,9 @@
 }
 
 .ai-button--text {
-    border-color: transparent;
+    border-color: transparent !important;
     color: #409eff;
-    background: transparent;
+    background: transparent !important;
     padding-left: 0;
     padding-right: 0
 }
