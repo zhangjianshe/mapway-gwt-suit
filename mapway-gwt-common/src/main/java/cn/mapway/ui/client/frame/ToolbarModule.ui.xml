@@ -23,14 +23,16 @@
                                    verticalAlignment="middle">
                     <g:HorizontalPanel verticalAlignment="middle">
                         <g:cell width="40px" verticalAlignment="middle" horizontalAlignment="center">
-                            <g:HorizontalPanel height="100%" horizontalAlignment="center" verticalAlignment="middle">
+                            <g:HorizontalPanel height="100%" horizontalAlignment="center" verticalAlignment="middle"
+                                               ui:field="iconHorizontal">
                                 <g:Image ui:field="icon" visible="false" width="22px" height="22px"
-                                         styleName="{style.icon}"/>
-                                <widget:FontIcon visible="false" ui:field="fontIcon"/>
+                                         styleName="{style.icon}" addStyleNames="toolbar-icon"/>
+                                <widget:FontIcon visible="false" ui:field="fontIcon" addStyleNames="toolbar-icon"/>
                             </g:HorizontalPanel>
                         </g:cell>
                         <g:cell horizontalAlignment="left">
                             <g:HorizontalPanel spacing="3" height="40px" verticalAlignment="middle"
+                                               addStyleNames="ai-header"
                                                ui:field="leftToolBar">
 
                             </g:HorizontalPanel>

@@ -170,6 +170,21 @@ public abstract class ToolbarModules extends BaseAbstractModule implements IShow
         }
     }
 
+    public void setTileVisible(boolean visible) {
+        try{
+            uiHolder.lbTitle.setVisible(visible);
+            if(!visible){
+                uiHolder.bar.remove(uiHolder.lbTitle);
+                uiHolder.iconHorizontal.remove(uiHolder.fontIcon);
+                uiHolder.iconHorizontal.remove(uiHolder.icon);
+            } else {
+                uiHolder.bar.add(uiHolder.lbTitle);
+                uiHolder.iconHorizontal.add(uiHolder.fontIcon);
+                uiHolder.iconHorizontal.add(uiHolder.icon);
+            }
+        }catch (Exception e){}
+    }
+
     /**
      * 初始化子系统
      */
@@ -217,5 +232,7 @@ public abstract class ToolbarModules extends BaseAbstractModule implements IShow
         AiTab btnSubmodules;
         @UiField
         FontIcon fontIcon;
+        @UiField
+        HorizontalPanel iconHorizontal;
     }
 }

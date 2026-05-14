@@ -32,6 +32,7 @@
             height: 36px;
             font-size: 36px;
             overflow: hidden;
+            font-family: "mapway-font";
         }
         .item:HOVER{
             background-color: BK;

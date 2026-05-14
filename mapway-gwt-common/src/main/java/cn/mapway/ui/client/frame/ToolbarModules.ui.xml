@@ -18,10 +18,10 @@
                 <g:HorizontalPanel ui:field="bar" width="100%" height="100%" spacing="0"
                                    verticalAlignment="middle">
                     <g:cell width="30px" verticalAlignment="middle" horizontalAlignment="center">
-                        <g:HorizontalPanel height="100%" verticalAlignment="middle">
+                        <g:HorizontalPanel height="100%" verticalAlignment="middle" ui:field="iconHorizontal">
                             <g:Image ui:field="icon" visible="false" width="20px" height="20px"
-                                     styleName="{style.icon}"/>
-                            <widget:FontIcon visible="false" ui:field="fontIcon"/>
+                                     styleName="{style.icon}" addStyleNames="toolbar-icon"/>
+                            <widget:FontIcon visible="false" ui:field="fontIcon" addStyleNames="toolbar-icon"/>
                         </g:HorizontalPanel>
                     </g:cell>
                     <g:cell width="130">
