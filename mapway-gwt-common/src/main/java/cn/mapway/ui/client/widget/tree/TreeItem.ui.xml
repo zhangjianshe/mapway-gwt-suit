@@ -50,6 +50,7 @@
             cursor: default;
             user-select: none;
             text-align: center;
+            font-family: "mapway-font";
         }
 
         .icon > svg {

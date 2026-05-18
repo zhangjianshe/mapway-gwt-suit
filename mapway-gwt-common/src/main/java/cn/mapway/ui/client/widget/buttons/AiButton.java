@@ -1,5 +1,6 @@
 package cn.mapway.ui.client.widget.buttons;
 
+import cn.mapway.ui.client.debounce.Debounce;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.window.ISelectable;
 import cn.mapway.ui.client.tools.IData;
@@ -44,9 +45,6 @@ public class AiButton extends Button implements IData, ISelectable {
     public static final String SIZE_MEDIUM = "medium";
 
 
-
-
-
     boolean down = false;
     private Object data;
 
@@ -68,15 +66,19 @@ public class AiButton extends Button implements IData, ISelectable {
 
     private boolean visibleFlag = true;
 
+    Debounce instance;
+
     public AiButton(String te) {
-        String html = getHtml(te);
-        setHTML(html);
+        instance = Debounce.getInstance(false);
+        spanContext = te;
         installEvent();
+        debounceUpdateUi();
     }
 
     public AiButton() {
-        String html = getHtml(null);
-        setHTML(html);
+        instance = Debounce.getInstance(false);
+        spanContext = super.getText();
+        super.setHTML(getButtonHtml());
         installEvent();
         rbacComposite = new RbacComposite();
         rbacComposite.addCommonHandler((e)->{
@@ -146,8 +148,27 @@ public class AiButton extends Button implements IData, ISelectable {
         }
     }
 
+    public void setText(String text) {
+        spanContext = text;
+        debounceUpdateUi();
+    }
+
+    public void updateUi() {
+        super.setHTML(getButtonHtml());
+    }
+
+    //
+
+    private void debounceUpdateUi() {
+        instance.debounce("aiButtonUpdateUi", ()->{
+            updateUi();
+            return 0;
+        }, 100);
+    }
+
+
     // 拼接html字符串
-    private String getHtml() {
+    private String getButtonHtml() {
         if(StringUtil.isBlank(spanContext)){
             spanContext = super.getText();
         }
@@ -159,23 +180,18 @@ public class AiButton extends Button implements IData, ISelectable {
         }
         StringBuffer sb = new StringBuffer();
         if(loading){
-            sb.append("<span class=\"ai-rotate ai-icon" + iconStyle + "\" "+fontSize+" > &#x" + Fonts.REFRESH + " </span>");
+            sb.append("<span class=\"ai-rotate ai-icon" + iconStyle + "\" "+iconSize+" > &#x" + Fonts.REFRESH + " </span>");
         } else if (!StringUtil.isBlank(icon)) {
-            sb.append("<span class=\" ai-icon " + iconStyle + "\"" +fontSize+" > &#x" + icon + "</span>");
+            sb.append("<span class=\" ai-icon " + iconStyle + "\" " +iconSize+" > &#x" + icon + "</span>");
         }
-        sb.append("<span class=\" " + spanStyle + "\">" + spanContext + "</span>");
+        sb.append("<span class=\" " + spanStyle + "\" " + fontSize + ">" + spanContext + "</span>");
         return sb.toString();
-    }
-
-    private String getHtml(String span) {
-        spanContext = span;
-        return getHtml();
     }
 
     public void setLoading(boolean loading) {
         this.loading = loading;
         setEnabled(!loading);
-        setHTML(getHtml());
+        debounceUpdateUi();
         if(loading){
             this.addStyleName("is-loading");
         } else {
@@ -185,10 +201,22 @@ public class AiButton extends Button implements IData, ISelectable {
 
     public void setIconStyle(String iconStyle) {
         this.iconStyle = iconStyle;
-        setHTML(getHtml());
+        debounceUpdateUi();
     }
-    String fontSize="";
+    String iconSize="";
     public void setIconSize(int size)
+    {
+        if(size>0){
+            iconSize = " style='font-size:"+size+"px;'";
+        }
+        else {
+            iconSize = "";
+        }
+        debounceUpdateUi();
+    }
+
+    String fontSize="";
+    public void setFontSize(int size)
     {
         if(size>0){
             fontSize = " style='font-size:"+size+"px;'";
@@ -196,22 +224,23 @@ public class AiButton extends Button implements IData, ISelectable {
         else {
             fontSize = "";
         }
-        setHTML(getHtml());
+        debounceUpdateUi();
     }
+
 
     public void setIcon(String icon) {
         this.icon = icon;
-        setHTML(getHtml());
+        debounceUpdateUi();
     }
 
     public void setSpanStyle(String spanStyle) {
         this.spanStyle = spanStyle;
-        setHTML(getHtml());
+        debounceUpdateUi();
     }
 
     public void setSpanContext(String spanContext) {
         this.spanContext = spanContext;
-        setHTML(getHtml());
+        debounceUpdateUi();
     }
 
     public void setType(String type) {
@@ -223,6 +252,7 @@ public class AiButton extends Button implements IData, ISelectable {
             type = "default";
         }
         addStyleName("ai-button--" + type);
+        debounceUpdateUi();
     }
 
     public void setSize(String size) {
@@ -234,6 +264,7 @@ public class AiButton extends Button implements IData, ISelectable {
             size = "default";
         }
         addStyleName("ai-button--" + size);
+        debounceUpdateUi();
     }
 
     /**

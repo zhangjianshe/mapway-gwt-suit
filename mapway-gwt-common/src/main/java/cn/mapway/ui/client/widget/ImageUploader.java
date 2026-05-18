@@ -41,7 +41,7 @@ public class ImageUploader extends CommonEventComposite {
     /**
      * The Constant EMPTY_PICTURE.
      */
-    public static final String EMPTY_PICTURE = GWT.getModuleBaseURL() + "../img/empty.png";
+    public static final String EMPTY_PICTURE = GWT.getModuleBaseURL() + "../img/selectImage.png";
 
     /**
      * The Constant DEFAULT_ACTION.
@@ -84,8 +84,6 @@ public class ImageUploader extends CommonEventComposite {
     /**
      * The btn uploader.
      */
-    @UiField
-    FontIcon btnUploader;
     @UiField
     FontIcon btnClear;
     @UiField
@@ -157,7 +155,6 @@ public class ImageUploader extends CommonEventComposite {
             addAcceptFileExtension(picTypes[i]);
         }
         img.setUrl(MapwayResource.INSTANCE.defaultImage().getSafeUri());
-        btnUploader.setLineHeight(28);
         btnClear.setIconUnicode(Fonts.CLOSE_L);
     }
 
@@ -181,15 +178,13 @@ public class ImageUploader extends CommonEventComposite {
         return false;
     }
 
-    public void setUploaderIconUnicode(String unicode) {
-        btnUploader.setIconUnicode(unicode);
-    }
 
     private void resizeImage() {
         HTMLImageElement imgNative = Js.uncheckedCast(img.getElement());
         //图像宽度和高度
         int width = imgNative.naturalWidth;
         int height = imgNative.naturalHeight;
+        Style titleStyle = lbTitle.getElement().getStyle();
 
         //容器的宽度和高度
         int boxWidth = ImageUploader.this.getOffsetWidth();
@@ -205,20 +200,36 @@ public class ImageUploader extends CommonEventComposite {
             if (height < boxHeight) {
                 //不变 图片小于显示框
                 img.setPixelSize(width, height);
-                style.setTop((boxHeight - height) >> 1, Style.Unit.PX);
+                int top = (boxHeight - height) >> 1;
+                style.setTop(top, Style.Unit.PX);
                 style.setLeft((boxWidth - width) >> 1, Style.Unit.PX);
+                if(top + height + 20 > boxHeight) {
+                    // 没地方不显示
+                    titleStyle.setVisibility(Style.Visibility.HIDDEN);
+                } else {
+                    titleStyle.setTop(top + height, Style.Unit.PX);
+                }
             } else {
                 //高度超过限制,就水平居中
                 img.setHeight(boxHeight + "px");
                 style.setTop(0, Style.Unit.PX);
                 style.setLeft((boxWidth - width) >> 1, Style.Unit.PX);
+                // 没地方不显示
+                titleStyle.setVisibility(Style.Visibility.HIDDEN);
             }
         } else {
             if (height < boxHeight) {
                 //需要上下居中
                 img.setWidth(boxWidth + "px");
-                style.setTop((boxHeight - height) >> 1, Style.Unit.PX);
+                int top = (boxHeight - height) >> 1;
+                style.setTop(top, Style.Unit.PX);
                 style.setLeft(0, Style.Unit.PX);
+                if(top + height + 20 > boxHeight) {
+                    // 没地方不显示
+                    titleStyle.setVisibility(Style.Visibility.HIDDEN);
+                } else {
+                    titleStyle.setTop(top + height, Style.Unit.PX);
+                }
             } else {
                 //高度也大 宽度也大 都缩小
                 double scale = (double) width / (double) height;
@@ -228,13 +239,22 @@ public class ImageUploader extends CommonEventComposite {
                     int newHeight = (int) ((1.0 * boxWidth / width) * height);
                     img.setPixelSize(boxWidth, newHeight);
                     style.setLeft(0, Style.Unit.PX);
+                    int top = (boxHeight - newHeight) >> 1;
                     style.setTop((boxHeight - newHeight) >> 1, Style.Unit.PX);
+                    if(top + newHeight + 20 > boxHeight) {
+                        // 没地方不显示
+                        titleStyle.setVisibility(Style.Visibility.HIDDEN);
+                    } else {
+                        titleStyle.setTop(top + newHeight, Style.Unit.PX);
+                    }
                 } else {
                     //高度缩小
                     int newWidth = (int) (((1.0 * boxHeight) / height) * width);
                     img.setPixelSize(newWidth, boxHeight);
                     style.setTop(0, Style.Unit.PX);
                     style.setLeft((boxWidth - newWidth) >> 1, Style.Unit.PX);
+                    // 没地方不显示
+                    titleStyle.setVisibility(Style.Visibility.HIDDEN);
                 }
             }
         }
@@ -347,7 +367,7 @@ public class ImageUploader extends CommonEventComposite {
     public void setUrl(String url) {
         currentImageHeight = 0;
         currentImageWidth = 0;
-      //  Logs.info("setUrl " + url);
+        //  Logs.info("setUrl " + url);
         if (url == null || url.length() == 0) {
             img.setUrl(EMPTY_PICTURE);
         } else {
@@ -362,7 +382,6 @@ public class ImageUploader extends CommonEventComposite {
      */
     public void setUrl(SafeUri url) {
         img.setUrl(url);
-        btnUploader.setVisible(false);
     }
 
     /**

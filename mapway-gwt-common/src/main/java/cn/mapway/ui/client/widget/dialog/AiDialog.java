@@ -52,7 +52,7 @@ public class AiDialog extends PopupPanel implements IData, HasCommonHandlers {
         caption.addCloseHandler(e -> {
             hide();
         });
-        layout.addNorth(caption, 54);
+        layout.addNorth(caption, 40);
         setWidget(layout);
         addStyleName("ai-dialog");
         this.setText(title);

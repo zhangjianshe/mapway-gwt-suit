@@ -132,6 +132,21 @@ public abstract class ToolbarModule extends BaseAbstractModule implements IShowM
         return true;
     }
 
+    public void setTileVisible(boolean visible) {
+        try{
+            uiHolder.lbTitle.setVisible(visible);
+            if(!visible){
+                uiHolder.bar.remove(uiHolder.lbTitle);
+                uiHolder.iconHorizontal.remove(uiHolder.fontIcon);
+                uiHolder.iconHorizontal.remove(uiHolder.icon);
+            } else {
+                uiHolder.bar.add(uiHolder.lbTitle);
+                uiHolder.iconHorizontal.add(uiHolder.fontIcon);
+                uiHolder.iconHorizontal.add(uiHolder.icon);
+            }
+        }catch (Exception e){}
+    }
+
     public void msg(String message) {
         uiHolder.lbMessage.setText(StringUtil.brief(message, 10));
     }
@@ -169,5 +184,7 @@ public abstract class ToolbarModule extends BaseAbstractModule implements IShowM
         HorizontalPanel leftToolBar;
         @UiField
         HorizontalPanel msgBar;
+        @UiField
+        HorizontalPanel iconHorizontal;
     }
 }
