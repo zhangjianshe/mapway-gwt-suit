@@ -6,6 +6,7 @@ import com.google.auto.service.AutoService;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.squareup.javapoet.*;
 import elemental2.core.Global;
+import lombok.NoArgsConstructor;
 import org.nutz.lang.Strings;
 
 import javax.annotation.processing.AbstractProcessor;
@@ -26,6 +27,7 @@ import static cn.mapway.ui.client.rpc.JsonRpcBase.JSON_CONTENT_TYPE;
  * JSON RPC代码生成处理器
  */
 @AutoService(Processor.class)
+@NoArgsConstructor
 public class JsonRpcProcessor extends AbstractProcessor {
     private final List<String> exceptionStacks = Collections.synchronizedList(new ArrayList<>());
 
