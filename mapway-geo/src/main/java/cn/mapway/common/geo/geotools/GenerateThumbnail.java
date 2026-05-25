@@ -3,7 +3,6 @@ package cn.mapway.common.geo.geotools;
 import cn.mapway.common.geo.gdal.GdalUtil;
 import lombok.extern.slf4j.Slf4j;
 import net.coobird.thumbnailator.Thumbnails;
-import org.apache.commons.io.FileUtils;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
 import org.gdal.gdal.gdal;
@@ -20,22 +19,20 @@ import org.geotools.map.FeatureLayer;
 import org.geotools.map.GridReaderLayer;
 import org.geotools.map.MapContent;
 import org.geotools.referencing.CRS;
-import org.geotools.referencing.crs.DefaultGeographicCRS;
 import org.geotools.renderer.lite.StreamingRenderer;
 import org.geotools.styling.*;
 import org.geotools.util.factory.Hints;
 import org.locationtech.jts.geom.Coordinate;
 import org.locationtech.jts.geom.Geometry;
-import org.nutz.img.Images;
+import org.nutz.lang.Files;
 import org.opengis.feature.simple.SimpleFeature;
 import org.opengis.filter.FilterFactory2;
 import org.opengis.referencing.crs.CoordinateReferenceSystem;
 import org.opengis.style.ContrastMethod;
+import org.apache.commons.io.FileUtils;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -54,6 +51,15 @@ public class GenerateThumbnail {
 
     private static Style rgbStyle = createRGBStyle(1, 2, 3);
 
+    /**
+     * 传入的 thumbnailUrl 必须是完全的路径， 带有扩展名的路径，若是没有扩展名字可能导致错误的将文件名中的最后一个.后的值切掉
+     * @param imageUrl
+     * @param labelUrl
+     * @param thumbnailUrl
+     * @param width
+     * @param height
+     * @throws IOException
+     */
     public static void generateRaster(File imageUrl, File labelUrl, File thumbnailUrl, int width, int height) throws IOException {
         // 用 gdal读取tif 将tif转换为BufferedImage
         BufferedImage imageImage = readImage(imageUrl.getAbsolutePath());
@@ -62,16 +68,18 @@ public class GenerateThumbnail {
 
         BufferedImage labelImage = Thumbnails.of(labelUrl).size(width, height).asBufferedImage();
         BufferedImage cannyImg = new Canny().getCannyImg(labelImage, imageImage);
-        thumbnailUrl.getParentFile().mkdirs();
+        FileUtils.forceMkdir(thumbnailUrl.getParentFile());
+        thumbnailUrl = new File(thumbnailUrl.getParentFile(), Files.getMajorName(thumbnailUrl));
         Thumbnails.of(cannyImg)
                 .scale(1.0)
-                .outputFormat("webp")
+                .outputFormat("jpg")
                 .outputQuality(0.9)
                 .toFile(thumbnailUrl);
     }
 
     /**
      * 生成缩略图
+     * 传入的 thumbnailUrl 必须是完全的路径， 带有扩展名的路径，若是没有扩展名字可能导致错误的将文件名中的最后一个.后的值切掉
      * @param imageUrl  栅格底图文件
      * @param labelUrl  栅格标注文件
      * @param thumbnailUrl 缩略图文件
@@ -83,6 +91,7 @@ public class GenerateThumbnail {
 
     /**
      * 导出缩略图
+     * 传入的 thumbnailUrl 必须是完全的路径， 带有扩展名的路径，若是没有扩展名字可能导致错误的将文件名中的最后一个.后的值切掉
      * @param rasterFile 栅格底图文件
      * @param geojsons   矢量geojson信息
      * @param splitSize  切片大小
@@ -91,9 +100,21 @@ public class GenerateThumbnail {
      */
     // 根据传入的矢量生成tif,  矢量转栅格
     public static boolean generateVector(File rasterFile, String geojsons, int splitSize, File exportUrl, boolean gcsFlag) throws IOException {
-        return generateVector(rasterFile, geojsons, splitSize, exportUrl, 0.9, "webp", gcsFlag);
+        return generateVector(rasterFile, geojsons, splitSize, exportUrl, 0.9, "jpg", gcsFlag);
     }
 
+    /**
+     * 传入的 thumbnailUrl 必须是完全的路径， 带有扩展名的路径，若是没有扩展名字可能导致错误的将文件名中的最后一个.后的值切掉
+     * @param rasterFile
+     * @param geojsons
+     * @param splitSize
+     * @param exportUrl
+     * @param quality
+     * @param imageFormat
+     * @param gcsFlag
+     * @return
+     * @throws IOException
+     */
     public static boolean generateVector(File rasterFile, String geojsons, int splitSize, File exportUrl, double quality, String imageFormat, boolean gcsFlag) throws IOException {
         final MapContent map = new MapContent();
         try{
@@ -175,11 +196,7 @@ public class GenerateThumbnail {
             if (!parentFile.exists()) {
                 parentFile.mkdirs();
             }
-            int subIndex = exportUrl.getName().lastIndexOf(".");
-            if(subIndex != -1){
-                exportUrl = new File(exportUrl.getParentFile(), exportUrl.getName().substring(0, subIndex));
-            }
-
+            exportUrl = new File(exportUrl.getParentFile() , Files.getMajorName(exportUrl));
             //将BufferedImage变量写入文件中。
             Thumbnails.of(bi).scale(1.0)
                     .outputFormat(imageFormat)
@@ -206,10 +223,7 @@ public class GenerateThumbnail {
         if (!parentFile.exists()) {
             parentFile.mkdirs();
         }
-        int subIndex = exportUrl.getName().lastIndexOf(".");
-        if(subIndex != -1){
-            exportUrl = new File(exportUrl.getParentFile(), exportUrl.getName().substring(0, subIndex));
-        }
+        exportUrl = new File(exportUrl.getParentFile(), Files.getMajorName(exportUrl));
         Thumbnails.of(bi).scale(1.0)
                 .outputFormat(imageFormat)
                 .outputQuality(quality)
@@ -229,7 +243,7 @@ public class GenerateThumbnail {
         return SLD.wrapSymbolizers(sym);
     }
 
-    public static Style createPolygonStyle(Color outlineColor, float strokeWidth,  Color fillColor, float opacity) {
+    private static Style createPolygonStyle(Color outlineColor, float strokeWidth,  Color fillColor, float opacity) {
         org.geotools.styling.Stroke stroke = sf.createStroke(ff.literal(outlineColor), ff.literal(strokeWidth));
         Fill fill = Fill.NULL;
         if (fillColor != null) {
@@ -239,7 +253,7 @@ public class GenerateThumbnail {
     }
 
 
-    public static BufferedImage readImage(String imageUrl){
+    private static BufferedImage readImage(String imageUrl){
         Dataset open = gdal.Open(imageUrl, gdalconst.GA_ReadOnly);
         try{
             int rasterCount = open.getRasterCount();
@@ -286,15 +300,15 @@ public class GenerateThumbnail {
         }
     }
 
-    public static byte[] readPixelValues(Band band) {
+    private static byte[] readPixelValues(Band band) {
         return readPixelValues(band, band.getDataType(),0.0, 0.0);
     }
 
-    public static byte[] readPixelValues(Band band, Double min, Double max) {
+    private static byte[] readPixelValues(Band band, Double min, Double max) {
         return readPixelValues(band, band.getDataType(),min, max);
     }
 
-    public static byte[] readPixelValues(Band band, int dataType, Double min, Double max) {
+    private static byte[] readPixelValues(Band band, int dataType, Double min, Double max) {
         if(dataType == gdalconst.GDT_Byte){
             byte[] data = new byte[band.getXSize() * band.getYSize()];
             band.ReadRaster(0, 0, band.getXSize(), band.getYSize(), dataType, data);
@@ -336,7 +350,7 @@ public class GenerateThumbnail {
         return null;
     }
 
-    public static byte[] stretch(float[] data, Double min, Double max) {
+    private static byte[] stretch(float[] data, Double min, Double max) {
         byte[] result = new byte[data.length];
         float[] clone = data.clone();
         Arrays.sort(clone);
@@ -368,10 +382,11 @@ public class GenerateThumbnail {
     public static void main(String[] args) throws IOException {
         GdalUtil.init();
 
-        String imageUrl = "F:\\data\\cis\\labels\\sample_189\\image\\43257.tif";
+        String imageUrl = "F:\\data\\cis\\labels\\sample_189\\image\\43257.label.A.tif";
         String outUrl = "F:\\data\\cis\\labels\\sample_189\\t.webp";
 
-        File image1File = new File(imageUrl);
-        emptyLabel(image1File, "webp", 0.9, new File(outUrl));
+
+        File file = new File(new File(imageUrl).getParentFile() ,Files.getMajorName(imageUrl));
+        System.out.println(file.getAbsolutePath());
     }
 }
