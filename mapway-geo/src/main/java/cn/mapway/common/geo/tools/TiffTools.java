@@ -520,12 +520,20 @@ public class TiffTools {
                 Double[] noValue1 = new Double[0];
                 bandInfo.setNoValues(noValue1);
             } else {
-                Double[] noValue1 = new Double[count];
-                System.arraycopy(noValue, 0, noValue1, 0, count);
-                bandInfo.setNoValues(noValue1);
+                List<Double> vs=new ArrayList<>();
+                for(int k=0;k<count;k++)
+                {
+                    if(!Double.isInfinite(noValue[k]))
+                    {
+                        vs.add(noValue[k]);
+                    }
+                }
+                bandInfo.setNoValues(vs.toArray(new Double[0]));
             }
+
             info.getBandInfos().add(bandInfo);
         }
+
 
         //处理band对应的RGB颜色
         if (info.getBandInfos().size() == 1) {
