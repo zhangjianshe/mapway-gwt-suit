@@ -77,7 +77,7 @@ public class ImageUploader extends CommonEventComposite {
         }
 
         img.setUrl(MapwayResource.INSTANCE.defaultImage().getSafeUri());
-        btnClear.setIconUnicode(Fonts.CLOSE_L);
+        btnClear.setIconUnicode(Fonts.CLEAR);
 
         // Click trigger for hidden file system input
         img.addClickHandler(new ClickHandler() {

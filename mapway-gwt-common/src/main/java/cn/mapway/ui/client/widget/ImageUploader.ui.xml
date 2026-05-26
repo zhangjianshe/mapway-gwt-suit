@@ -10,7 +10,7 @@
 
     <g:LayoutPanel styleName="image-uploader-box {style.relative-box}" ui:field="root">
         <g:layer>
-            <g:Image ui:field="img" />
+            <g:Image ui:field="img" title="点击上传更换" />
         </g:layer>
 
         <g:layer right="4px" top="4px" width="24px" height="24px">
