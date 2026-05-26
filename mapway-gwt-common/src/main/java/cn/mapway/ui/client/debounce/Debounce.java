@@ -20,13 +20,13 @@ public class Debounce {
             throw new RuntimeException("key is null");
         }
         if (delay <= 0) {
-            delay = 500;
+            delay = 100;
         }
         debounceInvoke(cache, key, handler, callback, delay);
     }
 
     public void debounce(String key, DebounceHandler handler) {
-        debounce(key, handler, null, 500);
+        debounce(key, handler, null, 100);
     }
 
     public void debounce(String key, DebounceHandler handler, int delay) {
@@ -34,7 +34,7 @@ public class Debounce {
     }
 
     public void debounce(String key, DebounceHandler handler, DebounceCallback callback ) {
-        debounce(key, handler, callback, 500);
+        debounce(key, handler, callback, 100);
     }
 
     public static Debounce getInstance(boolean flag) {
