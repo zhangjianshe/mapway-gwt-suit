@@ -1,13 +1,15 @@
 package cn.mapway.ui.client.debounce;
 
 import cn.mapway.ui.client.util.StringUtil;
+import elemental2.dom.DomGlobal;
 import jsinterop.base.JsPropertyMap;
 
 public class Debounce {
 
     static Debounce instance;
 
-    private final JsPropertyMap<Object> cache = new JsPropertyMap<Object>() {};
+    private final JsPropertyMap<Double> cache = new JsPropertyMap<Double>() {
+    };
 
     private Debounce() {
     }
@@ -33,13 +35,13 @@ public class Debounce {
         debounce(key, handler, null, delay);
     }
 
-    public void debounce(String key, DebounceHandler handler, DebounceCallback callback ) {
+    public void debounce(String key, DebounceHandler handler, DebounceCallback callback) {
         debounce(key, handler, callback, 100);
     }
 
     public static Debounce getInstance(boolean flag) {
-        if(flag){
-            if(instance == null){
+        if (flag) {
+            if (instance == null) {
                 instance = new Debounce();
             }
             return instance;
@@ -52,18 +54,22 @@ public class Debounce {
         return getInstance(false);
     }
 
-
-    private native void debounceInvoke(JsPropertyMap<Object> cache, String key, DebounceHandler handler,
-                                             DebounceCallback callback, int delay) /*-{
-        var id = cache[key];
-        if(id != null){
-            $wnd.clearTimeout(id);
+    private void debounceInvoke(JsPropertyMap<Double> cache, String key, DebounceHandler handler,
+                                DebounceCallback callback, int delay) {
+        Double id = cache.get(key);
+        if (id != null) {
+            DomGlobal.clearTimeout(id);
         }
-        var id = $wnd.setTimeout(function(){
-            var result = handler.onInvoke();
-            callback && callback.callback(result);
-        }, delay)
-        cache[key] = id;
-    }-*/;
+        id = DomGlobal.setTimeout(
+                p0 -> {
+                    if (handler != null) {
+                        Object result = handler.onInvoke();
+                        if (callback != null) {
+                            callback.callback(result);
+                        }
+                    }
+                }, delay);
+        cache.set(key, id);
+    }
 
 }
