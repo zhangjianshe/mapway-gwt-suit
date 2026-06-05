@@ -103,6 +103,7 @@ public class RoleResourceFrame extends BaseAbstractModule {
     @Override
     public boolean initialize(IModule parentModule, ModuleParameter parameter) {
         super.initialize(parentModule, parameter);
+        getRootWidget().addStyleName("root-card");
         roleTree.load();
         return true;
     }

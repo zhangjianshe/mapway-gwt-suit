@@ -13,7 +13,7 @@
         }
     </ui:style>
     <g:DockLayoutPanel ui:field="root">
-        <g:north size="46">
+        <g:north size="48">
             <g:HTMLPanel ui:field="panel">
                 <g:HorizontalPanel ui:field="bar" width="100%" height="100%" spacing="0"
                                    verticalAlignment="middle">
@@ -31,7 +31,7 @@
                         <widget:AiTab ui:field="btnSubmodules"/>
                     </g:cell>
                     <g:cell horizontalAlignment="right">
-                        <g:HorizontalPanel ui:field="tools" height="40px" styleName="{style.tools}"
+                        <g:HorizontalPanel ui:field="tools" height="48px" styleName="{style.tools}"
                                            verticalAlignment="middle">
                         </g:HorizontalPanel>
                     </g:cell>

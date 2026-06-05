@@ -14,6 +14,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.MouseDownEvent;
 import com.google.gwt.event.dom.client.MouseUpEvent;
 import com.google.gwt.event.shared.HandlerRegistration;
+import com.google.gwt.safehtml.shared.annotations.IsSafeHtml;
 import com.google.gwt.user.client.DOM;
 import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.Button;
@@ -153,6 +154,11 @@ public class AiButton extends Button implements IData, ISelectable {
         debounceUpdateUi();
     }
 
+    public void setHTML(@IsSafeHtml String html) {
+        spanContext = html;
+        getElement().setInnerHTML(html);
+    }
+
     public void updateUi() {
         super.setHTML(getButtonHtml());
     }
@@ -163,15 +169,15 @@ public class AiButton extends Button implements IData, ISelectable {
         instance.debounce("aiButtonUpdateUi", ()->{
             updateUi();
             return 0;
-        }, 100);
+        }, 10);
     }
 
 
     // 拼接html字符串
     private String getButtonHtml() {
-        if(StringUtil.isBlank(spanContext)){
-            spanContext = super.getText();
-        }
+//        if(StringUtil.isBlank(spanContext)){
+//            spanContext = super.getText();
+//        }
         if(iconStyle == null){
             iconStyle = "";
         }

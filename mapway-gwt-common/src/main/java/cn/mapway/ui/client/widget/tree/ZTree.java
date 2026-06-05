@@ -33,6 +33,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     boolean enabledChecked = false;
     boolean checkWithChildren = false;
     boolean autoSelected = true;
+    int gapSize = 44;
 
     //树形条目被点击了
     private final CommonEventHandler itemClicked = event -> {
@@ -151,6 +152,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         ImageTextItem item;
         if (parent == null) {
             item = new ImageTextItem();
+            item.setGapSize(gapSize);
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
@@ -171,6 +173,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         ImageTextItem item;
         if (parent == null) {
             item = new ImageTextItem();
+            item.setGapSize(gapSize);
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
@@ -193,6 +196,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         ImageTextItem item;
         if (parent == null) {
             item = new ImageTextItem();
+            item.setGapSize(gapSize);
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
@@ -215,6 +219,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         ImageTextItem item;
         if (parent == null) {
             item = new ImageTextItem();
+            item.setGapSize(gapSize);
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
@@ -236,6 +241,7 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
         ImageTextItem item;
         if (parent == null) {
             item = new ImageTextItem();
+            item.setGapSize(gapSize);
             if (itemStyleName != null && itemStyleName.length() > 0) {
                 item.setStyleName(itemStyleName);
             }
@@ -413,4 +419,10 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
     public void setItemStyleName(String treeItem) {
         this.itemStyleName = treeItem;
     }
+
+    public void setGapSize(int gapSize) {
+        this.gapSize = gapSize;
+
+    }
+
 }

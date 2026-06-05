@@ -66,6 +66,7 @@ public class RbacOrgFrame extends BaseAbstractModule {
     @Override
     public boolean initialize(IModule parentModule, ModuleParameter parameter) {
         boolean b = super.initialize(parentModule, parameter);
+        getRootWidget().addStyleName("root-card");
         orgPanel.init();
         return b;
     }

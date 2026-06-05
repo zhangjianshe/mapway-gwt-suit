@@ -96,6 +96,7 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     private Object data;
     boolean selectable;
     String tag;
+    int gapSize = 44;
     public String getTag() {
         return tag;
     }
@@ -367,11 +368,18 @@ public class ImageTextItem extends CommonEventComposite implements IData, HasDra
     }
 
     private int calPaddingLeft() {
-        int spacing = this.level * 44;
+        int spacing = this.level * gapSize;
         if (level > 0 && check.isVisible()) {
             spacing += 15;
         }
         return spacing;
+    }
+
+    public void setGapSize(int gapSize) {
+        if(gapSize < 0){
+            gapSize = 44;
+        }
+        this.gapSize = gapSize;
     }
 
     /**

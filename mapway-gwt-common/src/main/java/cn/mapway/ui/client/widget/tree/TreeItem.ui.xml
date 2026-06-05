@@ -9,6 +9,7 @@
         }
 
         .navi {
+            font-family: "mapway-font";
             align-self: center;
             flex-shrink: 0;
             font-size: 22px;
