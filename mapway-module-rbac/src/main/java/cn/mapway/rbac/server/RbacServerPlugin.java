@@ -150,6 +150,10 @@ public class RbacServerPlugin implements IServerPlugin {
 
     @Override
     public List<Class> getTableClasses() {
+        return getAllTableList();
+    }
+
+    public static List<Class> getAllTableList(){
         List<Class> tables = new ArrayList<>();
         tables.add(RbacConfigEntity.class);
         tables.add(RbacOrgEntity.class);
