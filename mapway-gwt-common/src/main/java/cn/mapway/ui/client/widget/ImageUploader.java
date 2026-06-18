@@ -3,6 +3,7 @@ package cn.mapway.ui.client.widget;
 import cn.mapway.ui.client.event.MessageObject;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.resource.MapwayResource;
+import cn.mapway.ui.client.util.StringUtil;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.UploadReturn;
 import com.google.gwt.core.client.GWT;
@@ -301,8 +302,10 @@ public class ImageUploader extends CommonEventComposite {
         currentImageWidth = 0;
         if (url == null || url.isEmpty()) {
             img.setUrl(EMPTY_PICTURE);
-        } else {
+        } else if(url.toLowerCase().startsWith("http")){
             img.setUrl(url);
+        }else {
+            img.setUrl(StringUtil.concatPath(GWT.getHostPageBaseURL(),url));
         }
     }
 
