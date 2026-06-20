@@ -147,10 +147,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     public final static int LABEL = 133; // 标签
     public final static int CREATE_FOLDER = 134; // 标签
     public final static int NEED_LOGIN = 135; // 需要登录
-
     public final static int SHOW_SPECTRAL_CURVE = 136; // 显示光谱曲线
-
     public final static int SPLIT = 137; // 切分
+    public final static int DATE_RANGE = 138; // 时间选择
 
 
 
@@ -173,6 +172,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
 
     public static CommonEvent logEvent(Object data) {
         return new CommonEvent(LOG, data);
+    }
+    public static CommonEvent dateRangeEvent(Object data) {
+        return new CommonEvent(DATE_RANGE, data);
     }
     public static CommonEvent needLoginEvent(Object data) {
         return new CommonEvent(NEED_LOGIN, data);
@@ -1196,6 +1198,9 @@ public class CommonEvent extends GwtEvent<CommonEventHandler> {
     }
     public boolean isLabel() {
         return LABEL == this.type;
+    }
+    public boolean isDateRange() {
+        return DATE_RANGE == this.type;
     }
 
     public boolean isShowSpectralCurve() {
