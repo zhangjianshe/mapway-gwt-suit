@@ -4,6 +4,7 @@ import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.resource.MapwayResource;
 import cn.mapway.ui.client.util.IEachElement;
 import cn.mapway.ui.client.util.StringUtil;
+import cn.mapway.ui.client.widget.Waiting;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
@@ -19,6 +20,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Label;
+import com.google.gwt.user.client.ui.Widget;
 import lombok.Setter;
 
 import java.util.ArrayList;
@@ -82,8 +84,23 @@ public class Tree extends Composite implements HasCommonHandlers {
         }, ContextMenuEvent.getType());
     }
 
-
-
+    public void loading()
+    {
+        lbMessage.clear();
+        lbMessage.add(new Waiting());
+        lbMessage.setHeight("150px");
+    }
+    public void appendMessage(Widget widget, Integer height)
+    {
+        if(height != null && height > 0) {
+            lbMessage.clear();
+            lbMessage.add(widget);
+            lbMessage.setHeight(height+"px");
+        }
+        else {
+            lbMessage.setHeight("0px");
+        }
+    }
     public void setMessage(String message,Integer height) {
         if(height != null && height > 0) {
             lbMessage.clear();

@@ -21,3 +21,14 @@
     font-weight:bold;
     font-style: italic;
 }
+@keyframes l1 {
+    50% {
+        background-position: right
+    }
+}
+.waiting {
+    width: 200px;
+    height: 20px;
+    background: linear-gradient(BK_HOVER 0 0) left/20px 20px no-repeat BK_SELECT;
+    animation: l1 2s infinite linear;
+}

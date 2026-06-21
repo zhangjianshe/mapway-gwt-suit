@@ -7,4 +7,6 @@ public interface MapWayCss extends CssResource {
     String aiTreeItem();
 
     String text();
+
+    String waiting();
 }
