@@ -141,7 +141,9 @@ public class ZTree extends VerticalPanel implements HasCommonHandlers {
             current.setSelect(false);
         }
         current = item;
-        current.setSelect(true);
+        if(current!=null) {
+            current.setSelect(true);
+        }
     }
 
     public void setStoragePrefix(String prefix) {

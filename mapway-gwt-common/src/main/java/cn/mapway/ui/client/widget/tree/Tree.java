@@ -228,10 +228,12 @@ public class Tree extends Composite implements HasCommonHandlers {
 
     public void setValue(TreeItem item, boolean fire) {
         clearSelected();
-        selectedItems.add(item);
-        item.setSelected(true);
-        if (fire) {
-            fireEvent(CommonEvent.selectEvent(item));
+        if(item!=null) {
+            selectedItems.add(item);
+            item.setSelected(true);
+            if (fire) {
+                fireEvent(CommonEvent.selectEvent(item));
+            }
         }
     }
 
