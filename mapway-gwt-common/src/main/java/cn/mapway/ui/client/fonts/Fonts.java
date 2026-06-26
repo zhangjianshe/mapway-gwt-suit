@@ -16,7 +16,12 @@ public class Fonts {
         }
     }
 
-    	public final static String JINGGAO = "e63b";
+    	public final static String JINDUYIWANCHENG = "e872";
+	public final static String SHIBAIHONGSE24 = "e876";
+	public final static String JINGGAOHUANGSE24 = "e7fe";
+	public final static String TISHILANSE24 = "e7ff";
+	public final static String ZHENGQUELVSE24 = "e800";
+	public final static String JINGGAO = "e63b";
 	public final static String CUNCHU = "eaa4";
 	public final static String NEICUN = "eaa9";
 	public final static String POD = "eaaa";
@@ -939,7 +944,12 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("JINGGAO", Fonts.JINGGAO);
+			unicodes.put("JINDUYIWANCHENG", Fonts.JINDUYIWANCHENG);
+	unicodes.put("SHIBAIHONGSE24", Fonts.SHIBAIHONGSE24);
+	unicodes.put("JINGGAOHUANGSE24", Fonts.JINGGAOHUANGSE24);
+	unicodes.put("TISHILANSE24", Fonts.TISHILANSE24);
+	unicodes.put("ZHENGQUELVSE24", Fonts.ZHENGQUELVSE24);
+	unicodes.put("JINGGAO", Fonts.JINGGAO);
 	unicodes.put("CUNCHU", Fonts.CUNCHU);
 	unicodes.put("NEICUN", Fonts.NEICUN);
 	unicodes.put("POD", Fonts.POD);
