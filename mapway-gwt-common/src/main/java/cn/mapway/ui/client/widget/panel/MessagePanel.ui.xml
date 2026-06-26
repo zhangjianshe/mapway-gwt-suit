@@ -6,6 +6,9 @@
             justify-content: center;
             align-items: center;
         }
+        .box .gwt-Label div{
+            font-family: "mapway-font";
+        }
     </ui:style>
     <g:HTMLPanel styleName="{style.box}" ui:field="panel">
         <g:Label ui:field="lbMessage"/>
