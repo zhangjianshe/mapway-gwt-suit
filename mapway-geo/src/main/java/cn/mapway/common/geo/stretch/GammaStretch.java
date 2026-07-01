@@ -1,6 +1,10 @@
 package cn.mapway.common.geo.stretch;
 
-import java.util.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import static cn.mapway.common.geo.stretch.Histogram.DEFAULT_BINS;
 
@@ -45,7 +49,7 @@ public class GammaStretch {
             if(noValueSet.contains(d)){
                 result[i] = 0;
             } else {
-                double linearPixel = clip(d, gamma, min, max);
+                double linearPixel = clip(d, min, max, gamma);
                 byte v=(byte)((int)linearPixel & 0xFF);
                 result[i] = v;
             }

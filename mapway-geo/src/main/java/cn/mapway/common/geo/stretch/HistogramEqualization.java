@@ -1,8 +1,8 @@
 package cn.mapway.common.geo.stretch;
 
+import javax.imageio.ImageIO;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import javax.imageio.ImageIO;
 
 public class HistogramEqualization {
     public static void main(String[] args) {
