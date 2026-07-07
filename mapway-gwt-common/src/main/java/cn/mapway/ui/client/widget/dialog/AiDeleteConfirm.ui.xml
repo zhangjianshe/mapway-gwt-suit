@@ -7,6 +7,7 @@
         @eval COLOR-WARNING "var(--el-color-warning)";
         @eval COLOR-PRIMARY "var(--el-color-primary)";
         @eval COLOR-TEXT-SUMMARY "var(--color-text-summary)";
+        @eval BORDER_RADIUS "var(--border-radius)";
 
 
         .card {
@@ -50,13 +51,12 @@
 
         .btnRow {
             display: flex;
-            flex-direction: row;
             justify-content: center;
             gap: 16px;
         }
 
         .btnDelete {
-            border-radius: 4px;
+            border-radius: BORDER_RADIUS;
             width: 80px;
             height: 32px;
             border: 1px solid COLOR-PRIMARY;
@@ -66,7 +66,7 @@
         }
 
         .btnCancel {
-            border-radius: 4px;
+            border-radius: BORDER_RADIUS;
             width: 80px;
             height: 32px;
             border: 1px solid COLOR-TEXT-SUMMARY;
@@ -79,9 +79,9 @@
         <widget:FontIcon ui:field="icon" addStyleNames="{style.icon}"/>
         <g:Label ui:field="title" styleName="{style.title}"/>
         <g:Label ui:field="subtitle" styleName="{style.subtitle}">删除后不可恢复</g:Label>
-        <g:HorizontalPanel styleName="{style.btnRow}">
+        <g:HTMLPanel styleName="{style.btnRow}">
             <buttons:AiButton ui:field="btnDelete" addStyleNames="{style.btnDelete}">确认</buttons:AiButton>
             <buttons:AiButton ui:field="btnCancel" addStyleNames="{style.btnCancel}">取消</buttons:AiButton>
-        </g:HorizontalPanel>
+        </g:HTMLPanel>
     </g:HTMLPanel>
 </ui:UiBinder>
