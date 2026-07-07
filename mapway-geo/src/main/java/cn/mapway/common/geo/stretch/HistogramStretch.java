@@ -1,54 +1,12 @@
 package cn.mapway.common.geo.stretch;
 
-import cn.mapway.common.geo.gdal.GdalUtil;
 import org.gdal.gdal.Band;
 import org.gdal.gdal.Dataset;
-import org.gdal.gdal.gdal;
-import org.gdal.gdalconst.gdalconst;
 import org.gdal.gdalconst.gdalconstConstants;
-
-import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
-import java.io.File;
 
 import static org.gdal.gdalconst.gdalconstConstants.GDT_Byte;
 
 public class HistogramStretch {
-
-    public static void main(String[] args) {
-        File srcFile = new File("F:\\data\\cis\\labels\\sample_145\\image\\15623.tif");
-        File destFile = new File("F:\\data\\temp\\2.tif");
-        System.setProperty("org.geotools.referencing.forceXY", "true");
-
-        GdalUtil.init();
-        Dataset srcDataset = gdal.Open(srcFile.getAbsolutePath(), gdalconst.GA_ReadOnly);
-        if (srcDataset == null) {
-            System.out.println("打开文件失败");
-            return;
-        }
-        // 创建新的图像
-        BufferedImage destImage = new BufferedImage(srcDataset.getRasterXSize(), srcDataset.getRasterYSize(), BufferedImage.TYPE_3BYTE_BGR);
-        int r = 1, g = 2, b = 3;
-        HistogramStretch histogramStretch = new HistogramStretch();
-        byte[] stretchR = histogramStretch.stretch(srcDataset, r, 0.0, 1.0, 256);
-        byte[] stretchG = histogramStretch.stretch(srcDataset, g, 0.0, 1.0, 256);
-        byte[] stretchB = histogramStretch.stretch(srcDataset, b, 0.0, 1.0, 256);
-        for (int y = 0; y < srcDataset.getRasterYSize(); y++) {
-            for (int x = 0; x < srcDataset.getRasterXSize(); x++) {
-                int index = y * srcDataset.getRasterXSize() + x;
-                int rgb = 0xFF000000 | ((stretchR[index] & 0xFF) << 16) | ((stretchG[index] & 0xFF) << 8) | (stretchB[index] & 0xFF);
-                destImage.setRGB(x, y, rgb);
-            }
-        }
-        try {
-            ImageIO.write(destImage, "jpg", destFile);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-
 
     public byte[] stretch(Dataset srcDataset, int bandIndex, double minPct, double maxPct, int bins) {
         Band band = srcDataset.GetRasterBand(bandIndex);

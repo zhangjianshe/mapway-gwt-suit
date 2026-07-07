@@ -16,7 +16,17 @@ public class Fonts {
         }
     }
 
-    	public final static String YUYIFENGE = "eaa5";
+    	public final static String JINDUYIWANCHENG = "e872";
+	public final static String SHIBAIHONGSE24 = "e876";
+	public final static String JINGGAOHUANGSE24 = "e7fe";
+	public final static String TISHILANSE24 = "e7ff";
+	public final static String ZHENGQUELVSE24 = "e800";
+	public final static String JINGGAO = "e63b";
+	public final static String CUNCHU = "eaa4";
+	public final static String NEICUN = "eaa9";
+	public final static String POD = "eaaa";
+	public final static String GPU = "eaab";
+	public final static String YUYIFENGE = "eaa5";
 	public final static String NONGYENONGZUOWU = "eaa6";
 	public final static String YUANYOUMUBIAOJIANCE = "eaa7";
 	public final static String TUXIANGFENLEI = "eaa8";
@@ -934,7 +944,17 @@ public class Fonts {
 	static {
 		unicodes=new HashMap<>();
 		//unicodes.put("console", Fonts.CONSOLE);
-			unicodes.put("YUYIFENGE", Fonts.YUYIFENGE);
+			unicodes.put("JINDUYIWANCHENG", Fonts.JINDUYIWANCHENG);
+	unicodes.put("SHIBAIHONGSE24", Fonts.SHIBAIHONGSE24);
+	unicodes.put("JINGGAOHUANGSE24", Fonts.JINGGAOHUANGSE24);
+	unicodes.put("TISHILANSE24", Fonts.TISHILANSE24);
+	unicodes.put("ZHENGQUELVSE24", Fonts.ZHENGQUELVSE24);
+	unicodes.put("JINGGAO", Fonts.JINGGAO);
+	unicodes.put("CUNCHU", Fonts.CUNCHU);
+	unicodes.put("NEICUN", Fonts.NEICUN);
+	unicodes.put("POD", Fonts.POD);
+	unicodes.put("GPU", Fonts.GPU);
+	unicodes.put("YUYIFENGE", Fonts.YUYIFENGE);
 	unicodes.put("NONGYENONGZUOWU", Fonts.NONGYENONGZUOWU);
 	unicodes.put("YUANYOUMUBIAOJIANCE", Fonts.YUANYOUMUBIAOJIANCE);
 	unicodes.put("TUXIANGFENLEI", Fonts.TUXIANGFENLEI);

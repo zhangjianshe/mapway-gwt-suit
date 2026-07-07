@@ -18,6 +18,7 @@
             text-overflow: ellipsis;
             font-weight: normal;
             text-wrap: nowrap;
+            font-family: mapway-font;
         }
     </ui:style>
     <g:HTMLPanel>
