@@ -1,6 +1,7 @@
 package cn.mapway.ui.server;
 
 
+import cn.mapway.ui.server.exception.UserNotLoggedInException;
 import cn.mapway.ui.shared.CommonConstant;
 import cn.mapway.ui.shared.Messages;
 import cn.mapway.ui.shared.rpc.RpcResult;
@@ -95,6 +96,11 @@ public abstract class CheckUserServlet<T> extends RemoteServiceServlet {
         try {
             r = super.processCall(rpcRequest);
         } catch (Exception e) {
+            String message = e.getCause().getMessage();
+            if(message.equals(UserNotLoggedInException.MSG)){
+                RpcResult result = RpcResult.fail(300001, message);
+                return RPC.encodeResponseForSuccess(rpcRequest.getMethod(), result);
+            }
             log.error(e.getMessage());
             RpcResult result = RpcResult.fail(500, "操作错误:" + e.getMessage());
             return RPC.encodeResponseForSuccess(rpcRequest.getMethod(), result);
