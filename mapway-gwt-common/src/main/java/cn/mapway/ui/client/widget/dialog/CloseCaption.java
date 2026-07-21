@@ -225,6 +225,10 @@ public class CloseCaption extends HorizontalPanel implements DialogBox.Caption, 
         }
     }
 
+    public FontIcon getBtnClose() {
+        return btnClose;
+    }
+
     @Override
     public HandlerRegistration addCloseHandler(CloseHandler closeHandler) {
         return addHandler(closeHandler, CloseEvent.getType());
