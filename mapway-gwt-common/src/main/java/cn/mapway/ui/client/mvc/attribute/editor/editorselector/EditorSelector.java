@@ -144,8 +144,9 @@ public class EditorSelector extends CommonEventComposite {
         }
 
         currentDesign = preview.getEditor().getDesigner();
-        currentDesign.setTipHandler(tipHandler);
+
         if (currentDesign != null) {
+            currentDesign.setTipHandler(tipHandler);
             Widget designWidget = currentDesign.getDesignRoot();
             designPanel.add(designWidget);
             if (selectEditor.code.equals(this.currentEditData.getEditorCode())) {

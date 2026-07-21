@@ -3,9 +3,11 @@ package cn.mapway.ui.client.mvc.attribute.editor.dropdown;
 import cn.mapway.ui.client.fonts.Fonts;
 import cn.mapway.ui.client.mvc.attribute.IAttribute;
 import cn.mapway.ui.client.mvc.attribute.design.ParameterValue;
-import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
 import cn.mapway.ui.client.mvc.attribute.editor.IEditorDesigner;
+import cn.mapway.ui.client.mvc.attribute.editor.ParameterKeys;
 import cn.mapway.ui.client.widget.FontIcon;
+import cn.mapway.ui.shared.CommonEvent;
+import cn.mapway.ui.shared.CommonEventHandler;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -33,6 +35,22 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
     HTMLPanel list;
     List<IAttribute> parameters;
     JsArray<ParameterValue> designDataJsArray;
+    private final CommonEventHandler itemHandler = new CommonEventHandler() {
+        @Override
+        public void onCommonEvent(CommonEvent event) {
+            if (event.isDelete()) {
+                ListDataItem source = (ListDataItem) event.getSource();
+                ParameterValue data = source.getData();
+                int index = designDataJsArray.findIndex((t, i, d) -> {
+                    return t.name.equals(data.name);
+                });
+                if (index != -1) {
+                    designDataJsArray.splice(index, 1);
+                }
+                list.remove(source);
+            }
+        }
+    };
 
     public DropdownListDesign() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -74,7 +92,8 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
         for (int i = 0; i < list.getWidgetCount(); i++) {
             Widget widget = list.getWidget(i);
             if (widget instanceof ListDataItem) {
-                ParameterValue data = ((ListDataItem) widget).getData();
+                ListDataItem item = (ListDataItem) widget;
+                ParameterValue data = Js.uncheckedCast(item.getData());
                 dropdownOptions.push(data);
             }
         }
@@ -139,6 +158,7 @@ public class DropdownListDesign extends Composite implements IEditorDesigner {
             ListDataItem item = new ListDataItem();
             item.setData(designDataJsArray.getAt(i));
             list.add(item);
+            item.addCommonHandler(itemHandler);
         }
     }
 
