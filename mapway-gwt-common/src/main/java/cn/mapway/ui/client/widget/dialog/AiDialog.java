@@ -6,6 +6,7 @@ import cn.mapway.ui.client.tools.IData;
 import cn.mapway.ui.shared.CommonEvent;
 import cn.mapway.ui.shared.CommonEventHandler;
 import cn.mapway.ui.shared.HasCommonHandlers;
+import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.dom.client.*;
 import com.google.gwt.event.dom.client.*;
 import com.google.gwt.event.logical.shared.ResizeEvent;
@@ -24,6 +25,12 @@ import com.google.gwt.user.client.ui.Widget;
  *
  * @author zhangjianshe@gmail.com
  */
+/**
+ * AiDialog
+ * 开始自定义对话框
+ *
+ * @author zhangjianshe@gmail.com
+ */
 public class AiDialog extends PopupPanel implements IData, HasCommonHandlers {
     private final int clientLeft;
     private final int clientTop;
@@ -35,6 +42,8 @@ public class AiDialog extends PopupPanel implements IData, HasCommonHandlers {
     HandlerRegistration resizeHandlerRegistration;
     Widget body = null;
     boolean initialized = false;
+    private boolean explicitSize;
+    private boolean contentProvidesSize;
     private boolean dragging;
     private int dragStartX;
     private int dragStartY;
@@ -94,16 +103,14 @@ public class AiDialog extends PopupPanel implements IData, HasCommonHandlers {
             }
             body = w;
             layout.add(w);
+            contentProvidesSize = false;
             if (w instanceof IProvideSize) {
                 IProvideSize w2 = (IProvideSize) w;
                 Size size = w2.requireDefaultSize();
                 if (size != null) {
-                    setPixelSize(size.getXAsInt(), size.getYAsInt());
-                } else {
-                    setPixelSize(900, 500);
+                    contentProvidesSize = true;
+                    applyPixelSize(size.getXAsInt(), size.getYAsInt());
                 }
-            } else {
-                setPixelSize(900, 500);
             }
 
             if (w instanceof HasCommonHandlers) {
@@ -118,6 +125,11 @@ public class AiDialog extends PopupPanel implements IData, HasCommonHandlers {
 
     @Override
     public void setPixelSize(int width, int height) {
+        explicitSize = true;
+        applyPixelSize(width, height);
+    }
+
+    private void applyPixelSize(int width, int height) {
         layout.setPixelSize(width, height);
         layout.forceLayout();
     }
@@ -260,6 +272,79 @@ public class AiDialog extends PopupPanel implements IData, HasCommonHandlers {
         }
 
         super.show();
+        Scheduler.get().scheduleDeferred(this::autoSize);
+        Scheduler.get().scheduleFixedDelay(() -> {
+            autoSize();
+            return false;
+        }, 150);
+    }
+
+    @Override
+    public void center() {
+        super.center();
+        Scheduler.get().scheduleDeferred(() -> {
+            autoSize();
+            super.center();
+        });
+        Scheduler.get().scheduleFixedDelay(() -> {
+            autoSize();
+            super.center();
+            return false;
+        }, 150);
+    }
+
+    private void autoSize() {
+        if (explicitSize || contentProvidesSize || body == null) {
+            return;
+        }
+
+        int width = Math.max(measureWidth(body.getElement()), measureWidth(caption.getElement()));
+        width = Math.max(width, layout.getOffsetWidth() + measureHorizontalOverflow(body.getElement()));
+        int height = measureHeight(body.getElement()) + 40;
+        height = Math.max(height, layout.getOffsetHeight() + measureVerticalOverflow(body.getElement()));
+        int maxWidth = Window.getClientWidth() - 32;
+        int maxHeight = Window.getClientHeight() - 32;
+        width = Math.min(width, maxWidth);
+        height = Math.min(height, maxHeight);
+        if (width > 0 && height > 40) {
+            applyPixelSize(width, height);
+        }
+    }
+
+    private int measureWidth(Element element) {
+        int width = Math.max(element.getOffsetWidth(), element.getScrollWidth());
+        NodeList<Element> children = element.getElementsByTagName("*");
+        for (int i = 0; i < children.getLength(); i++) {
+            Element child = children.getItem(i);
+            width = Math.max(width, Math.max(child.getOffsetWidth(), child.getScrollWidth()));
+        }
+        return width;
+    }
+
+    private int measureHeight(Element element) {
+        int height = Math.max(element.getOffsetHeight(), element.getScrollHeight());
+        NodeList<Element> children = element.getElementsByTagName("*");
+        for (int i = 0; i < children.getLength(); i++) {
+            Element child = children.getItem(i);
+            height = Math.max(height, Math.max(child.getOffsetHeight(), child.getScrollHeight()));
+        }
+        return height;
+    }
+
+    private int measureHorizontalOverflow(Element element) {
+        int overflow = element.getScrollWidth() - element.getClientWidth();
+        for (Element child = element.getFirstChildElement(); child != null; child = child.getNextSiblingElement()) {
+            overflow = Math.max(overflow, measureHorizontalOverflow(child));
+        }
+        return overflow;
+    }
+
+    private int measureVerticalOverflow(Element element) {
+        int overflow = element.getScrollHeight() - element.getClientHeight();
+        for (Element child = element.getFirstChildElement(); child != null; child = child.getNextSiblingElement()) {
+            overflow = Math.max(overflow, measureVerticalOverflow(child));
+        }
+        return overflow;
     }
 
     protected void beginDragging(MouseDownEvent event) {
