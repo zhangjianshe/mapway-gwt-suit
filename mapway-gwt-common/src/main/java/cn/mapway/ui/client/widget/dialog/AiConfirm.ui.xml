@@ -8,7 +8,10 @@
             justify-content: center;
             align-items: center;
         }
-    </ui:style>
+
+        .info {
+            word-break: break-all;
+        }</ui:style>
     <g:DockLayoutPanel>
         <g:south size="68">
             <dialog:SaveBar ui:field="saveBar" saveText="确认"/>
@@ -20,7 +23,7 @@
                         <g:cell horizontalAlignment="center">
                             <g:Image ui:field="icon"/>
                         </g:cell>
-                        <g:HTML ui:field="html"/>
+                        <g:HTML addStyleNames="{style.info}" ui:field="html"/>
                     </g:HorizontalPanel>
                 </g:HTMLPanel>
             </g:ScrollPanel>
