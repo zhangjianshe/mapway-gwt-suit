@@ -89,7 +89,7 @@ public class AiDeleteConfirm extends AiDialog {
             title.setText(titleText);
         }
         if (content != null && !content.isEmpty()) {
-            subtitle.setText(content);
+            subtitle.getElement().setInnerHTML(content);
         }
         mCallback = callback;
     }
