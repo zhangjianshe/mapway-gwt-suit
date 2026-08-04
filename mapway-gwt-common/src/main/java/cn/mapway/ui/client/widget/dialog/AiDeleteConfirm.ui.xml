@@ -47,6 +47,7 @@
             line-height: 20px;
             margin-bottom: 24px;
             text-align: center;
+            word-break: break-all;
         }
 
         .btnRow {
