@@ -68,7 +68,7 @@ public class Tree extends Composite implements HasCommonHandlers {
 
     public Tree() {
         this(Fonts.toHtmlEntity(Fonts.DOWN), Fonts.toHtmlEntity(Fonts.RIGHT));
-        setMessage("",0);
+        setMessage("", 0);
     }
 
     public Tree(String openIcon, String closeIcon) {
@@ -84,38 +84,39 @@ public class Tree extends Composite implements HasCommonHandlers {
         }, ContextMenuEvent.getType());
     }
 
-    public void loading()
-    {
+    public void loading() {
         lbMessage.clear();
         lbMessage.add(new Waiting());
         lbMessage.setHeight("150px");
     }
-    public void appendMessage(Widget widget, Integer height)
-    {
-        if(height != null && height > 0) {
+
+    public void appendMessage(Widget widget, Integer height) {
+        if (height != null && height > 0) {
             lbMessage.clear();
             lbMessage.add(widget);
-            lbMessage.setHeight(height+"px");
-        }
-        else {
+            lbMessage.setHeight(height + "px");
+        } else {
             lbMessage.setHeight("0px");
         }
     }
-    public void setMessage(String message,Integer height) {
-        if(height != null && height > 0) {
+
+    public void setMessage(String message, Integer height) {
+        if (height != null && height > 0) {
             lbMessage.clear();
-            lbMessage.add(new Label(message));
-            lbMessage.setHeight(height+"px");
-        }
-        else {
+            Label msg = new Label(message);
+            msg.addStyleName("ai-message");
+            lbMessage.add(msg);
+            lbMessage.setHeight(height + "px");
+        } else {
             lbMessage.setHeight("0px");
         }
     }
-    public void clearMessage()
-    {
+
+    public void clearMessage() {
         lbMessage.clear();
         lbMessage.setHeight("0px");
     }
+
     /**
      * 重新加载所有的items 为子节点
      *
@@ -228,7 +229,7 @@ public class Tree extends Composite implements HasCommonHandlers {
 
     public void setValue(TreeItem item, boolean fire) {
         clearSelected();
-        if(item!=null) {
+        if (item != null) {
             selectedItems.add(item);
             item.setSelected(true);
             if (fire) {
