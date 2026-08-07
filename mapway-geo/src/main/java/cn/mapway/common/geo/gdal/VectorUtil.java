@@ -14,7 +14,6 @@ import org.nutz.lang.Strings;
 
 import java.io.Closeable;
 import java.io.File;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -128,6 +127,7 @@ public abstract class VectorUtil implements Closeable {
             return feature.GetFieldAsString(fieldName);
         }
     }
+
     public static String readAsStr(Feature feature, String fieldName, String encoding) {
         FieldDefn fieldDefn = feature.GetFieldDefnRef(fieldName);
         if (fieldDefn == null) {
@@ -138,14 +138,6 @@ public abstract class VectorUtil implements Closeable {
         } else {
             return feature.GetFieldAsString(fieldName);
         }
-    }
-    public  String readAsString(Feature feature, Integer fieldIndex) {
-        String value = readAsString(feature, fieldIndex, getEncoding());
-        return value;
-    }
-    public  String readAsString(Feature feature, String fileName) {
-        String value = readAsString(feature, fileName, getEncoding());
-        return value;
     }
 
     public static String readString(Feature feature, Integer fieldIndex, String encoding) {
@@ -173,6 +165,46 @@ public abstract class VectorUtil implements Closeable {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return value;
+    }
+
+    public static boolean isShapeFile(File file) {
+        return file.exists() && file.isFile() && file.getName().toLowerCase().endsWith(".shp");
+    }
+
+    public static boolean isGeoPackage(File file) {
+        return file.exists() && file.isFile() && file.getName().toLowerCase().endsWith(".gpkg");
+    }
+
+    public static boolean isOpenFileGdb(File file) {
+        return file.exists() && file.isDirectory() && file.getName().toLowerCase().endsWith(".gdb");
+    }
+
+    /**
+     * 打开矢量数据
+     *
+     * @param filename
+     * @return
+     */
+    public static VectorUtil openFile(String filename) {
+        File file = new File(filename);
+        if (isShapeFile(file)) {
+            return new ShapeUtil(file.getAbsolutePath());
+        } else if (isGeoPackage(file)) {
+            return new GeoPackageUtil(file.getAbsolutePath());
+        } else if (isOpenFileGdb(file)) {
+            return new OpenFileGdbUtil(file.getAbsolutePath());
+        }
+        return null;
+    }
+
+    public String readAsString(Feature feature, Integer fieldIndex) {
+        String value = readAsString(feature, fieldIndex, getEncoding());
+        return value;
+    }
+
+    public String readAsString(Feature feature, String fileName) {
+        String value = readAsString(feature, fileName, getEncoding());
         return value;
     }
 
@@ -394,7 +426,6 @@ public abstract class VectorUtil implements Closeable {
         }
     }
 
-
     public GeomFieldDefn addGeometry(String name) {
         return addGeometry(name, null);
     }
@@ -418,8 +449,8 @@ public abstract class VectorUtil implements Closeable {
         return geomFieldDefn;
     }
 
-    public Feature createRecord(Layer layer, Map<String,Object> attributes) {
-          return null;
+    public Feature createRecord(Layer layer, Map<String, Object> attributes) {
+        return null;
     }
 
     public Feature createFeature(Geometry geometry, Map<String, Object> attributes) {
@@ -453,7 +484,7 @@ public abstract class VectorUtil implements Closeable {
     }
 
     public void close() {
-        if(source!=null) {
+        if (source != null) {
             source.Close();
             source = null;
         }
@@ -485,7 +516,6 @@ public abstract class VectorUtil implements Closeable {
         return geometry;
     }
 
-
     public Box toBox(Geometry geometry) {
         Box box = new Box();
         // minX, maxX, minY, maxY
@@ -493,6 +523,14 @@ public abstract class VectorUtil implements Closeable {
         geometry.GetEnvelope(v);
         box.setValue(v[0], v[2], v[1], v[3]);
         return box;
+    }
+
+    public String getBoxWkt() {
+        Geometry extend = getExtend();
+        if (extend != null) {
+            return toBoxWkt(extend);
+        }
+        return "POLYGON EMPTY";
     }
 
     public String toBoxWkt(Geometry geometry) {
@@ -518,7 +556,6 @@ public abstract class VectorUtil implements Closeable {
 
         return wkt;
     }
-
 
     public Geometry toWgs84(Geometry geometry) {
         if (geometry == null) {
@@ -551,7 +588,6 @@ public abstract class VectorUtil implements Closeable {
         GeomTransformer geomTransformer = new GeomTransformer(coordinateTransformation);
         return geomTransformer;
     }
-
 
     @Deprecated
     public Geometry toWebMercator(Geometry geometry) {
@@ -588,44 +624,16 @@ public abstract class VectorUtil implements Closeable {
         return layer != null;
     }
 
-
     protected abstract Driver getDriver();
+
+    public Layer getLayer() {
+        return layer;
+    }
 
     public static class Attrs extends HashMap<String, Object> {
         public Attrs add(String key, Object v) {
             put(key, v);
             return this;
         }
-    }
-
-    public static boolean isShapeFile(File file) {
-        return file.exists() && file.isFile() && file.getName().toLowerCase().endsWith(".shp");
-    }
-    public static boolean isGeoPackage(File file) {
-        return file.exists() && file.isFile() && file.getName().toLowerCase().endsWith(".gpkg");
-    }
-    public static boolean isOpenFileGdb(File file) {
-        return file.exists() && file.isDirectory() && file.getName().toLowerCase().endsWith(".gdb");
-    }
-
-    public Layer getLayer()
-    {
-        return layer;
-    }
-    /**
-     * 打开矢量数据
-     * @param filename
-     * @return
-     */
-    public static VectorUtil openFile(String filename) {
-            File file = new File(filename);
-            if (isShapeFile(file)) {
-                return new ShapeUtil(file.getAbsolutePath());
-            } else if (isGeoPackage(file)) {
-                return new GeoPackageUtil(file.getAbsolutePath());
-            } else if (isOpenFileGdb(file)) {
-                return new OpenFileGdbUtil(file.getAbsolutePath());
-            }
-            return null;
     }
 }
