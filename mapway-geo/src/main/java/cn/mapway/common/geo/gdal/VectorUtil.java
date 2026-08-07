@@ -495,6 +495,30 @@ public abstract class VectorUtil implements Closeable {
         return box;
     }
 
+    public String toBoxWkt(Geometry geometry) {
+        if (geometry == null) {
+            return "POLYGON EMPTY";
+        }
+
+        // 1. Get the envelope bounds [minX, maxX, minY, maxY]
+        double[] env = new double[4];
+        geometry.GetEnvelope(env);
+        // Note: GetEnvelope returns [minX, maxX, minY, maxY]
+        Box box = new Box(env[0], env[2], env[1], env[3]);
+
+        // 2. Convert to a Polygon Geometry using your existing utility method
+        Geometry boxGeo = toGeometry(box, geometry.GetSpatialReference());
+        boxGeo.FlattenTo2D();
+
+        // 3. Export to WKT
+        String wkt = boxGeo.ExportToWkt();
+
+        // Clean up temporary OGR geometry
+        boxGeo.delete();
+
+        return wkt;
+    }
+
 
     public Geometry toWgs84(Geometry geometry) {
         if (geometry == null) {
