@@ -53,6 +53,11 @@ public class ImageInfo implements Serializable, IsSerializable {
      * 原始坐标参考下的包围盒
      */
     public Box sourceBox;
+
+    /**
+     * 新增图像四个角的坐标 WKT (POLYGON())
+     */
+    public String wkt;
     /**
      * 文件长度
      */

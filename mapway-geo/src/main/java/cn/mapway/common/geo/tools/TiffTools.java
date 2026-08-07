@@ -25,8 +25,6 @@ import org.gdal.ogr.Geometry;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
 import org.geotools.referencing.CRS;
-import org.locationtech.jts.geom.Coordinate;
-import org.locationtech.jts.geom.GeometryFactory;
 import org.nutz.filepool.FilePool;
 import org.nutz.filepool.NutFilePool;
 import org.nutz.json.Json;
@@ -42,10 +40,13 @@ import java.io.InputStream;
 import java.nio.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 
-import static cn.mapway.geo.shared.GeoConstant.*;
+import static cn.mapway.geo.shared.GeoConstant.MQTT_TOPIC_TYPE_DIR_INDEX;
+import static cn.mapway.geo.shared.GeoConstant.SRID_WGS84;
 import static org.gdal.gdalconst.gdalconstConstants.*;
 import static org.gdal.ogr.ogrConstants.wkbLinearRing;
 import static org.gdal.ogr.ogrConstants.wkbPolygon;
@@ -127,6 +128,7 @@ public class TiffTools {
         filePath = "/mnt/cangling/devdata/personal/1/test/GF2_PMS1_E119.5_N25.7_20220729_L1A0006632555-MSS1-rpc-ortho-rc-ac-fusion.tif";
         filePath = "/mnt/cangling/devdata/personal/1/test/GF2_PMS1_E117.4_N34.7_20230705_L1A0007378447-MSS1-rpc-ortho-rc-ac-fusion-bs.tif";
         filePath = "/mnt/cangling/devdata/personal/1/test1/S2_ZJK_YumiMask_20250910_20250920_NDVI_Feature.tif";
+        filePath = "/mnt/prod/np4/personal/1/3band_0.5m_8bit_10.tif";
         // 16/54099/26444.png
         //https://ib.cangling.cn:22002/api/v1/map3/b3689473dc2ba8b8d7e9f3e94f63a5662b17ab7e186cb30b4c6378bc85d61790/12/3407/1745.png
         // 12/3407/17457  14/13397/6175.png
@@ -155,8 +157,7 @@ public class TiffTools {
                 return false;
             }
         });
-        //System.out.println("INFO image extend " + md5File.getBox().toString());
-        //System.out.println("INFO image size " + md5File.width + " " + md5File.height);
+        System.out.println(Json.toJson(md5File));
         md5File.getBandInfos().get(0).enableGamma = false;
         ColorTable colorTable = new ColorTable();
         colorTable.setDefaultTable(true);
@@ -520,11 +521,9 @@ public class TiffTools {
                 Double[] noValue1 = new Double[0];
                 bandInfo.setNoValues(noValue1);
             } else {
-                List<Double> vs=new ArrayList<>();
-                for(int k=0;k<count;k++)
-                {
-                    if(!Double.isInfinite(noValue[k]))
-                    {
+                List<Double> vs = new ArrayList<>();
+                for (int k = 0; k < count; k++) {
+                    if (!Double.isInfinite(noValue[k])) {
                         vs.add(noValue[k]);
                     }
                 }
@@ -566,183 +565,112 @@ public class TiffTools {
         if (info.getBandInfos().size() > 4) {
             info.setChanelData(new ChanelData(4, 3, 2));
         }
+        info.setMaxZoom(20);
+        info.setMinZoom(3);
+        extractCornersWkt(info, dataset);
 
-
-        //根据坐标系不同 我们计算影像的范围
-        double[] adfGeoTransform = new double[6];
-        dataset.GetGeoTransform(adfGeoTransform);
-        info.geoTransform = adfGeoTransform;
-        //System.out.println("[INFO AFFINE TRANSFORM] " + Arrays.toString(adfGeoTransform));
-        Point leftBottom = BaseTileExtractor.rasterSpaceToImageSpace(adfGeoTransform, new Point(0, dataset.GetRasterYSize()));
-        Point rightTop = BaseTileExtractor.rasterSpaceToImageSpace(adfGeoTransform, new Point(dataset.getRasterXSize(), 0));
-        //System.out.println("[INFO IMAGE RANGE] " + leftBottom + " " + rightTop);
-
-        info.box = new Box();
-        info.setSourceBox(new Box());
-        Box box = info.box;
-        String projectionWkt = dataset.GetProjection();
-        String linerUnit = "";
-        String angleUnit = "";
-        double linerScale = 1.0;
-        double angleScale = 1.0;
-        if (Strings.isNotBlank(projectionWkt)) {
-            SpatialReference spatialReference = new SpatialReference();
-
-            spatialReference.ImportFromWkt(projectionWkt);
-            spatialReference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-
-            SpatialReference wgs84Reference = new SpatialReference();
-            wgs84Reference.ImportFromEPSG(4326);
-            wgs84Reference.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
-
-            linerUnit = spatialReference.GetLinearUnitsName();
-            linerScale = spatialReference.GetLinearUnits();
-            angleUnit = spatialReference.GetAngularUnitsName();
-            angleScale = spatialReference.GetAngularUnits();
-            //System.out.println("[INFO] units " + linerUnit + " " + linerScale + " " + angleUnit + " " + angleScale);
-
-            CoordinateTransformation coordinateTransformation = CoordinateTransformation.CreateCoordinateTransformation(spatialReference, wgs84Reference);
-            double[] doubles1 = coordinateTransformation.TransformPoint(leftBottom.getX(), leftBottom.getY());
-            double[] doubles2 = coordinateTransformation.TransformPoint(rightTop.getX(), rightTop.getY());
-
-            box.setValue(doubles1[0], doubles1[1], doubles2[0], doubles2[1]);
-            //System.out.println("[INFO PROJECTION] " + box);
-
-            //不是投影坐标系
-            String geogcs = spatialReference.GetAttrValue("GEOGCS");
-            String srname = spatialReference.GetName().toLowerCase();
-            geogcs = geogcs.toLowerCase();
-            if (
-                    srname.startsWith("gcs_cgcs_2000") || srname.startsWith("cgcs")
-                            || (geogcs.contains("2000") && geogcs.contains("china"))
-            ) {
-                //中国的坐标系
-                info.setSrid(SRID_CGCS2000);
-                info.setProjection(spatialReference.ExportToPrettyWkt());
-            } else if (geogcs.contains("wgs")) {
-                info.setSrid(SRID_WGS84);
-                info.setProjection(spatialReference.ExportToPrettyWkt());
-            } else if (geogcs.contains("3875")) {
-                // 3875 ESRI
-                info.setSrid(SRID_WEB_MERCATO);
-                info.setProjection(spatialReference.ExportToPrettyWkt());
-            } else {
-                log.info("不能处理的坐标系统{}", spatialReference.GetName());
-                info.setSrid(spatialReference.AutoIdentifyEPSG());
-                info.setProjection(spatialReference.ExportToPrettyWkt());
-            }
-        } else {
-            box.setValue(leftBottom.getX(), leftBottom.getY(), rightTop.getX(), rightTop.getY());
-            if (leftBottom.getX() >= -180 && leftBottom.getX() <= 180) {
-                // guess it is wgs84 srs
-                info.setSrid(SRID_WGS84);
-                info.setProjection("");
-            } else {
-                info.setSrid(SRID_NULL);
-                info.setProjection("");
-            }
-        }
-
-        if (info.getSrid() == SRID_WGS84) {
-            info.setLat(box.center().getY());
-            info.setLng(box.center().getX());
-            Point resolution = resolution(adfGeoTransform);
-
-            Point resolutionMi = new Point(
-                    resolution.getX() * linerScale,
-                    resolution.getY() * linerScale
-            );
-
-            int zoom = zoomByWgs84Resolution(resolutionMi.getX());
-            info.setMaxZoom(22);
-            info.setMinZoom(3);
-            info.setResolution((int) resolutionMi.getX() * 10);
-            info.getSourceBox().copyFrom(box);
-        } else if (info.getSrid() == SRID_CGCS2000) {
-            info.setLat(box.center().getY());
-            info.setLng(box.center().getX());
-            Point resolution = resolution(adfGeoTransform);
-            //计算分辨率 需要转换为米 如果原单位是米 那么分辨率也是米 单位
-            // TODO 需要根据参考系的单位进行换算
-            // Point resolutionMi = wgs84Resolution(box.center(), resolution);
-            Point resolutionMi = new Point(
-                    resolution.getX() * linerScale,
-                    resolution.getY() * linerScale
-            );
-
-            int zoom = zoomByWgs84Resolution(resolutionMi.getX());
-            info.setMaxZoom(22);
-            info.setMinZoom(3);
-            info.setResolution((int) (resolutionMi.getX() * 10));
-            info.getSourceBox().copyFrom(box);
-        } else if (info.getSrid() == SRID_WEB_MERCATO) {
-
-            info.setLat(box.center().getY());
-            info.setLng(box.center().getX());
-
-            //每个像素所占的经度
-            double lngPerPixel = box.width() / info.getWidth();
-            double resolution = lngPerPixel * (2 * Math.PI * GlobalMercator.get().EARTH_RADIUS) / 360;
-            int zoom = GlobalMercator.get().zoomForPixelSize(resolution);
-
-            info.setMaxZoom(22);
-            info.setMinZoom(3);
-            info.setResolution((int) (resolution * 10));
-        } else if (info.getSrid() > 0) {
-            info.setLat(box.center().getY());
-            info.setLng(box.center().getX());
-
-            //每个像素所占的经度
-            double lngPerPixel = box.width() / info.getWidth();
-            double resolution = lngPerPixel * (2 * Math.PI * GlobalMercator.get().EARTH_RADIUS) / 360;
-            int zoom = GlobalMercator.get().zoomForPixelSize(resolution);
-
-            info.setMaxZoom(22);
-            info.setMinZoom(3);
-            info.setResolution((int) (resolution * 10));
-        } else {
-            //没有坐标
-            // 1. 设置范围 3857的坐标转换为4326的坐标
-            if (transform3857To4326 != null) {
-                GeometryFactory geometryFactory = new GeometryFactory();
-                org.locationtech.jts.geom.Point pointMin = geometryFactory.createPoint(new Coordinate(0, 0));
-                org.locationtech.jts.geom.Point pointMax = geometryFactory.createPoint(new Coordinate(info.getWidth(), info.getHeight()));
-                // 找到 pointMin 和 pointMax 中的minx miny maxx maxy
-
-                double[] doubles = new double[4];
-                doubles[0] = pointMin.getX() > pointMax.getX() ? pointMax.getX() : pointMin.getX();
-                doubles[1] = pointMin.getX() > pointMax.getX() ? pointMin.getX() : pointMax.getX();
-                doubles[2] = pointMin.getY() > pointMax.getY() ? pointMax.getY() : pointMin.getY();
-                doubles[3] = pointMin.getY() > pointMax.getY() ? pointMin.getY() : pointMax.getY();
-                box.setValue(doubles[0], doubles[2], doubles[1], doubles[3]);
-            } else {
-                box.setValue(-180, -90, 180, 90);
-            }
-
-            // 2. 设置GeoTransform为像素坐标
-            // 像素坐标左上角是0,0 右下角是 width, height;
-            // 3857坐标系下的坐标 左上角是-20037508.342789244, 20037508.342789244 右下角是20037508.342789244, -20037508.342789244
-            // 计算GeoTransform
-            double[] geoTransform = new double[6];
-            geoTransform[0] = 0;
-            geoTransform[1] = 1;
-            geoTransform[2] = 0;
-            geoTransform[3] = 0;
-            geoTransform[4] = 0;
-            geoTransform[5] = -1;
-            info.geoTransform = geoTransform;
-            info.setLat(0);
-            info.setLng(0);
-            double lngPerPixel = box.width() / info.getWidth();
-            double resolution = lngPerPixel * (2 * Math.PI * GlobalMercator.get().EARTH_RADIUS) / 360;
-            int zoom = GlobalMercator.get().zoomForPixelSize(resolution);
-            info.setMaxZoom(zoom);
-            info.setMinZoom(3);
-            info.setResolution(0);
-            info.getSourceBox().copyTo(box);
-        }
-        info.setDataTime(Times.format("yyyy-MM-dd HH:mm:ss", new Date()));
         return info;
+    }
+
+    /**
+     * Extracts the four corner coordinates of a GeoTIFF in WGS84 and returns a WKT polygon string.
+     *
+     * @return WKT Polygon string representing the bounding corners in WGS84 (lon lat)
+     */
+    public static String extractCornersWkt(ImageInfo info, Dataset dataset) {
+        if (dataset == null) {
+            log.error("Failed to open dataset: {}");
+            return "POLYGON EMPTY";
+        }
+        try {
+            int width = dataset.getRasterXSize();
+            int height = dataset.getRasterYSize();
+
+            double[] geoTransform = new double[6];
+            dataset.GetGeoTransform(geoTransform);
+            info.setGeoTransform(geoTransform);
+
+            // 1. Define source spatial reference from dataset (or default to WGS84 if missing)
+            SpatialReference sourceSrs = new SpatialReference();
+            String projectionWkt = dataset.GetProjection();
+            if (StringUtils.isNotBlank(projectionWkt)) {
+                sourceSrs.ImportFromWkt(projectionWkt);
+            } else {
+                sourceSrs.ImportFromEPSG(4326);
+            }
+            sourceSrs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+
+            // 2. Define target WGS84 spatial reference
+            SpatialReference wgs84Srs = new SpatialReference();
+            wgs84Srs.ImportFromEPSG(4326);
+            wgs84Srs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
+
+            CoordinateTransformation transformer = new CoordinateTransformation(sourceSrs, wgs84Srs);
+
+            // 3. Compute four corners in raster space (Top-Left, Top-Right, Bottom-Right, Bottom-Left)
+            // Pixel coordinates: (0,0), (width,0), (width,height), (0,height)
+            double[][] pixelCorners = {
+                    {0.0, 0.0},
+                    {width, 0.0},
+                    {width, height},
+                    {0.0, height}
+            };
+
+            // OGR Polygon geometry to hold the WGS84 ring
+            Geometry polygon = new Geometry(wkbPolygon);
+            Geometry ring = new Geometry(wkbLinearRing);
+
+            for (double[] pixel : pixelCorners) {
+                // Apply GeoTransform to get projection coordinates
+                double xProj = geoTransform[0] + pixel[0] * geoTransform[1] + pixel[1] * geoTransform[2];
+                double yProj = geoTransform[3] + pixel[0] * geoTransform[4] + pixel[1] * geoTransform[5];
+
+                // Transform projection coordinates to WGS84 (longitude, latitude)
+                double[] latLng = transformer.TransformPoint(xProj, yProj);
+
+                // Add point to the linear ring (Note: OGR uses (X, Y) which maps to (Longitude, Latitude))
+                ring.AddPoint(latLng[0], latLng[1]);
+            }
+
+            // Close the polygon ring by repeating the first point if needed, then finalize
+            double[] firstPoint = transformer.TransformPoint(
+                    geoTransform[0], geoTransform[3]
+            );
+            ring.AddPoint(firstPoint[0], firstPoint[1]);
+
+            polygon.AddGeometry(ring);
+            polygon.AssignSpatialReference(wgs84Srs);
+            polygon.FlattenTo2D();
+
+            // Export to WKT format
+            String wkt = polygon.ExportToWkt();
+
+            info.wkt = wkt;
+
+            double[] envelope = new double[4];
+            polygon.GetEnvelope(envelope);
+
+            // Populate the Box instance on ImageInfo
+            if (info.box == null) {
+                info.box = new Box();
+            }
+            info.box.setValue(envelope[0], envelope[2], envelope[1], envelope[3]);
+            Geometry centroid = polygon.Centroid();
+            info.setLat(centroid.GetY());
+            info.setLng(centroid.GetX());
+
+            // Clean up native objects
+            transformer.delete();
+            sourceSrs.delete();
+            wgs84Srs.delete();
+            ring.delete();
+            polygon.delete();
+
+            return wkt;
+        } catch (Exception e) {
+            log.error("[IMAGE] 提取影像范围 {}", e.getMessage());
+            return "POLYGON EMPTY";
+        }
     }
 
     /**
