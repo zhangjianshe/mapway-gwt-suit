@@ -64,6 +64,7 @@ import static org.gdal.osr.osrConstants.OAMS_TRADITIONAL_GIS_ORDER;
 public class TiffTools {
 
     private static final List<ISatelliteExtractor> satelliteExtractorList;
+    private static final GlobalMercator globalMercator;
     static CoordinateReferenceSystem decode4326 = null;
     static CoordinateReferenceSystem decode3857 = null;
     static MathTransform transform3857To4326 = null;
@@ -76,6 +77,7 @@ public class TiffTools {
     static {
         satelliteExtractorList = new ArrayList<>();
         satelliteExtractorList.add(new GF1Parser());
+        globalMercator = new GlobalMercator(256);
         createTransform();
     }
 
@@ -1024,20 +1026,23 @@ public class TiffTools {
 
             // 1. 计算瓦片在 EPSG:3857 下的边界 (minX, minY, maxX, maxY)
             // 使用 GlobalMercator 或你项目中的 WebMercator 工具类
+            Box tileExtend = globalMercator.tileBoundWgs84(tilex, tiley, zoom);
             double[] bounds3857 = GlobalMercator.getTileBounds3857(tilex, tiley, zoom);
-
             // 检查tile是否落在srcDataset内部
-            //double[] extent4 = new double[4];
-            //srcDataset.GetExtentWGS84LongLat(extent4);
-            Box imgBox = imageInfo.getBox();
-            // 将你的瓦片 3857 边界转回经纬度 (使用你的 GlobalMercator 工具)
-            Box tileLonLat = GlobalMercator.get().tileLngLatBounds(tilex, tiley, zoom);
-            // tileLonLat 通常返回 [minLon, minLat, maxLon, maxLat]
+            boolean isIntersect = false;
+            if (Strings.isNotBlank(imageInfo.wkt)) {
+                Geometry geometry = Geometry.CreateFromWkt(imageInfo.wkt);
+                Geometry geometry1 = Geometry.CreateFromWkt(tileExtend.toWKT());
+                isIntersect = geometry.Intersect(geometry1);
+            } else {
+                Box imgBox = imageInfo.getBox();
+                // 将你的瓦片 3857 边界转回经纬度 (使用你的 GlobalMercator 工具)
+                Box tileLonLat = GlobalMercator.get().tileLngLatBounds(tilex, tiley, zoom);
+                isIntersect = imgBox.intersect(tileLonLat);
+            }
 
             // 进行相交判断
-            boolean isIntersect = imgBox.intersect(tileLonLat);
-            Point center = imgBox.center();
-            if (!isIntersect && !tileLonLat.contain(center)) {
+            if (!isIntersect) {
                 return null; // 或者返回透明图片，避免浪费 CPU 进行 Warp
             }
 

@@ -458,7 +458,7 @@ public class GlobalMercator {
      * @param zoom
      * @return
      */
-    public Box tileBoundWgs84(double tx, double ty, int zoom) {
+    public  Box tileBoundWgs84(double tx, double ty, int zoom) {
         //左上角 对应的墨卡托坐标
         Point LT = pixelsToMeters(tx * tileSize, ty * tileSize, zoom);
         //墨卡托转为 经纬度
