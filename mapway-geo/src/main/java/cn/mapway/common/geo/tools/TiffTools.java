@@ -597,7 +597,7 @@ public class TiffTools {
             String projectionWkt = dataset.GetProjection();
             if (StringUtils.isNotBlank(projectionWkt)) {
                 sourceSrs.ImportFromWkt(projectionWkt);
-                info.setProjection(projectionWkt);
+                info.setProjection(sourceSrs.ExportToWkt());
             } else {
                 sourceSrs.ImportFromEPSG(4326);
                 info.setProjection("");
