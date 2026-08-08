@@ -45,6 +45,12 @@ public class ImageInfo implements Serializable, IsSerializable {
      * 投影信息
      */
     public String projection;
+
+    /**
+     * 空间参考系  GDAL中它叫做 srs 其他标准叫做 crs,经常他们是可以混用的
+     *
+     */
+    public String crs;
     /**
      * 影像包围盒 WGS84
      */

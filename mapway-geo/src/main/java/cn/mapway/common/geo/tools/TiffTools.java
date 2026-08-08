@@ -600,6 +600,14 @@ public class TiffTools {
             } else {
                 sourceSrs.ImportFromEPSG(4326);
             }
+            String srsName = sourceSrs.GetName();
+            if (Strings.isBlank(srsName)) {
+                info.setCrs("没有设定");
+            } else {
+                info.setCrs(srsName);
+            }
+
+
             sourceSrs.SetAxisMappingStrategy(OAMS_TRADITIONAL_GIS_ORDER);
 
             // 2. Define target WGS84 spatial reference
@@ -646,6 +654,7 @@ public class TiffTools {
 
             // Export to WKT format
             String wkt = polygon.ExportToWkt();
+
 
             info.wkt = wkt;
 
