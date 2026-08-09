@@ -485,7 +485,7 @@ public abstract class VectorUtil implements Closeable {
 
     public void close() {
         if (source != null) {
-            source.Close();
+            source.delete();
             source = null;
         }
     }

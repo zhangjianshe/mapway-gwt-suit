@@ -213,13 +213,18 @@ public class TiffTools {
             String targetFileName = tempPath + "/" + R.UU16() + ".png";
             Dataset targetDataset = getPngDriver().CreateCopy(targetFileName, previewDataset);
             targetDataset.FlushCache();
-            dataset.Close();
+
             byte[] image = Files.readBytes(targetFileName);
             Files.deleteFile(new File(targetFileName));
             return image;
         } catch (Exception e) {
             e.printStackTrace();
             return null;
+        } finally {
+            if (dataset != null) {
+                dataset.delete();
+                dataset = null;
+            }
         }
     }
 

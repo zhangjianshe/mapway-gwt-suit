@@ -980,7 +980,7 @@ public class BaseTileExtractor {
 
             buffers[i] = outputBuffer;
         }
-        // dataset.Close();
+        dataset.delete();
         return buffers;
     }
 
