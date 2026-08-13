@@ -39,6 +39,8 @@ public class RbacConstant {
     public static final Long SUPER_USER_ID = 1L;
 
 
+
+
     //用户权限的缓存KEY
     /**
      * 每个用户的权限缓存 为该KEY加上用户ID 比如 USER_PERMISSION_1

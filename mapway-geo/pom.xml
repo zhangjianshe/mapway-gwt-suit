@@ -21,6 +21,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
         <maven.plugin.validation>VERBOSE</maven.plugin.validation>
+        <kingbase.jdbc>9.0.1</kingbase.jdbc>
     </properties>
 
     <repositories>
@@ -58,6 +59,11 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>${postgis-version}</version>
+        </dependency>
+        <dependency>
+            <groupId>cn.com.kingbase</groupId>
+            <artifactId>kingbase8</artifactId>
+            <version>${kingbase.jdbc}</version>
         </dependency>
         <dependency>
             <groupId>net.postgis</groupId>

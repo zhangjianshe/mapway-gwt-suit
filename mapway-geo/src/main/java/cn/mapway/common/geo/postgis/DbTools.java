@@ -36,7 +36,7 @@ public class DbTools {
      *
      * @param clazz
      */
-    public static void checkFieldSerial(Dao dao, Class clazz) {
+    public static void checkFieldSerial(Dao dao,String schema, Class clazz) {
         Field[] fields = clazz.getDeclaredFields();
         List<Sql> sqlList = new ArrayList<>();
         for (Field field : fields) {
@@ -46,7 +46,7 @@ public class DbTools {
                 String serialName = extractSerialName(defaultValue);
                 if (Strings.isNotBlank(serialName)) {
                     //model_user_relation_id_seq
-                    String sql = "CREATE SEQUENCE IF NOT EXISTS public." + serialName + ";";
+                    String sql = String.format("CREATE SEQUENCE IF NOT EXISTS %s.%s;",schema,serialName);
                     sqlList.add(Sqls.create(sql));
                 }
             }

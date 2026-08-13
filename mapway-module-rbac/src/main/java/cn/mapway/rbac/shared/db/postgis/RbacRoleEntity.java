@@ -82,7 +82,8 @@ public class RbacRoleEntity implements Serializable, IsSerializable {
     @ApiField("角色图标")
     @Column("icon")
     @ColDefine(
-            type = org.nutz.dao.entity.annotation.ColType.VARCHAR
+            type = org.nutz.dao.entity.annotation.ColType.VARCHAR,
+            width = 512
     )
     @Comment("角色图标")
     private String icon;

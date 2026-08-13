@@ -1130,6 +1130,27 @@ public class PgTools implements IDbSource, Closeable {
         }
     }
 
+    public void createSchema(String schemaName) {
+        if (Strings.isBlank(schemaName)) {
+            return;
+        }
+        try (PreparedStatement preparedStatement = connection.prepareStatement("SELECT schema_name FROM information_schema.schemata WHERE schema_name = ?")) {
+            preparedStatement.setString(1, schemaName);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                System.out.println("Schema '" + schemaName + "' already exists.");
+            } else {
+                try (Statement statement = connection.createStatement()) {
+                    statement.executeUpdate("CREATE SCHEMA " + schemaName);
+                    System.out.println("Schema '" + schemaName + "' created successfully.");
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        }
+    }
     public static void main(String[] args) {
         String string = "-179769313486231570000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
         Double d = Double.parseDouble(string);

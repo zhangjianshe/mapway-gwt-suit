@@ -107,8 +107,8 @@ public class RbacServerPlugin implements IServerPlugin {
             }
             else{
                 Daos.migration(dao,RbacResourceEntity.class,true,true,false);
-                String dropConstrain="alter table public.rbac_resource drop CONSTRAINT rbac_resource_pkey;";
-                String createnew="alter table public.rbac_resource add CONSTRAINT rbac_resource_pkey PRIMARY KEY (\"resource_code\", \"kind\");";
+                String dropConstrain=String.format("alter table %s.rbac_resource drop CONSTRAINT rbac_resource_pkey;",getServerContext().getDatabaseSchema());
+                String createnew="alter table "+getServerContext().getDatabaseSchema()+".rbac_resource add CONSTRAINT rbac_resource_pkey PRIMARY KEY (\"resource_code\", \"kind\");";
                 DbTools dbTools=new DbTools(dao);
                 dbTools.execute(Arrays.asList(dropConstrain,createnew));
                 log.info("修复RBAC_RESOURCE TABLE {}",SCHEMA_DATE);

@@ -24,23 +24,26 @@ public interface IServerContext {
 
     /**
      * 加入缓存
+     *
      * @param key
      * @param value
      */
-    void putToSession(String group,String key, Object value);
+    void putToSession(String group, String key, Object value);
 
     /**
      * 清楚group 下所有的东西
+     *
      * @param group
      */
     void clearToSession(String group);
 
     /**
      * 从缓存中获取
+     *
      * @param key
      * @return
      */
-    Object getFromSession(String group,String key);
+    Object getFromSession(String group, String key);
 
     /**
      * 获取当前的登录用户
@@ -51,20 +54,27 @@ public interface IServerContext {
 
     /**
      * 需要扫描的package
+     *
      * @return
      */
     Collection<Class<?>> getScanPackages();
 
     /**
      * 超级管理员
+     *
      * @return
      */
     IUserInfo getSuperUser();
 
     /**
      * clear session cache by group
+     *
      * @param sessionCacheGroup
      */
     void clearSessionGroup(String sessionCacheGroup);
+
+    default String getDatabaseSchema() {
+        return "";
+    }
 
 }
