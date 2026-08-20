@@ -1111,11 +1111,11 @@ public class TiffTools {
                 options.add(String.valueOf(2));
             } else if (srcDataset.GetRasterCount() == 3) {
                 options.add("-srcband");
-                options.add(String.valueOf(1));
+                options.add(String.valueOf(chanelData.getRedChanel()));
                 options.add("-srcband");
-                options.add(String.valueOf(2));
+                options.add(String.valueOf(chanelData.getGreenChanel()));
                 options.add("-srcband");
-                options.add(String.valueOf(3));
+                options.add(String.valueOf(chanelData.getBlueChanel()));
             } else {
 
                 options.add("-srcband");
