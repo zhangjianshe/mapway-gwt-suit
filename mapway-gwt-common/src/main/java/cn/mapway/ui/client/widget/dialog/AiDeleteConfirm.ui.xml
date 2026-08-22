@@ -15,6 +15,9 @@
             border: 1px solid BACKGROUND_COLOR;
             border-radius: 8px;
             box-shadow: 0 2px 12px 0 rgba(0, 0, 0, 0.06);
+            box-sizing: border-box;
+            width: 400px;
+            min-height: 240px;
             padding: 32px 40px;
             display: flex;
             flex-direction: column;
@@ -24,6 +27,7 @@
         .icon {
             width: 36px;
             height: 36px;
+            flex-shrink: 0;
             border-radius: 50%;
             color: COLOR_WARNING;
             font-size: 36px;
@@ -33,6 +37,7 @@
         }
 
         .title {
+            flex-shrink: 0;
             font-size: 18px;
             color: COLOR_WARNING;
             line-height: 25px;
@@ -41,6 +46,7 @@
         }
 
         .subtitle {
+            flex-shrink: 0;
             font-weight: 400;
             font-size: 14px;
             color: COLOR_TEXT_SUMMARY;
@@ -52,8 +58,10 @@
 
         .btnRow {
             display: flex;
+            flex-shrink: 0;
             justify-content: center;
             gap: 16px;
+            margin-bottom: 20px;
         }
 
         .btnDelete {

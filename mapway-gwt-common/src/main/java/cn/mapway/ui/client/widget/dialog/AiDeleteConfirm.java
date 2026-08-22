@@ -61,7 +61,6 @@ public class AiDeleteConfirm extends AiDialog {
             }
             hide(true);
         }, ClickEvent.getType());
-        setPixelSize(400, 280);
     }
 
     // ==================== 静态工厂（保持旧 API 兼容） ====================
