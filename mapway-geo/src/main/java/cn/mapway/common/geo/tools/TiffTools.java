@@ -1155,7 +1155,7 @@ public class TiffTools {
             return pngBytes;
 
         } catch (Exception e) {
-            log.error("切片提取失败: {}", e.getMessage());
+            log.error("切片提取失败: {} {}", imageInfo.location, e.getMessage());
             return null;
         } finally {
             // 必须显式 delete，否则会内存泄漏
