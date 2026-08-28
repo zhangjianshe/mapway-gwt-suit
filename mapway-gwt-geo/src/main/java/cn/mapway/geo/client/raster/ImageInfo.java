@@ -35,6 +35,12 @@ public class ImageInfo implements Serializable, IsSerializable {
      * 分辨率 以cm为单位
      */
     public Integer resolution;
+
+    /**
+     * 米为单位
+     */
+    public Double resolutionDouble;
+
     /**
      * 波段数量
      */
