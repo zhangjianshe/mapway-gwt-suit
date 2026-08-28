@@ -37,11 +37,6 @@ public class ImageInfo implements Serializable, IsSerializable {
     public Integer resolution;
 
     /**
-     * 米为单位
-     */
-    public Double resolutionDouble;
-
-    /**
      * 波段数量
      */
     public int bands = 0;

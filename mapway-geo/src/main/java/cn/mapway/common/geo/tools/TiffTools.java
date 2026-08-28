@@ -574,8 +574,6 @@ public class TiffTools {
         }
         info.setMaxZoom(20);
         info.setMinZoom(3);
-        double[] geoTransform = dataset.GetGeoTransform();
-        info.resolutionDouble = geoTransform[1];
         extractCornersWkt(info, dataset);
         return info;
     }
