@@ -574,8 +574,43 @@ public class TiffTools {
         }
         info.setMaxZoom(20);
         info.setMinZoom(3);
+        try {
+            applyTiffMetadata(dataset, info);
+        } catch (RuntimeException e) {
+            log.warn("Unable to apply TIFF metadata, continuing with the extracted image information", e);
+        }
+
         extractCornersWkt(info, dataset);
         return info;
+    }
+
+    private static void applyTiffMetadata(Dataset dataset, ImageInfo info) {
+        String satellite = StringUtils.trimToNull(TiffMetadataParser.getSatellite(dataset));
+        if (satellite != null) {
+            info.setSatellite(satellite);
+        }
+
+        String sensor = StringUtils.trimToNull(TiffMetadataParser.getSensor(dataset));
+        if (sensor != null) {
+            info.setSensor(sensor);
+        }
+
+        Double resolutionInMeters = TiffMetadataParser.getResolution(dataset);
+        if (resolutionInMeters != null) {
+            long resolutionInCentimeters = Math.round(resolutionInMeters * 100D);
+            if (resolutionInCentimeters > 0 && resolutionInCentimeters <= Integer.MAX_VALUE) {
+                info.setResolution((int) resolutionInCentimeters);
+            }
+        }
+
+        String captureTime = StringUtils.trimToNull(TiffMetadataParser.getCaptureTime(dataset));
+        if (captureTime != null) {
+            try {
+                info.setCaptureTime(Times.D(captureTime.replace('T', ' ')));
+            } catch (RuntimeException e) {
+                log.warn("Unable to parse TIFF capture time: {}", captureTime);
+            }
+        }
     }
 
     /**
