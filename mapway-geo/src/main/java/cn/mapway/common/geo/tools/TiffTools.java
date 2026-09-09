@@ -990,7 +990,7 @@ public class TiffTools {
         //需要重新计算
         Dataset dataset = gdal.Open(imageAbsoluteFilename, gdalconstConstants.GA_ReadOnly);
         if(dataset == null) {
-            log.info("路径" + imageAbsoluteFilename + "的文件无法打开");
+            log.info("路径 {} 的文件无法打开", imageAbsoluteFilename);
             return new ImageInfo();
         }
         ImageInfo info = extractImageInformation(dataset);
