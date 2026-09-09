@@ -989,6 +989,10 @@ public class TiffTools {
         // sha256  必须传入 我们就是不计算了
         //需要重新计算
         Dataset dataset = gdal.Open(imageAbsoluteFilename, gdalconstConstants.GA_ReadOnly);
+        if(dataset == null) {
+            log.info("路径" + imageAbsoluteFilename + "的文件无法打开");
+            return new ImageInfo();
+        }
         ImageInfo info = extractImageInformation(dataset);
 
 
