@@ -1,6 +1,5 @@
 package cn.mapway.common.geo.gdal;
 
-import lombok.extern.slf4j.Slf4j;
 import org.gdal.ogr.*;
 import org.gdal.osr.CoordinateTransformation;
 import org.gdal.osr.SpatialReference;
@@ -16,7 +15,6 @@ import java.io.File;
  *
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
-@Slf4j
 public class OpenFileGdbUtil extends VectorUtil {
 
     public static void main(String[] args) {
@@ -38,11 +36,17 @@ public class OpenFileGdbUtil extends VectorUtil {
         super(path);
         try {
             source = getDriver().Open(fileName);
+            if (source == null) {
+                throw new IllegalStateException("Unable to open OpenFileGDB data source: " + fileName);
+            }
             layer = source.GetLayer(0);
+            if (layer == null) {
+                throw new IllegalStateException("OpenFileGDB data source has no readable layer: " + fileName);
+            }
             sourceRef = layer.GetSpatialRef();
             if (sourceRef == null) {
                 //猜测
-                sourceRef = srcWgs84;
+                sourceRef = srcWgs84.Clone();
             }
             if (sourceRef.IsSame(srcWebMercator) != 0) {
                 coordinateTransformation = new CoordinateTransformation(sourceRef, srcWebMercator);
@@ -50,8 +54,9 @@ public class OpenFileGdbUtil extends VectorUtil {
             } else {
                 geomTransformer = null;
             }
-        } catch (Exception e) {
-            log.error("Open file {} {}", fileName, e.getMessage());
+        } catch (RuntimeException error) {
+            close();
+            throw new IllegalStateException("Unable to initialize OpenFileGDB data source: " + fileName, error);
         }
     }
 
@@ -61,7 +66,7 @@ public class OpenFileGdbUtil extends VectorUtil {
      * @param epsgCode
      */
     public OpenFileGdbUtil(String fileName, Integer geoType, Integer epsgCode) {
-        super(fileName,geoType,epsgCode);
+        super(fileName, geoType, epsgCode);
         try {
             if (Files.isFile(new File(fileName))) {
                 getDriver().DeleteDataSource(fileName);
@@ -69,8 +74,12 @@ public class OpenFileGdbUtil extends VectorUtil {
             sourceRef = new SpatialReference();
             sourceRef.ImportFromEPSG(epsgCode);
             source = getDriver().CreateDataSource(fileName);
-        } catch (Exception e) {
-            log.error("Open file {} {}", fileName, e.getMessage());
+            if (source == null) {
+                throw new IllegalStateException("Unable to create OpenFileGDB data source: " + fileName);
+            }
+        } catch (RuntimeException error) {
+            close();
+            throw new IllegalStateException("Unable to initialize OpenFileGDB data source: " + fileName, error);
         }
     }
 
@@ -85,6 +94,9 @@ public class OpenFileGdbUtil extends VectorUtil {
 
     protected Driver getDriver() {
         Driver odriver = ogr.GetDriverByName("OpenFileGDB");
+        if (odriver == null) {
+            throw new IllegalStateException("GDAL OpenFileGDB driver is unavailable");
+        }
         return odriver;
     }
 }

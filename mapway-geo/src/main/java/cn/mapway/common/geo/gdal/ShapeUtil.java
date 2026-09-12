@@ -1,6 +1,5 @@
 package cn.mapway.common.geo.gdal;
 
-import lombok.extern.slf4j.Slf4j;
 import org.gdal.ogr.Driver;
 import org.gdal.ogr.GeomTransformer;
 import org.gdal.ogr.ogr;
@@ -23,18 +22,23 @@ import static org.gdal.ogr.ogrConstants.wkbMultiPolygon;
  *
  * @author zhangjianshe <zhangjianshe@gmail.com>
  */
-@Slf4j
 public class ShapeUtil extends VectorUtil {
 
     public ShapeUtil(String path) {
         super(path);
         try {
             source = getDriver().Open(fileName);
+            if (source == null) {
+                throw new IllegalStateException("Unable to open SHP data source: " + fileName);
+            }
             layer = source.GetLayer(0);
+            if (layer == null) {
+                throw new IllegalStateException("SHP data source has no readable layer: " + fileName);
+            }
             sourceRef = layer.GetSpatialRef();
             if (sourceRef == null) {
                 //猜测
-                sourceRef = srcWgs84;
+                sourceRef = srcWgs84.Clone();
             }
             if (sourceRef.IsSame(srcWebMercator) != 0) {
                 coordinateTransformation = new CoordinateTransformation(sourceRef, srcWebMercator);
@@ -58,8 +62,9 @@ public class ShapeUtil extends VectorUtil {
                 tempEncoding = "GBK";
             }
             setEncoding(tempEncoding);
-        } catch (Exception e) {
-            log.error("Open file {} {}", fileName, e.getMessage());
+        } catch (RuntimeException error) {
+            close();
+            throw new IllegalStateException("Unable to initialize SHP data source: " + fileName, error);
         }
     }
 
@@ -69,26 +74,46 @@ public class ShapeUtil extends VectorUtil {
      * @param epsgCode
      */
     public ShapeUtil(String fileName, Integer geoType, Integer epsgCode) {
-        super(fileName,geoType,epsgCode);
+        super(fileName, geoType, epsgCode);
+        SpatialReference spatialReference = null;
+        boolean completed = false;
         try {
             if (Files.isFile(new File(fileName))) {
                 getDriver().DeleteDataSource(fileName);
             }
-            SpatialReference spatialReference = new SpatialReference();
-            spatialReference.ImportFromEPSG(epsgCode);
+            spatialReference = new SpatialReference();
+            spatialReference.ImportFromEPSG(this.epsgCode);
             source = getDriver().CreateDataSource(fileName);
+            if (source == null) {
+                throw new IllegalStateException("Unable to create SHP data source: " + fileName);
+            }
             Vector<String> options1 = new Vector<>();
             options1.add("ENCODING=UTF-8");
             options1.add("SHAPE_RESTORE_SHX=YES");
-            layer = source.CreateLayer("Layer", spatialReference, geoType, options1);
-        } catch (Exception e) {
-            log.error("Open file {} {}", fileName, e.getMessage());
+            layer = source.CreateLayer("Layer", spatialReference, this.geoType, options1);
+            if (layer == null) {
+                throw new IllegalStateException("Unable to create SHP layer: " + fileName);
+            }
+            completed = true;
+        } catch (RuntimeException error) {
+            throw new IllegalStateException("Unable to initialize SHP data source: " + fileName, error);
+        } finally {
+            if (spatialReference != null) {
+                spatialReference.delete();
+                spatialReference = null;
+            }
+            if (!completed) {
+                close();
+            }
         }
     }
 
 
     protected Driver getDriver() {
         Driver odriver = ogr.GetDriverByName("ESRI Shapefile");
+        if (odriver == null) {
+            throw new IllegalStateException("GDAL ESRI Shapefile driver is unavailable");
+        }
         return odriver;
     }
 

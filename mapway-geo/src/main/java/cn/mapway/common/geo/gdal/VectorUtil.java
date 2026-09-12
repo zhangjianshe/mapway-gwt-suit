@@ -50,6 +50,7 @@ public abstract class VectorUtil implements Closeable {
     private String encoding = "UTF-8";
 
     public VectorUtil(String fileName, Integer geoType, Integer epsgCode) {
+        initializeSpatialReferences();
         this.fileName = fileName;
         fieldTypes = new HashMap<>();
         if (epsgCode == null) {
@@ -65,14 +66,7 @@ public abstract class VectorUtil implements Closeable {
     }
 
     public VectorUtil(String path) {
-        if (srcWebMercator == null) {
-            srcWgs84 = new SpatialReference();
-            srcWebMercator = new SpatialReference();
-            srcWgs84.ImportFromEPSG(WebMercator.SRC_WGS84);
-            srcWgs84.SetAxisMappingStrategy(osrConstants.OAMS_TRADITIONAL_GIS_ORDER);
-            srcWebMercator.ImportFromEPSG(WebMercator.SRC_WEB_MERCATOR);
-        }
-
+        initializeSpatialReferences();
 
         this.fileName = path;
         fieldTypes = new HashMap<>();
@@ -82,6 +76,38 @@ public abstract class VectorUtil implements Closeable {
         }
 
 
+    }
+
+    private static synchronized void initializeSpatialReferences() {
+        if (srcWebMercator != null) {
+            return;
+        }
+        SpatialReference wgs84 = null;
+        SpatialReference webMercator = null;
+        try {
+            wgs84 = new SpatialReference();
+            webMercator = new SpatialReference();
+            if (wgs84.ImportFromEPSG(WebMercator.SRC_WGS84) != 0) {
+                throw new IllegalStateException("Unable to initialize WGS84 spatial reference");
+            }
+            wgs84.SetAxisMappingStrategy(osrConstants.OAMS_TRADITIONAL_GIS_ORDER);
+            if (webMercator.ImportFromEPSG(WebMercator.SRC_WEB_MERCATOR) != 0) {
+                throw new IllegalStateException("Unable to initialize Web Mercator spatial reference");
+            }
+            srcWgs84 = wgs84;
+            wgs84 = null;
+            srcWebMercator = webMercator;
+            webMercator = null;
+        } finally {
+            if (webMercator != null) {
+                webMercator.delete();
+                webMercator = null;
+            }
+            if (wgs84 != null) {
+                wgs84.delete();
+                wgs84 = null;
+            }
+        }
     }
 
     public static int gdalTypeFromGeometryType(GeometryType geometryType) {
@@ -257,7 +283,14 @@ public abstract class VectorUtil implements Closeable {
      */
     public Box getExtendBox() {
         Geometry geometry = getExtend();
-        return toBox(geometry);
+        try {
+            return toBox(geometry);
+        } finally {
+            if (geometry != null) {
+                geometry.delete();
+                geometry = null;
+            }
+        }
     }
 
     private Box extendBox() {
@@ -277,8 +310,21 @@ public abstract class VectorUtil implements Closeable {
      */
     public Geometry getExtend() {
         Box box = extendBox();
-        Geometry geometry = toGeometry(box, layer.GetSpatialRef());
-        return toWgs84(geometry);
+        SpatialReference spatialReference = layer.GetSpatialRef();
+        Geometry geometry = null;
+        try {
+            geometry = toGeometry(box, spatialReference);
+            return toWgs84(geometry);
+        } finally {
+            if (geometry != null) {
+                geometry.delete();
+                geometry = null;
+            }
+            if (spatialReference != null) {
+                spatialReference.delete();
+                spatialReference = null;
+            }
+        }
     }
 
     public SpatialReference getSpatialRef() {
@@ -484,10 +530,33 @@ public abstract class VectorUtil implements Closeable {
     }
 
     public void close() {
-        if (source != null) {
-            source.delete();
-            source = null;
+        DataSource dataSource = source;
+        prepareForDataSourceDelete();
+        if (dataSource != null) {
+            dataSource.delete();
+            dataSource = null;
         }
+    }
+
+    /**
+     * 读取全部结束后清理实例资源并断开引用，DataSource 由已保存它的调用方负责删除。
+     * Layer 借用自 DataSource，不能在这里删除。
+     */
+    public void prepareForDataSourceDelete() {
+        layer = null;
+        source = null;
+        if (geomTransformer != null) {
+            geomTransformer.delete();
+            geomTransformer = null;
+        }
+        if (coordinateTransformation != null) {
+            coordinateTransformation.delete();
+            coordinateTransformation = null;
+        }
+        if (sourceRef != null && sourceRef != srcWgs84 && sourceRef != srcWebMercator) {
+            sourceRef.delete();
+        }
+        sourceRef = null;
     }
 
     public Attrs createAttrs() {
@@ -501,19 +570,33 @@ public abstract class VectorUtil implements Closeable {
 
     public Geometry toGeometry(Box box, SpatialReference spatialReference) {
         Geometry geometry = new Geometry(wkbPolygon);
-        if (spatialReference != null) {
-            geometry.AssignSpatialReference(spatialReference);
-        } else {
-            geometry.AssignSpatialReference(srcWgs84);
+        Geometry ring = null;
+        boolean completed = false;
+        try {
+            if (spatialReference != null) {
+                geometry.AssignSpatialReference(spatialReference);
+            } else {
+                geometry.AssignSpatialReference(srcWgs84);
+            }
+            ring = new Geometry(wkbLinearRing);
+            ring.AddPoint(box.xmin, box.ymax);
+            ring.AddPoint(box.xmax, box.ymax);
+            ring.AddPoint(box.xmax, box.ymin);
+            ring.AddPoint(box.xmin, box.ymin);
+            ring.CloseRings();
+            geometry.AddGeometry(ring);
+            completed = true;
+            return geometry;
+        } finally {
+            if (ring != null) {
+                ring.delete();
+                ring = null;
+            }
+            if (!completed) {
+                geometry.delete();
+                geometry = null;
+            }
         }
-        Geometry ring = new Geometry(wkbLinearRing);
-        ring.AddPoint(box.xmin, box.ymax);
-        ring.AddPoint(box.xmax, box.ymax);
-        ring.AddPoint(box.xmax, box.ymin);
-        ring.AddPoint(box.xmin, box.ymin);
-        ring.CloseRings();
-        geometry.AddGeometry(ring);
-        return geometry;
     }
 
     public Box toBox(Geometry geometry) {
@@ -527,10 +610,17 @@ public abstract class VectorUtil implements Closeable {
 
     public String getBoxWkt() {
         Geometry extend = getExtend();
-        if (extend != null) {
-            return toBoxWkt(extend);
+        try {
+            if (extend != null) {
+                return toBoxWkt(extend);
+            }
+            return "POLYGON EMPTY";
+        } finally {
+            if (extend != null) {
+                extend.delete();
+                extend = null;
+            }
         }
-        return "POLYGON EMPTY";
     }
 
     public String toBoxWkt(Geometry geometry) {
@@ -545,48 +635,82 @@ public abstract class VectorUtil implements Closeable {
         Box box = new Box(env[0], env[2], env[1], env[3]);
 
         // 2. Convert to a Polygon Geometry using your existing utility method
-        Geometry boxGeo = toGeometry(box, geometry.GetSpatialReference());
-        boxGeo.FlattenTo2D();
-
-        // 3. Export to WKT
-        String wkt = boxGeo.ExportToWkt();
-
-        // Clean up temporary OGR geometry
-        boxGeo.delete();
-
-        return wkt;
+        SpatialReference spatialReference = geometry.GetSpatialReference();
+        Geometry boxGeo = null;
+        try {
+            boxGeo = toGeometry(box, spatialReference);
+            boxGeo.FlattenTo2D();
+            return boxGeo.ExportToWkt();
+        } finally {
+            if (boxGeo != null) {
+                boxGeo.delete();
+                boxGeo = null;
+            }
+            if (spatialReference != null) {
+                spatialReference.delete();
+                spatialReference = null;
+            }
+        }
     }
 
     public Geometry toWgs84(Geometry geometry) {
         if (geometry == null) {
             return null;
         }
-        if (geometry.GetSpatialReference() == null) {
+        SpatialReference spatialReference = geometry.GetSpatialReference();
+        if (spatialReference == null) {
             return null;
         }
-        CoordinateTransformation coordinateTransformation = new CoordinateTransformation(geometry.GetSpatialReference(), srcWgs84);
-        GeomTransformer geomTransformer = new GeomTransformer(coordinateTransformation);
-        return geomTransformer.Transform(geometry);
+        GeomTransformer transformer = null;
+        try {
+            transformer = createGeomTransformer(spatialReference, srcWgs84);
+            return transformer.Transform(geometry);
+        } finally {
+            if (transformer != null) {
+                transformer.delete();
+                transformer = null;
+            }
+            spatialReference.delete();
+            spatialReference = null;
+        }
     }
 
     public GeomTransformer getGeomTransformerToWgs84() {
-
-        if (getSpatialRef() == null) {
+        SpatialReference spatialReference = getSpatialRef();
+        if (spatialReference == null) {
             return null;
         }
-        CoordinateTransformation coordinateTransformation = new CoordinateTransformation(getSpatialRef(), srcWgs84);
-        GeomTransformer geomTransformer = new GeomTransformer(coordinateTransformation);
-        return geomTransformer;
+        try {
+            return createGeomTransformer(spatialReference, srcWgs84);
+        } finally {
+            spatialReference.delete();
+            spatialReference = null;
+        }
     }
 
     public GeomTransformer getGeomTransformerToWebMercator() {
-
-        if (getSpatialRef() == null) {
+        SpatialReference spatialReference = getSpatialRef();
+        if (spatialReference == null) {
             return null;
         }
-        CoordinateTransformation coordinateTransformation = new CoordinateTransformation(getSpatialRef(), srcWebMercator);
-        GeomTransformer geomTransformer = new GeomTransformer(coordinateTransformation);
-        return geomTransformer;
+        try {
+            return createGeomTransformer(spatialReference, srcWebMercator);
+        } finally {
+            spatialReference.delete();
+            spatialReference = null;
+        }
+    }
+
+    private GeomTransformer createGeomTransformer(SpatialReference sourceReference,
+                                                 SpatialReference targetReference) {
+        CoordinateTransformation transformation = new CoordinateTransformation(sourceReference, targetReference);
+        try {
+            // GeomTransformer 拷贝转换对象，临时 CoordinateTransformation 无需继续保留。
+            return new GeomTransformer(transformation);
+        } finally {
+            transformation.delete();
+            transformation = null;
+        }
     }
 
     @Deprecated
@@ -610,14 +734,30 @@ public abstract class VectorUtil implements Closeable {
             return;
         }
         Geometry filterBox = toGeometry(tileBox, srcWgs84);
-        if (sourceRef.IsSame(srcWgs84) == 0) {
-            //数据的坐标参考 与 tile过滤WGS84不一样
-            //转换坐标范围
-            CoordinateTransformation coordinateTransformation = new CoordinateTransformation(srcWgs84, sourceRef);
-            GeomTransformer geomTransformer = new GeomTransformer(coordinateTransformation);
-            filterBox = geomTransformer.Transform(filterBox);
+        Geometry transformedBox = null;
+        GeomTransformer transformer = null;
+        try {
+            if (sourceRef.IsSame(srcWgs84) == 0) {
+                transformer = createGeomTransformer(srcWgs84, sourceRef);
+                transformedBox = transformer.Transform(filterBox);
+                layer.SetSpatialFilter(transformedBox);
+            } else {
+                layer.SetSpatialFilter(filterBox);
+            }
+        } finally {
+            if (transformedBox != null) {
+                transformedBox.delete();
+                transformedBox = null;
+            }
+            if (transformer != null) {
+                transformer.delete();
+                transformer = null;
+            }
+            if (filterBox != null) {
+                filterBox.delete();
+                filterBox = null;
+            }
         }
-        layer.SetSpatialFilter(filterBox);
     }
 
     public boolean isSuccess() {
