@@ -20,6 +20,7 @@ import com.google.gwt.user.client.ui.TextBox;
  */
 public class SearchBox extends CommonEventComposite implements HasValueChangeHandlers<String>, HasValue<String> {
     private static final SearchBoxUiBinder ourUiBinder = GWT.create(SearchBoxUiBinder.class);
+    private static int inputSequence;
     @UiField
     TextBox txtSearch;
     @UiField
@@ -27,6 +28,7 @@ public class SearchBox extends CommonEventComposite implements HasValueChangeHan
 
     public SearchBox() {
         initWidget(ourUiBinder.createAndBindUi(this));
+        configureSearchInput();
         iconSearch.setIconUnicode(Fonts.SEARCH);
         txtSearch.addKeyDownHandler((event) -> {
             if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER) {
@@ -48,6 +50,27 @@ public class SearchBox extends CommonEventComposite implements HasValueChangeHan
             }
         }, DoubleClickEvent.getType());
         setPlaceholder("输入关键词");
+    }
+
+    private void configureSearchInput() {
+        txtSearch.getElement().setAttribute("type", "search");
+        txtSearch.getElement().setAttribute("name", "search-filter-" + (++inputSequence));
+        txtSearch.getElement().setAttribute("autocomplete", "off");
+        txtSearch.getElement().setAttribute("aria-label", "搜索");
+        txtSearch.getElement().setAttribute("data-lpignore", "true");
+        txtSearch.getElement().setAttribute("data-1p-ignore", "true");
+    }
+
+    public void setInputName(String name) {
+        txtSearch.getElement().setAttribute("name", name);
+    }
+
+    public void setAutocomplete(String autocomplete) {
+        txtSearch.getElement().setAttribute("autocomplete", autocomplete);
+    }
+
+    public void setAriaLabel(String label) {
+        txtSearch.getElement().setAttribute("aria-label", label);
     }
 
     @Override
