@@ -993,23 +993,24 @@ public class TiffTools {
             log.info("路径 {} 的文件无法打开", imageAbsoluteFilename);
             return new ImageInfo();
         }
-        ImageInfo info = extractImageInformation(dataset);
+        try {
+            ImageInfo info = extractImageInformation(dataset);
 
+            //获取了影像的基本信息 然后我们还要根据影像的类型区获取传感器信息
+            //比如 GF1 GF2 GF6 Sentianl等系列 主要是从 .xml文件中去读取
+            extractSatelliteInfo(imageAbsoluteFilename, info);
 
-        //获取了影像的基本信息 然后我们还要根据影像的类型区获取传感器信息
-        //比如 GF1 GF2 GF6 Sentianl等系列 主要是从 .xml文件中去读取
-        extractSatelliteInfo(imageAbsoluteFilename, info);
+            info.name = Files.getMajorName(imageAbsoluteFilename);
+            info.setLocation(imageAbsoluteFilename);
+            File f = new File(imageAbsoluteFilename);
+            info.setFileSize(f.length());
+            info.setSha256(sha256);
 
-
-        info.name = Files.getMajorName(imageAbsoluteFilename);
-        info.setLocation(imageAbsoluteFilename);
-        File f = new File(imageAbsoluteFilename);
-        info.setFileSize(f.length());
-        info.setSha256(sha256);
-
-        //  previewImage(dataset, info, previewProvider);
-
-        return info;
+            //  previewImage(dataset, info, previewProvider);
+            return info;
+        } finally {
+            dataset.delete();
+        }
     }
 
 
