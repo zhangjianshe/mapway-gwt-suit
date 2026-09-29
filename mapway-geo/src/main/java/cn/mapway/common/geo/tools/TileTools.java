@@ -403,6 +403,11 @@ public class TileTools {
         if (tableExist) {
             return connection;
         }
+        try {
+            connection.close();
+        } catch (SQLException closeError) {
+            log.warn("close unusable SQLite connection failed: {}", dbFileFullName, closeError);
+        }
         return null;
     }
 
